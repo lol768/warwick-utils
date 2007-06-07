@@ -16,16 +16,29 @@
   <target name="compile">
 	<mkdir dir="${build.dir}/all" />
 	<mkdir dir="${build.dir}/core" />
-	  
-	<!-- all classes -->
-    <javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" />
+	<mkdir dir="${build.dir}/web" />
 	
-	<!-- core library -->
-    <javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path">
-		<sourcepath>
-			<fileset dir="src/uk/ac/warwick/util/string" />
-		</sourcepath>
-	</javac>
+	<!-- let's compile in parallel for no particular reason! -->
+	<parallel failonany="true">
+	  
+		<!-- all classes -->
+		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" />
+		
+		<!-- core library -->
+		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path">
+			<sourcepath>
+				<fileset dir="src/uk/ac/warwick/util/string" />
+			</sourcepath>
+		</javac>
+		  
+		<!-- web library -->
+		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path">
+			<sourcepath>
+				<fileset dir="src/uk/ac/warwick/util/web" />
+			</sourcepath>
+		</javac>
+		
+	</parallel>  
   </target>
 	
   <target name="_compiletests">
@@ -37,8 +50,9 @@
   </target>
   
   <target name="package">
-	<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
+    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
     <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
+    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" />	  
   </target>
 	
   <target name="clean">
