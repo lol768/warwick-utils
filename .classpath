@@ -4,5 +4,11 @@
 	<classpathentry kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="external-libs/junit/junit-3.8.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/jstl/standard.jar"/>
+	<classpathentry kind="lib" path="external-libs/container/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring-mock.jar"/>
+	<classpathentry kind="lib" path="external-libs/jstl/jstl.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-cglib-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
