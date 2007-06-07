@@ -1,0 +1,37 @@
+<project name="Utilities" default="build-all">
+
+  <property file="build.properties" />
+  <property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
+	
+  <target name="build-all" depends="init,compile,package" />
+  
+  <target name="init">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+  
+  <target name="compile">
+	<mkdir dir="${build.dir}/all" />
+	<mkdir dir="${build.dir}/core" />
+	  
+	<!-- all classes -->
+    <javac destdir="${build.dir}/all" srcdir="${src.dir}" />
+	<!-- core library -->
+    <javac destdir="${build.dir}/core" srcdir="${src.dir}">
+		<sourcepath>
+			<fileset dir="src/uk/ac/warwick/util/string" />
+		</sourcepath>
+	</javac>
+  </target>
+  
+  <target name="package">
+	<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
+    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
+  </target>
+	
+  <target name="clean">
+    <deltree dir="${dist.dir}"/>
+    <deltree dir="${build.dir}"/> 
+  </target>
+
+</project>
