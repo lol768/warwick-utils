@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -128,7 +129,18 @@ public final class StringUtils {
         }
         return buffer.toString();
     }
-
+    
+    public static String join(String[] strings, String delimiter) {
+        StringBuffer buffer = new StringBuffer();
+        int len = strings.length;
+		for (int i=0;i<len;i++) {
+            buffer.append(strings[i]);
+            if (i+1 < len) {
+                buffer.append(delimiter);
+            }
+        }
+        return buffer.toString();
+    }
 
     public static List<String> convertCommaOrSpaceDelimitedStringToList(final String theKeywords) {
         ArrayList<String> results = new ArrayList<String>();

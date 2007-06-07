@@ -2,8 +2,9 @@
 
   <property file="build.properties" />
   <property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
+  <path id="external.libs.path" path="${external.libs.dir}" />
 	
-  <target name="build-all" depends="init,compile,package" />
+  <target name="build-all" depends="init,compile,test,package" />
   
   <target name="init">
     <mkdir dir="${dist.dir}"/>
@@ -23,6 +24,14 @@
 		</sourcepath>
 	</javac>
   </target>
+	
+  <target name="_compiletests">
+	<mkdir dir="${build.dir}/unit-tests" />  
+	<!-- unit tests -->
+	<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}">
+		<classpath location="${build.dir}/all" />
+	</javac>
+  </target>
   
   <target name="package">
 	<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
@@ -32,6 +41,23 @@
   <target name="clean">
     <deltree dir="${dist.dir}"/>
     <deltree dir="${build.dir}"/> 
+  </target>
+	
+  <target name="test" depends="compile,_compiletests">
+    <mkdir dir="${unit-test.report.dir}" />
+    <path id="test.run.class.path">
+      <path refid="external.libs.path" />
+	  <path path="${build.dir}/all" />
+	  <path path="${build.dir}/unit-tests" />
+    </path>
+    <junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="yes" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
+      <classpath refid="test.run.class.path" />
+      <formatter type="xml" />
+      <batchtest todir="${unit-test.report.dir}">
+        <fileset dir="${build.dir}/unit-tests" includes="**/*Test.class" excludes="**/Abstract*.class" />
+      </batchtest>
+    </junit>
+    <fail if="tests.failed" message="Unit tests failed" />
   </target>
 
 </project>
