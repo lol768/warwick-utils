@@ -32,6 +32,7 @@ public final class StringUtils {
             result = "";
         } else {
             int start = proposedStart < 0 ? 0 : proposedStart;
+            start = start > s.length() ? s.length() : start;
             int end = proposedEnd > s.length() ? s.length() : proposedEnd;
             result = s.substring(start, end);
         }
@@ -58,7 +59,7 @@ public final class StringUtils {
      * A more useful example is finding the what's between "name=" and "&" in the
      * string "a=b&name=whatwewant&othername=hello"
      *      
-     * If a matching string is not found, null is returned. 
+     * If a matching string is not found, an empty string is returned. 
      * 
      * @param text
      * @param startString
@@ -69,7 +70,7 @@ public final class StringUtils {
         String t = text;
         int start = t.indexOf(startString);
         if (start == -1) {
-            return null;
+            return "";
         }
         start += startString.length();
         int end = t.indexOf(endString, start);
@@ -118,6 +119,10 @@ public final class StringUtils {
         return sb.toString();
     }
     
+    /**
+     * Join a collection of String objects into a single string, joined
+     * by the given delimiter.
+     */
     public static String join(Collection<String> s, String delimiter) {
         StringBuffer buffer = new StringBuffer();
         Iterator<String> iter = s.iterator();
@@ -130,6 +135,10 @@ public final class StringUtils {
         return buffer.toString();
     }
     
+    /**
+     * Join an array of String objects into a single string, joined
+     * by the given delimiter.
+     */
     public static String join(String[] strings, String delimiter) {
         StringBuffer buffer = new StringBuffer();
         int len = strings.length;
@@ -142,6 +151,10 @@ public final class StringUtils {
         return buffer.toString();
     }
 
+    /**
+     * A rather loose method that will attempt to split a String by commas,
+     * and if there were no commas it will instead split by spaces.
+     */
     public static List<String> convertCommaOrSpaceDelimitedStringToList(final String theKeywords) {
         ArrayList<String> results = new ArrayList<String>();
         if (!hasLength(theKeywords)) {
@@ -185,11 +198,20 @@ public final class StringUtils {
         }
     }
 	
-	private static boolean hasLength(String s) {
+	/**
+	 * Returns if the string is non-null and has any characters.
+	 * A string containing just whitespace will return true.
+	 */
+	public static boolean hasLength(String s) {
 		return (s != null && s.length() > 0);
 	}
 
-    private static boolean hasText(String s) {
+	/**
+	 * Returns if the string is non-null and has any non-whitespace
+	 * characters.
+	 * A string containing just whitespace will return false.
+	 */
+	public static boolean hasText(String s) {
 		return (s != null && s.trim().length() > 0);
 	}
 
@@ -215,9 +237,7 @@ public final class StringUtils {
         return true;
     }
 
-    public static boolean isEmpty(final String s) {
-        return s == null || s.trim().length() == 0;
-    }
+    
 
     /**
      * Escapes all characters >127, into their respective HTML entities (&#222;
