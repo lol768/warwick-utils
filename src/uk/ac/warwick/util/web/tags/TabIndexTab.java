@@ -33,6 +33,7 @@ public final class TabIndexTab extends TagSupport {
         if (pageContext.getAttribute(TAB_INDEX_ATTRIBUTE, PageContext.REQUEST_SCOPE) == null) {
             pageContext.setAttribute(TAB_INDEX_ATTRIBUTE, FIRST_TABINDEX_VALUE, PageContext.REQUEST_SCOPE);
         }
-        return (Integer)pageContext.getAttribute(TAB_INDEX_ATTRIBUTE, PageContext.REQUEST_SCOPE);
+        Integer i = (Integer)pageContext.getAttribute(TAB_INDEX_ATTRIBUTE, PageContext.REQUEST_SCOPE);
+        return i.intValue();
     }
 }

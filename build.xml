@@ -6,7 +6,7 @@
 	  <fileset dir="${external.libs.dir}" includes="**/*.jar" />
   </path>
 	
-  <target name="build-all" depends="init,compile,test,package" />
+  <target name="build-all" depends="clean,init,compile,test,package" />
   
   <target name="init">
     <mkdir dir="${dist.dir}"/>
@@ -17,6 +17,7 @@
 	<mkdir dir="${build.dir}/all" />
 	<mkdir dir="${build.dir}/core" />
 	<mkdir dir="${build.dir}/web" />
+	<mkdir dir="${build.dir}/httpclient" />
 	
 	<!-- let's compile in parallel for no particular reason! -->
 	<parallel failonany="true">
@@ -28,6 +29,7 @@
 		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/string" />
+				<fileset dir="src/uk/ac/warwick/util/collections" />
 			</sourcepath>
 		</javac>
 		  
@@ -35,6 +37,13 @@
 		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/web" />
+			</sourcepath>
+		</javac>
+		
+		<!-- httpclient library -->
+		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path">
+			<sourcepath>
+				<fileset dir="src/uk/ac/warwick/util/httpclient" />
 			</sourcepath>
 		</javac>
 		
@@ -50,9 +59,10 @@
   </target>
   
   <target name="package">
-    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
-    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
-    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" />	  
+    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all-${jar.version}.jar" />
+    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core-${jar.version}.jar" />
+    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web-${jar.version}.jar" /> 
+	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient-${jar.version}.jar" />
   </target>
 	
   <target name="clean">
