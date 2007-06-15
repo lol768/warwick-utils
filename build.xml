@@ -63,6 +63,8 @@
     <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core-${jar.version}.jar" />
     <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web-${jar.version}.jar" /> 
 	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient-${jar.version}.jar" />
+	  
+	<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
   </target>
 	
   <target name="clean">
