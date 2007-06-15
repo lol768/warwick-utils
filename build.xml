@@ -23,10 +23,10 @@
 	<parallel failonany="true">
 	  
 		<!-- all classes -->
-		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" />
+		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5"/>
 		
 		<!-- core library -->
-		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path">
+		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/string" />
 				<fileset dir="src/uk/ac/warwick/util/collections" />
@@ -34,14 +34,14 @@
 		</javac>
 		  
 		<!-- web library -->
-		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path">
+		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/web" />
 			</sourcepath>
 		</javac>
 		
 		<!-- httpclient library -->
-		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path">
+		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/httpclient" />
 			</sourcepath>
