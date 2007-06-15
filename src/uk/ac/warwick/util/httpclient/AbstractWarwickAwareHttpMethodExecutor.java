@@ -41,7 +41,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
         this.substituteTags = substituteWarwickTags;
     }
 
-    protected final void setSSOCookieIfAppropriate(final User user) {
+    public final void setSSOCookieIfAppropriate(final User user) {
         if ((isWarwickServer(getUrl())) && user.isLoggedIn() && isSetCookie()) {
             HttpState state = getClient().getState();
             getMethod().getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
@@ -68,7 +68,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
         return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
     }
 
-    protected final String substituteWarwickTags(final String urlToSubstitute, final User user) {
+    public final String substituteWarwickTags(final String urlToSubstitute, final User user) {
         String newUrl = urlToSubstitute;
 
         if (isSubstituteTags()) {

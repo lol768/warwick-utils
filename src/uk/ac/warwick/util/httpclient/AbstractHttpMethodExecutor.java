@@ -41,35 +41,35 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     // true when has been executed
     private boolean executed;
     
-    final HttpClient getClient() {
+    public final HttpClient getClient() {
         return client;
     }
 
-    final HttpMethod getMethod() {
+    public final HttpMethod getMethod() {
         return method;
     }
     
-    final void setClient(final HttpClient client) {
+    public final void setClient(final HttpClient client) {
         this.client = client;
     }
     
-    final void setMethod(final HttpMethod method) {
+    public final void setMethod(final HttpMethod method) {
         this.method = method;
     }
     
-    final int getConnectionTimeout() {
+    public final int getConnectionTimeout() {
         return connectionTimeout;
     }
     
-    final int getRetrievalTimeout() {
+    public final int getRetrievalTimeout() {
         return retrievalTimeout;
     }
     
-    final boolean isHasExecuted() {
+    public final boolean isHasExecuted() {
         return executed;
     }
     
-    final void setHasExecuted(final boolean hasExecuted) {
+    public final void setHasExecuted(final boolean hasExecuted) {
         this.executed = hasExecuted;
     }
     
@@ -166,7 +166,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this.url = url;
     }
     
-    final Part[] getMultipartRequestPart() {
+    public final Part[] getMultipartRequestPart() {
         return multipartRequestPart;
     }
     
@@ -174,7 +174,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this.multipartRequestPart = thePart;
     }
     
-    final NameValuePair[] getPostBody() {
+    public final NameValuePair[] getPostBody() {
         return postBody;
     }
     
