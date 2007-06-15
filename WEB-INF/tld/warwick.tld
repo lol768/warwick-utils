@@ -12,8 +12,7 @@
 			</description>
 		<name>js</name>
 		<function-class>uk.ac.warwick.util.web.tags.Functions</function-class>
-		<function-signature>java.lang.String
-			js(java.lang.String)</function-signature>
+		<function-signature>java.lang.String js(java.lang.String)</function-signature>
 		<example> ${warwick:js(someString)} </example>
 	</function>
 	
@@ -21,8 +20,7 @@
 		<description> Escapes HTML characters. </description>
 		<name>html</name>
 		<function-class>uk.ac.warwick.util.web.tags.Functions</function-class>
-		<function-signature>java.lang.String
-			html(java.lang.String)</function-signature>
+		<function-signature>java.lang.String html(java.lang.String)</function-signature>
 		<example> ${warwick:html(myText)} </example>
 	</function>
 	
