@@ -7,6 +7,8 @@
   </path>
 	
   <target name="build-all" depends="clean,init,compile,test,package" />
+	
+  <target name="bamboo" depends="clean,init,compile,test" />
   
   <target name="init">
     <mkdir dir="${dist.dir}"/>
