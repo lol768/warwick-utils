@@ -83,7 +83,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
             throw e;
         } finally {
             LOGGER.debug("Released connection");
-            method.releaseConnection();
+            close();
         }
     }
 
@@ -97,7 +97,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
             throw e;
         } finally {
             LOGGER.debug("Released connection");
-            method.releaseConnection();
+            close();
         }
 
     }
@@ -183,6 +183,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
     
     public final void close() {
+        method.abort();
         method.releaseConnection();
     }
 }

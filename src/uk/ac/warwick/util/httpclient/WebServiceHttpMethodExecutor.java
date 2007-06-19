@@ -43,7 +43,7 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
 
         setMethod(createMethod());
 
-        setClient(new HttpClient());
+        setClient(HttpClientFactory.getClient());
         setSSOCookieIfAppropriate(user);
 
         HttpConnectionManagerParams params = getClient().getHttpConnectionManager().getParams();
