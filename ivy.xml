@@ -32,8 +32,8 @@
 		<dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="default,httpclient->default" />
 		<dependency org="commons-lang" name="commons-lang" rev="2.3" conf="default,web->default" />
 
-		<dependency org="warwick" name="userlookup" rev="latest.release" conf="default,httpclient->default" />
-		<dependency org="warwick" name="sso-client" rev="latest.release" conf="default,httpclient->default" />
+		<dependency org="warwick" name="userlookup" rev="1.4.2" conf="default,httpclient->default" />
+		<dependency org="warwick" name="sso-client" rev="1.5.3" conf="default,httpclient->default" />
 	</dependencies>
 </ivy-module>
 
