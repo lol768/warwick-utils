@@ -1,4 +1,4 @@
-<project name="Utilities" default="build-all">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="Utilities" default="build-all">
 
   <property file="build.properties" />
   <property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
@@ -61,17 +61,17 @@
   </target>
   
   <target name="package">
-    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all-${jar.version}.jar" />
-    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core-${jar.version}.jar" />
-    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web-${jar.version}.jar" /> 
-	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient-${jar.version}.jar" />
+    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
+    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
+    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" /> 
+	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" />
 	  
 	<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
   </target>
 	
   <target name="clean">
-    <deltree dir="${dist.dir}"/>
-    <deltree dir="${build.dir}"/> 
+    <delete dir="${dist.dir}"/>
+    <delete dir="${build.dir}"/> 
   </target>
 	
   <target name="test" depends="compile,_compiletests">
@@ -89,6 +89,25 @@
       </batchtest>
     </junit>
     <fail if="tests.failed" message="Unit tests failed" />
+  </target>
+	
+  <target name="publish">
+	  <!-- setup ivy default configuration with some custom info -->
+      <ivy:configure file="ivysettings.xml" />  
+	  
+	  <ivy:retrieve pattern="${external.libs.dir}/[artifact]/[artifact].[ext]" />
+	  
+	  <antcall target="build-all" />
+	  
+	  <property name="revision" value="${jar.version}"/>
+	  
+	  <ivy:publish 
+		   artifactspattern="${dist.dir}/[artifact].[ext]" 
+           resolver="dist"
+           pubrevision="${revision}" 
+           status="release"
+		   overwrite="true"
+    	/>
   </target>
 
 </project>

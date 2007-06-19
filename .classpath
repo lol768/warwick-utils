@@ -3,21 +3,18 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="external-libs/junit/junit-3.8.2.jar"/>
-	<classpathentry kind="lib" path="external-libs/jstl/standard.jar"/>
-	<classpathentry kind="lib" path="external-libs/container/javax.servlet.jar"/>
-	<classpathentry kind="lib" path="external-libs/spring/spring-mock.jar"/>
-	<classpathentry kind="lib" path="external-libs/jstl/jstl.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-logging/commons-logging.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-cglib-1.0.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/junit-3.8.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring.jar"/>
-	<classpathentry kind="lib" path="external-libs/commons_httpclient/commons-httpclient-3.0.jar"/>
-	<classpathentry kind="lib" path="external-libs/log4j/log4j-1.2.9.jar"/>
-	<classpathentry kind="lib" path="external-libs/userlookup/userlookup-1.4.2.jar"/>
-	<classpathentry kind="lib" path="external-libs/userlookup/sso-client-1.5.3.jar"/>
-	<classpathentry kind="lib" path="external-libs/commons_lang/commons-lang-2.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/commons_logging/commons-logging.jar"/>
-	<classpathentry kind="lib" path="external-libs/commons_httpclient/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="external-libs/sso-client/sso-client.jar"/>
 	<classpathentry kind="lib" path="external-libs/userlookup/opensaml.jar"/>
+	<classpathentry kind="lib" path="external-libs/userlookup/userlookup.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-codec/commons-codec.jar"/>
+	<classpathentry kind="lib" path="external-libs/servlet-api/servlet-api.jar"/>
+	<classpathentry kind="lib" path="external-libs/jsp-api/jsp-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

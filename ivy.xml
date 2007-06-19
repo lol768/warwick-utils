@@ -1,0 +1,39 @@
+<ivy-module version="1.0"> 
+	<info organisation="warwick"
+	       module="warwickutils"
+	       status="integration"
+	/>
+	<configurations>
+		<conf name="core" description="only core utility classes"/>
+		<conf name="httpclient" description="http method executor"/>
+		<conf name="web" extends="core" description="core + jstl tags"/>
+
+		<conf name="default" description="full utils with all dependencies"/>
+	</configurations>
+	<publications>
+		<artifact name="warwickutils-all" type="jar" conf="default"/>
+		<artifact name="warwickutils-core" type="jar" conf="core"/>
+		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
+		<artifact name="warwickutils-web" type="jar" conf="web"/>
+		<artifact name="warwick" type="tld" conf="web"/>
+	</publications>
+	<dependencies>
+		<!-- Core requires Spring -->
+		<!-- httpclient requires httpclient, logging, log4j, userlookup, ssoclient -->
+		<!-- web requires spring, jstl, javax servlet, Core, commons lang -->
+		
+		<dependency org="spring" name="spring" rev="2.0.4" conf="default,core->default;default,web->default" />
+		<dependency org="commons-httpclient" name="commons-httpclient" rev="3.0" conf="default,httpclient->default" />
+		<dependency org="commons-codec" name="commons-codec" rev="1.3" conf="default,httpclient->default" />
+		<dependency org="commons-logging" name="commons-logging" rev="1.1" conf="default,httpclient->default" />
+		<dependency org="log4j" name="log4j" rev="1.2.9" conf="default,httpclient->default" />
+		<dependency org="javax.servlet" name="jstl" rev="1.1.2" conf="default,httpclient->default" />
+		<dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="default,httpclient->default" />
+		<dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="default,httpclient->default" />
+		<dependency org="commons-lang" name="commons-lang" rev="2.3" conf="default,web->default" />
+
+		<dependency org="warwick" name="userlookup" rev="latest.release" conf="default,httpclient->default" />
+		<dependency org="warwick" name="sso-client" rev="latest.release" conf="default,httpclient->default" />
+	</dependencies>
+</ivy-module>
+
