@@ -116,7 +116,6 @@
 		  	organisation="warwick"
 		  	module="warwickutils"
 		  	revision="${revision}"
-		  	overwrite="true"
 		  	transitive="true"  
 		/>
   </target>
