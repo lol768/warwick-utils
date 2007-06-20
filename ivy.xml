@@ -16,7 +16,7 @@
 		<artifact name="warwickutils-core" type="jar" conf="core"/>
 		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
 		<artifact name="warwickutils-web" type="jar" conf="web"/>
-		<artifact name="warwick" type="tld" conf="web"/>
+		<artifact name="warwick" type="tld" conf="web-tld"/>
 	</publications>
 	<dependencies>
 		<!-- Core requires Spring -->
