@@ -11,6 +11,11 @@
 				artpattern="[module]/[artifact]-[revision].[ext]"
 			/>
 		</chain>
+		
+		<filesystem name="local">
+			<ivy pattern="${ivy.default.ivy.user.dir}/local/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+			<artifact pattern="${ivy.default.ivy.user.dir}/local/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+		</filesystem>
 	</resolvers>
 	<modules>
 		<module organisation="warwick" name=".*" resolver="warwick-rep" />
