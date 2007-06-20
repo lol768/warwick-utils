@@ -103,7 +103,7 @@
 	  
 	  <ivy:publish 
 		   artifactspattern="${dist.dir}/[artifact].[ext]" 
-           resolver="local"
+           resolver="dist"
            pubrevision="${revision}" 
            status="release"
 		   overwrite="true"
@@ -111,7 +111,7 @@
 	  
 	  <!-- Install dependencies to repository -->
 	  <ivy:install
-			from="local"
+			from="dist"
 		  	to="dist"
 		  	organisation="warwick"
 		  	module="warwickutils"

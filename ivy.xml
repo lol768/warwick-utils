@@ -3,6 +3,7 @@
 	       module="warwickutils"
 	       status="integration"
 	/>
+	<!-- Need to work on a few things here but should all work ok -->
 	<configurations>
 		<conf name="core" description="only core utility classes"/>
 		<conf name="httpclient" description="http method executor"/>
