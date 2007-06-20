@@ -6,9 +6,10 @@
 	<configurations>
 		<conf name="core" description="only core utility classes"/>
 		<conf name="httpclient" description="http method executor"/>
-		<conf name="web" extends="core" description="core + jstl tags"/>
+		<conf name="web" extends="core,web-tld" description="core + jstl tags"/>
+		<conf name="web-tld" description="tld for jstl tags"/>
 
-		<conf name="default" description="full utils with all dependencies"/>
+		<conf name="default" extends="web-tld" description="full utils with all dependencies"/>
 	</configurations>
 	<publications>
 		<artifact name="warwickutils-all" type="jar" conf="default"/>
