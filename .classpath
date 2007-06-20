@@ -11,10 +11,10 @@
 	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring.jar"/>
 	<classpathentry kind="lib" path="external-libs/sso-client/sso-client.jar"/>
-	<classpathentry kind="lib" path="external-libs/userlookup/opensaml.jar"/>
 	<classpathentry kind="lib" path="external-libs/userlookup/userlookup.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-codec/commons-codec.jar"/>
 	<classpathentry kind="lib" path="external-libs/servlet-api/servlet-api.jar"/>
 	<classpathentry kind="lib" path="external-libs/jsp-api/jsp-api.jar"/>
+	<classpathentry kind="lib" path="external-libs/opensaml/opensaml.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

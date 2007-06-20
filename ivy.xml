@@ -25,14 +25,14 @@
 		<!-- web requires spring, jstl, javax servlet, Core, commons lang -->
 		
 		<dependency org="spring" name="spring" rev="2.0.4" conf="default,core->default;default,web->default" />
-		<dependency org="commons-httpclient" name="commons-httpclient" rev="3.0" conf="default,httpclient->default" />
-		<dependency org="commons-codec" name="commons-codec" rev="1.3" conf="default,httpclient->default" />
-		<dependency org="commons-logging" name="commons-logging" rev="1.1" conf="default,httpclient->default" />
+		<dependency org="apache" name="commons-httpclient" rev="3.0" conf="default,httpclient->default" />
+		<dependency org="apache" name="commons-codec" rev="1.3" conf="default,httpclient->default" />
+		<dependency org="apache" name="commons-logging" rev="1.1" conf="default,httpclient->default" />
 		<dependency org="log4j" name="log4j" rev="1.2.9" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="jstl" rev="1.1.2" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="default,httpclient->default" />
-		<dependency org="commons-lang" name="commons-lang" rev="2.3" conf="default,web->default" />
+		<dependency org="apache" name="commons-lang" rev="2.3" conf="default,web->default" />
 
 		<dependency org="warwick" name="userlookup" rev="latest.integration" conf="default,httpclient->default" />
 		<dependency org="warwick" name="sso-client" rev="latest.integration" conf="default,httpclient->default" />
