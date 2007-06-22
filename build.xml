@@ -20,6 +20,7 @@
 	<mkdir dir="${build.dir}/core" />
 	<mkdir dir="${build.dir}/web" />
 	<mkdir dir="${build.dir}/httpclient" />
+	<mkdir dir="${build.dir}/ant" />
 	
 	<!-- let's compile in parallel for no particular reason! -->
 	<parallel failonany="true">
@@ -32,6 +33,7 @@
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/string" />
 				<fileset dir="src/uk/ac/warwick/util/collections" />
+				<fileset dir="src/uk/ac/warwick/util/core" />
 			</sourcepath>
 		</javac>
 		  
@@ -46,6 +48,13 @@
 		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/httpclient" />
+			</sourcepath>
+		</javac>
+		
+		<!-- ant library -->
+		<javac destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
+			<sourcepath>
+				<fileset dir="src/uk/ac/warwick/util/ant" />
 			</sourcepath>
 		</javac>
 		
@@ -65,6 +74,7 @@
     <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
     <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" /> 
 	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" />
+	<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" />
 	  
 	<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
   </target>

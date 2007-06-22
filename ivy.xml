@@ -7,6 +7,7 @@
 	<configurations>
 		<conf name="core" description="only core utility classes"/>
 		<conf name="httpclient" description="http method executor"/>
+		<conf name="ant" description="ant tasks"/>
 		<conf name="web" extends="core,web-tld" description="core + jstl tags"/>
 		<conf name="web-tld" description="tld for jstl tags"/>
 
@@ -14,6 +15,7 @@
 	</configurations>
 	<publications>
 		<artifact name="warwickutils-all" type="jar" conf="default"/>
+		<artifact name="warwickutils-ant" type="jar" conf="ant"/>
 		<artifact name="warwickutils-core" type="jar" conf="core"/>
 		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
 		<artifact name="warwickutils-web" type="jar" conf="web"/>
@@ -33,6 +35,9 @@
 		<dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="default,httpclient->default" />
 		<dependency org="apache" name="commons-lang" rev="2.3" conf="default,web->default" />
+		
+		<dependency org="packtag" name="packtag" rev="2.1" conf="default,ant->default" />
+		<dependency org="apache" name="ant" rev="1.6" conf="default,ant->default" />
 
 		<dependency org="warwick" name="userlookup" rev="latest.integration" conf="default,httpclient->default" />
 		<dependency org="warwick" name="sso-client" rev="latest.integration" conf="default,httpclient->default" />

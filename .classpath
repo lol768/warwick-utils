@@ -16,5 +16,7 @@
 	<classpathentry kind="lib" path="external-libs/servlet-api/servlet-api.jar"/>
 	<classpathentry kind="lib" path="external-libs/jsp-api/jsp-api.jar"/>
 	<classpathentry kind="lib" path="external-libs/opensaml/opensaml.jar"/>
+	<classpathentry kind="lib" path="external-libs/ant/ant.jar"/>
+	<classpathentry kind="lib" path="external-libs/packtag/packtag.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
