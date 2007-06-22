@@ -20,10 +20,10 @@ public final class CollectionUtilsTest extends TestCase {
 		Collection<NestedObject> allAs = new ArrayList<NestedObject>(numberOfValueAs);
 		Collection<NestedObject> allBs = new ArrayList<NestedObject>(numberOfValueBs);
 		for (int i = 0; i<numberOfValueAs; i++) {
-			allAs.add(new NestedObject(valueA));
+			allAs.add(new NestedObject(new String(valueA)));
 		}
 		for (int i = 0; i<numberOfValueBs; i++) {
-			allBs.add(new NestedObject(valueB));
+			allBs.add(new NestedObject(new String(valueB)));
 		}
 		Collection<NestedObject> all = new ArrayList<NestedObject>(numberOfValueAs + numberOfValueBs);
 		all.addAll(allAs);

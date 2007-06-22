@@ -1,13 +1,12 @@
 package uk.ac.warwick.util.collections;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * Singleton utility class.
@@ -30,9 +29,11 @@ public final class CollectionUtils {
      */
     public static <X> Map<String, Collection<X>> groupByProperty(final Collection<X> collection, final String property) {
         Map<String, Collection<X>> map = new HashMap<String, Collection<X>>();
+        String propertyGetter = "get"+capitalise(property);
         for (X o: collection) {
-            BeanWrapper wrapper = new BeanWrapperImpl(o);
-            String value = wrapper.getPropertyValue(property).toString();
+
+        	String value = callGetter(o, propertyGetter);
+        	
             Collection<X> group = map.get(value);
             if (group == null) {
                 group = new ArrayList<X>();
@@ -42,8 +43,28 @@ public final class CollectionUtils {
         }
         return map;
     }
+
+    /**
+     * Calls bean.{getterMethod}() and returns a value as a String
+     */
+	private static <X> String callGetter(X bean, String getterMethod) {
+		try {
+			Class clazz = bean.getClass();
+			Method method = clazz.getMethod(getterMethod, new Class[0]);
+			Object value = method.invoke(bean, new Object[0]);
+			return value==null? null : value.toString();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Failed to get value of bean property", e);
+		}
+	}
     
-    public static <Y, X extends Y> Collection<X> filterByClass(Collection<Y> collection, Class<X> clazz) {
+    private static String capitalise(String property) {
+		char[] cs = property.toCharArray();
+		cs[0] = Character.toUpperCase(cs[0]);
+		return new String(cs);
+	}
+
+	public static <Y, X extends Y> Collection<X> filterByClass(Collection<Y> collection, Class<X> clazz) {
         List<X> results = new ArrayList<X>();
         
         for (Y obj : collection) {
