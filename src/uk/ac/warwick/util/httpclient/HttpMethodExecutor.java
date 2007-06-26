@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
@@ -102,6 +103,21 @@ public interface HttpMethodExecutor extends Serializable {
      * @throws URIException
      */
     URI getURI() throws URIException;
+    
+    /**
+     * Returns the specified header from the response. 
+     * 
+     * @param headerTitle
+     * @return
+     */
+    String getHeader(String headerTitle);
+    
+    /**
+     * Returns the value of the "Location" header
+     * 
+     * @return
+     */
+    String getRedirectUrl();
 
     /**
      * The url to fetch from

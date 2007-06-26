@@ -151,6 +151,22 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         return method.getURI();
     }
 
+    public String getHeader(String headerTitle) {
+        if (!executed) {
+            throw new IllegalStateException("Cannot get header if method has not been executed");
+        }
+        
+        Header header = getMethod().getResponseHeader(headerTitle);
+        if (header == null) {
+            return null;
+        }
+        return header.getValue();
+    }
+
+    public String getRedirectUrl() {
+        return getHeader("Location");
+    }
+
     public final String getUrl() {
         // if we have executed already, return the final path (following
         // redirects)
