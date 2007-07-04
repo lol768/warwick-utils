@@ -1,12 +1,12 @@
 package uk.ac.warwick.util.collections;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Singleton utility class.
@@ -27,8 +27,8 @@ public final class CollectionUtils {
      * <p>Note: This method will convert the value used as a key to a string by calling the toString method</p>
      * @return Map whose key is the value
      */
-    public static <X> Map<String, Collection<X>> groupByProperty(final Collection<X> collection, final String property) {
-        Map<String, Collection<X>> map = new HashMap<String, Collection<X>>();
+    public static <X> SortedMap<String, Collection<X>> groupByProperty(final Collection<X> collection, final String property) {
+        SortedMap<String, Collection<X>> map = new TreeMap<String, Collection<X>>();
         String propertyGetter = "get"+capitalise(property);
         for (X o: collection) {
 
