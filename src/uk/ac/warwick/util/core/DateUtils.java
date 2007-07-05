@@ -5,8 +5,11 @@ import java.util.Date;
 
 /**
  * Singleton utility class.
- *
- * @author xusqac
+ * 
+ * It is recommended that you use JodaTime instead, as it has most of these
+ * conveniences built in and is generally better than Date or Calendar.
+ * 
+ * @author cusebr
  */
 public final class DateUtils {
     
@@ -23,8 +26,6 @@ public final class DateUtils {
     /**
      * Return a date which represents the specified date rounded down to the earlist
      * millisecond.
-     *
-     * @todo This is only used by LastModifiedFilter, so maybe move it there?
      */
     public static Date roundDownToMS(final Date date) {
         if (date == null) return null;
