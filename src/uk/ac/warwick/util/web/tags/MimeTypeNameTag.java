@@ -43,6 +43,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("image/pjpeg", "JPEG image");
             mimeNames.put("image/png", "PNG image");
             mimeNames.put("image/bmp", "BMP image");
+            mimeNames.put("application/x-javascript", "Javascript file");
             
             mimeNames.put("application/xml", "XML data");
             mimeNames.put("application/mac-binary", "Mac binary");
