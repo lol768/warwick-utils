@@ -22,6 +22,9 @@ import org.apache.commons.httpclient.methods.multipart.Part;
  * @author Mat Mannion
  */
 public interface HttpMethodExecutor extends Serializable {
+	
+	int DEFAULT_CONNECTION_TIMEOUT = 5000;
+	int DEFAULT_RETRIEVAL_TIMEOUT = 5000;
 
     public enum Method {
         get, post, head

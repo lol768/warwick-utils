@@ -41,6 +41,12 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     // true when has been executed
     private boolean executed;
     
+    public AbstractHttpMethodExecutor() {
+    	//set default timeout values
+    	setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+    	setRetrievalTimeout(DEFAULT_RETRIEVAL_TIMEOUT);
+    }
+    
     public final HttpClient getClient() {
         return client;
     }

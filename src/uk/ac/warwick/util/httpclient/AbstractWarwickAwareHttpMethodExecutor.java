@@ -22,6 +22,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     private String cookieDomain;
     
     public AbstractWarwickAwareHttpMethodExecutor(String theCookieDomain) {
+    	super();
         this.cookieDomain = theCookieDomain;
     }
     

@@ -25,6 +25,7 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
     private final Method methodType;
     
     public SimpleHttpMethodExecutor(final Method theMethodType) {
+    	super();
         this.methodType = theMethodType;
     }
 
