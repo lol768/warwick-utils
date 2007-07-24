@@ -80,7 +80,7 @@ public final class CollectionUtils {
 		Map<E, Integer> map = new HashMap<E, Integer>();
 		for (E item : collection) {
 			if (map.containsKey(item)) {
-				map.put(item, map.get(item) + 1);
+				map.put(item, map.get(item).intValue() + 1);
 			} else {
 				map.put(item, 1);
 			}
