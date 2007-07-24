@@ -26,10 +26,10 @@
 	<parallel failonany="true">
 	  
 		<!-- all classes -->
-		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5"/>
+		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"/>
 		
 		<!-- core library -->
-		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
+		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/string" />
 				<fileset dir="src/uk/ac/warwick/util/collections" />
@@ -38,21 +38,21 @@
 		</javac>
 		  
 		<!-- web library -->
-		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
+		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/web" />
 			</sourcepath>
 		</javac>
 		
 		<!-- httpclient library -->
-		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
+		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/httpclient" />
 			</sourcepath>
 		</javac>
 		
 		<!-- ant library -->
-		<javac destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5">
+		<javac destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/ant" />
 			</sourcepath>
@@ -64,7 +64,7 @@
   <target name="_compiletests">
 	<mkdir dir="${build.dir}/unit-tests" />  
 	<!-- unit tests -->
-	<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path">
+	<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path" debug="on">
 		<classpath location="${build.dir}/all" />
 	</javac>
   </target>
