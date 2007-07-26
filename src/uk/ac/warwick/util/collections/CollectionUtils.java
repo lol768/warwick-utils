@@ -89,6 +89,19 @@ public final class CollectionUtils {
 	}
 	
 	/**
+	 * Join two string arrays into one.
+	 * 
+	 * (I tried to make a generic method but you can't create a generic-type
+	 * array at runtime.)
+	 */
+	public static String[] joinArrays(String[] oneArray, String[] twoArray) {
+		String[] result = new String[oneArray.length + twoArray.length];
+        System.arraycopy(oneArray, 0, result, 0, oneArray.length);
+        System.arraycopy(twoArray, 0, result, oneArray.length, twoArray.length);
+        return result;
+	}
+	
+	/**
      * Calls bean.{getterMethod}() and returns a value as a String
      */
 	private static String callGetter(Object bean, String getterMethod) {
