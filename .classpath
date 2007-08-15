@@ -3,13 +3,13 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="external-libs/commons-httpclient/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient/commons-httpclient.jar" sourcepath="external-libs/src/commons-httpclient-3.0.zip"/>
 	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-logging/commons-logging.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/junit-3.8.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar"/>
-	<classpathentry kind="lib" path="external-libs/spring/spring.jar"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring.jar" sourcepath="external-libs/src/spring-framework-2.0.6-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="external-libs/sso-client/sso-client.jar"/>
 	<classpathentry kind="lib" path="external-libs/userlookup/userlookup.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-codec/commons-codec.jar"/>

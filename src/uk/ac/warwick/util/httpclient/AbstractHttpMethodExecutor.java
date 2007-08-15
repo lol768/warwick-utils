@@ -41,6 +41,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     // true when has been executed
     private boolean executed;
     
+    private HttpClientFactory factory = MultiThreadedHttpClientFactory.getInstance();
+    
     public AbstractHttpMethodExecutor() {
     	//set default timeout values
     	setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
@@ -207,5 +209,13 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     public final void close() {
         method.abort();
         method.releaseConnection();
+    }
+
+    public void setHttpClientFactory(HttpClientFactory factory) {
+        this.factory = factory;
+    }
+    
+    public HttpClient getHttpClientFromFactory() {
+        return factory.getClient();
     }
 }

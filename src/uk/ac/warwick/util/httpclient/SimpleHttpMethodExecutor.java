@@ -36,7 +36,7 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
 
         setMethod(createMethod());
 
-        setClient(HttpClientFactory.getClient());
+        setClient(getHttpClientFromFactory());
 
         //if we have set timeouts, pass them through
         HttpConnectionManagerParams params = getClient().getHttpConnectionManager().getParams();

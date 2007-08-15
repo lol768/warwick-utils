@@ -178,5 +178,10 @@ public interface HttpMethodExecutor extends Serializable {
      * Closes the stream.
      */
     void close();
+    
+    /**
+     * Sets the Http Client Factory to get the HttpClient for the request.
+     */
+    void setHttpClientFactory(HttpClientFactory factory);
 
 }
