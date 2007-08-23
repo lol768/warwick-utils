@@ -22,7 +22,18 @@ public final class FileUtils {
      * By default, deletes are strict and throw ISEs when bad things happen.
      */
     public static void recursiveDelete(final File file) {
-        recursiveDelete(file, true);
+        recursiveDelete(file, true, null);
+    }
+    
+    public static void recursiveDelete(final File file, final boolean strict) {
+        recursiveDelete(file, strict, null);
+    }
+    
+    /**
+     * Do a strict delete, but if the deletion fails then rename the directory to a recycle bin.
+     */
+    public static void recursiveDelete(final File file, final File deletionBin) {
+        recursiveDelete(file, true, deletionBin);
     }
 
     /**
@@ -32,17 +43,59 @@ public final class FileUtils {
      * rather than move the file to some safe tmp directory, so you can't delete
      * the parent directory).
      */
-    public static void recursiveDelete(final File file, final boolean strict) {
+    public static void recursiveDelete(final File file, final boolean strict, final File deletionBin) {
         if (file.isDirectory()) {
+            if (LOGGER.isDebugEnabled()) {
+                String logMessage = "Directory contains files (pre-delete):";
+                logMessage += FileUtils.recursiveOutput(file);
+                LOGGER.debug(logMessage);
+            }
+            
             for (File child: file.listFiles()) {
-                recursiveDelete(child, strict);
+                recursiveDelete(child, strict, deletionBin);
             }
         }
         LOGGER.debug("Deleting " + file);
         boolean deletedFileOK = file.delete();
         if (!deletedFileOK) {
             if (strict) {
-                throw new IllegalStateException("Cannot delete " + file);
+                // on NFS we want to move the file to some safe temporary directory
+                // and mark it to be deleted on exit
+                
+                LOGGER.error("Could not delete the " + (file.isDirectory() ? "directory" : "file") + " " + file);
+                
+                if (LOGGER.isDebugEnabled() && file.isDirectory()) {
+                    if (file.list().length == 0) {
+                        LOGGER.debug("Directory contains no files anymore though");
+                    } else {
+                        String logMessage = "Directory contains files:";
+                        logMessage += FileUtils.recursiveOutput(file);
+                        LOGGER.debug(logMessage);
+                    }
+                }
+                
+                if (deletionBin != null && file.isDirectory()) {
+                    // rename the file to the deletion bin
+                    if (!deletionBin.isDirectory() || !deletionBin.exists()) {
+                        throw new IllegalArgumentException("Deletion bin " + deletionBin + " must be an existing directory");
+                    } else {
+                        File renameToFile = new File(deletionBin, file.getName() + System.currentTimeMillis());
+                        
+                        if (renameToFile.exists()) {
+                            throw new IllegalStateException("Could not rename directory to " + renameToFile + " - file already exists");
+                        } else {
+                            boolean success = file.renameTo(renameToFile);
+                            
+                            if (!success) {
+                                throw new IllegalStateException("Failed to rename directory to " + renameToFile);
+                            }
+                            
+                            renameToFile.deleteOnExit();
+                        }
+                    }
+                } else {
+                    throw new IllegalStateException("Cannot delete " + file);
+                }
             } else {
                 file.deleteOnExit();
                 LOGGER.error("Could not delete the file " + file + ", marked to delete on exit");
