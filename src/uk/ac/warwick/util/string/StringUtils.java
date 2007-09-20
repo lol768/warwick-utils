@@ -2,6 +2,8 @@ package uk.ac.warwick.util.string;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -276,6 +278,72 @@ public final class StringUtils {
     /* remove trailing whitespace */
     public static String rtrim(final String source) {
         return Pattern.compile("\\s+$", Pattern.DOTALL).matcher(source).replaceAll("");
+    }
+    
+    /**
+     * Replace characters having special meaning in regular expressions with
+     * their escaped equivalents.
+     * <P>
+     * The escaped characters include :
+     * <ul>
+     * <li>.
+     * <li>\
+     * <li>?, * , and +
+     * <li>&
+     * <li>:
+     * <li>{ and }
+     * <li>[ and ]
+     * <li>( and )
+     * <li>^ and $
+     * </ul>
+     */
+    public static String escapeForRegex(String aRegexFragment) {
+        final StringBuilder result = new StringBuilder();
+
+        final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
+        char character = iterator.current();
+        while (character != CharacterIterator.DONE) {
+            /*
+             * All literals need to have backslashes doubled.
+             */
+            if (character == '.') {
+                result.append("\\.");
+            } else if (character == '\\') {
+                result.append("\\\\");
+            } else if (character == '?') {
+                result.append("\\?");
+            } else if (character == '*') {
+                result.append("\\*");
+            } else if (character == '+') {
+                result.append("\\+");
+            } else if (character == '&') {
+                result.append("\\&");
+            } else if (character == ':') {
+                result.append("\\:");
+            } else if (character == '{') {
+                result.append("\\{");
+            } else if (character == '}') {
+                result.append("\\}");
+            } else if (character == '[') {
+                result.append("\\[");
+            } else if (character == ']') {
+                result.append("\\]");
+            } else if (character == '(') {
+                result.append("\\(");
+            } else if (character == ')') {
+                result.append("\\)");
+            } else if (character == '^') {
+                result.append("\\^");
+            } else if (character == '$') {
+                result.append("\\$");
+            } else {
+                // the char is not a special one
+                // add it to the result as is
+                result.append(character);
+            }
+            character = iterator.next();
+        }
+        return result.toString();
     }
 
 }

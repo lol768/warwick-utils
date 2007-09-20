@@ -3,6 +3,8 @@ package uk.ac.warwick.util.core;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -90,28 +92,23 @@ public final class StringUtils {
         }
         return result;
     }
-    
+
     /**
      * Trivial guard to ensure that a string is never null.
      */
     public static String nullGuard(final String s) {
-        if (s == null) return "";
+        if (s == null)
+            return "";
         return s;
     }
-    
+
     /**
      * Find the first occurrence of text between startString and endString, OR
-     * startString and the end of the input string.
-     * 
-     * eg. given text = "my name is frank, how are you"
-     *      startString = "is "
-     *      endString = ","
-     *      the result would be "frank"
-     *      
-     * A more useful example is finding the what's between "name=" and "&" in the
-     * string "a=b&name=whatwewant&othername=hello"
-     *      
-     * If a matching string is not found, null is returned. 
+     * startString and the end of the input string. eg. given text = "my name is
+     * frank, how are you" startString = "is " endString = "," the result would
+     * be "frank" A more useful example is finding the what's between "name="
+     * and "&" in the string "a=b&name=whatwewant&othername=hello" If a matching
+     * string is not found, null is returned.
      * 
      * @param text
      * @param startString
@@ -130,7 +127,7 @@ public final class StringUtils {
         if (end == -1) {
             result = t.substring(start);
         } else {
-            result = t.substring(start,end);
+            result = t.substring(start, end);
         }
         return result;
     }
@@ -170,7 +167,7 @@ public final class StringUtils {
         }
         return sb.toString();
     }
-    
+
     public static String join(Collection<String> s, String delimiter) {
         StringBuffer buffer = new StringBuffer();
         Iterator<String> iter = s.iterator();
@@ -182,7 +179,6 @@ public final class StringUtils {
         }
         return buffer.toString();
     }
-
 
     public static List<String> convertCommaOrSpaceDelimitedStringToList(final String theKeywords) {
         ArrayList<String> results = new ArrayList<String>();
@@ -289,6 +285,72 @@ public final class StringUtils {
     /* remove trailing whitespace */
     public static String rtrim(final String source) {
         return Pattern.compile("\\s+$", Pattern.DOTALL).matcher(source).replaceAll("");
+    }
+
+    /**
+     * Replace characters having special meaning in regular expressions with
+     * their escaped equivalents.
+     * <P>
+     * The escaped characters include :
+     * <ul>
+     * <li>.
+     * <li>\
+     * <li>?, * , and +
+     * <li>&
+     * <li>:
+     * <li>{ and }
+     * <li>[ and ]
+     * <li>( and )
+     * <li>^ and $
+     * </ul>
+     */
+    public static String escapeForRegex(String aRegexFragment) {
+        final StringBuilder result = new StringBuilder();
+
+        final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
+        char character = iterator.current();
+        while (character != CharacterIterator.DONE) {
+            /*
+             * All literals need to have backslashes doubled.
+             */
+            if (character == '.') {
+                result.append("\\.");
+            } else if (character == '\\') {
+                result.append("\\\\");
+            } else if (character == '?') {
+                result.append("\\?");
+            } else if (character == '*') {
+                result.append("\\*");
+            } else if (character == '+') {
+                result.append("\\+");
+            } else if (character == '&') {
+                result.append("\\&");
+            } else if (character == ':') {
+                result.append("\\:");
+            } else if (character == '{') {
+                result.append("\\{");
+            } else if (character == '}') {
+                result.append("\\}");
+            } else if (character == '[') {
+                result.append("\\[");
+            } else if (character == ']') {
+                result.append("\\]");
+            } else if (character == '(') {
+                result.append("\\(");
+            } else if (character == ')') {
+                result.append("\\)");
+            } else if (character == '^') {
+                result.append("\\^");
+            } else if (character == '$') {
+                result.append("\\$");
+            } else {
+                // the char is not a special one
+                // add it to the result as is
+                result.append(character);
+            }
+            character = iterator.next();
+        }
+        return result.toString();
     }
 
 }
