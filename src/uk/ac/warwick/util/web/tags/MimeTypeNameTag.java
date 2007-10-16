@@ -8,20 +8,20 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 /**
  * Tag which renders a friendly name for a given MIME type.
- *
+ * 
  * @author cusebr
  */
 public final class MimeTypeNameTag extends TagSupport {
     private static final long serialVersionUID = -5219943614407001433L;
+
     private static HashMap<String, String> mimeNames;
-    
+
     private String mimeType;
-    
+
     public MimeTypeNameTag() {
         /*
-         * I feel that this could be somehow moved into some nice
-         * XML. But am not sure how that would be done with tags.
-         * - nickh
+         * I feel that this could be somehow moved into some nice XML. But am
+         * not sure how that would be done with tags. - nickh
          */
         if (mimeNames == null) {
             mimeNames = new HashMap<String, String>();
@@ -44,14 +44,14 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("image/png", "PNG image");
             mimeNames.put("image/bmp", "BMP image");
             mimeNames.put("application/x-javascript", "Javascript file");
-            
+
             mimeNames.put("application/xml", "XML data");
             mimeNames.put("application/mac-binary", "Mac binary");
-            
+
             mimeNames.put("application/futuresplash", "Shockwave Flash animation");
             mimeNames.put("application/x-shockwave-flash", "Shockwave Flash animation");
             mimeNames.put("application/x-director", "Director movie");
-            
+
             mimeNames.put("audio/mpeg3", "MP3 sound clip");
             mimeNames.put("audio/wav", "WAV sound clip");
             mimeNames.put("audio/mpeg", "Sound clip");
@@ -59,23 +59,37 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("audio/midi", "MIDI music clip");
             mimeNames.put("audio/s3m", "ScreamTracker music file");
             mimeNames.put("audio/mod", "MOD music file");
-            
+
             mimeNames.put("application/zip", "Zipped archive");
             mimeNames.put("application/x-gzip", "GZipped archive");
-            
-            String videoClipString = "Video clip";            
-            mimeNames.put("video/animaflex",videoClipString);
-            mimeNames.put("video/x-ms-asf",videoClipString);
-            mimeNames.put("application/x-troff-msvideo",videoClipString);
-            mimeNames.put("video/avs-video",videoClipString);
-            mimeNames.put("video/x-dv",videoClipString);
-            mimeNames.put("video/fli",videoClipString);
-            mimeNames.put("video/x-isvideo",videoClipString);
-            mimeNames.put("video/mpeg",videoClipString);
-            mimeNames.put("video/x-motion-jpeg",videoClipString);
-            mimeNames.put("video/quicktime",videoClipString);
-            mimeNames.put("video/x-sgi-movie",videoClipString);
-            mimeNames.put("video/vnd.rn-realvideo",videoClipString);
+
+            String videoClipString = "Video clip";
+            mimeNames.put("video/animaflex", videoClipString);
+            mimeNames.put("video/x-ms-asf", videoClipString);
+            mimeNames.put("application/x-troff-msvideo", videoClipString);
+            mimeNames.put("video/avs-video", videoClipString);
+            mimeNames.put("video/x-dv", videoClipString);
+            mimeNames.put("video/fli", videoClipString);
+            mimeNames.put("video/x-isvideo", videoClipString);
+            mimeNames.put("video/mpeg", videoClipString);
+            mimeNames.put("video/x-motion-jpeg", videoClipString);
+            mimeNames.put("video/quicktime", videoClipString);
+            mimeNames.put("video/x-sgi-movie", videoClipString);
+            mimeNames.put("video/vnd.rn-realvideo", videoClipString);
+
+            // Office 2007
+            mimeNames.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Word document");
+            mimeNames.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", "Powerpoint presentation");
+            mimeNames.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Excel spreadsheet");
+            mimeNames.put("application/vnd.ms-word.document.macroEnabled.12", "Word document");
+            mimeNames.put("application/vnd.ms-word.template.macroEnabled.12", "Word template");
+            mimeNames.put("application/vnd.openxmlformats-officedocument.wordprocessingml.template", "Word template");
+            mimeNames.put("application/vnd.ms-powerpoint.slideshow.macroEnabled.12", "Powerpoint presentation");
+            mimeNames.put("application/vnd.openxmlformats-officedocument.presentationml.slideshow", "Powerpoint presentation");
+            mimeNames.put("application/vnd.ms-powerpoint.presentation.macroEnabled.12", "Powerpoint presentation");
+            mimeNames.put("application/vnd.ms-excel.sheet.binary.macroEnabled.12", "Excel spreadsheet");
+            mimeNames.put("application/vnd.ms-excel.sheet.macroEnabled.12", "Excel spreadsheet");
+            mimeNames.put("application/vnd.ms-xpsdocument", "XPS document");
         }
     }
 
@@ -89,7 +103,6 @@ public final class MimeTypeNameTag extends TagSupport {
         }
         return SKIP_BODY;
     }
-
 
     String getMimeTypeName() {
         String mimeTypeName = mimeNames.get(this.mimeType);
