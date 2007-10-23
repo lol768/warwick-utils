@@ -3,8 +3,6 @@ package uk.ac.warwick.util.core;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,7 +16,11 @@ import java.util.regex.Pattern;
  */
 public final class StringUtils {
 
-    public static final String DEFAULT_ENCODING = "ISO-8859-1";
+    private static final Pattern TRAILING_SPACE_PATTERN = Pattern.compile("\\s+$", Pattern.DOTALL);
+
+	private static final Pattern LEADING_SPACE_PATTERN = Pattern.compile("^\\s+", Pattern.DOTALL);
+
+	public static final String DEFAULT_ENCODING = "ISO-8859-1";
 
     private static final int HIGH_CHAR = 127;
 
@@ -28,10 +30,7 @@ public final class StringUtils {
 
     /**
      * Always use this instead of new String(bytes) because of encoding issues.
-     * See http://link.csv.warwick.ac.uk:8080/jira/browse/SBTWO-167
-     * 
-     * @param bytes
-     * @return
+     * See SBTWO-167
      */
     public static String create(final byte[] bytes) {
         if (bytes == null || bytes.length == 0) {
@@ -47,10 +46,7 @@ public final class StringUtils {
 
     /**
      * Always use this instead of new String(bytes) because of encoding issues.
-     * See http://link.csv.warwick.ac.uk:8080/jira/browse/SBTWO-167
-     * 
-     * @param bytes
-     * @return
+     * See SBTWO-167
      */
     public static byte[] create(final String s) {
         String text = s;
@@ -65,12 +61,72 @@ public final class StringUtils {
         }
     }
 
+    
     /**
-     * Surely this has already been implemented? :)
+     * Join an array of String objects into a single string, joined
+     * by the given delimiter.
      */
-    public static String[] convertToArray(final String s) {
-        String[] result = s.split(",");
-        return result;
+    public static String join(String[] strings, String delimiter) {
+    	StringBuilder buffer = new StringBuilder();
+        int len = strings.length;
+		for (int i=0;i<len;i++) {
+            buffer.append(strings[i]);
+            if (i+1 < len) {
+                buffer.append(delimiter);
+            }
+        }
+        return buffer.toString();
+       
+    }
+    
+    /**
+     * Joins a collection of strings into one string using the specified delimiter.
+     * 
+     * This version doesn't trim the strings as they go in.
+     */
+    public static String join(Collection<String> s, String delimiter) {
+    	return join(s, delimiter, false);
+    }
+ 
+    /**
+     * @param trim If true, each element is trim()ed before it is added.
+     */
+    public static String join(Collection<String> s, String delimiter, boolean trim) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<String> iter = s.iterator();
+        while (iter.hasNext()) {
+        	String string = iter.next();
+        	if (trim) { string = string.trim(); }
+            builder.append(string);
+            if (iter.hasNext()) {
+                builder.append(delimiter);
+            }
+        }
+        return builder.toString();
+    }
+    
+    /**
+     *  Basically join(keywords, separator) but it trims each value as well.
+     */
+    public static String convertToString(final Collection<String> keywords, final String seperator) {    	
+    	return join(keywords, seperator, true);
+    }
+    
+    /**
+     * Basically keywords.split(",") but it also trims each value.
+     */
+    public static List<String> convertCommaDelimitedStringToList(final String keywords) {
+        ArrayList<String> results = new ArrayList<String>();
+        if (!hasText(keywords)) {
+            return results;
+        }
+        String[] commaSeperatedElements = keywords.split(",");
+        for (String s: commaSeperatedElements) {
+		    if (hasText(s)) {
+		        results.add(s.trim());
+		    }
+		}
+        return results;
     }
 
     /**
@@ -86,7 +142,8 @@ public final class StringUtils {
         } else if (proposedEnd < 0) {
             result = "";
         } else {
-            int start = proposedStart < 0 ? 0 : proposedStart;
+        	int start = proposedStart < 0 ? 0 : proposedStart;
+            start = start > s.length() ? s.length() : start;
             int end = proposedEnd > s.length() ? s.length() : proposedEnd;
             result = s.substring(start, end);
         }
@@ -97,8 +154,9 @@ public final class StringUtils {
      * Trivial guard to ensure that a string is never null.
      */
     public static String nullGuard(final String s) {
-        if (s == null)
+        if (s == null) {
             return "";
+        }
         return s;
     }
 
@@ -109,11 +167,6 @@ public final class StringUtils {
      * be "frank" A more useful example is finding the what's between "name="
      * and "&" in the string "a=b&name=whatwewant&othername=hello" If a matching
      * string is not found, null is returned.
-     * 
-     * @param text
-     * @param startString
-     * @param endString
-     * @return
      */
     public static String substringBetween(final String text, final String startString, final String endString) {
         String t = text;
@@ -138,10 +191,10 @@ public final class StringUtils {
      * 3.
      */
     public static int determineEndOfCommon(final String firstString, final String secondString) {
-        byte[] a = StringUtils.create(firstString);
-        byte[] b = StringUtils.create(secondString);
+        char[] a = firstString.toCharArray();
+        char[] b = secondString.toCharArray();
 
-        int longestString = a.length > b.length ? a.length : b.length;
+        int longestString = Math.max(a.length, b.length);
         int i = 0;
         for (i = 0; i < longestString; i++) {
             if (i >= a.length || i >= b.length) {
@@ -155,71 +208,6 @@ public final class StringUtils {
         return i;
     }
 
-    public static String convertToString(final List<String> keywords, final String seperator) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < keywords.size(); i++) {
-            if (keywords.get(i) != null) {
-                if (i > 0) {
-                    sb.append(seperator);
-                }
-                sb.append(keywords.get(i).trim());
-            }
-        }
-        return sb.toString();
-    }
-
-    public static String join(Collection<String> s, String delimiter) {
-        StringBuffer buffer = new StringBuffer();
-        Iterator<String> iter = s.iterator();
-        while (iter.hasNext()) {
-            buffer.append(iter.next());
-            if (iter.hasNext()) {
-                buffer.append(delimiter);
-            }
-        }
-        return buffer.toString();
-    }
-
-    public static List<String> convertCommaOrSpaceDelimitedStringToList(final String theKeywords) {
-        ArrayList<String> results = new ArrayList<String>();
-        if (!org.springframework.util.StringUtils.hasLength(theKeywords)) {
-            return results;
-        }
-
-        String keywords = theKeywords.trim();
-
-        String[] commaSeperatedElements = keywords.split(",");
-        if (commaSeperatedElements[0] == keywords) { // it couldn't find any
-            String[] spaceSeperatedElements = keywords.split(" ");
-            addToListButIgnoreEmpty(results, spaceSeperatedElements);
-        } else {
-            addToListButIgnoreEmpty(results, commaSeperatedElements);
-        }
-
-        return results;
-    }
-
-    public static List<String> convertCommaDelimitedStringToList(final String theKeywords) {
-        ArrayList<String> results = new ArrayList<String>();
-        if (!org.springframework.util.StringUtils.hasLength(theKeywords)) {
-            return results;
-        }
-
-        String keywords = theKeywords.trim();
-
-        String[] commaSeperatedElements = keywords.split(",");
-        addToListButIgnoreEmpty(results, commaSeperatedElements);
-
-        return results;
-    }
-
-    private static void addToListButIgnoreEmpty(final List<String> list, final String[] elements) {
-        for (String s: elements) {
-            if (s != null && org.springframework.util.StringUtils.hasLength(s.trim())) {
-                list.add(s.trim());
-            }
-        }
-    }
 
     /**
      * Compacts extraneous whitespace in HTML into single spaces. Multiple
@@ -231,28 +219,8 @@ public final class StringUtils {
     }
 
     /**
-     * Returns whether the entire given String is made of whitespace characters
-     */
-    public static boolean isWhitespace(final String text) {
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (!Character.isWhitespace(c)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isEmpty(final String s) {
-        return s == null || s.trim().length() == 0;
-    }
-
-    /**
-     * Escapes all characters >127, into their respective HTML entities (&#222;
-     * etc).
-     * 
-     * @param input
-     * @return
+     * Escapes all non-ASCII characters into HTML entities, so you
+     * can output the result into any HTML page.
      */
     public static String htmlEscapeHighCharacters(final String input) {
         StringReader reader = new StringReader(input);
@@ -279,80 +247,54 @@ public final class StringUtils {
 
     /* remove leading whitespace */
     public static String ltrim(final String source) {
-        return Pattern.compile("^\\s+", Pattern.DOTALL).matcher(source).replaceAll("");
+        return LEADING_SPACE_PATTERN.matcher(source).replaceAll("");
     }
 
     /* remove trailing whitespace */
     public static String rtrim(final String source) {
-        return Pattern.compile("\\s+$", Pattern.DOTALL).matcher(source).replaceAll("");
+        return TRAILING_SPACE_PATTERN.matcher(source).replaceAll("");
+    }
+
+	
+	/**
+	 * Returns if the string is non-null and has any characters.
+	 * A string containing just whitespace will return true.
+	 * 
+	 * @see #hasText(String)
+	 */
+	public static boolean hasLength(String s) {
+		return (s != null && s.length() > 0);
+	}
+
+	/**
+	 * Returns if the string is non-null and has any non-whitespace
+	 * characters. This is generally best for validating whether a user
+	 * has inputted anything.
+	 * A string containing just whitespace will return false.
+	 */
+	public static boolean hasText(String s) {
+		return (s != null && s.trim().length() > 0);
+	}
+
+	/**
+     * Returns whether the entire given String is made of whitespace characters,
+     * including when the string has no characters.
+     * The logical opposite of {@link #hasText(String)}.
+     * 
+     * @deprecated Please use {@link #hasText(String)} instead.
+     */
+    public static boolean isWhitespace(final String text) {
+        return !hasText(text);
     }
 
     /**
-     * Replace characters having special meaning in regular expressions with
-     * their escaped equivalents.
-     * <P>
-     * The escaped characters include :
-     * <ul>
-     * <li>.
-     * <li>\
-     * <li>?, * , and +
-     * <li>&
-     * <li>:
-     * <li>{ and }
-     * <li>[ and ]
-     * <li>( and )
-     * <li>^ and $
-     * </ul>
+     * Identical to {@link #isWhitespace(String)}.
+     * 
+     * @deprecated Please use {@link #hasText(String)} instead.
      */
-    public static String escapeForRegex(String aRegexFragment) {
-        final StringBuilder result = new StringBuilder();
-
-        final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
-        char character = iterator.current();
-        while (character != CharacterIterator.DONE) {
-            /*
-             * All literals need to have backslashes doubled.
-             */
-            if (character == '.') {
-                result.append("\\.");
-            } else if (character == '\\') {
-                result.append("\\\\");
-            } else if (character == '?') {
-                result.append("\\?");
-            } else if (character == '*') {
-                result.append("\\*");
-            } else if (character == '+') {
-                result.append("\\+");
-            } else if (character == '&') {
-                result.append("\\&");
-            } else if (character == ':') {
-                result.append("\\:");
-            } else if (character == '{') {
-                result.append("\\{");
-            } else if (character == '}') {
-                result.append("\\}");
-            } else if (character == '[') {
-                result.append("\\[");
-            } else if (character == ']') {
-                result.append("\\]");
-            } else if (character == '(') {
-                result.append("\\(");
-            } else if (character == ')') {
-                result.append("\\)");
-            } else if (character == '^') {
-                result.append("\\^");
-            } else if (character == '$') {
-                result.append("\\$");
-            } else if (character == '|') {
-                result.append("\\|");
-            } else {
-                // the char is not a special one
-                // add it to the result as is
-                result.append(character);
-            }
-            character = iterator.next();
-        }
-        return result.toString();
+    public static boolean isEmpty(final String s) {
+        return isWhitespace(s);
     }
+ 
 
 }

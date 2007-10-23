@@ -35,40 +35,16 @@ public final class StringUtilsListToStringConversionTest extends TestCase {
     }
     
     public void testConvertEmptyKeywordToList() {
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(null);
+        List<String> results = StringUtils.convertCommaDelimitedStringToList(null);
         assertEquals("number of results", 0, results.size());
     }
 
     public void testConvertSingleKeywordToList() {
         String keyword = " the_keyword ";
         
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(keyword);
+        List<String> results = StringUtils.convertCommaDelimitedStringToList(keyword);
         assertEquals("number of results", 1, results.size());
         assertEquals("result", keyword.trim(), results.get(0));
-    }
-    
-    public void testConvertMultipleSpaceSeperatedKeywordToList() {
-        String firstKeyword = " the_keyword ";
-        String secondKeyword = " the_second_keyword";
-
-        String keywords = firstKeyword + " " + secondKeyword;
-        
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(keywords);
-        assertEquals("number of results", 2, results.size());
-        assertEquals("first result", firstKeyword.trim(), results.get(0));
-        assertEquals("second result", secondKeyword.trim(), results.get(1));        
-    }
-    
-    public void testConvertMultipleSpaceSeperatedKeywordToListButIgnoreMultipleSpaces() {
-        String firstKeyword = " the_keyword ";
-        String secondKeyword = " the_second_keyword";
-
-        String keywords = firstKeyword + "      " + secondKeyword;
-        
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(keywords);
-        assertEquals("number of results", 2, results.size());
-        assertEquals("first result", firstKeyword.trim(), results.get(0));
-        assertEquals("second result", secondKeyword.trim(), results.get(1));        
     }
 
     
@@ -78,7 +54,7 @@ public final class StringUtilsListToStringConversionTest extends TestCase {
 
         String keywords = firstKeyword + "," + secondKeyword;
         
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(keywords);
+        List<String> results = StringUtils.convertCommaDelimitedStringToList(keywords);
         assertEquals("number of results", 2, results.size());
         assertEquals("first result", firstKeyword.trim(), results.get(0));
         assertEquals("second result", secondKeyword.trim(), results.get(1));        
@@ -90,7 +66,7 @@ public final class StringUtilsListToStringConversionTest extends TestCase {
 
         String keywords = firstKeyword + ",,,,,," + secondKeyword;
         
-        List<String> results = StringUtils.convertCommaOrSpaceDelimitedStringToList(keywords);
+        List<String> results = StringUtils.convertCommaDelimitedStringToList(keywords);
         assertEquals("number of results", 2, results.size());
         assertEquals("first result", firstKeyword.trim(), results.get(0));
         assertEquals("second result", secondKeyword.trim(), results.get(1));        

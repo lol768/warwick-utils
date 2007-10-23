@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.core.StringUtils;
 
 public class StringUtilsTest extends TestCase {
 	public void testJoinStringArray() {
