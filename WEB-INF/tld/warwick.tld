@@ -81,4 +81,17 @@
 		<tag-class>uk.ac.warwick.util.web.tags.CompressContentTag</tag-class>
 		<description> Compresses the contents of the tag onto a single line </description>
 	</tag>
+	
+	<tag>
+		<name>wrappingUrl</name>
+		<tag-class>uk.ac.warwick.util.web.tags.WrappingUrlTag</tag-class>
+		<description> Snips a long URL at each forward slash and puts a barely visible 
+			space before the next word, causing the browser to wrap to the next line 
+			if necessary. </description>
+		<attribute>
+			<name>url</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>
