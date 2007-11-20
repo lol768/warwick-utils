@@ -1,1 +1,1 @@
-spring-framework-2.0.4
+spring-framework-2.5

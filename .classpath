@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-logging/commons-logging.jar"/>
 	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar"/>
-	<classpathentry kind="lib" path="external-libs/spring/spring.jar" sourcepath="external-libs/src/spring-framework-2.0.6-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="external-libs/sso-client/sso-client.jar"/>
 	<classpathentry kind="lib" path="external-libs/userlookup/userlookup.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-codec/commons-codec.jar"/>
@@ -16,7 +15,6 @@
 	<classpathentry kind="lib" path="external-libs/opensaml/opensaml.jar"/>
 	<classpathentry kind="lib" path="external-libs/ant/ant.jar"/>
 	<classpathentry kind="lib" path="external-libs/packtag/packtag.jar"/>
-	<classpathentry kind="lib" path="external-libs/spring/spring-mock.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/hamcrest-core-1.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/hamcrest-library-1.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
@@ -27,5 +25,9 @@
 	<classpathentry kind="lib" path="external-libs/junit/jmock-legacy-2.3.0.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/objenesis-1.0.jar"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring.jar" sourcepath="external-libs/src/spring-2.5-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring-aspects.jar" sourcepath="external-libs/src/spring-2.5-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring-test.jar" sourcepath="external-libs/src/spring-test-2.5-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar" sourcepath="external-libs/src/spring-2.5-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
