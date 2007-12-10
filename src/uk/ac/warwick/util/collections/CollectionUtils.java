@@ -101,6 +101,30 @@ public final class CollectionUtils {
         return result;
 	}
 	
+	public <T> List<T> splice(List<T> list, int num, int skip) {
+        int fromIndex = skip;
+
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+
+        if (fromIndex > list.size() - 1) {
+            fromIndex = list.size() - 1;
+        }
+
+        // splice
+        int toIndex = num + fromIndex;
+        if (toIndex > list.size()) {
+            toIndex = list.size();
+        }
+
+        if (fromIndex > toIndex) {
+            toIndex = fromIndex;
+        }
+
+        return list.subList(fromIndex, toIndex);
+    }
+	
 	/**
      * Calls bean.{getterMethod}() and returns a value as a String
      */
