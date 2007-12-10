@@ -101,7 +101,7 @@ public final class CollectionUtils {
         return result;
 	}
 	
-	public <T> List<T> splice(List<T> list, int num, int skip) {
+	public static <T> List<T> splice(List<T> list, int num, int skip) {
         int fromIndex = skip;
 
         if (fromIndex < 0) {
