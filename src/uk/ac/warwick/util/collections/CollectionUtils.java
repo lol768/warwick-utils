@@ -102,6 +102,10 @@ public final class CollectionUtils {
 	}
 	
 	public static <T> List<T> splice(List<T> list, int num, int skip) {
+	    if (list.isEmpty()) {
+	        return list;
+	    }
+	    
         int fromIndex = skip;
 
         if (fromIndex < 0) {
