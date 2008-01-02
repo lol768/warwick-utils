@@ -10,6 +10,7 @@
 		<conf name="ant" description="ant tasks"/>
 		<conf name="web" extends="core,web-tld" description="core + jstl tags"/>
 		<conf name="web-tld" description="tld for jstl tags"/>
+		<conf name="mail" description="asynchronous mail sender"/>
 
 		<conf name="default" extends="web-tld" description="full utils with all dependencies"/>
 	</configurations>
@@ -18,6 +19,7 @@
 		<artifact name="warwickutils-ant" type="jar" conf="ant"/>
 		<artifact name="warwickutils-core" type="jar" conf="core"/>
 		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
+		<artifact name="warwickutils-mail" type="jar" conf="mail"/>
 		<artifact name="warwickutils-web" type="jar" conf="web"/>
 		<artifact name="warwick" type="tld" conf="web-tld"/>
 	</publications>
@@ -25,6 +27,7 @@
 		<!-- Core requires Spring -->
 		<!-- httpclient requires httpclient, logging, log4j, userlookup, ssoclient -->
 		<!-- web requires spring, jstl, javax servlet, Core, commons lang -->
+		<!-- mail requires Core, javax.mail -->
 		
 		<dependency org="spring" name="spring" rev="2.0.4" conf="default,core->default;default,web->default" />
 		<dependency org="apache" name="commons-httpclient" rev="3.0" conf="default,httpclient->default" />
@@ -34,6 +37,7 @@
 		<dependency org="javax.servlet" name="jstl" rev="1.1.2" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="default,httpclient->default" />
 		<dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="default,httpclient->default" />
+		<dependency org="javax.servlet" name="javax-mail" rev="1.3.3" conf="default,mail->default" />
 		<dependency org="apache" name="commons-lang" rev="2.3" conf="default,web->default" />
 		
 		<dependency org="packtag" name="packtag" rev="2.1" conf="default,ant->default" />
