@@ -78,12 +78,15 @@
   </target>
   
   <target name="package">
-    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" />
-    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" />
-    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" />
-    <jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" />  
-	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" />
-	<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" />
+  	<copyfile src="META-INF/MANIFEST.MF" dest="${build.dir}/MANIFEST.MF"/>
+  	<replace file="${build.dir}/MANIFEST.MF" token="$VERSION" value="${jar.version}" />
+  	
+    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
+    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" manifest="${build.dir}/MANIFEST.MF"/>
+    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" manifest="${build.dir}/MANIFEST.MF"/>
+    <jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" manifest="${build.dir}/MANIFEST.MF"/>  
+	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
+	<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
 	  
 	<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
   </target>
