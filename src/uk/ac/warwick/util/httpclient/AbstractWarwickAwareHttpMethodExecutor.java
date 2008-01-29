@@ -73,7 +73,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
         String newUrl = urlToSubstitute;
 
         if (isSubstituteTags()) {
-        	new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
+        	newUrl = new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
         }
 
         return newUrl;
