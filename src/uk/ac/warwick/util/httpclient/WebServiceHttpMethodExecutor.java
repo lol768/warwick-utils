@@ -2,12 +2,12 @@ package uk.ac.warwick.util.httpclient;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
@@ -49,6 +49,8 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
         HttpConnectionManagerParams params = getClient().getHttpConnectionManager().getParams();
         params.setConnectionTimeout(getConnectionTimeout());
         params.setSoTimeout(getRetrievalTimeout());
+        getClient().getParams().setBooleanParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, true);
+        getClient().getParams().setIntParameter(HttpClientParams.MAX_REDIRECTS, 10);
 
         setHasExecuted(true);
 

@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
@@ -40,6 +41,9 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
 
         //if we have set timeouts, pass them through
         HttpConnectionManagerParams params = getClient().getHttpConnectionManager().getParams();
+        
+        getClient().getParams().setBooleanParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, true);
+        getClient().getParams().setIntParameter(HttpClientParams.MAX_REDIRECTS, 10);
         
         if (getConnectionTimeout() != 0) {
             params.setConnectionTimeout(getConnectionTimeout());
