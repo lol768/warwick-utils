@@ -98,7 +98,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
 
     private void validateAddress(String address) throws AddressException {
         if (StringUtils.hasText(address)) {
-            InternetAddress ia = new InternetAddress(address.toString());
+            InternetAddress ia = new InternetAddress(address);
             ia.validate();
         }
     }
