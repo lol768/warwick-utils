@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
@@ -173,6 +174,12 @@ public interface HttpMethodExecutor extends Serializable {
      * Sets the POST body
      */
     void setPostBody(final NameValuePair[] postBody);
+    
+    /**
+     * Adds a header to send
+     */
+    void addHeader(final String name, final String value);
+    void addHeader(final Header header);
 
     /**
      * Closes the stream.

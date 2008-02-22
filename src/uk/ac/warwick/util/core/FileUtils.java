@@ -204,7 +204,7 @@ public final class FileUtils {
      * @todo What makes it safe?
      */
     public static String convertToSafeFileName(final String originalName) {
-        if (StringUtils.isEmpty(originalName)) {
+        if (!StringUtils.hasText(originalName)) {
             return originalName;
         }
 
@@ -226,7 +226,7 @@ public final class FileUtils {
             fileNameSB.deleteCharAt(0);
         }
 
-        if (!StringUtils.isEmpty(extension)) {
+        if (StringUtils.hasText(extension)) {
             fileNameSB.append(".");
             for (byte b: StringUtils.create(extension)) {
                 char c = (char) b;

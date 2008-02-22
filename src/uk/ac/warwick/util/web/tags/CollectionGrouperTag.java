@@ -15,17 +15,17 @@ import uk.ac.warwick.util.collections.CollectionUtils;
 public final class CollectionGrouperTag extends RequestContextAwareTag {
     private static final long serialVersionUID = -7357664897018370348L;
     private static final String DEFAULT_MAP_ATTRIBUTE_NAME = "result";	// name of page attribute
-    private Collection objects;
+    private Collection<?> objects;
     private String property;
     private String var = DEFAULT_MAP_ATTRIBUTE_NAME;
 
     protected int doStartTagInternal() throws Exception {
-        Map map = CollectionUtils.groupByProperty(objects, property);
+        Map<String, ?> map = CollectionUtils.groupByProperty(objects, property);
         pageContext.setAttribute(var, map);
         return EVAL_BODY_INCLUDE;
     }
 
-    public void setObjects(final Collection theObjects) {
+    public void setObjects(final Collection<?> theObjects) {
         this.objects = theObjects;
     }
 

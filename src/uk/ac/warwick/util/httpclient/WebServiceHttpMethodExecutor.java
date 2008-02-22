@@ -87,6 +87,9 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
         } else {
             throw new IllegalArgumentException("No method type? No dice.");
         }
+        
+        addHeaders(method);
+        
         return method;
     }
 

@@ -134,7 +134,7 @@ public final class CollectionUtils {
      */
 	private static String callGetter(Object bean, String getterMethod) {
 		try {
-			Class clazz = bean.getClass();
+			Class<?> clazz = bean.getClass();
 			Method method = clazz.getMethod(getterMethod, new Class[0]);
 			Object value = method.invoke(bean, new Object[0]);
 			return value==null? null : value.toString();

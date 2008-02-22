@@ -82,6 +82,9 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
         } else {
             throw new IllegalArgumentException("No method type? No dice.");
         }
+        
+        addHeaders(method);
+        
         return method;
     }
 

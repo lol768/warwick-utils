@@ -35,7 +35,7 @@ public final class CollectionUtilsTest extends TestCase {
 
 		String propertyName = NestedObject.PROPERTY_NAME;
 
-		Map map = CollectionUtils.groupByProperty(all, propertyName);
+		Map<String, ?> map = CollectionUtils.groupByProperty(all, propertyName);
 		assertEquals("number of groups", 2, map.size());
 
 		assertEquals("valueAs", allAs, map.get(valueA));

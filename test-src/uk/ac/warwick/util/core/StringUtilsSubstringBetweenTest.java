@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.core;
 
-import junit.framework.TestCase;;
+import junit.framework.TestCase;
 
 public class StringUtilsSubstringBetweenTest extends TestCase {
     public void testSubstringFound() {

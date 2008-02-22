@@ -2,7 +2,9 @@ package uk.ac.warwick.util.httpclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -40,6 +42,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
 
     // true when has been executed
     private boolean executed;
+    
+    private List<Header> headers = new ArrayList<Header>();
     
     private HttpClientFactory factory = MultiThreadedHttpClientFactory.getInstance();
     
@@ -218,4 +222,18 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     public HttpClient getHttpClientFromFactory() {
         return factory.getClient();
     }
+
+	public void addHeader(Header header) {
+		this.headers.add(header);
+	}
+
+	public void addHeader(String name, String value) {
+		this.headers.add(new Header(name, value));
+	}
+	
+	protected void addHeaders(HttpMethod method) {
+		for (Header header : headers) {
+        	method.addRequestHeader(header);
+        }
+	}
 }

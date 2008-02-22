@@ -1,14 +1,11 @@
 package uk.ac.warwick.util.httpclient;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.springframework.util.StringUtils;
 
 import uk.ac.warwick.sso.client.SSOProxyCookieHelper;
 import uk.ac.warwick.userlookup.User;
