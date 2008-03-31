@@ -62,7 +62,7 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
         HttpMethod method;
         if (methodType.equals(Method.post)) {
             LOGGER.debug("method is post, appending parameters");
-            method = new PostMethod(getUrl());
+            method = new PostMethod(escapeQueryString(getUrl()));
             // can't follow redirects from a POST request. HTTPClient is TeH
             // SUX0R
             method.setFollowRedirects(false);
@@ -75,9 +75,9 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
             }
         } else if (methodType.equals(Method.get)) {
             LOGGER.debug("Method is get");
-            method = new GetMethod(getUrl());
+            method = new GetMethod(escapeQueryString(getUrl()));
         } else if (methodType.equals(Method.head)) {
-            method = new HeadMethod(getUrl());
+            method = new HeadMethod(escapeQueryString(getUrl()));
             method.setFollowRedirects(true);
         } else {
             throw new IllegalArgumentException("No method type? No dice.");

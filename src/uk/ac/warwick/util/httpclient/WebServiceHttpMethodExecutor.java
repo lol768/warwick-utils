@@ -63,7 +63,7 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
 
     private HttpMethod createMethod() {
         HttpMethod method;
-        String substitutedUrl = substituteWarwickTags(getUrl(), user);
+        String substitutedUrl = escapeQueryString(substituteWarwickTags(getUrl(), user));
         if (methodType.equals(Method.post)) {
             LOGGER.debug("method is post, appending parameters");
             method = new PostMethod(substitutedUrl);

@@ -2,10 +2,13 @@ package uk.ac.warwick.util.httpclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -25,6 +28,47 @@ import org.apache.log4j.Logger;
 public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     private static final Logger LOGGER = Logger.getLogger(AbstractHttpMethodExecutor.class);
+    
+    private static final BitSet ALLOWED_QUERYSTRING_CHARACTERS;
+    
+    static {
+    	ALLOWED_QUERYSTRING_CHARACTERS = new BitSet(256);
+    	
+    	//standard URL characters
+    	ALLOWED_QUERYSTRING_CHARACTERS.set(';');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('/');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('?');
+		ALLOWED_QUERYSTRING_CHARACTERS.set(':');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('@');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('&');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('=');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('+');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('$');
+		ALLOWED_QUERYSTRING_CHARACTERS.set(',');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('-');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('_');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('.');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('!');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('~');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('*');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('\'');
+		ALLOWED_QUERYSTRING_CHARACTERS.set('(');
+		ALLOWED_QUERYSTRING_CHARACTERS.set(')');
+		
+		// ignore already escaped characters
+		ALLOWED_QUERYSTRING_CHARACTERS.set('%');
+        
+		// alphanumeric
+        for (int i = 'a'; i <= 'z'; i++) {
+        	ALLOWED_QUERYSTRING_CHARACTERS.set(i);
+        }
+        for (int i = 'A'; i <= 'Z'; i++) {
+        	ALLOWED_QUERYSTRING_CHARACTERS.set(i);
+        }
+        for (int i = '0'; i <= '9'; i++) {
+        	ALLOWED_QUERYSTRING_CHARACTERS.set(i);
+        }
+    }
 
     private HttpMethod method;
 
@@ -189,9 +233,25 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
             return method.getPath();
         }
     }
+    
+    public final String escapeQueryString(String url) {
+    	String escapedUrl = url;
+    	
+    	// if the URL has a query string, escape that query string since HttpClient 3.1 is really anal about it
+    	if (escapedUrl.indexOf('?') != -1) {
+    		try {
+    			escapedUrl = escapedUrl.substring(0, escapedUrl.indexOf('?')) + new String(URLCodec.encodeUrl(ALLOWED_QUERYSTRING_CHARACTERS, escapedUrl.substring(escapedUrl.indexOf('?')).getBytes("UTF-8")), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// this can never happen unless UTF-8 is suddenly invalid. if that happened, we'd have much, much bigger problems
+				throw new IllegalStateException(e);
+			}
+    	}
+    	
+    	return escapedUrl;
+    }
 
-    public final void setUrl(final String url) {
-        this.url = url;
+    public final void setUrl(String url) {
+    	this.url = url;
     }
     
     public final Part[] getMultipartRequestPart() {

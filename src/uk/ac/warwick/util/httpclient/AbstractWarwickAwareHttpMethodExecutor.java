@@ -46,7 +46,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
 
             URL targetURL;
             try {
-                targetURL = new URL(getUrl());
+                targetURL = new URL(escapeQueryString(getUrl()));
             } catch (final MalformedURLException e) {
                 throw new IllegalStateException("URL is invalid: " + getUrl(), e);
             }
