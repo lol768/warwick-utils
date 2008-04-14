@@ -33,12 +33,6 @@ public final class QueryStringEscapingTest extends TestCase {
 		
 		retrieveUrl(url);
 	}
-	
-	public void testEscapeSquareBrackets() throws Exception {
-		String url = "http://pipes.yahoo.com/pipes/pipe.run?_id=KsElgn_M3BGDkPL5jUnRlg&_render=rss&uc=%5Bhrrgab%5D";
-		
-		retrieveUrl(url);
-	}
 
 	public void testWarwickTagReplacement() throws Exception {
 		String url = "http://www2.warwick.ac.uk/insite/?dept=<warwick_deptcode/>";
