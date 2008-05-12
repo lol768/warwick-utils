@@ -3,6 +3,7 @@ package uk.ac.warwick.util.collections;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.hamcrest.text.X;
 
 /**
 
@@ -27,7 +30,17 @@ public final class CollectionUtils {
      * @return Map whose key is the value
      */
     public static <X> SortedMap<String, Collection<X>> groupByProperty(final Collection<X> collection, final String property) {
-        SortedMap<String, Collection<X>> map = new TreeMap<String, Collection<X>>();
+        return groupByProperty(collection, property, null);
+    }
+    
+    public static <X> SortedMap<String, Collection<X>> groupByProperty(final Collection<X> collection, final String property, final Comparator<String> comparator) {
+        SortedMap<String, Collection<X>> map;
+        if (comparator != null) {
+        	map = new TreeMap<String, Collection<X>>(comparator);
+        } else {
+        	map = new TreeMap<String, Collection<X>>();
+        }
+        
         String propertyGetter = "get"+capitalise(property);
         for (X o: collection) {
 
