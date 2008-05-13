@@ -45,6 +45,9 @@ public final class CollectionUtils {
         for (X o: collection) {
 
         	String value = callGetter(o, propertyGetter);
+        	if (value == null) {
+        		value = "";
+        	}
         	
             Collection<X> group = map.get(value);
             if (group == null) {
