@@ -195,7 +195,7 @@ public final class FileUtils {
         if (indexOfLastDot < 0) {
             return "";
         }
-        return s.substring(indexOfLastDot + 1);
+        return s.substring(indexOfLastDot + 1).toLowerCase();
     }
 
     /**
