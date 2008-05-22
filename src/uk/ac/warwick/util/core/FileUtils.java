@@ -189,6 +189,8 @@ public final class FileUtils {
     /**
      * Return the extension of the specified fileName. If there is no extension,
      * this will return "".
+     * @deprecated use getLowerCaseExtension, which does exactly what it says on the tin
+     * 
      */
     public static String getExtension(final String s) {
         int indexOfLastDot = s.lastIndexOf('.');
@@ -196,6 +198,17 @@ public final class FileUtils {
             return "";
         }
         return s.substring(indexOfLastDot + 1).toLowerCase();
+    }
+    
+    public static String getLowerCaseExtension(final String filename){
+    	return getExtension(filename);
+    }
+    
+    public static boolean extensionMatches(final String filename, final String extension){
+    	String compareExtension = extension.toLowerCase();
+    	// if the user has specified an extension like ".txt", clean it up for them
+    	compareExtension = compareExtension.replaceAll("[^\\.]*\\.", "");
+    	return getExtension(filename).equalsIgnoreCase(compareExtension);
     }
 
     /**

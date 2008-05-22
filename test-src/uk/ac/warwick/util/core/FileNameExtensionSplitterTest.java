@@ -34,4 +34,15 @@ public final class FileNameExtensionSplitterTest extends TestCase {
 		assertEquals("fileName", fileName, FileUtils.getFileNameWithoutExtension(fileName + "."));
 		assertEquals("extension", "", FileUtils.getExtension(fileName));
 	}
+	
+	public void testCompareExtensions(){
+		String filename = "foobar.baz";
+		assertTrue("Extension match failed",FileUtils.extensionMatches(filename, "baz"));
+		assertTrue("Extension match failed",FileUtils.extensionMatches(filename, ".baz"));
+		assertTrue("Extension match failed",FileUtils.extensionMatches(filename, ".BAZ"));
+		assertTrue("Extension match failed",FileUtils.extensionMatches(filename, "BaZ"));
+		assertFalse("Extension match succeeded unexpectedly!",FileUtils.extensionMatches(filename, "ba"));
+		assertFalse("Extension match succeeded unexpectedly!",FileUtils.extensionMatches(filename, "az"));
+
+	}
 }
