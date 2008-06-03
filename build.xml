@@ -19,6 +19,7 @@
 	<mkdir dir="${build.dir}/all" />
 	<mkdir dir="${build.dir}/core" />
 	<mkdir dir="${build.dir}/web" />
+  	<mkdir dir="${build.dir}/hibernate" />
 	<mkdir dir="${build.dir}/httpclient" />
 	<mkdir dir="${build.dir}/ant" />
 	<mkdir dir="${build.dir}/mail" />
@@ -49,6 +50,13 @@
 		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
 			<sourcepath>
 				<fileset dir="src/uk/ac/warwick/util/httpclient" />
+			</sourcepath>
+		</javac>
+		
+		<!-- web library -->
+		<javac destdir="${build.dir}/hibernate" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+			<sourcepath>
+				<fileset dir="src/uk/ac/warwick/util/hibernate" />
 			</sourcepath>
 		</javac>
 		
@@ -84,6 +92,7 @@
     <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
     <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" manifest="${build.dir}/MANIFEST.MF"/>
     <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" manifest="${build.dir}/MANIFEST.MF"/>
+  	<jar basedir="${build.dir}/hibernate" destfile="${dist.dir}/${jar.name}-hibernate.jar" manifest="${build.dir}/MANIFEST.MF"/>
     <jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" manifest="${build.dir}/MANIFEST.MF"/>  
 	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
 	<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
