@@ -18,7 +18,6 @@ public class CompressContentTag extends BodyTagSupport {
             String[] contents = body.replaceAll("\t|\r","").split("\n+");
             
             for (String line : contents) {
-                line = line.trim();
                 if (!line.equals("")) {
                     sb.append(line);
                 }
