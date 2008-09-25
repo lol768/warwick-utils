@@ -34,6 +34,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/x-project", "Project File");
             mimeNames.put("application/postscript", "PostScript File");
             mimeNames.put("application/x-dvi", "DVI File");
+            mimeNames.put("application/x-msaccess", "Access database");
             mimeNames.put("text/plain", "Text file");
             mimeNames.put("text/html", "HTML page");
             mimeNames.put("application/rtf", "Rich Text document");
@@ -51,7 +52,11 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/futuresplash", "Shockwave Flash animation");
             mimeNames.put("application/x-shockwave-flash", "Shockwave Flash animation");
             mimeNames.put("application/x-director", "Director movie");
-
+            
+            mimeNames.put("application/zip", "Zipped archive");
+            mimeNames.put("application/x-gzip", "GZipped archive");
+            
+            // specific audio
             mimeNames.put("audio/mpeg3", "MP3 sound clip");
             mimeNames.put("audio/wav", "WAV sound clip");
             mimeNames.put("audio/mpeg", "Sound clip");
@@ -59,9 +64,17 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("audio/midi", "MIDI music clip");
             mimeNames.put("audio/s3m", "ScreamTracker music file");
             mimeNames.put("audio/mod", "MOD music file");
-
-            mimeNames.put("application/zip", "Zipped archive");
-            mimeNames.put("application/x-gzip", "GZipped archive");
+            
+            mimeNames.put("text/csv", "Comma-separated values file");
+            mimeNames.put("text/php", "PHP script");
+            
+            // non-specific audio
+            String audioClipString = "Audio clip";
+            mimeNames.put("audio/x-m4a", audioClipString);
+            mimeNames.put("audio/x-ms-wma", audioClipString);
+            mimeNames.put("audio/mp4", audioClipString);
+            mimeNames.put("audio/ogg", audioClipString);
+            mimeNames.put("audio/flac", audioClipString);
 
             String videoClipString = "Video clip";
             mimeNames.put("video/animaflex", videoClipString);
@@ -76,6 +89,16 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("video/quicktime", videoClipString);
             mimeNames.put("video/x-sgi-movie", videoClipString);
             mimeNames.put("video/vnd.rn-realvideo", videoClipString);
+            
+            mimeNames.put("video/mp4", videoClipString);
+            mimeNames.put("video/x-flv", videoClipString);
+            mimeNames.put("video/x-m4v", videoClipString);
+            mimeNames.put("video/x-ms-wmv", videoClipString);
+            mimeNames.put("video/ogg", videoClipString);
+            
+            mimeNames.put("application/ogg", "OGG application");
+            mimeNames.put("application/x-java-jnlp-file", "Java Web Start definition");
+            mimeNames.put("application/x-iphone", "iPhone application");
 
             // Office 2007
             mimeNames.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Word document");
