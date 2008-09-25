@@ -88,8 +88,11 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("video/x-motion-jpeg", videoClipString);
             mimeNames.put("video/quicktime", videoClipString);
             mimeNames.put("video/x-sgi-movie", videoClipString);
+            mimeNames.put("video/x-la-asf", videoClipString);
             mimeNames.put("video/vnd.rn-realvideo", videoClipString);
             
+            mimeNames.put("video/x-vrml", videoClipString);
+            mimeNames.put("video/x-msvideo", videoClipString);
             mimeNames.put("video/mp4", videoClipString);
             mimeNames.put("video/x-flv", videoClipString);
             mimeNames.put("video/x-m4v", videoClipString);
