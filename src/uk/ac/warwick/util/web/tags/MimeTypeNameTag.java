@@ -44,6 +44,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("image/pjpeg", "JPEG image");
             mimeNames.put("image/png", "PNG image");
             mimeNames.put("image/bmp", "BMP image");
+            mimeNames.put("image/tiff", "TIFF image");
             mimeNames.put("application/x-javascript", "Javascript file");
 
             mimeNames.put("application/xml", "XML data");
@@ -103,6 +104,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/ogg", "OGG application");
             mimeNames.put("application/x-java-jnlp-file", "Java Web Start definition");
             mimeNames.put("application/x-iphone", "iPhone application");
+            mimeNames.put("text/css", "CSS style definitions");
 
             // Office 2007
             mimeNames.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Word document");
