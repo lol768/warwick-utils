@@ -11,8 +11,10 @@
 		<conf name="web" extends="core,web-tld" description="core + jstl tags"/>
 		<conf name="web-tld" description="tld for jstl tags"/>
 		<conf name="mail" description="asynchronous mail sender"/>
+		<conf name="content" extends="core,content-tld" description="content transformation"/>
+		<conf name="content-tld" description="content transformation tld"/>
 
-		<conf name="default" extends="web-tld" description="full utils with all dependencies"/>
+		<conf name="default" extends="*" description="full utils with all dependencies"/>
 	</configurations>
 	<publications>
 		<artifact name="warwickutils-all" type="jar" conf="default"/>
@@ -21,7 +23,9 @@
 		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
 		<artifact name="warwickutils-mail" type="jar" conf="mail"/>
 		<artifact name="warwickutils-web" type="jar" conf="web"/>
+		<artifact name="warwickutils-content" type="jar" conf="content"/>
 		<artifact name="warwick" type="tld" conf="web-tld"/>
+		<artifact name="textile" type="tld" conf="content-tld"/>
 	</publications>
 	<dependencies>
 		<!-- Core requires Spring -->

@@ -1,147 +1,181 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="Utilities" default="build-all">
 
-  <property file="build.properties" />
-  <property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
-  <path id="external.libs.path" description="All external libraries">
-	  <fileset dir="${external.libs.dir}" includes="**/*.jar" />
-  </path>
-	
-  <target name="build-all" depends="clean,init,compile,test,package" />
-	
-  <target name="bamboo" depends="clean,init,compile,test" />
-  
-  <target name="init">
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${build.dir}"/>
-  </target>
-  
-  <target name="compile">
-	<mkdir dir="${build.dir}/all" />
-	<mkdir dir="${build.dir}/core" />
-	<mkdir dir="${build.dir}/web" />
-  	<mkdir dir="${build.dir}/hibernate" />
-	<mkdir dir="${build.dir}/httpclient" />
-	<mkdir dir="${build.dir}/ant" />
-	<mkdir dir="${build.dir}/mail" />
-	
-	<!-- let's compile in parallel for no particular reason! -->
-	<parallel failonany="true">
-	  
-		<!-- all classes -->
-		<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"/>
-		
-		<!-- core library -->
-		<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/collections" />
-				<fileset dir="src/uk/ac/warwick/util/concurrency" />
-				<fileset dir="src/uk/ac/warwick/util/core" />
-			</sourcepath>
+	<property file="build.properties" />
+	<property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
+	<path id="external.libs.path" description="All external libraries">
+		<fileset dir="${external.libs.dir}" includes="**/*.jar" />
+	</path>
+
+	<target name="build-all" depends="clean,init,compile,test,package" />
+
+	<target name="bamboo" depends="clean,init,compile,test" />
+
+	<target name="init">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${build.dir}"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.dir}/all" />
+		<mkdir dir="${build.dir}/core" />
+		<mkdir dir="${build.dir}/web" />
+		<mkdir dir="${build.dir}/hibernate" />
+		<mkdir dir="${build.dir}/httpclient" />
+		<mkdir dir="${build.dir}/ant" />
+		<mkdir dir="${build.dir}/mail" />
+		<mkdir dir="${build.dir}/content" />
+
+		<!-- let's compile in parallel for no particular reason! -->
+		<parallel failonany="true">
+
+			<!-- all classes -->
+			<javac destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"/>
+
+			<!-- core library -->
+			<javac destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/collections" />
+					<fileset dir="src/uk/ac/warwick/util/concurrency" />
+					<fileset dir="src/uk/ac/warwick/util/core" />
+				</sourcepath>
+			</javac>
+
+			<!-- web library -->
+			<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/web" />
+				</sourcepath>
+			</javac>
+
+			<!-- httpclient library -->
+			<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/httpclient" />
+				</sourcepath>
+			</javac>
+
+			<!-- web library -->
+			<javac destdir="${build.dir}/hibernate" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/hibernate" />
+				</sourcepath>
+			</javac>
+
+			<!-- ant library -->
+			<javac destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/ant" />
+				</sourcepath>
+			</javac>
+
+			<!-- mail library -->
+			<javac destdir="${build.dir}/mail" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/mail" />
+				</sourcepath>
+			</javac>
+
+			<!-- content library -->
+			<javac destdir="${build.dir}/content" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/content" />
+				</sourcepath>
+			</javac>
+			
+			<!-- Copy freemarker templates into /all and /content -->
+			<copy todir="${build.dir}/all/freemarker">
+				<fileset dir="${src.dir}/freemarker" />
+			</copy>
+
+			<copy todir="${build.dir}/content/freemarker">
+				<fileset dir="${src.dir}/freemarker" />
+			</copy>
+
+			<copy todir="${build.dir}/all/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+			<copy todir="${build.dir}/core/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+
+			<copy todir="${build.dir}/all/">
+				<fileset includes="**/*.rb" dir="${src.dir}" />
+			</copy>
+
+			<copy todir="${build.dir}/content/">
+				<fileset includes="**/*.rb" dir="${src.dir}" />
+			</copy>
+		</parallel>
+	</target>
+
+	<target name="_compiletests">
+		<mkdir dir="${build.dir}/unit-tests" />
+		<!-- unit tests -->
+		<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path" debug="on">
+			<classpath location="${build.dir}/all" />
 		</javac>
-		  
-		<!-- web library -->
-		<javac destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/web" />
-			</sourcepath>
-		</javac>
-		
-		<!-- httpclient library -->
-		<javac destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/httpclient" />
-			</sourcepath>
-		</javac>
-		
-		<!-- web library -->
-		<javac destdir="${build.dir}/hibernate" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/hibernate" />
-			</sourcepath>
-		</javac>
-		
-		<!-- ant library -->
-		<javac destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/ant" />
-			</sourcepath>
-		</javac>
-		
-		<!-- mail library -->
-		<javac destdir="${build.dir}/mail" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
-			<sourcepath>
-				<fileset dir="src/uk/ac/warwick/util/mail" />
-			</sourcepath>
-		</javac>
-		
-	</parallel>  
-  </target>
-	
-  <target name="_compiletests">
-	<mkdir dir="${build.dir}/unit-tests" />  
-	<!-- unit tests -->
-	<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path" debug="on">
-		<classpath location="${build.dir}/all" />
-	</javac>
-  </target>
-  
-  <target name="package">
-  	<copyfile src="META-INF/MANIFEST.MF" dest="${build.dir}/MANIFEST.MF"/>
-  	<replace file="${build.dir}/MANIFEST.MF" token="$VERSION" value="${jar.version}" />
-  	
-    <jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
-    <jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" manifest="${build.dir}/MANIFEST.MF"/>
-    <jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" manifest="${build.dir}/MANIFEST.MF"/>
-  	<jar basedir="${build.dir}/hibernate" destfile="${dist.dir}/${jar.name}-hibernate.jar" manifest="${build.dir}/MANIFEST.MF"/>
-    <jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" manifest="${build.dir}/MANIFEST.MF"/>  
-	<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
-	<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
-	  
-	<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
-  </target>
-	
-  <target name="clean">
-    <delete dir="${dist.dir}"/>
-    <delete dir="${build.dir}"/> 
-  </target>
-	
-  <target name="test" depends="compile,_compiletests">
-    <mkdir dir="${unit-test.report.dir}" />
-    <path id="test.run.class.path">
-      <path refid="external.libs.path" />
-	  <path path="${build.dir}/all" />
-	  <path path="${build.dir}/unit-tests" />
-    </path>
-    <junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="yes" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
-      <classpath refid="test.run.class.path" />
-      <formatter type="xml" />
-      <batchtest todir="${unit-test.report.dir}">
-        <fileset dir="${build.dir}/unit-tests" includes="**/*Test.class" excludes="**/Abstract*.class" />
-      </batchtest>
-    </junit>
-    <fail if="tests.failed" message="Unit tests failed" />
-  </target>
-	
-  <target name="publish">
-	  <!-- setup ivy default configuration with some custom info -->
-      <ivy:configure file="ivysettings.xml" />  
-	  
-	  <ivy:retrieve pattern="${external.libs.dir}/[artifact]/[artifact].[ext]" />
-	  
-	  <antcall target="build-all" />
-	  
-	  <property name="revision" value="${jar.version}"/>
-	  
-	  <ivy:publish 
+
+		<copy todir="${build.dir}/unit-tests/resources">
+			<fileset dir="${test-src.dir}/resources" />
+		</copy>
+	</target>
+
+	<target name="package">
+		<copy file="META-INF/MANIFEST.MF" tofile="${build.dir}/MANIFEST.MF"/>
+		<replace file="${build.dir}/MANIFEST.MF" token="$VERSION" value="${jar.version}" />
+
+		<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/hibernate" destfile="${dist.dir}/${jar.name}-hibernate.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/content" destfile="${dist.dir}/${jar.name}-content.jar" manifest="${build.dir}/MANIFEST.MF"/>
+
+		<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
+		<copy file="WEB-INF/tld/textile.tld" tofile="${dist.dir}/textile.tld" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${dist.dir}"/>
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="test" depends="compile,_compiletests">
+		<mkdir dir="${unit-test.report.dir}" />
+		<path id="test.run.class.path">
+			<path refid="external.libs.path" />
+			<path path="${build.dir}/all" />
+			<path path="${build.dir}/unit-tests" />
+			<pathelement path="${build.dir}/unit-tests/resources" />
+		</path>
+		<junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="yes" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
+			<classpath refid="test.run.class.path" />
+			<formatter type="xml" />
+			<batchtest todir="${unit-test.report.dir}">
+				<fileset dir="${build.dir}/unit-tests" includes="**/*Test.class" excludes="**/Abstract*.class" />
+			</batchtest>
+		</junit>
+		<fail if="tests.failed" message="Unit tests failed" />
+	</target>
+
+	<target name="publish">
+		<!-- setup ivy default configuration with some custom info -->
+		<ivy:configure file="ivysettings.xml" />
+
+		<ivy:retrieve pattern="${external.libs.dir}/[artifact]/[artifact].[ext]" />
+
+		<antcall target="build-all" />
+
+		<property name="revision" value="${jar.version}"/>
+
+		<ivy:publish 
 		   artifactspattern="${dist.dir}/[artifact].[ext]" 
            resolver="dist"
            pubrevision="${revision}" 
            status="release"
 		   overwrite="true"
     	/>
-	  
-	  <!-- Install dependencies to repository -->
-	  <ivy:install
+
+		<!-- Install dependencies to repository -->
+		<ivy:install
 			from="dist"
 		  	to="dist"
 		  	organisation="warwick"
@@ -150,6 +184,6 @@
 		  	transitive="true"
 		    overwrite="true"
 		/>
-  </target>
+	</target>
 
 </project>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test-src"/>
+	<classpathentry excluding="resources/" kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-logging/commons-logging.jar"/>
@@ -31,5 +31,9 @@
 	<classpathentry kind="lib" path="external-libs/javax-mail/javax-mail-1.3.3.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-httpclient/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/hibernate/hibernate3.jar"/>
+	<classpathentry kind="lib" path="external-libs/tagsoup/tagsoup-1.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/freemarker/freemarker-2.3.14.jar" sourcepath="external-libs/src/freemarker-2.3.14-src.zip"/>
+	<classpathentry kind="lib" path="test-src/resources"/>
+	<classpathentry kind="lib" path="external-libs/jruby/jruby-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
