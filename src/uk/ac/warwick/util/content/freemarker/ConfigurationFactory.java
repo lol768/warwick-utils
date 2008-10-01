@@ -4,7 +4,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 
-public final class ConfigurationFactory {
+final class ConfigurationFactory {
 	
 	private static final Configuration configuration;
 	

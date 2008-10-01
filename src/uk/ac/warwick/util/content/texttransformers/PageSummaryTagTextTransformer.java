@@ -29,7 +29,7 @@ public final class PageSummaryTagTextTransformer extends AbstractSquareTagTransf
             public String transform(final String input) {
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {
-                    throw new IllegalStateException("Failed to match lightbox tag, but shouldn't be here if it didn't");
+                    throw new IllegalStateException("Failed to match summary tag, but shouldn't be here if it didn't");
                 }
                 Map<String, Object> parameters = getParameters(matcher);
                 String contents = getContents(matcher);
