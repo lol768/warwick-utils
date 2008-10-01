@@ -10,7 +10,7 @@ import org.xml.sax.Attributes;
 public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     private final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
-            "place", "city", "country-region", "time", "date" });
+            "place", "city", "country-region", "time", "date", "notextile" });
     
     private final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
