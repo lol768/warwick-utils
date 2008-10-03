@@ -1,4 +1,4 @@
-<#assign uniqueId = random.nextInt(1000000) />
+<#assign uniqueId = random.nextInt(1000000)?c />
 
 <form action="http://search.warwick.ac.uk/${index?default("sitebuilder")}/" method="get"> ${label}<br>
 
