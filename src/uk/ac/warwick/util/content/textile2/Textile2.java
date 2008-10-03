@@ -1,13 +1,15 @@
 package uk.ac.warwick.util.content.textile2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.Assert;
 
+import uk.ac.warwick.util.content.textile2.TextileTextTransformer;
+import uk.ac.warwick.util.content.textile2.TransformerFeature;
 import uk.ac.warwick.util.content.textile2.jruby.JRubyTextileTextTransformer;
 import uk.ac.warwick.util.content.texttransformers.BadLinkRemovingTransformer;
 import uk.ac.warwick.util.content.texttransformers.CompositeTextTransformer;
@@ -47,14 +49,15 @@ import uk.ac.warwick.util.content.texttransformers.media.YouTubeMediaUrlHandler;
  */
 public final class Textile2 {
 	
-	public static final List<TransformerFeature> DEFAULT_FEATURESET = Arrays.asList(
-			new TransformerFeature[] { 
-					TransformerFeature.backslashes, TransformerFeature.latex,
-					TransformerFeature.media, TransformerFeature.textilise, 
-					TransformerFeature.removeJsLinks }
-	);
+	public static final EnumSet<TransformerFeature> DEFAULT_FEATURESET = EnumSet.of(
+			TransformerFeature.backslashes, 
+			TransformerFeature.latex,
+			TransformerFeature.media, 
+			TransformerFeature.textilise, 
+			TransformerFeature.removeJsLinks
+		);
 	
-	private final List<TransformerFeature> features;
+	private final EnumSet<TransformerFeature> features;
 
 	private TextTransformer transformer;
 
@@ -66,12 +69,12 @@ public final class Textile2 {
 		this(null, DEFAULT_FEATURESET);
 	}
 	
-	public Textile2(List<TransformerFeature> features) {
+	public Textile2(EnumSet<TransformerFeature> features) {
 		this(null, features);
 	}
 
 	public Textile2(boolean addNoFollow) {
-		List<TransformerFeature> features = new ArrayList<TransformerFeature>(DEFAULT_FEATURESET);
+		EnumSet<TransformerFeature> features = EnumSet.copyOf(DEFAULT_FEATURESET);
 		
 		if (addNoFollow) {
 			features.add(TransformerFeature.noFollowLinks);
@@ -90,7 +93,7 @@ public final class Textile2 {
 		this(textile2ServiceLocation, DEFAULT_FEATURESET);
 	}
 
-	public Textile2(String textile2ServiceLocation, List<TransformerFeature> features) {
+	public Textile2(String textile2ServiceLocation, EnumSet<TransformerFeature> features) {
 		this.features = features;
 		setupTransformers(textile2ServiceLocation);
 	}
@@ -162,8 +165,7 @@ public final class Textile2 {
 	
 			if (jrubyTransformer == null) {
 				// handle being unable to instantiate jruby
-				transformers
-						.add(new TextileTextTransformer(textile2ServiceLocation));
+				transformers.add(new TextileTextTransformer(textile2ServiceLocation));
 			} else {
 				jrubyTransformer.setHardBreaks(true);
 				transformers.add(jrubyTransformer);

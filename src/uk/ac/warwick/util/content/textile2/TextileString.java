@@ -5,6 +5,7 @@
 package uk.ac.warwick.util.content.textile2;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -40,7 +41,7 @@ public class TextileString {
 	
 	private boolean allowJavascriptHandlers = true;
 	
-	private List<TransformerFeature> features = null;
+	private EnumSet<TransformerFeature> features = null;
 
 	public TextileString(final String theTextileText) {
 		this.textileText = theTextileText;
@@ -65,7 +66,7 @@ public class TextileString {
 			
 			if (features != null) {
 				if (isAddNoFollow() && !features.contains(TransformerFeature.noFollowLinks)) {
-					features = new ArrayList<TransformerFeature>(features);
+					features = EnumSet.copyOf(features);
 					features.add(TransformerFeature.noFollowLinks);
 				}
 				
@@ -222,11 +223,11 @@ public class TextileString {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
 	}
 
-	public List<TransformerFeature> getFeatures() {
+	public EnumSet<TransformerFeature> getFeatures() {
 		return features;
 	}
 
-	public void setFeatures(List<TransformerFeature> features) {
+	public void setFeatures(EnumSet<TransformerFeature> features) {
 		this.features = features;
 	}
 }
