@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.content.textile2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,15 @@ import uk.ac.warwick.util.content.texttransformers.media.YouTubeMediaUrlHandler;
  * @author Mat Mannion
  */
 public final class Textile2 {
+	
+	public static final List<TransformerFeature> DEFAULT_FEATURESET = Arrays.asList(
+			new TransformerFeature[] { 
+					TransformerFeature.backslashes, TransformerFeature.latex,
+					TransformerFeature.media, TransformerFeature.textilise, 
+					TransformerFeature.removeJsLinks }
+	);
+	
+	private final List<TransformerFeature> features;
 
 	private TextTransformer transformer;
 
@@ -53,11 +63,23 @@ public final class Textile2 {
 	 * 
 	 */
 	public Textile2() {
-		this(null);
+		this(null, DEFAULT_FEATURESET);
+	}
+	
+	public Textile2(List<TransformerFeature> features) {
+		this(null, features);
 	}
 
 	public Textile2(boolean addNoFollow) {
-		this(null, addNoFollow);
+		List<TransformerFeature> features = new ArrayList<TransformerFeature>(DEFAULT_FEATURESET);
+		
+		if (addNoFollow) {
+			features.add(TransformerFeature.noFollowLinks);
+		}
+		
+		this.features = features;
+		
+		setupTransformers(null);
 	}
 
 	/**
@@ -65,81 +87,95 @@ public final class Textile2 {
 	 * 
 	 */
 	public Textile2(String textile2ServiceLocation) {
-		this(textile2ServiceLocation, false);
+		this(textile2ServiceLocation, DEFAULT_FEATURESET);
 	}
 
-	public Textile2(String textile2ServiceLocation, boolean addNoFollow) {
-		setupTransformers(textile2ServiceLocation, addNoFollow);
+	public Textile2(String textile2ServiceLocation, List<TransformerFeature> features) {
+		this.features = features;
+		setupTransformers(textile2ServiceLocation);
 	}
 
 	/**
 	 * @param textile2ServiceLocation
 	 */
-	private void setupTransformers(String textile2ServiceLocation,
-			boolean addNoFollow) {
+	private void setupTransformers(String textile2ServiceLocation) {
 		List<TextTransformer> transformers = new ArrayList<TextTransformer>();
-
-		Assert.isTrue(
-				System.getProperty("textile.media.mp3WimpyPlayerLocation") != null
-	  		 || System.getProperty("textile.media.mp3AlternatePlayerLocation") != null,
-			"Properties textile.media.mp3WimpyPlayerLocation and " +
-			"textile.media.mp3AlternatePlayerLocation are both not set");
-		
-		Assert.notNull(System.getProperty("textile.media.quicktimePreviewImage"), "textile.media.quicktimePreviewImage is not set");
-		Assert.notNull(System.getProperty("textile.media.windowsMediaPreviewImage"), "textile.media.windowsMediaPreviewImage is not set");
-		Assert.notNull(System.getProperty("textile.media.flvPlayerLocation"), "textile.media.flvPlayerLocation is not set");
-		Assert.notNull(System.getProperty("textile.latex.location"), "textile.latex.location is not set");
-
-		Map<String, MediaUrlHandler> mediaHandlers = new HashMap<String, MediaUrlHandler>();
-		mediaHandlers.put("audio", new AudioMediaUrlHandler(System
-				.getProperty("textile.media.mp3WimpyPlayerLocation"), System
-				.getProperty("textile.media.mp3AlternatePlayerLocation")));
-		mediaHandlers.put("google", new GoogleMediaUrlHandler());
-		mediaHandlers.put("youtube", new YouTubeMediaUrlHandler());
-		mediaHandlers.put("quicktime", new QuickTimeMediaUrlHandler(System
-				.getProperty("textile.media.quicktimePreviewImage")));
-		mediaHandlers.put("avi", new AviMediaUrlHandler(System
-				.getProperty("textile.media.windowsMediaPreviewImage")));
-		mediaHandlers.put("flv", new FlvMediaUrlHandler(System
-				.getProperty("textile.media.flvPlayerLocation")));
-		mediaHandlers.put("flash", new StandardFlashMediaUrlHandler());
-		mediaHandlers.put("revver", new RevverMediaUrlHandler());
-		mediaHandlers.put("metacafe", new MetacafeMediaUrlHandler());
-		mediaHandlers.put("jumpcut", new JumpcutMediaUrlHandler());
-		mediaHandlers.put("guba", new GubaMediaUrlHandler());
-		mediaHandlers.put("ifilm", new IFilmMediaUrlHandler());
-		mediaHandlers.put("selfcasttv", new SelfcastTVMediaUrlHandler());
-		mediaHandlers.put("grouper", new GrouperMediaUrlHandler());
-		mediaHandlers.put("eyespot", new EyespotMediaUrlHandler());
-		mediaHandlers.put("vimeo", new VimeoMediaUrlHandler());
-		mediaHandlers.put("myspace", new MySpaceMediaUrlHandler());
 
 		// preprocess
 		transformers.add(new TidyLineBreaksTransformer());
 		transformers.add(new EscapeHtmlCommentsTransformer());
 		transformers.add(new EscapeScriptTagsTransformer());
-		transformers.add(new CustomEscapingTransformer());
+		
+		if (features.contains(TransformerFeature.backslashes)) {
+			transformers.add(new CustomEscapingTransformer());
+		}
+		
 		transformers.add(new EntityConvertingTransformer());
-		transformers.add(new MediaUrlTransformer(mediaHandlers));
-		transformers.add(new LatexTextTransformer(System.getProperty("textile.latex.location")));
+		
+		if (features.contains(TransformerFeature.media)) {
+			Assert.isTrue(
+					System.getProperty("textile.media.mp3WimpyPlayerLocation") != null
+		  		 || System.getProperty("textile.media.mp3AlternatePlayerLocation") != null,
+				"Properties textile.media.mp3WimpyPlayerLocation and " +
+				"textile.media.mp3AlternatePlayerLocation are both not set");
+			
+			Assert.notNull(System.getProperty("textile.media.quicktimePreviewImage"), "textile.media.quicktimePreviewImage is not set");
+			Assert.notNull(System.getProperty("textile.media.windowsMediaPreviewImage"), "textile.media.windowsMediaPreviewImage is not set");
+			Assert.notNull(System.getProperty("textile.media.flvPlayerLocation"), "textile.media.flvPlayerLocation is not set");
 
-		// process
-		JRubyTextileTextTransformer jrubyTransformer = JRubyTextileTextTransformer
-				.getInstance();
+			Map<String, MediaUrlHandler> mediaHandlers = new HashMap<String, MediaUrlHandler>();
+			mediaHandlers.put("audio", new AudioMediaUrlHandler(System
+					.getProperty("textile.media.mp3WimpyPlayerLocation"), System
+					.getProperty("textile.media.mp3AlternatePlayerLocation")));
+			mediaHandlers.put("google", new GoogleMediaUrlHandler());
+			mediaHandlers.put("youtube", new YouTubeMediaUrlHandler());
+			mediaHandlers.put("quicktime", new QuickTimeMediaUrlHandler(System
+					.getProperty("textile.media.quicktimePreviewImage")));
+			mediaHandlers.put("avi", new AviMediaUrlHandler(System
+					.getProperty("textile.media.windowsMediaPreviewImage")));
+			mediaHandlers.put("flv", new FlvMediaUrlHandler(System
+					.getProperty("textile.media.flvPlayerLocation")));
+			mediaHandlers.put("flash", new StandardFlashMediaUrlHandler());
+			mediaHandlers.put("revver", new RevverMediaUrlHandler());
+			mediaHandlers.put("metacafe", new MetacafeMediaUrlHandler());
+			mediaHandlers.put("jumpcut", new JumpcutMediaUrlHandler());
+			mediaHandlers.put("guba", new GubaMediaUrlHandler());
+			mediaHandlers.put("ifilm", new IFilmMediaUrlHandler());
+			mediaHandlers.put("selfcasttv", new SelfcastTVMediaUrlHandler());
+			mediaHandlers.put("grouper", new GrouperMediaUrlHandler());
+			mediaHandlers.put("eyespot", new EyespotMediaUrlHandler());
+			mediaHandlers.put("vimeo", new VimeoMediaUrlHandler());
+			mediaHandlers.put("myspace", new MySpaceMediaUrlHandler());
+		
+			transformers.add(new MediaUrlTransformer(mediaHandlers));
+		}
+		
+		if (features.contains(TransformerFeature.latex)) {
+			Assert.notNull(System.getProperty("textile.latex.location"), "textile.latex.location is not set");
+			transformers.add(new LatexTextTransformer(System.getProperty("textile.latex.location")));
+		}
 
-		if (jrubyTransformer == null) {
-			// handle being unable to instantiate jruby
-			transformers
-					.add(new TextileTextTransformer(textile2ServiceLocation));
-		} else {
-			jrubyTransformer.setHardBreaks(true);
-			transformers.add(jrubyTransformer);
+		if (features.contains(TransformerFeature.textilise)) {
+			// process
+			JRubyTextileTextTransformer jrubyTransformer = JRubyTextileTextTransformer
+					.getInstance();
+	
+			if (jrubyTransformer == null) {
+				// handle being unable to instantiate jruby
+				transformers
+						.add(new TextileTextTransformer(textile2ServiceLocation));
+			} else {
+				jrubyTransformer.setHardBreaks(true);
+				transformers.add(jrubyTransformer);
+			}
 		}
 
 		// postprocess
-		transformers.add(new BadLinkRemovingTransformer());
+		if (features.contains(TransformerFeature.removeJsLinks)) {
+			transformers.add(new BadLinkRemovingTransformer());
+		}
 
-		if (addNoFollow) {
+		if (features.contains(TransformerFeature.noFollowLinks)) {
 			transformers.add(new NoFollowLinkTransformer());
 		}
 

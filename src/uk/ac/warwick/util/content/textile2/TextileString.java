@@ -4,6 +4,8 @@
  */
 package uk.ac.warwick.util.content.textile2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,8 @@ public class TextileString {
 	private boolean addNoFollow;
 	
 	private boolean allowJavascriptHandlers = true;
+	
+	private List<TransformerFeature> features = null;
 
 	public TextileString(final String theTextileText) {
 		this.textileText = theTextileText;
@@ -57,7 +61,19 @@ public class TextileString {
 			TextileLite textile = new TextileLite();
 			converted = textile.process(textileText);
 		} else {
-			Textile2 textile = new Textile2(isAddNoFollow());
+			Textile2 textile;
+			
+			if (features != null) {
+				if (isAddNoFollow() && !features.contains(TransformerFeature.noFollowLinks)) {
+					features = new ArrayList<TransformerFeature>(features);
+					features.add(TransformerFeature.noFollowLinks);
+				}
+				
+				textile = new Textile2(features);
+			} else {
+				textile = new Textile2(isAddNoFollow());
+			}
+						
 			try {
 				converted = textile.process(textileText);
 			} catch (IllegalStateException e) {
@@ -204,5 +220,13 @@ public class TextileString {
 
 	public void setAllowJavascriptHandlers(boolean allowJavascriptHandlers) {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
+	}
+
+	public List<TransformerFeature> getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(List<TransformerFeature> features) {
+		this.features = features;
 	}
 }
