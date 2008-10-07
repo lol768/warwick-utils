@@ -24,6 +24,8 @@ public final class JSMinFilter implements TokenFilter.Filter {
         try {
             result = new JsminPackStrategy().pack(new ByteArrayInputStream(input.getBytes()));
         } catch (PackException e) {
+        	e.fillInStackTrace();
+        	e.printStackTrace(System.err);
             result = input;
         }
 
