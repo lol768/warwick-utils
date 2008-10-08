@@ -29,6 +29,9 @@ public class ShrinkSafe {
 	private static final int EXITCODE_RUNTIME_ERROR = 3;
 	private static SecurityProxy securityImpl;
 	private ToolErrorReporter errorReporter;
+	
+	private boolean interpreted;
+
 
 	static {
 		//TODO is this necessary for us? I'm really not sure.
@@ -38,6 +41,9 @@ public class ShrinkSafe {
 	public String compress(String script) {
 		try {
 			Context context = Context.enter();
+			if (interpreted) {
+				context.setOptimizationLevel(-1);
+			}
 			Scriptable scope = context.initStandardObjects();
 			return compressScript(context, scope, script, null);
 		} finally {
@@ -85,6 +91,19 @@ public class ShrinkSafe {
 			Context.reportError(msg);
 		}
 		return null;
+	}
+	
+	public boolean isInterpreted() {
+		return interpreted;
+	}
+
+	/**
+	 * If set to true, optimization level will be set to -1
+ 	 * which should disable compilation and just interpret
+ 	 * the script directly.
+	 */
+	public void setInterpreted(boolean interpreted) {
+		this.interpreted = interpreted;
 	}
 
 	/**
