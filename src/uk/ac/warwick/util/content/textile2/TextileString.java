@@ -4,9 +4,7 @@
  */
 package uk.ac.warwick.util.content.textile2;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 

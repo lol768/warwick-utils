@@ -35,5 +35,6 @@
 	<classpathentry kind="lib" path="external-libs/freemarker/freemarker-2.3.14.jar" sourcepath="external-libs/src/freemarker-2.3.14-src.zip"/>
 	<classpathentry kind="lib" path="test-src/resources"/>
 	<classpathentry kind="lib" path="external-libs/jruby/jruby-1.1.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/shrinksafe/custom_rhino.jar" sourcepath="/rhino"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

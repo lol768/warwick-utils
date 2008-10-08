@@ -2,6 +2,7 @@ package uk.ac.warwick.util.ant;
 
 import java.io.ByteArrayInputStream;
 
+import net.sf.packtag.implementation.JSMin;
 import net.sf.packtag.implementation.JsminPackStrategy;
 import net.sf.packtag.strategy.PackException;
 
