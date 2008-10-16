@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public final class VimeoMediaUrlHandler extends AbstractFlashPlayerMediaUrlHandler {
     
-    private static final Pattern PATTERN = Pattern.compile("http://(?:www\\.)?vimeo.com/clip:(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile("http://(?:www\\.)?vimeo.com/(?:clip:)?(\\d+)", Pattern.CASE_INSENSITIVE);
     
     private static final ThreadLocal<String> VIDEO_ID = new ThreadLocal<String>();
     
@@ -20,6 +20,6 @@ public final class VimeoMediaUrlHandler extends AbstractFlashPlayerMediaUrlHandl
 
     @Override
     public String getFlashUrl(final String url) {
-        return "http://web1.vimeo.com/moogaloop.swf?clip_id=" + VIDEO_ID.get();
+        return "http://vimeo.com/moogaloop.swf?clip_id=" + VIDEO_ID.get();
     }
 }
