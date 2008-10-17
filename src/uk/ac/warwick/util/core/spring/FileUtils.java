@@ -1,10 +1,12 @@
-package uk.ac.warwick.util.core;
+package uk.ac.warwick.util.core.spring;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
+
+import uk.ac.warwick.util.core.StringUtils;
 
 /**
  * Singleton utility class.

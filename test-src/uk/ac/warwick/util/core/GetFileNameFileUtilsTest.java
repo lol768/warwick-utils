@@ -2,6 +2,8 @@ package uk.ac.warwick.util.core;
 
 import org.jmock.MockObjectTestCase;
 
+import uk.ac.warwick.util.core.spring.FileUtils;
+
 public final class GetFileNameFileUtilsTest extends MockObjectTestCase {
     public void testWithRoot() {
         String url = "/";

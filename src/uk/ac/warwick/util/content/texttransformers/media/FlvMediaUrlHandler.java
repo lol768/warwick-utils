@@ -3,8 +3,6 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 public final class FlvMediaUrlHandler extends MediaUrlHandler {
 	
 	private final String playerLocation;
@@ -12,7 +10,9 @@ public final class FlvMediaUrlHandler extends MediaUrlHandler {
 	public FlvMediaUrlHandler(String playerLocation) {
 		this.playerLocation = playerLocation;
 		
-		Assert.notNull(playerLocation, "FLV Player location must be set");
+		if (playerLocation == null) {
+			throw new IllegalStateException("FLV Player location must be set");
+		}
 	}
 
     /* An extension matching one within, so that I can use its powers

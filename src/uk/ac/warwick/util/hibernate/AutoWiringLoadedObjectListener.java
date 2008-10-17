@@ -8,6 +8,9 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import uk.ac.warwick.util.hibernate.AnnotationFilteringEventListener.LoadedObjectListener;
 import uk.ac.warwick.util.hibernate.AnnotationFilteringEventListener.SavedOrUpdatedObjectListener;
 
+/**
+ * @requires Spring
+ */
 public final class AutoWiringLoadedObjectListener implements LoadedObjectListener, SavedOrUpdatedObjectListener, BeanFactoryAware  {
     private AutowireCapableBeanFactory beanFactory;
 

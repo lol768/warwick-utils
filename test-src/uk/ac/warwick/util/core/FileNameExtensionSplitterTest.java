@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.core;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.core.spring.FileUtils;
 
 public final class FileNameExtensionSplitterTest extends TestCase {
 	public void testNoExtension() {

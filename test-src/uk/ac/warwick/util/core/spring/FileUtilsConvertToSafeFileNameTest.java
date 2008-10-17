@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.core;
+package uk.ac.warwick.util.core.spring;
 
 import junit.framework.TestCase;
 

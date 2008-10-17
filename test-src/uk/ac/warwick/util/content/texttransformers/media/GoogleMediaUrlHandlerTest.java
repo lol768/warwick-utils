@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.content.texttransformers.media;
 
 import junit.framework.TestCase;
-import uk.ac.warwick.util.content.texttransformers.media.GoogleMediaUrlHandler;
 
 public class GoogleMediaUrlHandlerTest extends TestCase {
     public void testItRecognisesGoogleDotCom() throws Exception {

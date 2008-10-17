@@ -1,14 +1,10 @@
 package uk.ac.warwick.util.web.tags;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.BodyContent;
+import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockBodyContent;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockJspWriter;
 import org.springframework.mock.web.MockPageContext;
-
-import junit.framework.TestCase;
 
 public class CompressContentTagTest extends TestCase {
 	/**

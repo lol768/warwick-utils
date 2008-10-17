@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -20,7 +19,9 @@ public final class FreeMarkerRenderingUtils {
     public static StringWriter processTemplate(final String templateName, final Map<String, Object> model) {
     	Configuration configuration = ConfigurationFactory.getConfiguration();
     	
-        Assert.notNull(configuration, "Configuration cannot be null");
+        if (configuration == null) {
+        	throw new IllegalStateException("Configuration cannot be null");
+        }
         
         Template template = null;
         try {

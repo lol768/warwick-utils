@@ -4,8 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.web.util.HtmlUtils;
 import org.xml.sax.Attributes;
+
+import uk.ac.warwick.util.core.HtmlUtils;
 
 /**
  * Default implementation

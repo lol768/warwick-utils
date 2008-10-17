@@ -22,6 +22,7 @@ import uk.ac.warwick.util.core.StringUtils;
  * A service to send mail asynchronously.
  * 
  * @author Mat Mannion
+ * @requires Spring
  */
 public final class AsynchronousWarwickMailSender implements WarwickMailSender {
     

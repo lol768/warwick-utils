@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import uk.ac.warwick.util.content.textile2.TextileTextTransformer;
 import uk.ac.warwick.util.content.textile2.TransformerFeature;
 import uk.ac.warwick.util.content.textile2.jruby.JRubyTextileTextTransformer;
@@ -116,15 +114,24 @@ public final class Textile2 {
 		transformers.add(new EntityConvertingTransformer());
 		
 		if (features.contains(TransformerFeature.media)) {
-			Assert.isTrue(
+			if (!(
 					System.getProperty("textile.media.mp3WimpyPlayerLocation") != null
-		  		 || System.getProperty("textile.media.mp3AlternatePlayerLocation") != null,
-				"Properties textile.media.mp3WimpyPlayerLocation and " +
+		  		 || System.getProperty("textile.media.mp3AlternatePlayerLocation") != null)) {
+			        	throw new IllegalStateException("Properties textile.media.mp3WimpyPlayerLocation and " +
 				"textile.media.mp3AlternatePlayerLocation are both not set");
+			}
 			
-			Assert.notNull(System.getProperty("textile.media.quicktimePreviewImage"), "textile.media.quicktimePreviewImage is not set");
-			Assert.notNull(System.getProperty("textile.media.windowsMediaPreviewImage"), "textile.media.windowsMediaPreviewImage is not set");
-			Assert.notNull(System.getProperty("textile.media.flvPlayerLocation"), "textile.media.flvPlayerLocation is not set");
+			if (System.getProperty("textile.media.quicktimePreviewImage") == null) {
+				throw new IllegalStateException("textile.media.quicktimePreviewImage is not set");
+			}
+			
+			if (System.getProperty("textile.media.windowsMediaPreviewImage") == null) {
+				throw new IllegalStateException("textile.media.windowsMediaPreviewImage is not set");
+			}
+			
+			if (System.getProperty("textile.media.flvPlayerLocation") == null) {
+				throw new IllegalStateException("textile.media.flvPlayerLocation is not set");
+			}
 
 			Map<String, MediaUrlHandler> mediaHandlers = new HashMap<String, MediaUrlHandler>();
 			mediaHandlers.put("audio", new AudioMediaUrlHandler(System
@@ -154,7 +161,10 @@ public final class Textile2 {
 		}
 		
 		if (features.contains(TransformerFeature.latex)) {
-			Assert.notNull(System.getProperty("textile.latex.location"), "textile.latex.location is not set");
+			if (System.getProperty("textile.latex.location") == null) {
+				throw new IllegalStateException("textile.latex.location is not set");
+			}
+			
 			transformers.add(new LatexTextTransformer(System.getProperty("textile.latex.location")));
 		}
 

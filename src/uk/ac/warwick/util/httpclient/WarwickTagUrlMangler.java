@@ -3,9 +3,8 @@ package uk.ac.warwick.util.httpclient;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.springframework.util.StringUtils;
-
 import uk.ac.warwick.userlookup.User;
+import uk.ac.warwick.util.core.StringUtils;
 
 public class WarwickTagUrlMangler {
 

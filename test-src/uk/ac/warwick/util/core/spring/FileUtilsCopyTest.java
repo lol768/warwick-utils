@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.core;
+package uk.ac.warwick.util.core.spring;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.AbstractFileBasedTest;
+import uk.ac.warwick.util.core.StringUtils;
 
 public final class FileUtilsCopyTest extends AbstractFileBasedTest {
     public void testCopyFile() throws IOException {

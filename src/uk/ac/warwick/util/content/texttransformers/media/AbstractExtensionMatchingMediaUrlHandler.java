@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.content.texttransformers.media;
 
-import uk.ac.warwick.util.core.FileUtils;
+import uk.ac.warwick.util.core.spring.FileUtils;
 
 public abstract class AbstractExtensionMatchingMediaUrlHandler extends MediaUrlHandler {
     

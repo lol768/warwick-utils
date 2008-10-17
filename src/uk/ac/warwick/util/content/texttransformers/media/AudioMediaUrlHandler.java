@@ -3,8 +3,7 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import uk.ac.warwick.util.core.StringUtils;
 
 public final class AudioMediaUrlHandler extends AbstractExtensionMatchingMediaUrlHandler {
 	
@@ -16,7 +15,9 @@ public final class AudioMediaUrlHandler extends AbstractExtensionMatchingMediaUr
 		this.playerLocation = wimpyPlayerLocation;
 		this.alternatePlayerLocation = onePixelOutPlayerLocation;
 		
-		Assert.isTrue(playerLocation != null || alternatePlayerLocation != null, "Either Wimpy player location or one pixel out player location must be set");
+		if (!(playerLocation != null || alternatePlayerLocation != null)) {
+			throw new IllegalStateException("Either Wimpy player location or one pixel out player location must be set");
+		}
 	}
 
     protected String[] getSupportedExtensions() {

@@ -18,6 +18,7 @@
 	<target name="compile">
 		<mkdir dir="${build.dir}/all" />
 		<mkdir dir="${build.dir}/core" />
+		<mkdir dir="${build.dir}/core-nospring" />
 		<mkdir dir="${build.dir}/web" />
 		<mkdir dir="${build.dir}/hibernate" />
 		<mkdir dir="${build.dir}/httpclient" />
@@ -37,6 +38,15 @@
 					<fileset dir="src/uk/ac/warwick/util/collections" />
 					<fileset dir="src/uk/ac/warwick/util/concurrency" />
 					<fileset dir="src/uk/ac/warwick/util/core" />
+				</sourcepath>
+			</javac>
+			
+			<!-- core, but no spring -->
+			<javac destdir="${build.dir}/core-nospring" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on">
+				<sourcepath>
+					<fileset dir="src/uk/ac/warwick/util/collections" />
+					<fileset dir="src/uk/ac/warwick/util/concurrency" />
+					<fileset dir="src/uk/ac/warwick/util/core" excludes="src/uk/ac/warwick/util/core/spring" />
 				</sourcepath>
 			</javac>
 
@@ -93,6 +103,7 @@
 
 			<copy todir="${build.dir}/all/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
 			<copy todir="${build.dir}/core/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+			<copy todir="${build.dir}/core-nospring/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
 
 			<copy todir="${build.dir}/all/">
 				<fileset includes="**/*.rb" dir="${src.dir}" />
@@ -122,6 +133,7 @@
 
 		<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/core" destfile="${dist.dir}/${jar.name}-core.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/core-nospring" destfile="${dist.dir}/${jar.name}-core-nospring.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/web" destfile="${dist.dir}/${jar.name}-web.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/hibernate" destfile="${dist.dir}/${jar.name}-hibernate.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/mail" destfile="${dist.dir}/${jar.name}-mail.jar" manifest="${build.dir}/MANIFEST.MF"/>

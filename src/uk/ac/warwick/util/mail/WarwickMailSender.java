@@ -9,6 +9,7 @@ import org.springframework.mail.SimpleMailMessage;
  * A service to send email.
  * 
  * @author Mat Mannion
+ * @requires Spring
  */
 public interface WarwickMailSender {
     MimeMessage createMimeMessage();

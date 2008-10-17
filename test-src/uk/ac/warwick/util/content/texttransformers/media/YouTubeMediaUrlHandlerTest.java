@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import junit.framework.TestCase;
-import uk.ac.warwick.util.content.texttransformers.media.YouTubeMediaUrlHandler;
 
 public class YouTubeMediaUrlHandlerTest extends TestCase {
     public void testBasicUrl() throws MalformedURLException {

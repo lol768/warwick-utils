@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.jmock.MockObjectTestCase;
 
-import uk.ac.warwick.util.core.FileUtils;
+import uk.ac.warwick.util.core.spring.FileUtils;
 
 public abstract class AbstractFileBasedTest extends MockObjectTestCase {
     protected File root;

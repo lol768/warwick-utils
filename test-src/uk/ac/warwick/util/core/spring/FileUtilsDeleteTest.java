@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.core;
+package uk.ac.warwick.util.core.spring;
 
 import java.io.File;
 import java.io.IOException;

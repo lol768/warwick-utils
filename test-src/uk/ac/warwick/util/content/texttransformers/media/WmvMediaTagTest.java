@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers.media;
 
-import uk.ac.warwick.util.content.textile2.Textile2;
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.textile2.Textile2;
 
 public class WmvMediaTagTest extends TestCase {
 	

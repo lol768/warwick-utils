@@ -3,6 +3,8 @@ package uk.ac.warwick.util.core;
 import java.io.File;
 import java.io.IOException;
 
+import uk.ac.warwick.util.core.spring.FileUtils;
+
 public final class FileSystemHelperImpl implements FileSystemHelper {
     public boolean move(final File source, final File target) throws IOException {
         if (source.renameTo(target)) {

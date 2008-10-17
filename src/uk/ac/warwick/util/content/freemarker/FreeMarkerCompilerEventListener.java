@@ -25,6 +25,8 @@ import freemarker.template.Configuration;
  * @todo This could be improved because it requires a copy of the Resource.  Unfortunately we cannot
  * simply ask the configuration because the TemplateLoader isn't clever enough to give us a list
  * of files :(
+ * 
+ * @requires Spring
  *
  */
 public final class FreeMarkerCompilerEventListener implements ApplicationListener, ApplicationContextAware {

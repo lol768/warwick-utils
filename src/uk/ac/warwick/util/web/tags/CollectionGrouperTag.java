@@ -3,16 +3,15 @@ package uk.ac.warwick.util.web.tags;
 import java.util.Collection;
 import java.util.Map;
 
-import org.springframework.web.servlet.tags.RequestContextAwareTag;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import uk.ac.warwick.util.collections.CollectionUtils;
 
 /**
  * <p>Groups the specified collection by the value of the specified parameter.</p>
  * @author yatesco
- *
  */
-public final class CollectionGrouperTag extends RequestContextAwareTag {
+public final class CollectionGrouperTag extends TagSupport {
     private static final long serialVersionUID = -7357664897018370348L;
     private static final String DEFAULT_MAP_ATTRIBUTE_NAME = "result";	// name of page attribute
     private Collection<?> objects;
