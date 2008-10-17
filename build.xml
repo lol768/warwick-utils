@@ -140,6 +140,8 @@
 		<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/content" destfile="${dist.dir}/${jar.name}-content.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		
+		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${src.dir}" />
 
 		<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
 		<copy file="WEB-INF/tld/textile.tld" tofile="${dist.dir}/textile.tld" />

@@ -6,6 +6,7 @@
 	<!-- Need to work on a few things here but should all work ok -->
 	<configurations>
 		<conf name="core" description="only core utility classes"/>
+		<conf name="core-nospring" description="only core utility classes (no dependency on spring)"/>
 		<conf name="httpclient" description="http method executor"/>
 		<conf name="ant" description="ant tasks"/>
 		<conf name="web" extends="core,web-tld" description="core + jstl tags"/>
@@ -20,6 +21,7 @@
 		<artifact name="warwickutils-all" type="jar" conf="default"/>
 		<artifact name="warwickutils-ant" type="jar" conf="ant"/>
 		<artifact name="warwickutils-core" type="jar" conf="core"/>
+		<artifact name="warwickutils-core-nospring" type="jar" conf="core-nospring"/>
 		<artifact name="warwickutils-httpclient" type="jar" conf="httpclient"/>
 		<artifact name="warwickutils-mail" type="jar" conf="mail"/>
 		<artifact name="warwickutils-web" type="jar" conf="web"/>
