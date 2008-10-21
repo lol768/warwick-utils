@@ -10,6 +10,8 @@ public class CompressContentTag extends BodyTagSupport {
     
     private static final long serialVersionUID = -8639817913739561015L;
 
+    private boolean removeInterTagSpaces;
+    
     public final int doEndTag() throws JspException {
 
         String body = getBodyContent().getString().trim();
@@ -25,6 +27,10 @@ public class CompressContentTag extends BodyTagSupport {
             
             String results = sb.toString();
             results = results.replaceAll("\\s{2,}", " ");
+            
+            if (removeInterTagSpaces) {
+            	results = results.replace("> <", "><");
+            }
 
             try {
                 pageContext.getOut().write(results);
@@ -36,5 +42,13 @@ public class CompressContentTag extends BodyTagSupport {
         return EVAL_PAGE;
 
     }
+
+	public boolean isRemoveInterTagSpaces() {
+		return removeInterTagSpaces;
+	}
+
+	public void setRemoveInterTagSpaces(boolean removeInterTagSpaces) {
+		this.removeInterTagSpaces = removeInterTagSpaces;
+	}
 
 }
