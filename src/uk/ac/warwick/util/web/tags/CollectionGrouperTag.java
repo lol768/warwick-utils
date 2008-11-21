@@ -18,7 +18,8 @@ public final class CollectionGrouperTag extends TagSupport {
     private String property;
     private String var = DEFAULT_MAP_ATTRIBUTE_NAME;
 
-    protected int doStartTagInternal() throws Exception {
+    @Override
+	public int doStartTag() {
         Map<String, ?> map = CollectionUtils.groupByProperty(objects, property);
         pageContext.setAttribute(var, map);
         return EVAL_BODY_INCLUDE;
