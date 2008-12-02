@@ -216,7 +216,9 @@ public final class FileUtils {
     /**
      * Strip all invalid characters from the specified spring.
      * 
-     * @todo What makes it safe?
+     * The safety refers to the fact that only ANSI characters remain so
+     * there is no need to worry about escaping, and no slashes
+     * are allowed to avoid any problems with path handling.
      */
     public static String convertToSafeFileName(final String originalName) {
         if (!StringUtils.hasText(originalName)) {

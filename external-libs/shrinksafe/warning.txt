@@ -1,3 +1,0 @@
-This jar is a patched version of Rhino. If this is loaded into the same
-classloader as the real Rhino, you'll probably get problems. So just
-don't load them into the same classloader.
