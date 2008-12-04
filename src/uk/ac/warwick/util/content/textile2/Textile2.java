@@ -129,7 +129,7 @@ public final class Textile2 {
 				throw new IllegalStateException("textile.media.windowsMediaPreviewImage is not set");
 			}
 			
-			if (System.getProperty("textile.media.flvPlayerLocation") == null) {
+			if (System.getProperty("textile.media.flvPlayerLocation") == null && System.getProperty("textile.media.newFlvPlayerLocation") == null) {
 				throw new IllegalStateException("textile.media.flvPlayerLocation is not set");
 			}
 
@@ -144,7 +144,8 @@ public final class Textile2 {
 			mediaHandlers.put("avi", new AviMediaUrlHandler(System
 					.getProperty("textile.media.windowsMediaPreviewImage")));
 			mediaHandlers.put("flv", new FlvMediaUrlHandler(System
-					.getProperty("textile.media.flvPlayerLocation")));
+					.getProperty("textile.media.flvPlayerLocation"), System
+					.getProperty("textile.media.newFlvPlayerLocation")));
 			mediaHandlers.put("flash", new StandardFlashMediaUrlHandler());
 			mediaHandlers.put("revver", new RevverMediaUrlHandler());
 			mediaHandlers.put("metacafe", new MetacafeMediaUrlHandler());

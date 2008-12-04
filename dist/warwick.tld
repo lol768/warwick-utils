@@ -80,6 +80,11 @@
 		<name>compress</name>
 		<tag-class>uk.ac.warwick.util.web.tags.CompressContentTag</tag-class>
 		<description> Compresses the contents of the tag onto a single line </description>
+		<attribute>
+			<name>removeInterTagSpaces</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	
 	<tag>

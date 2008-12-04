@@ -3,14 +3,17 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FlvMediaUrlHandler extends MediaUrlHandler {
+public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandler {
 	
 	private final String playerLocation;
 	
-	public FlvMediaUrlHandler(String playerLocation) {
+	private final String newPlayerLocation;
+	
+	public FlvMediaUrlHandler(String playerLocation, String newPlayerLocation) {
 		this.playerLocation = playerLocation;
+		this.newPlayerLocation = newPlayerLocation;
 		
-		if (playerLocation == null) {
+		if (playerLocation == null && newPlayerLocation == null) {
 			throw new IllegalStateException("FLV Player location must be set");
 		}
 	}
@@ -27,16 +30,22 @@ public final class FlvMediaUrlHandler extends MediaUrlHandler {
         }
     };
     
-    @Override
     public boolean recognises(final String url) {
         return (delegate.recognises(url) || url.startsWith("rmtp://"));
     }
     
-    @Override
-    public String getHtml(final String url, final Map<String,Object> parameters) {
+    public String getHtmlInner(final String url, final Map<String,Object> parameters) {
         Map<String,Object> model = new HashMap<String,Object>();
         model.put("url", url);
-        model.put("playerLocation", playerLocation);
+        
+        if (newPlayerLocation != null) {
+        	model.put("newPlayer", true);
+        	model.put("playerLocation", newPlayerLocation);
+        } else {
+        	model.put("newPlayer", false);
+        	model.put("playerLocation", playerLocation);
+        }
+        
         model.putAll(parameters);
         if (!parameters.containsKey("previewimage")) {
             model.put("previewimage", "");

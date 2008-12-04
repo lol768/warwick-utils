@@ -19,7 +19,7 @@ public class ListOfUrlsForHandlingTest extends TestCase {
         handlers.put("youtube", new YouTubeMediaUrlHandler());
         handlers.put("quicktime", new QuickTimeMediaUrlHandler(""));
         handlers.put("avi", new AviMediaUrlHandler(""));
-        handlers.put("flv", new FlvMediaUrlHandler(""));
+        handlers.put("flv", new FlvMediaUrlHandler("", ""));
         handlers.put("flash", new StandardFlashMediaUrlHandler());
         handlers.put("revver", new RevverMediaUrlHandler());
         handlers.put("metacafe", new MetacafeMediaUrlHandler());
