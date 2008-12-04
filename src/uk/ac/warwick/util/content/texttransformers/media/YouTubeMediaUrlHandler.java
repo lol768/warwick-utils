@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public final class YouTubeMediaUrlHandler extends AbstractFlashPlayerMediaUrlHandler {
     
-    private static final Pattern PATTERN = Pattern.compile("http://(?:.*\\.)?youtube\\.com/watch\\?(.*v=.+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile("http://(?:.*\\.)?youtube\\.com/watch\\?(.*v=[^&]+)", Pattern.CASE_INSENSITIVE);
     
     public boolean recognises(final String url) {
         return PATTERN.matcher(url.toString()).matches();
@@ -14,6 +14,6 @@ public final class YouTubeMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
     public String getFlashUrl(final String url) {
         String params = toURL(url).getQuery();
         String videoId = extractVideoId(params, "v");
-        return "http://www.youtube.com/v/" + videoId + "?ap=%2526fmt%3D18";
+        return "http://www.youtube.com/v/" + videoId + "&fmt=18&fs=1&hl=en";
     }
 }
