@@ -48,7 +48,7 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
         String url = address;
         YouTubeMediaUrlHandler handler = new YouTubeMediaUrlHandler();
         assertTrue("should recognise url", handler.recognises(url));
-        assertEquals("http://www.youtube.com/v/"+videoId + "?ap=%2526fmt%3D18", handler.getFlashUrl(url));
+        assertEquals("http://www.youtube.com/v/"+videoId + "&fmt=18&fs=1&hl=en", handler.getFlashUrl(url));
     }
     
     private void checkAddressDoesntWork(String videoId, String address) throws MalformedURLException {
