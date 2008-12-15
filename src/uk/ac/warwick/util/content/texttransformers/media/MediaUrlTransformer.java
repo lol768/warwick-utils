@@ -12,7 +12,7 @@ import uk.ac.warwick.util.core.HttpUtils;
 
 public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
     
-    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackVersion"};
+    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackVersion", "stretching"};
     private static final Logger LOGGER = Logger.getLogger(MediaUrlTransformer.class);
     
     private Map<String, MediaUrlHandler> handlers;
@@ -29,7 +29,7 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
     @Override
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback(){
-            @SuppressWarnings("unchecked")
+
             public String transform(final String input) {
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {

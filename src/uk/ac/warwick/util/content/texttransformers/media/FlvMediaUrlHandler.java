@@ -50,6 +50,10 @@ public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandl
         if (!parameters.containsKey("previewimage")) {
             model.put("previewimage", "");
         }
+        
+        if (!parameters.containsKey("stretching")) {
+            model.put("stretching", "fill");
+        }
         return renderTemplate("media/flv.ftl", model);
     }
 }

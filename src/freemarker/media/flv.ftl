@@ -21,7 +21,7 @@
   <#if previewimage?default("") != ''>
   	object${uniqueId}.addVariable("image", "${previewimage?default("")}");
   </#if>
-  object${uniqueId}.addVariable("stretching", "fill");
+  object${uniqueId}.addVariable("stretching", "${stretching?default("fill")}");
 <#else>
   object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true",'',"${width?default(425)?number?c}","${(height?default(350)?number + 20)?c}");
 </#if>
