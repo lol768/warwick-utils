@@ -15,7 +15,7 @@
 <#else>
   url = '${url}'.toAbsoluteUrl();
 </#if>
-<#if newPlayer>
+<#if newPlayer && !url?starts_with('rtmp://')>
   object${uniqueId} = new FlashObject("${playerLocation}",'',"${width?default(425)?number?c}","${(height?default(350)?number + 20)?c}");
   object${uniqueId}.addVariable("file", url);
   <#if previewimage?default("") != ''>
