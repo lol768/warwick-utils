@@ -31,14 +31,14 @@ public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandl
     };
     
     public boolean recognises(final String url) {
-        return (delegate.recognises(url) || url.startsWith("rmtp://"));
+        return (delegate.recognises(url) || url.startsWith("rtmp://"));
     }
     
     public String getHtmlInner(final String url, final Map<String,Object> parameters) {
         Map<String,Object> model = new HashMap<String,Object>();
         model.put("url", url);
         
-        if (newPlayerLocation != null) {
+        if (newPlayerLocation != null && !url.startsWith("rtmp://")) {
         	model.put("newPlayer", true);
         	model.put("playerLocation", newPlayerLocation);
         } else {

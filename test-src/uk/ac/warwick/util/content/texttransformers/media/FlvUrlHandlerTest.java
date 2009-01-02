@@ -11,7 +11,7 @@ public class FlvUrlHandlerTest extends TestCase {
     
     public void testItRecognisesRtmpStreams() throws Exception {
         FlvMediaUrlHandler handler = new FlvMediaUrlHandler("", null);
-        String url = "rmtp://example.com/mediaserver/id=1234?autoPlay=true";
+        String url = "rtmp://example.com/mediaserver/id=1234?autoPlay=true";
         assertTrue(handler.recognises(url));
     }
 }

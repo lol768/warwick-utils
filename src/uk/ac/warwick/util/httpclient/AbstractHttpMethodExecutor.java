@@ -27,7 +27,9 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractHttpMethodExecutor.class);
+	private static final long serialVersionUID = -1663245845376032024L;
+
+	private static final Logger LOGGER = Logger.getLogger(AbstractHttpMethodExecutor.class);
     
     private static final BitSet ALLOWED_QUERYSTRING_CHARACTERS;
     
@@ -270,9 +272,14 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this.postBody = postBody;
     }
     
+    /**
+     * NOOP if not executed
+     */
     public final void close() {
-        method.abort();
-        method.releaseConnection();
+    	if (executed || method != null) {
+	        method.abort();
+	        method.releaseConnection();
+    	}
     }
 
     public void setHttpClientFactory(HttpClientFactory factory) {
