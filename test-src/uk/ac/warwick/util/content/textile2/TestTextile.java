@@ -5,6 +5,7 @@
 package uk.ac.warwick.util.content.textile2;
 
 import java.net.URLEncoder;
+import java.util.EnumSet;
 
 import junit.framework.TestCase;
 import uk.ac.warwick.util.content.texttransformers.RemoveLeadingNbspTransformer;
@@ -1360,6 +1361,28 @@ public class TestTextile extends TestCase {
 		String source = "\\\\\\\nstatic {\n\tcharToEntity = new HashMap<String, String>();\n\tcharToEntity.put(\" \", \"&nbsp;\");\n\tcharToEntity.put(\"¡\", \"&iexcl;\");\n\tcharToEntity.put(\"¢\", \"&cent;\");\n\tcharToEntity.put(\"£\", \"&pound;\");}\n\\\\\\";
 		String expected = "<pre><code>static {    charToEntity = new HashMap&lt;String, String&gt;();    charToEntity.put(\" \", \"&amp;nbsp;\");    charToEntity.put(\"¡\", \"&amp;iexcl;\");    charToEntity.put(\"¢\", \"&amp;cent;\");    charToEntity.put(\"£\", \"&amp;pound;\");}</code></pre>";
 		compare(source,expected);
+	}
+	
+	public final void testUseDefaultMP3Player() {
+		String source = "[media]blah.mp3[/media]";
+		
+		TextileString text = new TextileString(source);
+		String output = text.getHtml();
+		
+		assertTrue(output.contains("wimpy.swf"));
+		assertFalse(output.contains("mp3player.swf"));
+	}
+	
+	public final void testForceAlternativeMP3Player() {
+		String source = "[media]blah.mp3[/media]";
+		
+		TextileString text = new TextileString(source);
+		text.setOptions(EnumSet.of(TransformationOptions.alwaysUseAlternativeMp3Player));
+		
+		String output = text.getHtml();
+		
+		assertFalse(output.contains("wimpy.swf"));
+		assertTrue(output.contains("mp3player.swf"));
 	}
 
 	private void compare(String source, String expected,

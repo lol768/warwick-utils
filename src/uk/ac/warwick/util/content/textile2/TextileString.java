@@ -40,6 +40,8 @@ public class TextileString {
 	private boolean allowJavascriptHandlers = true;
 	
 	private EnumSet<TransformerFeature> features = null;
+	
+	private EnumSet<TransformationOptions> options = null;
 
 	public TextileString(final String theTextileText) {
 		this.textileText = theTextileText;
@@ -68,9 +70,9 @@ public class TextileString {
 					features.add(TransformerFeature.noFollowLinks);
 				}
 				
-				textile = new Textile2(features);
+				textile = new Textile2(features, options);
 			} else {
-				textile = new Textile2(isAddNoFollow());
+				textile = new Textile2(isAddNoFollow(), options);
 			}
 						
 			try {
@@ -227,5 +229,13 @@ public class TextileString {
 
 	public void setFeatures(EnumSet<TransformerFeature> features) {
 		this.features = features;
+	}
+
+	public EnumSet<TransformationOptions> getOptions() {
+		return options;
+	}
+
+	public void setOptions(EnumSet<TransformationOptions> options) {
+		this.options = options;
 	}
 }

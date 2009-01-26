@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.warwick.util.content.textile2.TextileTextTransformer;
-import uk.ac.warwick.util.content.textile2.TransformerFeature;
 import uk.ac.warwick.util.content.textile2.jruby.JRubyTextileTextTransformer;
 import uk.ac.warwick.util.content.texttransformers.BadLinkRemovingTransformer;
 import uk.ac.warwick.util.content.texttransformers.CompositeTextTransformer;
@@ -55,7 +53,12 @@ public final class Textile2 {
 			TransformerFeature.removeJsLinks
 		);
 	
+	public static final EnumSet<TransformationOptions> DEFAULT_OPTIONS = 
+		EnumSet.noneOf(TransformationOptions.class);
+	
 	private final EnumSet<TransformerFeature> features;
+	
+	private final EnumSet<TransformationOptions> options;
 
 	private TextTransformer transformer;
 
@@ -64,14 +67,22 @@ public final class Textile2 {
 	 * 
 	 */
 	public Textile2() {
-		this(null, DEFAULT_FEATURESET);
+		this(null, DEFAULT_FEATURESET, DEFAULT_OPTIONS);
 	}
 	
 	public Textile2(EnumSet<TransformerFeature> features) {
-		this(null, features);
+		this(null, features, DEFAULT_OPTIONS);
+	}
+	
+	public Textile2(EnumSet<TransformerFeature> features, EnumSet<TransformationOptions> options) {
+		this(null, features, options);
+	}
+	
+	public Textile2(boolean addNoFollow) {
+		this(addNoFollow, DEFAULT_OPTIONS);
 	}
 
-	public Textile2(boolean addNoFollow) {
+	public Textile2(boolean addNoFollow, EnumSet<TransformationOptions> options) {
 		EnumSet<TransformerFeature> features = EnumSet.copyOf(DEFAULT_FEATURESET);
 		
 		if (addNoFollow) {
@@ -79,6 +90,7 @@ public final class Textile2 {
 		}
 		
 		this.features = features;
+		this.options = options == null ? DEFAULT_OPTIONS : options;
 		
 		setupTransformers(null);
 	}
@@ -88,11 +100,12 @@ public final class Textile2 {
 	 * 
 	 */
 	public Textile2(String textile2ServiceLocation) {
-		this(textile2ServiceLocation, DEFAULT_FEATURESET);
+		this(textile2ServiceLocation, DEFAULT_FEATURESET, DEFAULT_OPTIONS);
 	}
 
-	public Textile2(String textile2ServiceLocation, EnumSet<TransformerFeature> features) {
-		this.features = features;
+	public Textile2(String textile2ServiceLocation, EnumSet<TransformerFeature> features, EnumSet<TransformationOptions> options) {
+		this.features = features == null ? DEFAULT_FEATURESET : features;
+		this.options = options == null ? DEFAULT_OPTIONS : options;
 		setupTransformers(textile2ServiceLocation);
 	}
 
@@ -136,7 +149,7 @@ public final class Textile2 {
 			Map<String, MediaUrlHandler> mediaHandlers = new HashMap<String, MediaUrlHandler>();
 			mediaHandlers.put("audio", new AudioMediaUrlHandler(System
 					.getProperty("textile.media.mp3WimpyPlayerLocation"), System
-					.getProperty("textile.media.mp3AlternatePlayerLocation")));
+					.getProperty("textile.media.mp3AlternatePlayerLocation"), options));
 			mediaHandlers.put("google", new GoogleMediaUrlHandler());
 			mediaHandlers.put("youtube", new YouTubeMediaUrlHandler());
 			mediaHandlers.put("quicktime", new QuickTimeMediaUrlHandler(System
