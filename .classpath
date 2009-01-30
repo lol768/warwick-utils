@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring.jar"/>
 	<classpathentry kind="lib" path="external-libs/yuicompressor/yuicompressor-2.4.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/google-collect/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
