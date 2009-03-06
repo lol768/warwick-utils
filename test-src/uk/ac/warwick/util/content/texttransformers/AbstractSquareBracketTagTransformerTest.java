@@ -15,6 +15,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     public void setUp() throws Exception {
     	this.transformer = new SquareBracketTransformer();
     	this.transformer2 = new MultiTagSquareBracketTransformer();
+    	this.transformer3 = new BlockLevelSquareBracketTransformer();
     }
 
     public void testStandard() {
@@ -203,6 +204,72 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
                     parameters = getParameters(matcher);
                     contents = getContents(matcher);
                     tagName = getTagName(matcher);
+
+                    return input;
+                }
+            };
+        }
+
+    }
+    
+    private BlockLevelSquareBracketTransformer transformer3;
+    
+    public void testBlockStandard() {
+        String input = "[tag-name]contents[/tag-name]";
+        transformer3.transform(input);
+
+        assertEquals("contents", transformer3.contents);
+    }
+    
+    public void testBlockWrapped() {
+        String input = "<p>[tag-name]contents[/tag-name]</p>";
+        transformer3.transform(input);
+
+        assertEquals("<p>contents</p>", transformer3.contents);
+    }
+
+    public void testBlockAttributes() {
+        String input = "[tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/tag-name]";
+        transformer3.transform(input);
+
+        assertEquals(" the contents ", transformer3.contents);
+
+        assertTrue(transformer3.parameters.containsKey("allowed1"));
+        assertTrue(transformer3.parameters.containsKey("allowed2"));
+        assertFalse(transformer3.parameters.containsKey("allowed3"));
+
+        assertEquals(transformer3.parameters.get("allowed1"), "one");
+        assertEquals(transformer3.parameters.get("allowed2"), "two");
+        assertEquals(transformer3.parameters.get("allowed3"), null);
+    }
+
+    private static class BlockLevelSquareBracketTransformer extends AbstractSquareTagTransformer {
+
+        private String contents;
+
+        private Map<String, Object> parameters;
+
+        public BlockLevelSquareBracketTransformer() {
+            super("tag-name", false, false, true);
+        }
+
+        @Override
+        protected String[] getAllowedParameters() {
+            return new String[] { "allowed1", "allowed2", "regex" };
+        }
+
+        @Override
+        protected Callback getCallback() {
+            return new TextPatternTransformer.Callback() {
+
+                public String transform(final String input) {
+                    Matcher matcher = getTagPattern().matcher(input);
+                    if (!matcher.matches()) {
+                        fail("Failed to match tag, but shouldn't be here if it didn't");
+                    }
+
+                    parameters = getParameters(matcher);
+                    contents = getContents(matcher);
 
                     return input;
                 }

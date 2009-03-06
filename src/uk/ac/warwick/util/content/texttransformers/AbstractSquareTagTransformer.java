@@ -23,9 +23,9 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     private static final int BLOCKLEVEL_STANDARD_PARAMETERS_MATCH_GROUP = 3;
     private static final int BLOCKLEVEL_STANDARD_CONTENTS_MATCH_GROUP = 4;
     
-    private static final int BLOCKLEVEL_BLOCK_TAGNAME_MATCH_GROUP = 5;
-    private static final int BLOCKLEVEL_BLOCK_PARAMETERS_MATCH_GROUP = 6;
-    private static final int BLOCKLEVEL_BLOCK_CONTENTS_MATCH_GROUP = 7;
+    private static final int BLOCKLEVEL_BLOCK_TAGNAME_MATCH_GROUP = 6;
+    private static final int BLOCKLEVEL_BLOCK_PARAMETERS_MATCH_GROUP = 7;
+    private static final int BLOCKLEVEL_BLOCK_CONTENTS_MATCH_GROUP = 8;
     
     private final Pattern tagPattern; 
     
@@ -172,7 +172,11 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         "\\[/\\1\\]";             //closing tag
         
         if (blockLevel) { //if we have a blocklevel element, remove TinyMCE's nasty <p> tag wrapping
-            pattern = "(" + pattern + ")|((?:<p>\\s*(?:&nbsp;)*\\s*)" + pattern + "(?:\\s*(?:&nbsp;)*\\s*</p>))";
+            pattern = "(" 
+            	+ pattern.replace("\\1", "\\" + BLOCKLEVEL_STANDARD_TAGNAME_MATCH_GROUP) 
+            	+ ")|((?:<p>\\s*(?:&nbsp;)*\\s*)" 
+            	+ pattern.replace("\\1", "\\" + BLOCKLEVEL_BLOCK_TAGNAME_MATCH_GROUP) 
+            	+ "(?:\\s*(?:&nbsp;)*\\s*</p>))";
         }
         
         return Pattern.compile(
