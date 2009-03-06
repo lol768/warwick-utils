@@ -10,12 +10,12 @@
 
 	<target name="bamboo" depends="clean,init,compile,test" />
 
-	<target name="init">
+	<target name="init" depends="clean">
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile">
+	<target name="compile" depends="init">
 		<mkdir dir="${build.dir}/all" />
 		<mkdir dir="${build.dir}/core" />
 		<mkdir dir="${build.dir}/core-nospring" />
@@ -115,7 +115,7 @@
 		</parallel>
 	</target>
 
-	<target name="_compiletests">
+	<target name="_compiletests" depends="compile">
 		<mkdir dir="${build.dir}/unit-tests" />
 		<!-- unit tests -->
 		<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path" debug="on">
@@ -127,7 +127,7 @@
 		</copy>
 	</target>
 
-	<target name="package">
+	<target name="package" depends="compile">
 		<copy file="META-INF/MANIFEST.MF" tofile="${build.dir}/MANIFEST.MF"/>
 		<replace file="${build.dir}/MANIFEST.MF" token="$VERSION" value="${jar.version}" />
 
@@ -170,7 +170,7 @@
 		<fail if="tests.failed" message="Unit tests failed" />
 	</target>
 
-	<target name="publish">
+	<target name="publish" depends="build-all">
 		<!-- setup ivy default configuration with some custom info -->
 		<ivy:configure file="ivysettings.xml" />
 

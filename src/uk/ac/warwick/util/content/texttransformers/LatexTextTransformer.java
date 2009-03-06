@@ -25,7 +25,6 @@ public final class LatexTextTransformer extends AbstractSquareTagTransformer {
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback() {
             public String transform(final String input) {
-            	System.err.println(input);
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {
                     throw new IllegalStateException(

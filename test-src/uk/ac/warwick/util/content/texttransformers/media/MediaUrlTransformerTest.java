@@ -13,7 +13,7 @@ public class MediaUrlTransformerTest extends TestCase {
         String input = "Test words [media]Contents[/media] More words";
         Matcher m = p.matcher(input);
         assertTrue(m.find());
-        assertEquals("Contents", m.group(2));
+        assertEquals("Contents", m.group(3));
     }
     
     public void testTagMatchingPatternWorksOnMultipleTags() {
@@ -21,9 +21,9 @@ public class MediaUrlTransformerTest extends TestCase {
         String input = "Test words [media]Contents[/media] More words [media]Contents 2[/media] More words";
         Matcher m = p.matcher(input);
         assertTrue(m.find());
-        assertEquals("Contents", m.group(2));
+        assertEquals("Contents", m.group(3));
         assertTrue(m.find());
-        assertEquals("Contents 2", m.group(2));
+        assertEquals("Contents 2", m.group(3));
     }
     
     public void testTransforming() {

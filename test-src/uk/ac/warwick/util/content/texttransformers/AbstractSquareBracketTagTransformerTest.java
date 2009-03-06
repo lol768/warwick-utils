@@ -9,7 +9,13 @@ import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callba
 
 public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
-    private final SquareBracketTransformer transformer = new SquareBracketTransformer();
+    private SquareBracketTransformer transformer;
+    
+    @Override
+    public void setUp() throws Exception {
+    	this.transformer = new SquareBracketTransformer();
+    	this.transformer2 = new MultiTagSquareBracketTransformer();
+    }
 
     public void testStandard() {
         String input = "[tag-name]contents[/tag-name]";
@@ -71,7 +77,123 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
                 public String transform(final String input) {
                     Matcher matcher = getTagPattern().matcher(input);
                     if (!matcher.matches()) {
-                        fail("Failed to match schedule tag, but shouldn't be here if it didn't");
+                        fail("Failed to match tag, but shouldn't be here if it didn't");
+                    }
+
+                    parameters = getParameters(matcher);
+                    contents = getContents(matcher);
+
+                    return input;
+                }
+            };
+        }
+
+    }
+    
+    private MultiTagSquareBracketTransformer transformer2;
+    
+    public void testStandardMulti() {
+        String input = "[tag-name]contents[/tag-name]";
+        transformer2.transform(input);
+
+        assertEquals("contents", transformer2.contents);
+        
+        input = "[other-tag-name]contents[/other-tag-name]";
+        transformer2.transform(input);
+
+        assertEquals("contents", transformer2.contents);
+    }
+    
+    public void testDoesntMatchMismatchedTags() {
+        String input = "[tag-name]contents[/other-tag-name]";
+        transformer2.transform(input);
+
+        // hasn't matched
+        // contents hasn't been set
+        assertNull(transformer2.contents);
+    }
+
+    public void testAttributesMulti() {
+        String input = "[tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/tag-name]";
+        transformer2.transform(input);
+
+        assertEquals(" the contents ", transformer2.contents);
+
+        assertTrue(transformer2.parameters.containsKey("allowed1"));
+        assertTrue(transformer2.parameters.containsKey("allowed2"));
+        assertFalse(transformer2.parameters.containsKey("allowed3"));
+
+        assertEquals(transformer2.parameters.get("allowed1"), "one");
+        assertEquals(transformer2.parameters.get("allowed2"), "two");
+        assertEquals(transformer2.parameters.get("allowed3"), null);
+        
+        input = "[other-tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/other-tag-name]";
+        transformer2.transform(input);
+
+        assertEquals(" the contents ", transformer2.contents);
+
+        assertTrue(transformer2.parameters.containsKey("allowed1"));
+        assertTrue(transformer2.parameters.containsKey("allowed2"));
+        assertFalse(transformer2.parameters.containsKey("allowed3"));
+
+        assertEquals(transformer2.parameters.get("allowed1"), "one");
+        assertEquals(transformer2.parameters.get("allowed2"), "two");
+        assertEquals(transformer2.parameters.get("allowed3"), null);
+    }
+
+    public void testEscapedAttributesMulti() {
+        String input = "[tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/tag-name]";
+        transformer2.transform(input);
+
+        assertEquals("\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n", transformer2.contents);
+
+        assertTrue(transformer2.parameters.containsKey("regex"));
+
+        String regex = (String) transformer2.parameters.get("regex");
+        regex = regex.replaceAll("\\\\\\[", "[");
+        regex = regex.replaceAll("\\\\]", "]");
+
+        assertEquals("^[A-Za-z0-9]+$", regex);
+        assertTrue("regex works", Pattern.matches(regex, "Sometextwithoutspaces092"));
+        
+        input = "[other-tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/other-tag-name]";
+        transformer2.transform(input);
+
+        assertEquals("\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n", transformer2.contents);
+
+        assertTrue(transformer2.parameters.containsKey("regex"));
+
+        regex = (String) transformer2.parameters.get("regex");
+        regex = regex.replaceAll("\\\\\\[", "[");
+        regex = regex.replaceAll("\\\\]", "]");
+
+        assertEquals("^[A-Za-z0-9]+$", regex);
+        assertTrue("regex works", Pattern.matches(regex, "Sometextwithoutspaces092"));
+    }
+    
+    private static class MultiTagSquareBracketTransformer extends AbstractSquareTagTransformer {
+
+        private String contents;
+
+        private Map<String, Object> parameters;
+
+        public MultiTagSquareBracketTransformer() {
+            super(new String[] {"tag-name", "other-tag-name"}, true);
+        }
+
+        @Override
+        protected String[] getAllowedParameters() {
+            return new String[] { "allowed1", "allowed2", "regex" };
+        }
+
+        @Override
+        protected Callback getCallback() {
+            return new TextPatternTransformer.Callback() {
+
+                public String transform(final String input) {
+                    Matcher matcher = getTagPattern().matcher(input);
+                    if (!matcher.matches()) {
+                        fail("Failed to match tag, but shouldn't be here if it didn't");
                     }
 
                     parameters = getParameters(matcher);

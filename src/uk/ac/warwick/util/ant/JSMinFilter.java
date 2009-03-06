@@ -2,10 +2,10 @@ package uk.ac.warwick.util.ant;
 
 import java.io.ByteArrayInputStream;
 
-import net.sf.packtag.implementation.JSMin;
 import net.sf.packtag.implementation.JsminPackStrategy;
 import net.sf.packtag.strategy.PackException;
 
+import org.apache.log4j.Logger;
 import org.apache.tools.ant.filters.TokenFilter;
 
 /**
@@ -15,6 +15,8 @@ import org.apache.tools.ant.filters.TokenFilter;
  * @author Mat Mannion
  */
 public final class JSMinFilter implements TokenFilter.Filter {
+	
+	private static final Logger LOGGER = Logger.getLogger(JSMinFilter.class);
 
     public String filter(final String input) {
         if (input == null || input.length() == 0) {
@@ -25,8 +27,7 @@ public final class JSMinFilter implements TokenFilter.Filter {
         try {
             result = new JsminPackStrategy().pack(new ByteArrayInputStream(input.getBytes()));
         } catch (PackException e) {
-        	e.fillInStackTrace();
-        	e.printStackTrace(System.err);
+        	LOGGER.error("Could not pack", e);
             result = input;
         }
 

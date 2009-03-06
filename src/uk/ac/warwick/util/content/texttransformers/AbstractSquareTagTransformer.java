@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.core.StringUtils;
+
 /**
  * Abstract tag transformer which works upon 
  * 
@@ -13,18 +15,18 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractSquareTagTransformer implements TextTransformer {
     
-    private static final int PARAMETERS_MATCH_GROUP = 1;
-    private static final int CONTENTS_MATCH_GROUP = 2;
+    private static final int PARAMETERS_MATCH_GROUP = 2;
+    private static final int CONTENTS_MATCH_GROUP = 3;
     
-    private static final int BLOCKLEVEL_STANDARD_PARAMETERS_MATCH_GROUP = 2;
-    private static final int BLOCKLEVEL_STANDARD_CONTENTS_MATCH_GROUP = 3;
+    private static final int BLOCKLEVEL_STANDARD_PARAMETERS_MATCH_GROUP = 3;
+    private static final int BLOCKLEVEL_STANDARD_CONTENTS_MATCH_GROUP = 4;
     
-    private static final int BLOCKLEVEL_BLOCK_PARAMETERS_MATCH_GROUP = 5;
-    private static final int BLOCKLEVEL_BLOCK_CONTENTS_MATCH_GROUP = 6;
+    private static final int BLOCKLEVEL_BLOCK_PARAMETERS_MATCH_GROUP = 6;
+    private static final int BLOCKLEVEL_BLOCK_CONTENTS_MATCH_GROUP = 7;
     
     private final Pattern tagPattern; 
     
-    private final String tagName;
+    private final String[] tagNames;
     
     private final boolean isBlockLevel;
     
@@ -48,10 +50,26 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     }
     
     public AbstractSquareTagTransformer(final String theTagName, final boolean multiline, final boolean allowEmpty, final boolean blockLevel) {
+        this(new String[] { theTagName }, multiline, allowEmpty, blockLevel);
+    }
+    
+    public AbstractSquareTagTransformer(final String[] theTagNames) {
+        this(theTagNames, false);
+    }
+    
+    public AbstractSquareTagTransformer(final String[] theTagNames, final boolean multiline) {
+        this(theTagNames, multiline, false);
+    }
+    
+    public AbstractSquareTagTransformer(final String[] theTagNames, final boolean multiline, final boolean allowEmpty) {
+        this(theTagNames, multiline, allowEmpty, false);
+    }
+    
+    public AbstractSquareTagTransformer(final String[] theTagNames, final boolean multiline, final boolean allowEmpty, final boolean blockLevel) {
         this.isBlockLevel = blockLevel;
         
-        tagPattern = getPatternForTagName(theTagName, multiline, allowEmpty, blockLevel);
-        tagName = theTagName;
+        this.tagPattern = getPatternForTagNames(theTagNames, multiline, allowEmpty, blockLevel);
+        this.tagNames = theTagNames;
     }
  
     /**
@@ -66,8 +84,18 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         String html = text;
         
         //Quick escape
-        if (doQuickCheck && html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) == -1) {
-            return html;
+        if (doQuickCheck) {
+        	boolean found = false;
+        	
+        	for (String tagName : tagNames) {
+        		if (html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) != -1) {
+        			found = true;
+        		}
+        	}
+        	
+        	if (!found) {
+        		return html;
+        	}
         }
         
         //we need to split HTML into do and don't do...
@@ -124,7 +152,7 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         }
     }
     
-    private Pattern getPatternForTagName(final String theTagName, final boolean multiline, final boolean allowEmpty, final boolean blockLevel) {
+    private Pattern getPatternForTagNames(final String[] theTagNames, final boolean multiline, final boolean allowEmpty, final boolean blockLevel) {
         int flags = Pattern.CASE_INSENSITIVE;
         String optional = "";
         if (multiline) {
@@ -134,11 +162,11 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
             optional = "?";
         }
         
-        String pattern = "\\[" + theTagName +                //opening tag
+        String pattern = "\\[(" + StringUtils.join(theTagNames,"|") + ")" +                //opening tag
         "(\\s+.+?[^\\\\])?" +          //optional parameters (can escape ] with backslash)
         "\\]" +         
         "(.+?)" + optional +               //url
-        "\\[/" + theTagName + "\\]";             //closing tag
+        "\\[/\\1\\]";             //closing tag
         
         if (blockLevel) { //if we have a blocklevel element, remove TinyMCE's nasty <p> tag wrapping
             pattern = "(" + pattern + ")|((?:<p>\\s*(?:&nbsp;)*\\s*)" + pattern + "(?:\\s*(?:&nbsp;)*\\s*</p>))";
