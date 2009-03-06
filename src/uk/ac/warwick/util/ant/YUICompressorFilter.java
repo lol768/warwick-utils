@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import org.apache.log4j.Logger;
 import org.apache.tools.ant.filters.TokenFilter;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -14,8 +13,6 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 public class YUICompressorFilter implements TokenFilter.Filter {
 	
-	private static final Logger LOGGER = Logger.getLogger(YUICompressorFilter.class);
-
 	private boolean disableOptimizations = false;
 	private boolean verbose = false;
 	private boolean munge = true;
@@ -106,18 +103,18 @@ public class YUICompressorFilter implements TokenFilter.Filter {
         public void warning(String message, String sourceName,
                 int line, String lineSource, int lineOffset) {
             if (line < 0) {
-                LOGGER.warn(message);
+            	System.err.println("\n[WARN] " + message);
             } else {
-                LOGGER.warn(line + ':' + lineOffset + ':' + message);
+            	System.err.println("\n[WARN] " + line + ':' + lineOffset + ':' + message);
             }
         }
 
         public void error(String message, String sourceName,
                 int line, String lineSource, int lineOffset) {
             if (line < 0) {
-                LOGGER.error("\n[ERROR] " + message);
+                System.err.println("\n[ERROR] " + message);
             } else {
-                LOGGER.error(line + ':' + lineOffset + ':' + message);
+            	System.err.println("\n[ERROR] " + line + ':' + lineOffset + ':' + message);
             }
         }
 

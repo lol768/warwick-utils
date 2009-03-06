@@ -15,12 +15,15 @@ import uk.ac.warwick.util.core.StringUtils;
  */
 public abstract class AbstractSquareTagTransformer implements TextTransformer {
     
+	private static final int TAGNAME_MATCH_GROUP = 1;
     private static final int PARAMETERS_MATCH_GROUP = 2;
     private static final int CONTENTS_MATCH_GROUP = 3;
     
+    private static final int BLOCKLEVEL_STANDARD_TAGNAME_MATCH_GROUP = 2;
     private static final int BLOCKLEVEL_STANDARD_PARAMETERS_MATCH_GROUP = 3;
     private static final int BLOCKLEVEL_STANDARD_CONTENTS_MATCH_GROUP = 4;
     
+    private static final int BLOCKLEVEL_BLOCK_TAGNAME_MATCH_GROUP = 5;
     private static final int BLOCKLEVEL_BLOCK_PARAMETERS_MATCH_GROUP = 6;
     private static final int BLOCKLEVEL_BLOCK_CONTENTS_MATCH_GROUP = 7;
     
@@ -193,6 +196,24 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         }
         
         return extractParameters(matcher.group(PARAMETERS_MATCH_GROUP));
+    }
+    
+    protected String getTagName(Matcher matcher) {
+        if (isBlockLevel) {
+            String result;
+            
+            if (matcher.group(1) != null) {
+                // normal grouping
+                result = matcher.group(BLOCKLEVEL_STANDARD_TAGNAME_MATCH_GROUP);
+            } else {
+                // block level grouping
+                result = matcher.group(BLOCKLEVEL_BLOCK_TAGNAME_MATCH_GROUP);
+            }
+            
+            return result;
+        }
+        
+        return matcher.group(TAGNAME_MATCH_GROUP);
     }
     
     protected final String getContents(Matcher matcher) {

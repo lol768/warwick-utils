@@ -97,11 +97,13 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         transformer2.transform(input);
 
         assertEquals("contents", transformer2.contents);
+        assertEquals("tag-name", transformer2.tagName);
         
         input = "[other-tag-name]contents[/other-tag-name]";
         transformer2.transform(input);
 
         assertEquals("contents", transformer2.contents);
+        assertEquals("other-tag-name", transformer2.tagName);
     }
     
     public void testDoesntMatchMismatchedTags() {
@@ -176,6 +178,8 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         private String contents;
 
         private Map<String, Object> parameters;
+        
+        private String tagName;
 
         public MultiTagSquareBracketTransformer() {
             super(new String[] {"tag-name", "other-tag-name"}, true);
@@ -198,6 +202,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
                     parameters = getParameters(matcher);
                     contents = getContents(matcher);
+                    tagName = getTagName(matcher);
 
                     return input;
                 }
