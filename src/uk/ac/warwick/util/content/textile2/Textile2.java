@@ -127,38 +127,15 @@ public final class Textile2 {
 		transformers.add(new EntityConvertingTransformer());
 		
 		if (features.contains(TransformerFeature.media)) {
-			if (!(
-					System.getProperty("textile.media.mp3WimpyPlayerLocation") != null
-		  		 || System.getProperty("textile.media.mp3AlternatePlayerLocation") != null)) {
-			        	throw new IllegalStateException("Properties textile.media.mp3WimpyPlayerLocation and " +
-				"textile.media.mp3AlternatePlayerLocation are both not set");
-			}
-			
-			if (System.getProperty("textile.media.quicktimePreviewImage") == null) {
-				throw new IllegalStateException("textile.media.quicktimePreviewImage is not set");
-			}
-			
-			if (System.getProperty("textile.media.windowsMediaPreviewImage") == null) {
-				throw new IllegalStateException("textile.media.windowsMediaPreviewImage is not set");
-			}
-			
-			if (System.getProperty("textile.media.flvPlayerLocation") == null && System.getProperty("textile.media.newFlvPlayerLocation") == null) {
-				throw new IllegalStateException("textile.media.flvPlayerLocation is not set");
-			}
+			TextileConfiguration config = TextileConfiguration.getInstance();
 
 			Map<String, MediaUrlHandler> mediaHandlers = new HashMap<String, MediaUrlHandler>();
-			mediaHandlers.put("audio", new AudioMediaUrlHandler(System
-					.getProperty("textile.media.mp3WimpyPlayerLocation"), System
-					.getProperty("textile.media.mp3AlternatePlayerLocation"), options));
+			mediaHandlers.put("audio", new AudioMediaUrlHandler(config.getWimpyPlayerLocation(), config.getAlternativeMp3PlayerLocation(), options));
 			mediaHandlers.put("google", new GoogleMediaUrlHandler());
 			mediaHandlers.put("youtube", new YouTubeMediaUrlHandler());
-			mediaHandlers.put("quicktime", new QuickTimeMediaUrlHandler(System
-					.getProperty("textile.media.quicktimePreviewImage")));
-			mediaHandlers.put("avi", new AviMediaUrlHandler(System
-					.getProperty("textile.media.windowsMediaPreviewImage")));
-			mediaHandlers.put("flv", new FlvMediaUrlHandler(System
-					.getProperty("textile.media.flvPlayerLocation"), System
-					.getProperty("textile.media.newFlvPlayerLocation")));
+			mediaHandlers.put("quicktime", new QuickTimeMediaUrlHandler(config.getQtPreviewImage()));
+			mediaHandlers.put("avi", new AviMediaUrlHandler(config.getWmPreviewImage()));
+			mediaHandlers.put("flv", new FlvMediaUrlHandler(config.getFlvPlayerLocation(), config.getNewFlvPlayerLocation()));
 			mediaHandlers.put("flash", new StandardFlashMediaUrlHandler());
 			mediaHandlers.put("revver", new RevverMediaUrlHandler());
 			mediaHandlers.put("metacafe", new MetacafeMediaUrlHandler());
@@ -175,11 +152,7 @@ public final class Textile2 {
 		}
 		
 		if (features.contains(TransformerFeature.latex)) {
-			if (System.getProperty("textile.latex.location") == null) {
-				throw new IllegalStateException("textile.latex.location is not set");
-			}
-			
-			transformers.add(new LatexTextTransformer(System.getProperty("textile.latex.location")));
+			transformers.add(new LatexTextTransformer(TextileConfiguration.getInstance().getLatexLocation()));
 		}
 
 		if (features.contains(TransformerFeature.textilise)) {
