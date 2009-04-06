@@ -143,6 +143,16 @@ public final class CollectionUtils {
         return list.subList(fromIndex, toIndex);
     }
 	
+	public static <T> List<List<T>> batch(List<T> list, int batchSize) {
+		List<List<T>> result = new ArrayList<List<T>>();
+		
+		for (int i=0; i < list.size(); i+=batchSize) {
+			result.add(list.subList(i, Math.min(i+batchSize, list.size())));
+		}
+		
+		return result;
+	}
+	
 	/**
      * Calls bean.{getterMethod}() and returns a value as a String
      */

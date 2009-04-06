@@ -114,4 +114,49 @@ public final class CollectionUtilsTest extends TestCase {
             return object;
         }
     }
+    
+    public void testBatch() {
+    	List<String> list = new ArrayList<String>();
+    	
+    	for (int i=0; i<150; i++) {
+    		list.add(Integer.toString(i));
+    	}
+    	
+    	List<List<String>> batches = CollectionUtils.batch(list, 20);
+    	
+    	// should have returned 7 batches of 20 and 1 batch of 10
+    	assertEquals(8, batches.size());
+    	for (int i=0;i<7;i++) {
+    		assertEquals(20, batches.get(i).size());
+    	}
+    	assertEquals(10, batches.get(7).size());
+    	
+    	for (int i=0;i<7;i++) {
+    		for (int j=0;j<20;j++) {
+    			int expected = (i*20)+j;
+    			assertEquals(Integer.toString(expected), batches.get(i).get(j));
+    		}
+    	}
+    	
+    	for (int i=0;i<10;i++) {
+    		int expected = 140 + i;
+    		assertEquals(Integer.toString(expected), batches.get(7).get(i));
+    	}
+    }
+    
+    public void testBatchExact() {
+    	List<String> list = new ArrayList<String>();
+    	
+    	for (int i=0; i<150; i++) {
+    		list.add(Integer.toString(i));
+    	}
+    	
+    	List<List<String>> batches = CollectionUtils.batch(list, 50);
+    	
+    	// should have returned 3 batches of 50
+    	assertEquals(3, batches.size());
+    	for (List<String> batch : batches) {
+    		assertEquals(50, batch.size());
+    	}
+    }
 }
