@@ -159,4 +159,18 @@ public final class CollectionUtilsTest extends TestCase {
     		assertEquals(50, batch.size());
     	}
     }
+    
+    public void testBigBatchTinyList() {
+    	List<String> list = new ArrayList<String>();
+    	
+    	for (int i=0; i<10; i++) {
+    		list.add(Integer.toString(i));
+    	}
+    	
+    	List<List<String>> batches = CollectionUtils.batch(list, 50);
+    	
+    	// should have returned 1 batch of 10
+    	assertEquals(1, batches.size());
+    	assertEquals(10, batches.get(0).size());
+    }
 }
