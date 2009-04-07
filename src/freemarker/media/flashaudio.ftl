@@ -4,7 +4,7 @@
 
 <#if altplayer?default("") = "true">
 <script type="text/javascript">
-  object${uniqueId} = new FlashObject("${alternatePlayerLocation}",'',"${width?default(290)?number}","${height?default(24)?number}");
+  object${uniqueId} = new FlashObject("${alternatePlayerLocation}",'object${uniqueId}',"${width?default(290)?number}","${height?default(24)?number}");
   object${uniqueId}.addParam("wmode","transparent");
   object${uniqueId}.addParam("menu","false");
   object${uniqueId}.addParam("play","true");
@@ -18,7 +18,7 @@
 </script>
 <#else>
 <script type="text/javascript">
-  object${uniqueId} = new FlashObject("${playerLocation}?theFile=${url}",'',"${width?default(16)?number}","${height?default(16)?number}");
+  object${uniqueId} = new FlashObject("${playerLocation}?theFile=${url}",'object${uniqueId}',"${width?default(16)?number}","${height?default(16)?number}");
   object${uniqueId}.addParam("wmode","transparent");
   object${uniqueId}.addParam("bgcolor","#FFFFFF");
   object${uniqueId}.align = "${align}";
