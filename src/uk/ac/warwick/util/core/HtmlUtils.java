@@ -45,6 +45,39 @@ public final class HtmlUtils {
 		return escaped.toString();
 	}
 	
+	/**
+	 * Replace characters with HTML entities IF they are non-ASCII,
+	 * ie a value > 127. It will use the named entity if it exists,
+	 * otherwise it will use the hex code starting &#x .
+	 */
+	public static String htmlEscapeNonAscii(String input) {
+		if (input == null) {
+			return null;
+		}
+		StringBuffer escaped = new StringBuffer(input.length() * 2);
+		for (int i = 0; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (character > 127) {
+				String reference = characterEntityReferences.convertToReference(character);
+				if (reference != null) {
+					escaped.append(reference);
+				} else {
+					escaped.append("&#x");
+					escaped.append(Integer.toString((int) character, 16));
+					escaped.append(";");
+				}
+			} else {
+				escaped.append(character);
+			}
+		}
+		
+		return escaped.toString();
+	}
+	
+	public static String htmlEscape(char character) {
+		return characterEntityReferences.convertToReference(character);
+	}
+	
     public static Set<String> extractContentRegex(final String content, final String start, final String end) {
         Set<String> results = new LinkedHashSet<String>();
         Pattern p = Pattern.compile("(?ism)" + start + "(.*?)" + end);

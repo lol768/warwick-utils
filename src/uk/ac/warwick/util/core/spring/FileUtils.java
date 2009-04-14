@@ -181,11 +181,11 @@ public final class FileUtils {
      * @return
      */
     public static String getFileNameWithoutExtension(final String s) {
-        int indexOfLastDot = s.lastIndexOf('.');
+        int indexOfLastDot = StringUtils.safeSubstring(s, 1).lastIndexOf('.');
         if (indexOfLastDot < 0) {
             return s;
         }
-        return s.substring(0, indexOfLastDot);
+        return s.substring(0, indexOfLastDot + 1);
     }
 
     /**
@@ -195,22 +195,22 @@ public final class FileUtils {
      * 
      */
     public static String getExtension(final String s) {
-        int indexOfLastDot = s.lastIndexOf('.');
+        int indexOfLastDot = StringUtils.safeSubstring(s, 1).lastIndexOf('.');
         if (indexOfLastDot < 0) {
             return "";
         }
-        return s.substring(indexOfLastDot + 1).toLowerCase();
+        return s.substring(indexOfLastDot + 2);
     }
     
     public static String getLowerCaseExtension(final String filename){
-    	return getExtension(filename);
+    	return getExtension(filename).toLowerCase();
     }
     
     public static boolean extensionMatches(final String filename, final String extension){
     	String compareExtension = extension.toLowerCase();
     	// if the user has specified an extension like ".txt", clean it up for them
     	compareExtension = compareExtension.replaceAll("[^\\.]*\\.", "");
-    	return getExtension(filename).equalsIgnoreCase(compareExtension);
+    	return getLowerCaseExtension(filename).equalsIgnoreCase(compareExtension);
     }
 
     /**
@@ -219,6 +219,8 @@ public final class FileUtils {
      * The safety refers to the fact that only ANSI characters remain so
      * there is no need to worry about escaping, and no slashes
      * are allowed to avoid any problems with path handling.
+     * 
+     * It removes a leading dot from the filename.
      */
     public static String convertToSafeFileName(final String originalName) {
         if (!StringUtils.hasText(originalName)) {

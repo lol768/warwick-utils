@@ -149,6 +149,22 @@ public final class StringUtils {
         }
         return result;
     }
+    
+    public static String safeSubstring(final String s, final int proposedStart) {
+    	if (s == null || s.length() == 0) {
+            return "";
+        }
+        String result;
+        int l = s.length();
+        if (proposedStart > l) {
+            result = "";
+        } else {
+        	int start = proposedStart < 0 ? 0 : proposedStart;
+            start = start > l ? l : start;
+            result = s.substring(start);
+        }
+        return result;
+    }
 
     /**
      * Trivial guard to ensure that a string is never null.

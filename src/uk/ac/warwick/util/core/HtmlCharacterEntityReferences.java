@@ -30,14 +30,11 @@ class HtmlCharacterEntityReferences {
 
 	static final char CHAR_NULL = (char) -1;
 
-
 	private static final String PROPERTIES_FILE = "HtmlCharacterEntityReferences.properties";
-
 
 	private final String[] characterToEntityReferenceMap = new String[3000];
 
 	private final Map<String, Character> entityReferenceToCharacterMap = new HashMap<String, Character>(252);
-
 
 	/**
 	 * Returns a new set of character entity references reflecting the HTML 4.0 character set.
