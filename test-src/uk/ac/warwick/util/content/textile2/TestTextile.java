@@ -1384,6 +1384,21 @@ public class TestTextile extends TestCase {
 		assertFalse(output.contains("wimpy.swf"));
 		assertTrue(output.contains("mp3player.swf"));
 	}
+	
+	// UTL-39 can't fix
+//	public void testLinkWithUnderscores() {
+//		for (String link : new String[] {
+//				"http://www2.warwick.ac.uk/site/carer-administered_midazolam_-__final_issued_17apr09sb.pdf",
+//				"http://www2.warwick.ac.uk/_file_.pdf",
+//				"http://www2.warwick.ac.uk/site/carer-administered_midazolam_-__final_issued_17apr09sb_.pdf"
+//			}) {
+//			TextileString text = new TextileString(String.format("%s", link));
+//			String output = text.getHtml();
+//			String expected = String.format("<p><a href=\"%s\">%s</a></p>",link,link);
+//			assertFalse("Shouldn't convert these underscores to em in " + link, output.contains("<em"));
+//			assertEquals("Failed linkify for " + link, expected, output);
+//		}
+//	}
 
 	private void compare(String source, String expected,
 			boolean stripAllHtmlBeforeConvert,
