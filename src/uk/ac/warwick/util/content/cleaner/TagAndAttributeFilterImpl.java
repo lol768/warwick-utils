@@ -50,59 +50,62 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     public boolean isAttributeAllowed(final String tagName, final String attributeName, final String attributeValue) {
         boolean allowed = true;
-        allowed = isAllowedAttributeForTag(tagName, attributeName, allowed);
+        allowed &= isAllowedAttributeForTag(tagName, attributeName);
 
-        allowed = isAllowedAttributeForAllTags(attributeName, allowed);
+        allowed &= isAllowedAttributeForAllTags(attributeName);
 
         // [SBTWO-1024] Don't allow empty attributes
-        allowed = isAllowedBlankAttribute(attributeName, attributeValue, allowed);
+        allowed &= isAllowedBlankAttribute(attributeName, attributeValue);
         
         // [SBTWO-1090] Unwanted class markup
         if (attributeName.equalsIgnoreCase("class")) {
-            allowed = isAllowedClassName(attributeValue, allowed);
+            allowed &= isAllowedClassName(attributeValue);
         }
         
         return allowed;
     }
     
-    private boolean isAllowedClassName(final String className, final boolean allowed) {
+    private boolean isAllowedClassName(final String className) {
         if (className.startsWith("mce") || className.startsWith("Mso")) {
             return false;
         }
-        return allowed;
+        return true;
     }
 
-    private boolean isAllowedBlankAttribute(final String attributeName, final String attributeValue, final boolean allowed) {
+    private boolean isAllowedBlankAttribute(final String attributeName, final String attributeValue) {
         boolean canBeBlank = (allowedEmptyAttributes.contains(attributeName));
         if (attributeValue.equals("") && !canBeBlank) {
             return false;
         }
-        return allowed;
+        return true;
     }
 
-    private boolean isAllowedAttributeForAllTags(final String attributeName, final boolean allowed) {
-        if (disallowedAttributesAllTags.contains(attributeName)) {
-            return false;
-        }
+    private boolean isAllowedAttributeForAllTags(final String attributeName) {
+    	for (String attribute : disallowedAttributesAllTags) {
+    		if (attribute.equalsIgnoreCase(attributeName) || ("mce_" + attribute).equalsIgnoreCase(attributeName)) {
+    			return false;
+    		}
+    	}
         
         if (!isAllowJavascriptHandlers() && attributeName.toLowerCase().startsWith("on")) {
         	return false;
         }
         
-        return allowed;
+        return true;
     }
 
-    private boolean isAllowedAttributeForTag(final String tagName, final String attributeName, final boolean allowed) {
+    private boolean isAllowedAttributeForTag(final String tagName, final String attributeName) {
         for (String tag: disallowedAttributes.keySet()) {
             if (tagName.equals(tag)) {
                 for (String attribute: disallowedAttributes.get(tag)) {
-                    if (attributeName.equals(attribute)) {
+                	// do a little bit of fudging to look for mce_ attributes too
+                    if (attributeName.equals(attribute) || attributeName.equals("mce_" + attribute)) {
                         return false;
                     }
                 }
             }
         }
-        return allowed;
+        return true;
     }
 
     private boolean isTagAllowed(final String tagName, final boolean hasAttsOrClosing) {

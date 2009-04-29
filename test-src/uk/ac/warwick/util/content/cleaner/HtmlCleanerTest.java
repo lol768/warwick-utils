@@ -219,16 +219,32 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     }
 
     public void testMceStyle() {
-        String input = "<p mce_style=\"text-align: center\">Hello</p>";
-        String expected = "<p style=\"text-align: center\">Hello</p>";
+        String input = "<div mce_style=\"text-align: center\">Hello</div>";
+        String expected = "<div style=\"text-align: center\">Hello</div>";
         verify(expected, input);
 
         // style AND mce_style. in this case they tend to have the same value so
         // it
         // doesn't matter which one is used; the important thing is mce_style
         // goes away.
-        input = "<p style=\"text-align: center\" mce_style=\"text-align: center\">Hello</p>";
-        expected = "<p style=\"text-align: center\">Hello</p>";
+        input = "<div style=\"text-align: center\" mce_style=\"text-align: center\">Hello</div>";
+        expected = "<div style=\"text-align: center\">Hello</div>";
+        verify(expected, input);
+    }
+    
+    public void testMceStyleOnSpan() {
+    	String input = "<span style=\"text-align: center\">Hello</span>";
+        String expected = "Hello";
+        verify(expected, input);
+        
+    	input = "<span mce_style=\"text-align: center\">Hello</span>";
+        expected = "Hello";
+        verify(expected, input);
+
+        input = "<span style=\"text-align: center\" mce_style=\"text-align: center\">Hello</span>";
+        
+        // we should strip both style (a banned tag) and mce_style (which gets converted to style) - and then remove the span with no attributes 
+        expected = "Hello";
         verify(expected, input);
     }
 

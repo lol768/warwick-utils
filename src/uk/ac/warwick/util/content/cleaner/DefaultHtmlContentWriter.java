@@ -63,11 +63,7 @@ public final class DefaultHtmlContentWriter implements HtmlContentWriter {
         attributeLoop: for (int i = 0; i < atts.getLength(); i++) {
             String name = atts.getLocalName(i);
             String value = atts.getValue(i);
-            if (!filter.isAttributeAllowed(tagName, name, value)) {
-                continue;
-            }
             
-
             /**
              * mce_src, mce_href and mce_style sometimes find their way into the final
              * markup. We just want to remove the mce_ here. Sometimes there is both
@@ -82,6 +78,10 @@ public final class DefaultHtmlContentWriter implements HtmlContentWriter {
                         name = tag;
                     }
                 }
+            }
+            
+            if (!filter.isAttributeAllowed(tagName, name, value)) {
+                continue;
             }
 
             String attrName = contentFilter.handleAttributeName(name, tagName);
