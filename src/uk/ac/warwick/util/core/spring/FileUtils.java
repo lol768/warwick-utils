@@ -57,7 +57,7 @@ public final class FileUtils {
                 recursiveDelete(child, strict, deletionBin);
             }
         }
-        LOGGER.debug("Deleting " + file);
+        if (LOGGER.isDebugEnabled()) LOGGER.debug("Deleting " + file);
         boolean deletedFileOK = file.delete();
         if (!deletedFileOK) {
             if (strict) {
