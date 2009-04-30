@@ -30,7 +30,7 @@
 	<classpathentry kind="lib" path="external-libs/tagsoup/tagsoup-1.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/freemarker/freemarker-2.3.14.jar" sourcepath="external-libs/src/freemarker-2.3.14-src.zip"/>
 	<classpathentry kind="lib" path="test-src/resources"/>
-	<classpathentry kind="lib" path="external-libs/jruby/jruby-1.1.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/jruby/jruby-1.1.1.jar" sourcepath="external-libs/src/joda-time-1.4-src-ide.zip"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-aspects.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-test.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar"/>
@@ -38,5 +38,7 @@
 	<classpathentry kind="lib" path="external-libs/yuicompressor/yuicompressor-2.4.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/google-collect/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="lib" path="external-libs/javacsv/javacsv.jar"/>
+	<classpathentry kind="lib" path="external-libs/jodatime/joda-time-1.4.jar" sourcepath="external-libs/src/joda-time-1.4-src-ide.zip"/>
+	<classpathentry kind="lib" path="external-libs/jodatime/joda-time-hibernate-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
