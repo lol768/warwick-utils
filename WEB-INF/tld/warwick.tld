@@ -99,4 +99,29 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+	
+	<tag>
+		<description>
+			Formats Joda DateTimes to the specified format
+	    </description>
+		<name>formatDate</name>
+		<tag-class>uk.ac.warwick.util.web.tags.DateTimeFormatTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<description>
+				Date and/or time to be formatted.
+	        </description>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>
+				Custom formatting style for dates and times.
+	        </description>
+			<name>pattern</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>
