@@ -15,6 +15,9 @@ import org.joda.time.chrono.LenientChronology;
  * @author Mat
  */
 public final class DateTimeUtils {
+	
+	private static DateTime mockDateTime;
+	
     private DateTimeUtils() {}
     
     /**
@@ -92,6 +95,36 @@ public final class DateTimeUtils {
     	}
     	
     	return weeks;
+    }
+    
+    public static boolean isBetween(final DateTime cal, final DateTime earliest, final DateTime latest) {
+        return (cal.isEqual(earliest) || cal.isEqual(latest) || 
+                (cal.isAfter(earliest) && cal.isBefore(latest)));
+    }
+    
+    public static DateTime newDateTime() {
+        if (mockDateTime == null) {
+            return new DateTime(); 
+        }
+        return mockDateTime;
+    }
+    
+    /**
+     * NOT threadsafe. Used for testing.
+     * Does an action with a mockdatetime. only makes a difference if the
+     * code inside uses DateTimeUtils.newDateTime()
+     */
+    public static void useMockDateTime(final DateTime dt, final Callback callback) {
+        try {
+            mockDateTime = dt;
+            callback.doSomething();
+        } finally {
+            mockDateTime = null;
+        }
+    }
+    
+    public static interface Callback {
+       void doSomething();
     }
 
 }
