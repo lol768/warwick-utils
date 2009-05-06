@@ -3,6 +3,7 @@ package uk.ac.warwick.util.content.cleaner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 import org.jmock.MockObjectTestCase;
 import org.springframework.util.FileCopyUtils;
@@ -365,6 +366,14 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         input = "<p>Some test, la la!<br mce_bogus=1></p>";
         expected = "<p>Some test, la la!</p>";
         verify(expected, input);
+    }
+    
+    // TinyMCE3 puts scripts in <p> tags because it is a KNOBSHITE
+    public void testMceScript() {
+    	String input = "<p><mce:script type=\"text/javascript\"><!--\nalert('Im a script!');\n// --></mce:script></p>";
+    	String expected = "<script type=\"text/javascript\"><!--\nalert('Im a script!');\n// --></script>";
+    	
+    	verify(expected, input);
     }
 
     public void testAlignMiddleOnTableCells() {

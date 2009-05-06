@@ -45,6 +45,8 @@ public final class HtmlCleaner {
         
         this.regexReplacements = new HashMap<Pattern, String>();
         this.regexReplacements.put(Pattern.compile("<br mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "");
+        this.regexReplacements.put(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<$1$2>$3</$1>");
+        this.regexReplacements.put(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "$1");
         this.regexReplacements.put(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "$1 align=\"center\"");
     }
     
