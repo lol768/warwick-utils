@@ -1407,6 +1407,14 @@ public class TestTextile extends TestCase {
 		
 		compare(source, expected);
 	}
+	
+	public void testNoSpaceOnAutoLinkingWithDot() {
+		String source = "Hey check this out:\n\nhttp://www.warwick.ac.uk.\n\nAwesome, eh!";
+		// om nom nom extra space is gone!
+		String expected = "<p>Hey check this out:</p><p><a href=\"http://www.warwick.ac.uk\">http://www.warwick.ac.uk</a>.</p><p>Awesome, eh!</p>";
+		
+		compare(source, expected);
+	}
 
 	private void compare(String source, String expected,
 			boolean stripAllHtmlBeforeConvert,
