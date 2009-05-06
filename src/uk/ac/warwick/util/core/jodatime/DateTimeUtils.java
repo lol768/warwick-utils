@@ -1,10 +1,9 @@
 package uk.ac.warwick.util.core.jodatime;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Duration;
-import org.joda.time.ReadableInstant;
+import org.joda.time.ReadableDateTime;
 import org.joda.time.Weeks;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.LenientChronology;
@@ -54,19 +53,19 @@ public final class DateTimeUtils {
      * 
      * Reflexive.
      */
-    public static boolean equalsIgnoreTime(final ReadableInstant a, final ReadableInstant b) {
-    	return new DateMidnight(a).isEqual(new DateMidnight(b));
+    public static boolean equalsIgnoreTime(final ReadableDateTime a, final ReadableDateTime b) {
+    	return a.getYear() == b.getYear() && a.getDayOfYear() == b.getDayOfYear();
     }
     
     /** Synonym for equalsIgnoreTime **/
-    public static boolean isSameDay(final ReadableInstant a, final ReadableInstant b) {
+    public static boolean isSameDay(final ReadableDateTime a, final ReadableDateTime b) {
         return equalsIgnoreTime(a, b);
     }
     
     /**
      * Gets the difference in days between two Calendar objects, rounded UP (diff between 23:59 and 00:01 on consecutive days is 1)
      */
-    public static int getDifferenceInDays(final ReadableInstant a, final ReadableInstant b) {
+    public static int getDifferenceInDays(final ReadableDateTime a, final ReadableDateTime b) {
     	Days d = Days.daysBetween(a, b);
     	int days = d.getDays();
     	
@@ -83,7 +82,7 @@ public final class DateTimeUtils {
     /**
      * Gets the difference in weeks between two Calendar objects, rounded UP
      */
-    public static int getDifferenceInWeeks(final ReadableInstant a, final ReadableInstant b) {
+    public static int getDifferenceInWeeks(final ReadableDateTime a, final ReadableDateTime b) {
     	Weeks w = Weeks.weeksBetween(a, b);
     	int weeks = w.getWeeks();
     	
@@ -97,9 +96,9 @@ public final class DateTimeUtils {
     	return weeks;
     }
     
-    public static boolean isBetween(final DateTime cal, final DateTime earliest, final DateTime latest) {
-        return (cal.isEqual(earliest) || cal.isEqual(latest) || 
-                (cal.isAfter(earliest) && cal.isBefore(latest)));
+    public static boolean isBetween(final ReadableDateTime dateTime, final ReadableDateTime earliest, final ReadableDateTime latest) {
+        return (dateTime.isEqual(earliest) || dateTime.isEqual(latest) || 
+                (dateTime.isAfter(earliest) && dateTime.isBefore(latest)));
     }
     
     public static DateTime newDateTime() {
