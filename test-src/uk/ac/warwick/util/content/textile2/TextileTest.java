@@ -15,10 +15,10 @@ import uk.ac.warwick.util.core.HtmlUtils;
  * @author Kieran Shaw
  * 
  */
-public class TestTextile extends TestCase {
+public class TextileTest extends TestCase {
 
 	public static void main(String[] args) throws Exception {
-		TestTextile t = new TestTextile();
+		TextileTest t = new TextileTest();
 		System.out.println("Blah1");
 		t.testRegex();
 		System.out.println("Blah3");
