@@ -64,7 +64,7 @@ public final class FileUtils {
                 // on NFS we want to move the file to some safe temporary directory
                 // and mark it to be deleted on exit
                 
-                LOGGER.error("Could not delete the " + (file.isDirectory() ? "directory" : "file") + " " + file);
+                LOGGER.info("Could not delete the " + (file.isDirectory() ? "directory" : "file") + " " + file);
                 
                 if (LOGGER.isDebugEnabled() && file.isDirectory()) {
                     if (file.list().length == 0) {
@@ -100,7 +100,7 @@ public final class FileUtils {
                 }
             } else {
                 file.deleteOnExit();
-                LOGGER.error("Could not delete the file " + file + ", marked to delete on exit");
+                LOGGER.info("Could not delete the file " + file + ", marked to delete on exit");
             }
         }
     }
