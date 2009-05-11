@@ -3,7 +3,6 @@ package uk.ac.warwick.util.content.cleaner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.regex.Pattern;
 
 import org.jmock.MockObjectTestCase;
 import org.springframework.util.FileCopyUtils;
@@ -387,6 +386,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         assertTrue(output.contains("<td align=\"center\">"));
         assertTrue(output.contains("<th align=\"center\">"));
         assertFalse(output.contains("<td align=\"middle\">"));
+    }
+    
+    public void testNastyOOWriterPasteTinyMCE3() throws Exception {
+    	String input = readResourceToString("/htmlClean/input5.html");
+    	String expected = "<p class=\"western\">Some nasty ass shit</p>";
+    	
+    	verify(expected, input);
     }
 
     private void verify(String expected, String input) {

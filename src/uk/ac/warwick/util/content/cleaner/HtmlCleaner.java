@@ -2,7 +2,9 @@ package uk.ac.warwick.util.content.cleaner;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +14,7 @@ import org.ccil.cowan.tagsoup.Parser;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 
 /**
@@ -25,7 +28,8 @@ public final class HtmlCleaner {
     public static final Logger LOGGER = Logger.getLogger(HtmlCleaner.class); 
 
     private final Map<String,String> straightReplacements;
-    private final Map<Pattern,String> regexReplacements;
+    private final List<Pair<Pattern,String>> regexReplacements;
+    private final List<Pair<Pattern,String>> postParseRegexReplacements;
     
     private final HtmlContentWriter contentWriter;
     
@@ -43,11 +47,19 @@ public final class HtmlCleaner {
         this.straightReplacements.put("mce_tsrc=", "src=");
         this.straightReplacements.put(NewWindowLinkTextTransformer.HTML_IMAGE, "");
         
-        this.regexReplacements = new HashMap<Pattern, String>();
-        this.regexReplacements.put(Pattern.compile("<br mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "");
-        this.regexReplacements.put(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<$1$2>$3</$1>");
-        this.regexReplacements.put(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "$1");
-        this.regexReplacements.put(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "$1 align=\"center\"");
+        this.regexReplacements = new ArrayList<Pair<Pattern, String>>();
+        this.regexReplacements.add(Pair.of(Pattern.compile("<br mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<style[^>]* mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<mce:style([^>]*)>\\<\\!\\-\\-(.*?)\\-\\-\\></mce:style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<style$1>$2</style>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<$1$2>$3</$1>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "$1"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "$1 align=\"center\""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<meta[^>]+>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
+        
+        this.postParseRegexReplacements = new ArrayList<Pair<Pattern, String>>();
+        this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s+</p>"), ""));
     }
     
     public String clean(final String input) {
@@ -76,10 +88,11 @@ public final class HtmlCleaner {
         } catch (SAXException e) {
             throw new IllegalStateException("HTML cleanup error", e);
         }
-        return handler.getOutput();
+        
+        return doPostParsingCleanup(handler.getOutput());
     }
 
-    /**
+	/**
      * Do simple find-and-replaces that should be done before
      * SAX parsing.
      */
@@ -88,14 +101,29 @@ public final class HtmlCleaner {
         for (String key : straightReplacements.keySet()) {
             text = text.replace(key, straightReplacements.get(key));
         }
-        for (Pattern pattern : regexReplacements.keySet()) {
-            text = pattern.matcher(text).replaceAll(regexReplacements.get(pattern));
+        for (Pair<Pattern,String> replacement : regexReplacements) {
+        	while (replacement.getLeft().matcher(text).find()) {
+        		text = replacement.getLeft().matcher(text).replaceAll(replacement.getRight());
+        	}
         }
         
         text = text.replaceAll("<!--\\[(.+?)]-->", "");
         
         return text;
     }
+
+    /**
+     * More simple find and replaces
+     */
+    private String doPostParsingCleanup(final String output) {
+    	String text = output;
+    	for (Pair<Pattern,String> replacement : postParseRegexReplacements) {
+        	while (replacement.getLeft().matcher(text).find()) {
+        		text = replacement.getLeft().matcher(text).replaceAll(replacement.getRight());
+        	}
+        }
+    	return text;
+	}
 
     /*
      * Idea: put (<script.*>)?PATTERN(</script>)? and then if
