@@ -64,6 +64,9 @@ public final class HtmlCleaner {
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         
+        // MS Word lists
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?MsoNormal\"?[^>]*>(?:<!--\\[if !supportLists\\]-->)?(?:<\\/?(?:span|font)[^>]*>)*&#183;(?:<\\/?(?:span|font)[^>]*>)*(?:&nbsp;)+\\s*(?:<\\/?(?:span|font)[^>]*>)*(?:<!--\\[endif\\]-->)?(.*?)(?:<\\/?(?:span|font)[^>]*>)*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<li>$1</li>"));
+        
         this.postParseRegexReplacements = new ArrayList<Pair<Pattern, String>>();
         this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s*</p>"), ""));
     }
