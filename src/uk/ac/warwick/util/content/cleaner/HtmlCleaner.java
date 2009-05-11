@@ -60,12 +60,12 @@ public final class HtmlCleaner {
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<link[^>]+>(?:</link>)?(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
-        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?MsoNormal\"?[^>]*>(?:<\\?xml[^>]*>)?(?:<b style[^>]*>)?<o:p>(?:<font[^>]*>)?&nbsp;(?:</font>)?</o:p>(?:</b>)?</p>",Pattern.CASE_INSENSITIVE), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?Mso(?:[A-Z][a-z]+)+\"?[^>]*>(?:<\\?xml[^>]*>)?(?:<b style[^>]*>)?<o:p>(?:<font[^>]*>)?&nbsp;(?:</font>)?</o:p>(?:</b>)?</p>",Pattern.CASE_INSENSITIVE), ""));
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         
         // MS Word lists
-        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?MsoNormal\"?[^>]*>(?:<!--\\[if !supportLists\\]-->)?(?:<\\/?(?:span|font)[^>]*>)*&#183;(?:<\\/?(?:span|font)[^>]*>)*(?:&nbsp;)+\\s*(?:<\\/?(?:span|font)[^>]*>)*(?:<!--\\[endif\\]-->)?(.*?)(?:<\\/?(?:span|font)[^>]*>)*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<li>$1</li>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?Mso(?:[A-Z][a-z]+)+\"?[^>]*>(?:<!--\\[if !supportLists\\]-->)?(?:<\\/?(?:span|font)[^>]*>)*&#183;(?:<\\/?(?:span|font)[^>]*>)*(?:&nbsp;)+\\s*(?:<\\/?(?:span|font)[^>]*>)*(?:<!--\\[endif\\]-->)?(.*?)(?:<\\/?(?:span|font)[^>]*>)*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<li>$1</li>"));
         
         this.postParseRegexReplacements = new ArrayList<Pair<Pattern, String>>();
         this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s*</p>"), ""));
