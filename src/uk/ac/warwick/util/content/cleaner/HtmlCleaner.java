@@ -111,7 +111,8 @@ public final class HtmlCleaner {
             text = text.replace(key, straightReplacements.get(key));
         }
         for (Pair<Pattern,String> replacement : regexReplacements) {
-        	while (replacement.getLeft().matcher(text).find()) {
+        	int attempts = 10;
+        	while (replacement.getLeft().matcher(text).find() && (attempts-- > 0)) {
         		text = replacement.getLeft().matcher(text).replaceAll(replacement.getRight());
         	}
         }
@@ -127,7 +128,8 @@ public final class HtmlCleaner {
     private String doPostParsingCleanup(final String output) {
     	String text = output;
     	for (Pair<Pattern,String> replacement : postParseRegexReplacements) {
-        	while (replacement.getLeft().matcher(text).find()) {
+    		int attempts = 10;
+        	while (replacement.getLeft().matcher(text).find() && (attempts-- > 0)) {
         		text = replacement.getLeft().matcher(text).replaceAll(replacement.getRight());
         	}
         }
