@@ -60,7 +60,7 @@ public final class HtmlCleaner {
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<link[^>]+>(?:</link>)?(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
-        this.regexReplacements.add(Pair.of(Pattern.compile("<p class=\"MsoNormal\">(?:<b style=\"\">)?<o:p>&nbsp;</o:p>(?:</b>)?</p>"), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p[^>]*class=\"?MsoNormal\"?[^>]*>(?:<\\?xml[^>]*>)?(?:<b style[^>]*>)?<o:p>(?:<font[^>]*>)?&nbsp;(?:</font>)?</o:p>(?:</b>)?</p>",Pattern.CASE_INSENSITIVE), ""));
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         

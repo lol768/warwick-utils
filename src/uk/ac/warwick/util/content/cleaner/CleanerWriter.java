@@ -77,6 +77,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
         this.tagReplacements = new HashMap<String, String>();
         this.tagReplacements.put("b", "strong");
+        this.tagReplacements.put("h1", "h2");
         this.tagReplacements.put("i", "em");
     }
     

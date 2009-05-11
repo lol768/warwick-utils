@@ -61,9 +61,16 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         // we need to allow td style :(
     }
     
-    public void testHorribleMsWord2007PasteTinyMCE3() throws Exception {
-    	String input = readResourceToString("/htmlClean/input6.html");
-    	String expected = readResourceToString("/htmlClean/output6.html");
+    public void testHorribleMsWord2007PasteTinyMCE3Firefox() throws Exception {
+    	String input = readResourceToString("/htmlClean/input6-firefox.html");
+    	String expected = readResourceToString("/htmlClean/output6-firefox.html");
+    	
+    	verify(expected, input);
+    }
+    
+    public void testHorribleMsWord2007PasteTinyMCE3IE() throws Exception {
+    	String input = readResourceToString("/htmlClean/input6-ie.html");
+    	String expected = readResourceToString("/htmlClean/output6-ie.html");
     	
     	verify(expected, input);
     }
