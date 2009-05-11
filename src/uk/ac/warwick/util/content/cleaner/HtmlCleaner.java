@@ -54,12 +54,18 @@ public final class HtmlCleaner {
         this.regexReplacements.add(Pair.of(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<$1$2>$3</$1>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "$1"));
         this.regexReplacements.add(Pair.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "$1 align=\"center\""));
+        
+        // MS Word idiocy
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<meta[^>]+>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
         this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p>(.*?)<link[^>]+>(?:</link>)?(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<p>$1$2</p>"));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<p class=\"MsoNormal\">(?:<b style=\"\">)?<o:p>&nbsp;</o:p>(?:</b>)?</p>"), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
+        this.regexReplacements.add(Pair.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), ""));
         
         this.postParseRegexReplacements = new ArrayList<Pair<Pattern, String>>();
-        this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s+</p>"), ""));
+        this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s*</p>"), ""));
     }
     
     public String clean(final String input) {
