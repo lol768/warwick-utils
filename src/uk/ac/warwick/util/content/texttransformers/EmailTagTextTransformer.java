@@ -189,7 +189,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
 
 	private String generateJavascriptCode(
 			final StringBuilder sb, final Random r, final String uniqueId) {
-		StringBuilder javascriptSb = new StringBuilder(uniqueId + " = '");
+		StringBuilder javascriptSb = new StringBuilder("var " + uniqueId + " = '");
 
 		for (int i = 0; i < sb.length(); i++) {
 			if (r.nextInt(RANDOM_RESTART_THRESHOLD) == 0) {

@@ -422,6 +422,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, input);
     }
+    
+    public void testStripMceStyleWithPadding() throws Exception {
+    	String input = readResourceToString("/htmlClean/input7.html");
+    	String expected = readResourceToString("/htmlClean/output7.html");
+    	
+    	verify(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
