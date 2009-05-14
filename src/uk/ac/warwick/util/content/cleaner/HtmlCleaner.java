@@ -69,6 +69,10 @@ public final class HtmlCleaner {
         
         this.postParseRegexReplacements = new ArrayList<Pair<Pattern, String>>();
         this.postParseRegexReplacements.add(Pair.of(Pattern.compile("<p>\\s*</p>"), ""));
+        
+        // TinyMCE 3 indents use padding-left - [SBTWO-3017]
+        this.regexReplacements.add(Pair.of(Pattern.compile("style=(\"padding-left: \\d{2,}px;\")"), "tinymce_indent=$1"));
+        this.postParseRegexReplacements.add(Pair.of(Pattern.compile("tinymce_indent=(\"padding-left: \\d{2,}px;\")"), "style=$1"));
     }
     
     public String clean(final String input) {

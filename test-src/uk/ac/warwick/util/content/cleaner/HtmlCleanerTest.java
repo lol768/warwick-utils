@@ -408,6 +408,20 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, input);
     }
+    
+    public void testDontTrimTinyMCE3Indents() throws Exception {
+    	String input = "<h2 style=\"padding-left: 270px;\">blah blah blah</h2>\n\n<p style=\"padding-left: 60px;\">blah blah blah</p>";
+    	String expected = input;
+    	
+    	verify(expected, input);
+    }
+    
+    public void testCleanEmptyStyleAttributes() throws Exception {
+    	String input = "<p style=\"\">blah blah blah</p>";
+    	String expected = "<p>blah blah blah</p>";
+    	
+    	verify(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
