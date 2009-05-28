@@ -36,8 +36,42 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
     public RelativeLinkTextTransformer(final String theBase) throws MalformedURLException {
         this.base = new URL(theBase);
     }
-
+    
     public String transform(final String text) {
+    	// parse out nasty script tags
+    	Pattern noScriptTags = Pattern.compile("<script([^>]*)>(.*?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        
+        Matcher matcher = noScriptTags.matcher(text);
+        StringBuilder sb = new StringBuilder();
+        
+        int lastMatch = 0;
+        int startIndex = 0;
+        int endIndex = 0;    
+        
+        while (matcher.find()) {
+            startIndex = matcher.start();
+            endIndex = matcher.end();
+            sb.append(doUrlRewriting(text.substring(lastMatch, startIndex)));
+            
+            if (matcher.group(1).contains("src=")) {
+            	// do URL rewriting on the script tag anyway
+            	sb.append(doUrlRewriting("<script" + matcher.group(1) + ">"));
+            	sb.append(matcher.group(2));
+            	sb.append("</script>");
+            } else {
+            	// don't rewrite inside script tags
+            	sb.append(text.substring(startIndex, endIndex));
+            }
+            
+            lastMatch = endIndex;
+        }
+        
+        sb.append(doUrlRewriting(text.substring(endIndex)));
+        
+        return sb.toString();
+    }
+
+    public String doUrlRewriting(final String text) {
         String result = text;
 
         for (String pattern: PATTERNS) {
