@@ -416,6 +416,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	verify(expected, input);
     }
     
+    public void testDontTrimTinyMCE3Aligns() throws Exception {
+    	String input = "<h2 style=\"text-align: middle;\">blah blah blah</h2>\n\n<p style=\"text-align: right;\">blah blah blah</p>";
+    	String expected = input;
+    	
+    	verify(expected, input);
+    }
+    
     public void testCleanEmptyStyleAttributes() throws Exception {
     	String input = "<p style=\"\">blah blah blah</p>";
     	String expected = "<p>blah blah blah</p>";

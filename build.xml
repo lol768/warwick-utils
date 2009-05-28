@@ -106,6 +106,23 @@
 		<javac destdir="${build.dir}/unit-tests" srcdir="${test-src.dir}" classpathref="external.libs.path" debug="on">
 			<classpath location="${build.dir}/all" />
 		</javac>
+		
+		<copy todir="${build.dir}/unit-tests">
+            <fileset dir="${test-src.dir}" includes="**/*.xml" />
+        	<fileset dir="${test-src.dir}" includes="**/*.csv" />
+        	<fileset dir="${test-src.dir}" includes="**/*.sql" />
+        	<fileset dir="${test-src.dir}" includes="**/*.properties" />
+            <fileset dir="${test-src.dir}" includes="**/*.htm" />
+            <fileset dir="${test-src.dir}" includes="**/*.html" />
+            <fileset dir="${test-src.dir}" includes="**/*.zip" />
+            <fileset dir="${test-src.dir}" includes="**/*.jpg" />
+            <fileset dir="${test-src.dir}" includes="**/*.rss" />
+            <fileset dir="${test-src.dir}" includes="**/*.txt" />
+            <fileset dir="${test-src.dir}" includes="**/*.mp3" />
+        	<fileset dir="${test-src.dir}" includes="**/*.tpl" />
+        	<fileset dir="${test-src.dir}" includes="**/*.ftl" />
+        	<fileset dir="${src.dir}" includes="META-INF/*"/>
+        </copy>
 
 		<copy todir="${build.dir}/unit-tests/resources">
 			<fileset dir="${test-src.dir}/resources" />
