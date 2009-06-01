@@ -25,6 +25,29 @@ public class AttributeStringParserTest extends TestCase {
         assertEquals("value2", parser.getValue("param2"));
     }
     
+    public void testEscapedQuotes() {
+    	String input = "param1=&#8217;value1&#8217; param2=&#8221;value2&#8221; param3=&quot;value3&quot;";
+    	AttributeStringParser parser = new AttributeStringParser(input);
+	   assertEquals("value1", parser.getValue("param1"));
+       assertEquals("value2", parser.getValue("param2"));
+       assertEquals("value3", parser.getValue("param3"));
+    }
+    
+    public void testBackslashEscaping() {
+    	String input = "allowed2=\"The \\\"Magic\\\" tag\" allowed1='It\\'s escaped!'";
+    	AttributeStringParser parser = new AttributeStringParser(input);
+    	assertEquals("It's escaped!", parser.getValue("allowed1"));
+    	assertEquals("The \"Magic\" tag", parser.getValue("allowed2"));
+    }
+    
+    // Backslashes only work on the quotes you are using for quoting
+    public void testBackslashesForDifferentQuotes() {
+    	String input = "allowed2=\"Bob\\'s Cobs\"";
+    	AttributeStringParser parser = new AttributeStringParser(input);
+    	// still has the backslash in it, because we used double quotes.
+    	assertEquals("Bob\\'s Cobs", parser.getValue("allowed2"));
+    }
+    
     /**
      * Test that double quotes don't have to be escaped when inside
      * a single-quoted value.

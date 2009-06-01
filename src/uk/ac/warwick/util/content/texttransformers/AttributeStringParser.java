@@ -6,64 +6,86 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class AttributeStringParser {
-    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile(
-            "(?:(\\w+)\\s*=\\s*'([^']*)')" + //Attribute with single quotes 
-            "|" +
-            "(?:(\\w+)\\s*=\\s*\\&\\#8217\\;([^\\#]*)\\&\\#8217\\;)" + //Attribute with escaped single quotes 
-            "|" +
-            "(?:(\\w+)\\s*=\\s*\"([^\"]*)\")" + //Attribute with double quotes
-            "|" +
-            "(?:(\\w+)\\s*=\\s*\\&\\#8221\\;([^\\#]*)\\&\\#8221\\;)" + //Attribute with escaped double quotes
-            "|" +
-            "(?:(\\w+)\\s*=\\s*\\&quot\\;([^\\&]*)\\&quot\\;)" + //Attribute with escaped double quotes entity
-            "|" +
-            "(?:(\\w+)\\s*=\\s*([^\"'\\s]+)\\b)", //Attribute with NO quotes
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL); 
     
-    private static final int NAME_GROUP_SINGLE = 1;
-    private static final int VALUE_GROUP_SINGLE = 2;
-    private static final int NAME_GROUP_SINGLE_ESCAPED = 3;
-    private static final int VALUE_GROUP_SINGLE_ESCAPED = 4;
-    private static final int NAME_GROUP_DOUBLE = 5;
-    private static final int VALUE_GROUP_DOUBLE = 6;
-    private static final int NAME_GROUP_DOUBLE_ESCAPED = 7;
-    private static final int VALUE_GROUP_DOUBLE_ESCAPED = 8;
-    private static final int NAME_GROUP_DOUBLE_ESCAPED_ENTITY = 9;
-    private static final int VALUE_GROUP_DOUBLE_ESCAPED_ENTITY = 10;
-    private static final int NAME_GROUP_NONE = 11;
-    private static final int VALUE_GROUP_NONE = 12;
+    private static final Pattern NAME_EQUALS = Pattern.compile("^(\\s*(\\w+)=).+", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern OPENER = Pattern.compile("^\\s*([\"']|\\&#8217\\;|\\&#8221\\;|\\&quot\\;)");
+    private static final Pattern UNQUOTED = Pattern.compile("^[^\\s]+");
+    
+    private static final char ESCAPE = '\\'; 
     
     private final List<Attribute> attributes;
     
     public AttributeStringParser(final String attributesString) {
-        Matcher matcher = ATTRIBUTE_PATTERN.matcher(attributesString.trim());
 
         attributes = new ArrayList<Attribute>();
         
+        String text = attributesString.trim();
+        
+        /*
+         * Parse through the string, looking first for 'name=', then
+         * seeing if there's a quote character, then looking for a matching end quote (ignoring
+         * where a quote has a slash before it). Repeat until there is no more string.
+         * 
+         * If no quote character is found, it just matches a word.
+         * 
+         * Here we progress through text by repeatedly calling substring(), though we could
+         * have instead used the start index support of the pattern matchers. It's not much difference
+         * either way... substring() uses the same backing bytes as the original string anyway.
+         */
+        Matcher matcher = NAME_EQUALS.matcher(text);
         while (matcher.find()) {
-            String name, value;
-            if (matcher.group(NAME_GROUP_SINGLE) != null) {
-                name = matcher.group(NAME_GROUP_SINGLE);
-                value = matcher.group(VALUE_GROUP_SINGLE);
-            } else if (matcher.group(NAME_GROUP_SINGLE_ESCAPED) != null) {
-                name = matcher.group(NAME_GROUP_SINGLE_ESCAPED);
-                value = matcher.group(VALUE_GROUP_SINGLE_ESCAPED);
-            } else if (matcher.group(NAME_GROUP_DOUBLE) != null) { 
-                name = matcher.group(NAME_GROUP_DOUBLE);
-                value = matcher.group(VALUE_GROUP_DOUBLE);
-            } else if (matcher.group(NAME_GROUP_DOUBLE_ESCAPED) != null) {
-                name = matcher.group(NAME_GROUP_DOUBLE_ESCAPED);
-                value = matcher.group(VALUE_GROUP_DOUBLE_ESCAPED);
-            } else if (matcher.group(NAME_GROUP_DOUBLE_ESCAPED_ENTITY) != null) {
-                name = matcher.group(NAME_GROUP_DOUBLE_ESCAPED_ENTITY);
-                value = matcher.group(VALUE_GROUP_DOUBLE_ESCAPED_ENTITY);
-            } else {
-                name = matcher.group(NAME_GROUP_NONE);
-                value = matcher.group(VALUE_GROUP_NONE);
-            }
-            attributes.add(new Attribute(name, value));
+        	String openedQuote;
+        	String name = matcher.group(2);
+        	String value;
+        	text = text.substring(matcher.group(1).length());
+        	Matcher openMatcher = OPENER.matcher(text);
+        	if (openMatcher.find()) {
+        		// Quoted attribute
+        		openedQuote = openMatcher.group(1);
+        		text = text.substring(openMatcher.group().length());
+        		int end = findEndOfValue(openedQuote, text);
+        		if (end > -1) {
+        			value = text.substring(0, end);
+        		} else {
+        			value = text;
+        		}
+        		//remove slashes from quotes
+        		value = value.replace(ESCAPE + openedQuote, openedQuote);
+        		text = text.substring(end + openedQuote.length());
+        	} else {
+        		//Unquoted attribute
+        		Matcher unquotedMatcher = UNQUOTED.matcher(text);
+        		value = "";
+        		if (unquotedMatcher.find()) {
+        			value = unquotedMatcher.group();
+        		}
+        		text = text.substring(unquotedMatcher.group().length());
+        	}
+        	attributes.add(new Attribute(name, value));
+        	matcher = NAME_EQUALS.matcher(text);
         }
     }
+
+    /**
+     * Keep looking for a particular quote character until we find one
+     * that doesn't have a backslash before it.
+     * 
+     * Does have the slightly strange behaviour that you can escape the
+     * longer quotes like \&quot; - which might be good...?
+     */
+	private int findEndOfValue(String openedQuote, String text) {
+		int start = 0;
+		int end;
+		while ((end = text.indexOf(openedQuote, start)) > -1) {
+			start = end+1;
+			if (end > 0 && text.charAt(end-1) == ESCAPE) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		return end;
+	}
     
     public List<Attribute> getAttributes() {
         return attributes;

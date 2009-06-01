@@ -243,6 +243,13 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         assertEquals(transformer3.parameters.get("allowed3"), null);
     }
 
+    public void testAttributeEscaping() {
+    	String input = "[tag-name allowed2=\"The \\\"Magic\\\" tag\" allowed1='It\'s escaped!' ]the contents[/tag-name]";
+    	transformer3.transform(input);
+    	assertEquals("It's escaped!", transformer3.parameters.get("allowed1"));
+    	assertEquals("The \"Magic\" tag", transformer3.parameters.get("allowed2"));
+    }
+    
     private static class BlockLevelSquareBracketTransformer extends AbstractSquareTagTransformer {
 
         private String contents;
