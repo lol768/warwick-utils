@@ -3,7 +3,10 @@ package uk.ac.warwick.util.content.texttransformers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -77,18 +80,29 @@ public final class EmailTagTextTransformerTest {
 		assertTrue(output.contains("<span id"));
 	}
 	
+	@SuppressWarnings("serial")
 	@Test
-	public void withMediaTag() throws Exception {
-		String input = "<html><head></head><body>Firstly [media]man.mp3[/media] and then [email]n.howes@warwick.ac.uk[/email] and that is it</body></html>";
+	public void playsNicelyWithMediaTags() throws Exception {
+		String input = "<html><body><p>[media]blah.mp3[/media]</p><p>[email]mat.mannion@gmail.com[/email]</p></body></html>";
 		
-		EmailTagTextTransformer email = new EmailTagTextTransformer();
-		MediaUrlTransformer media = new MediaUrlTransformer(new HashMap<String, MediaUrlHandler>(){{ 
-			put("audio", new AudioMediaUrlHandler("",""));
-		}});
+		CompositeTextTransformer transformer = new CompositeTextTransformer(Arrays.asList(
+				new MediaUrlTransformer(new HashMap<String, MediaUrlHandler>() {{
+					put("mp3", new AudioMediaUrlHandler("wimpy", "opo"));
+				}}),
+				new EmailTagTextTransformer()
+		));
+		String output = transformer.transform(input);
 		
-		String output = media.transform(input);
-		output = email.transform(output);
-		System.out.println(output);
+		// the main problem is that it has more than one <body> tag because it adds the html stuff in twice. laaaaame
+		Pattern p = Pattern.compile("<body>");
+		Matcher m = p.matcher(output);
+		
+		int matches = 0;
+		while (m.find()) {
+			matches++;
+		}
+		
+		assertEquals(1, matches);
 	}
 
 }

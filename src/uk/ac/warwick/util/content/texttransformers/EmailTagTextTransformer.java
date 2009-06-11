@@ -52,28 +52,35 @@ public final class EmailTagTextTransformer implements TextTransformer {
         int startIndex = 0;
         int endIndex = 0;    
         
+        Map<String, String> emails = new HashMap<String, String>();
+        
         while (matcher.find()) {
             startIndex = matcher.start();
             endIndex = matcher.end();
-            sb.append(doEmailTransform(text.substring(lastMatch, startIndex)));
+            sb.append(doEmailTransform(text.substring(lastMatch, startIndex), emails));
             sb.append(text.substring(startIndex, endIndex));
             lastMatch = endIndex;
         }
         
-        sb.append(doEmailTransform(text.substring(endIndex)));
+        sb.append(doEmailTransform(text.substring(endIndex), emails));
         
-        return sb.toString();
+        String html = sb.toString();
+        
+        // now we need to inject the script tag at the top
+        if (emails.isEmpty()) {
+        	return html;
+        } else {
+        	return insertScript(html, emails);
+        }
 	}
 
-	private String doEmailTransform(String text) {
+	private String doEmailTransform(String text, Map<String, String> emails) {
 		Matcher matcher = EMAIL_TAG_PATTERN.matcher(text);
         StringBuilder sb = new StringBuilder();
         
         int lastMatch = 0;
         int startIndex = 0;
         int endIndex = 0;
-        
-        Map<String, String> emails = new HashMap<String, String>();
         
         while (matcher.find()) {
             startIndex = matcher.start();
@@ -87,14 +94,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
         
         sb.append(text.substring(endIndex));
         
-        String html = sb.toString();
-        
-        // now we need to inject the script tag at the top
-        if (emails.isEmpty()) {
-        	return html;
-        } else {
-        	return insertScript(html, emails);
-        }
+        return sb.toString();
 	}
 	
 	private String insertScript(String originalHtml, Map<String, String> emails) {
