@@ -10,8 +10,10 @@ import java.util.List;
 
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HeaderElement;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
@@ -132,9 +134,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
     
     public final byte[] retrieveContents() throws IOException {
-        if (!executed) {
-            throw new IllegalStateException("Could not retrieve contents of HTTP stream - has not been executed");
-        }
+    	assertExecuted();
         try {
             return method.getResponseBody();
         } catch (IOException e) {
@@ -146,9 +146,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
 
     public final String retrieveContentsAsString() throws IOException {
-        if (!executed) {
-            throw new IllegalStateException("Could not retrieve contents of HTTP stream - has not been executed");
-        }
+    	assertExecuted();
         try {
             return method.getResponseBodyAsString();
         } catch (IOException e) {
@@ -164,9 +162,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
      * MUST BE CLOSED MANUALLY
      */
     public final InputStream retrieveContentsAsStream() throws IOException {
-        if (!executed) {
-            throw new IllegalStateException("Could not retrieve contents of HTTP stream - has not been executed");
-        }
+    	assertExecuted();
         try {
             return method.getResponseBodyAsStream();
         } catch (IOException e) {
@@ -175,9 +171,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
     
     public final Date getLastModifiedDate() {
-        if (!executed) {
-            throw new IllegalStateException("Could not retrieve last modified header - has not been executed");
-        }
+    	assertExecuted();
         Header lastModifiedHeader = method.getResponseHeader("Last-Modified");
         Date result = null;
         
@@ -203,22 +197,42 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
 
     public final URI getURI() throws URIException {
-        if (!executed) {
-            throw new IllegalStateException("Cannot get URI if method has not been executed");
-        }
+    	assertExecuted();
         return method.getURI();
     }
 
     public String getHeader(String headerTitle) {
-        if (!executed) {
-            throw new IllegalStateException("Cannot get header if method has not been executed");
-        }
-        
+        assertExecuted();
         Header header = getMethod().getResponseHeader(headerTitle);
         if (header == null) {
             return null;
         }
         return header.getValue();
+    }
+
+    /**
+     * Find the declared charset in the headers, or null if it
+     * wasn't specified.
+     * From {@link HttpMethodBase#getContentCharSet}
+     */
+    public String getEncodingFromHeader() {
+    	assertExecuted();
+    	Header contentheader = getMethod().getResponseHeader("Content-Type");
+    	String charset = null;
+        if (contentheader != null) {
+            HeaderElement values[] = contentheader.getElements();
+            // I expect only one header element to be there
+            // No more. no less
+            if (values.length == 1) {
+                NameValuePair param = values[0].getParameterByName("charset");
+                if (param != null) {
+                    // If I get anything "funny" 
+                    // UnsupportedEncodingException will result
+                    charset = param.getValue();
+                }
+            }
+        }
+        return charset;
     }
 
     public String getRedirectUrl() {
@@ -301,6 +315,12 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
 	protected void addHeaders(HttpMethod method) {
 		for (Header header : headers) {
         	method.addRequestHeader(header);
+        }
+	}
+
+	private void assertExecuted() {
+		if (!executed) {
+            throw new IllegalStateException("Method has not yet been executed");
         }
 	}
 }

@@ -1,7 +1,15 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
 import org.junit.Test;
+
+import uk.ac.warwick.util.content.texttransformers.media.AudioMediaUrlHandler;
+import uk.ac.warwick.util.content.texttransformers.media.MediaUrlHandler;
+import uk.ac.warwick.util.content.texttransformers.media.MediaUrlTransformer;
 
 public final class EmailTagTextTransformerTest {
 	
@@ -67,6 +75,20 @@ public final class EmailTagTextTransformerTest {
 		String output = transformer.transform(input);
 		
 		assertTrue(output.contains("<span id"));
+	}
+	
+	@Test
+	public void withMediaTag() throws Exception {
+		String input = "<html><head></head><body>Firstly [media]man.mp3[/media] and then [email]n.howes@warwick.ac.uk[/email] and that is it</body></html>";
+		
+		EmailTagTextTransformer email = new EmailTagTextTransformer();
+		MediaUrlTransformer media = new MediaUrlTransformer(new HashMap<String, MediaUrlHandler>(){{ 
+			put("audio", new AudioMediaUrlHandler("",""));
+		}});
+		
+		String output = media.transform(input);
+		output = email.transform(output);
+		System.out.println(output);
 	}
 
 }
