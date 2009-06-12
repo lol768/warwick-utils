@@ -1,6 +1,7 @@
 <#assign uniqueId = random.nextInt(1000000)?c />
 
 <script type="text/javascript">
+Event.onDOMReady(function(){
 <#if fallback?exists>
   // check for H.264 version
   <#if !fallbackVersion?exists>
@@ -32,6 +33,7 @@
   object${uniqueId}.addVariable("showdownload","false");
   object${uniqueId}.align = "${align}";
   object${uniqueId}.write();
+});
 </script>
 
 <#if download?exists && download = 'true'>

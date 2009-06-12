@@ -4,6 +4,7 @@
 
 <#if altplayer?default("") = "true">
 <script type="text/javascript">
+Event.onDOMReady(function(){
   object${uniqueId} = new FlashObject("${alternatePlayerLocation}",'object${uniqueId}',"${width?default(290)?number}","${height?default(24)?number}");
   object${uniqueId}.addParam("wmode","transparent");
   object${uniqueId}.addParam("menu","false");
@@ -15,14 +16,17 @@
 					+ "&amp;soundFile=${url}");
   object${uniqueId}.align = "${align}";
   object${uniqueId}.write("audio_${uniqueId}");
+});
 </script>
 <#else>
 <script type="text/javascript">
+Event.onDOMReady(function(){
   object${uniqueId} = new FlashObject("${playerLocation}?theFile=${url}",'object${uniqueId}',"${width?default(16)?number}","${height?default(16)?number}");
   object${uniqueId}.addParam("wmode","transparent");
   object${uniqueId}.addParam("bgcolor","#FFFFFF");
   object${uniqueId}.align = "${align}";
   object${uniqueId}.write("audio_${uniqueId}");
+});
 </script>
 </#if>
 
