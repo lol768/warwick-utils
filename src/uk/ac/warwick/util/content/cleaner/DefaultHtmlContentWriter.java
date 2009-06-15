@@ -15,7 +15,7 @@ import uk.ac.warwick.util.core.HtmlUtils;
  */
 public final class DefaultHtmlContentWriter implements HtmlContentWriter {
 
-    public static final String[] MCE_TAGS = new String[] {"href","src","style"};
+    public static final String[] MCE_TAGS = new String[] {"href","src","style","coords","shape"};
     
     private static final int MAX_ASCII_VALUE = 127;
 

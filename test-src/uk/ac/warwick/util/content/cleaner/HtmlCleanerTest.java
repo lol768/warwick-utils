@@ -279,6 +279,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         String expected = "<img src=\"kitten.jpg\" border=\"0\" />";
         verify(expected, input);
     }
+    
+    public void testMceArea() {
+        String input = "<map><area title=\"Pasqual Paoli - Corsican patriot\" alt=\"Pasqual Paoli - Corsican patriot\" coords=\"203,107,220,139\" mce_coords=\"203,107,220,139\" shape=\"rect\" mce_shape=\"rect\" href=\"/wiki/Pasquale_Paoli\" /></map>";
+        String expected = "<map>  <area title=\"Pasqual Paoli - Corsican patriot\" alt=\"Pasqual Paoli - Corsican patriot\" coords=\"203,107,220,139\" shape=\"rect\" href=\"/wiki/Pasquale_Paoli\" /></map>";
+        verifyNoLineBreaks(expected, input);
+    }
 
     /**
      * Make sure empty attributes are removed

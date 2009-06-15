@@ -1,5 +1,7 @@
 <#assign uniqueId = random.nextInt(1000000)?c />
 
+<div align="${align}" id="video_${uniqueId}"></div>
+
 <script type="text/javascript">
 Event.onDOMReady(function(){
 <#if fallback?exists>
@@ -32,7 +34,7 @@ Event.onDOMReady(function(){
   object${uniqueId}.addParam("allowfullscreen","true");
   object${uniqueId}.addVariable("showdownload","false");
   object${uniqueId}.align = "${align}";
-  object${uniqueId}.write();
+  object${uniqueId}.write('video_${uniqueId}');
 });
 </script>
 
