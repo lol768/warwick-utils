@@ -237,25 +237,31 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         String expected = "<div style=\"text-align: center\">Hello</div>";
         verify(expected, input);
 
-        // style AND mce_style. in this case they tend to have the same value so
-        // it
-        // doesn't matter which one is used; the important thing is mce_style
-        // goes away.
+        // style AND mce_style. in this case they tend to have the same value so it
+        // doesn't matter which one is used; the important thing is mce_style goes away.
         input = "<div style=\"text-align: center\" mce_style=\"text-align: center\">Hello</div>";
         expected = "<div style=\"text-align: center\">Hello</div>";
         verify(expected, input);
     }
     
+    public void testParagraphCenter() {
+    	String standard = "<p style=\"text-align: center;\">Centre me</p>";
+    	// uppercase property name, no ending semicolon
+    	String ie = "<p style=\"TEXT-ALIGN: center\">Centre me</p>";
+    	verify(standard, standard);
+    	verify(ie, ie);
+    }
+    
     public void testMceStyleOnSpan() {
-    	String input = "<span style=\"text-align: center\">Hello</span>";
+    	String input = "<span style=\"color: magenta\">Hello</span>";
         String expected = "Hello";
         verify(expected, input);
         
-    	input = "<span mce_style=\"text-align: center\">Hello</span>";
+    	input = "<span mce_style=\"color: magenta\">Hello</span>";
         expected = "Hello";
         verify(expected, input);
 
-        input = "<span style=\"text-align: center\" mce_style=\"text-align: center\">Hello</span>";
+        input = "<span style=\"color: magenta\" mce_style=\"color: magenta\">Hello</span>";
         
         // we should strip both style (a banned tag) and mce_style (which gets converted to style) - and then remove the span with no attributes 
         expected = "Hello";
@@ -263,7 +269,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     }
 
     public void testMceStyleDoesntKillOthers() {
-        String input = "<a href=\"#\" mce_style=\"text-align: center\" style=\"text-align:center\">Hello</a>";
+        String input = "<a href=\"#\" mce_style=\"text-align: center\" style=\"text-align: center;\">Hello</a>";
         String expected = "<a href=\"#\" style=\"text-align: center\">Hello</a>";
         verify(expected, input);
     }
@@ -450,11 +456,6 @@ public class HtmlCleanerTest extends MockObjectTestCase {
 
     private void verifyNoLineBreaks(String expected, String input) {
         String output = cleaner.clean(input).trim().replaceAll("\n", "").replaceAll("\t", "");
-        assertEquals(expected, output);
-    }
-
-    private void verifyNoTrim(String expected, String input) {
-        String output = cleaner.clean(input);
         assertEquals(expected, output);
     }
 

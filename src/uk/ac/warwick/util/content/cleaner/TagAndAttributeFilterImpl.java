@@ -4,31 +4,34 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 
 public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
-    private final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
+	private static final Pattern ALIGN_STYLE = Pattern.compile("\\s*text-align:\\s*[a-z]+;?\\s*", Pattern.CASE_INSENSITIVE);
+	
+    private static final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
             "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname" });
     
-    private final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
+    private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
-    private final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "onerror", "onsuccess", "onfailure" });
+    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "onerror", "onsuccess", "onfailure" });
 
-    private final Set<String> allowedEmptyAttributes = CleanerWriter.toSet(new String[] { "alt" });
+    private static final Set<String> allowedEmptyAttributes = CleanerWriter.toSet(new String[] { "alt" });
 
-    private final Set<String> disallowNested = CleanerWriter.toSet(new String[] { "b", "i", "strong", "em", "p", "sup", "sub",
+    private static final Set<String> disallowNested = CleanerWriter.toSet(new String[] { "b", "i", "strong", "em", "p", "sup", "sub",
             "script", "code", "pre", "a", "form" });
 
-    private final Map<String, Set<String>> disallowedAttributes;
+    private static final Map<String, Set<String>> disallowedAttributes;
 
     private Stack<String> removedNestedTags = new Stack<String>();
     
     private boolean allowJavascriptHandlers = true;
-
-	public TagAndAttributeFilterImpl() {
-        disallowedAttributes = new HashMap<String, Set<String>>();
+    
+    static {
+    	disallowedAttributes = new HashMap<String, Set<String>>();
         //disallowedAttributes.put("div", CleanerWriter.toSet(new String[] { "style" }));
         disallowedAttributes.put("span", CleanerWriter.toSet(new String[] { "style", "lang" }));
         disallowedAttributes.put("h1", CleanerWriter.toSet(new String[] { "style" }));
@@ -50,8 +53,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     public boolean isAttributeAllowed(final String tagName, final String attributeName, final String attributeValue) {
         boolean allowed = true;
-        allowed &= isAllowedAttributeForTag(tagName, attributeName);
-
+        allowed &= isAllowedAttributeForTag(tagName, attributeName, attributeValue);
         allowed &= isAllowedAttributeForAllTags(attributeName);
 
         // [SBTWO-1024] Don't allow empty attributes
@@ -94,7 +96,13 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         return true;
     }
 
-    private boolean isAllowedAttributeForTag(final String tagName, final String attributeName) {
+    private boolean isAllowedAttributeForTag(final String tagName, final String attributeName, final String attributeValue) {
+    	
+    	// Specifically allow style if it's for alignment, even if we otherwise don't allow style
+    	if (isAlignStyle(tagName, attributeValue)) {
+    		return true;
+    	}
+    	
         for (String tag: disallowedAttributes.keySet()) {
             if (tagName.equals(tag)) {
                 for (String attribute: disallowedAttributes.get(tag)) {
@@ -107,6 +115,10 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         }
         return true;
     }
+
+	private boolean isAlignStyle(final String tagName, final String attributeValue) {
+		return !tagName.equals("span") && ALIGN_STYLE.matcher(attributeValue).matches();
+	}
 
     private boolean isTagAllowed(final String tagName, final boolean hasAttsOrClosing) {
         boolean result = true;

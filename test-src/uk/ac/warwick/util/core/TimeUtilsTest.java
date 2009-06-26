@@ -1,15 +1,10 @@
 package uk.ac.warwick.util.core;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Calendar;
 
-import org.joda.time.DateTime;
-
-import sun.util.calendar.CalendarUtils;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
-
 import junit.framework.TestCase;
+
+import org.joda.time.DateTime;
 
 public class TimeUtilsTest extends TestCase {
     public void testEqualsIgnoreTime() {
