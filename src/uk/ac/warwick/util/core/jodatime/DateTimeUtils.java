@@ -1,8 +1,10 @@
 package uk.ac.warwick.util.core.jodatime;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Duration;
+import org.joda.time.DurationFieldType;
 import org.joda.time.ReadableDateTime;
 import org.joda.time.Weeks;
 import org.joda.time.chrono.ISOChronology;
@@ -15,6 +17,7 @@ import org.joda.time.chrono.LenientChronology;
  */
 public final class DateTimeUtils {
 	
+	private static final int DAYS_PER_WEEK = 7;
 	private static DateTime mockDateTime;
 	
     private DateTimeUtils() {}
@@ -63,36 +66,23 @@ public final class DateTimeUtils {
     }
     
     /**
-     * Gets the difference in days between two Calendar objects, rounded UP (diff between 23:59 and 00:01 on consecutive days is 1)
+     * Gets the difference in days between two Calendar objects, ignoring time (diff between 23:59 and 00:01 on consecutive days is 1)
      */
     public static int getDifferenceInDays(final ReadableDateTime a, final ReadableDateTime b) {
-    	Days d = Days.daysBetween(a, b);
-    	int days = d.getDays();
-    	
-    	Duration duration = new Duration(a, b);
-    	    	
-    	// since we're rounding up, we need to check whether the period has any left overs
-    	if (duration.minus(d.toStandardDuration()).getMillis() > 0) {
-    		days++;
-    	}
-    	
-    	return days;
+    	DateMidnight start = new DateMidnight(a);
+    	DateMidnight end = new DateMidnight(b);
+    	return Days.daysBetween(start, end).getDays();
     }
     
     /**
      * Gets the difference in weeks between two Calendar objects, rounded UP
      */
     public static int getDifferenceInWeeks(final ReadableDateTime a, final ReadableDateTime b) {
-    	Weeks w = Weeks.weeksBetween(a, b);
-    	int weeks = w.getWeeks();
-    	
-    	Duration duration = new Duration(a, b);
-    	    	
-    	// since we're rounding up, we need to check whether the period has any left overs
-    	if (duration.minus(w.toStandardDuration()).getMillis() > 0) {
+    	int days = Days.daysBetween(new DateMidnight(a), new DateMidnight(b)).getDays();
+    	int weeks = days / DAYS_PER_WEEK;
+    	if (days % 7 != 0) {
     		weeks++;
     	}
-    	
     	return weeks;
     }
     

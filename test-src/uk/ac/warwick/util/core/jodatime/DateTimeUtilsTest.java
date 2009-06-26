@@ -64,11 +64,11 @@ public final class DateTimeUtilsTest {
     	// This should round UP
     	DateTime dt = new DateTime().withDate(2009, 1, 1).withTime(1, 0, 0, 0); //1am, 1st Jan 09
     	
-    	assertEquals(1, DateTimeUtils.getDifferenceInDays(dt, dt.plusHours(1)));
+    	assertEquals(0, DateTimeUtils.getDifferenceInDays(dt, dt.plusHours(1)));
     	assertEquals(1, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(1)));
-    	assertEquals(2, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(1).plusHours(1)));
+    	assertEquals(1, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(1).plusHours(1)));
     	assertEquals(30, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(30)));
-    	assertEquals(31, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(30).plusHours(1)));
+    	assertEquals(30, DateTimeUtils.getDifferenceInDays(dt, dt.plusDays(30).plusHours(1)));
     }
     
     @Test
@@ -76,11 +76,16 @@ public final class DateTimeUtilsTest {
     	// This should round UP
     	DateTime dt = new DateTime().withDate(2009, 1, 1).withTime(1, 0, 0, 0); //1am, 1st Jan 09
     	
-    	assertEquals(1, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusHours(1)));
+    	/* these are slightly different to TimeUtils' equivalent, but only where hours are involved
+    	 * (time of day would be ignored as with getDifferenceInDays())
+    	 */
+    	
+    	assertEquals(0, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusHours(1)));
     	assertEquals(1, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(1)));
-    	assertEquals(2, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(1).plusHours(1)));
+    	assertEquals(1, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(1).plusHours(1)));
+    	assertEquals(2, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusDays(8)));
     	assertEquals(5, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(5)));
-    	assertEquals(6, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(5).plusHours(1)));
+    	assertEquals(5, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(5).plusHours(1)));
     }
     
     private DateTime makeDateTime(int date, int hour) {
