@@ -32,7 +32,7 @@
 		<mkdir dir="${build.dir}/content" />
 
 		<!-- let's compile in parallel for no particular reason! -->
-		<parallel failonany="true">
+		<parallel failonany="true" threadcount="2">
 
 			<!-- all classes -->
 			<javac fork="true" destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"/>
