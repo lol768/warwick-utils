@@ -20,10 +20,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Mat Mannion
  */
-public final class TaskExecutionService /* implements ExecutorService*/ {
-    
-    //we can't implement ExecutorService as the method signatures change between Java5 and Java6
-    //(i.e. we won't be able to until all our machines are Java6)
+public final class TaskExecutionService implements ExecutorService {
     
     private static final Logger LOGGER = Logger.getLogger(TaskExecutionService.class);
 
