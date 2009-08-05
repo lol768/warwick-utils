@@ -79,14 +79,6 @@ public final class MapBackedAttributes implements Attributes {
             this.name = theName;
             this.value = theValue;
         }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
         
     }
 

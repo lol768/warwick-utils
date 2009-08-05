@@ -15,6 +15,7 @@ public class WarwickTagUrlManglerTest extends TestCase{
 		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(testUrl, u));	
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void testEverythingEver() {
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		User u = new User();

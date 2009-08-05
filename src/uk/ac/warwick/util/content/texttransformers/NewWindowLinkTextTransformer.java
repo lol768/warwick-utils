@@ -15,7 +15,7 @@ public final class NewWindowLinkTextTransformer implements TextTransformer {
     //public static final String CSS_CLASS = "newWindow";
     public static final String HTML_IMAGE = "<img class='targetBlank' alt='' title='Link opens in a new window' src='/static_war/images/shim.gif' />";
     
-    private static final String HTML_DOUBLE_QUOTE = "&quot;";
+//    private static final String HTML_DOUBLE_QUOTE = "&quot;";
 
     public String transform(final String html) {
         return rewriteLinks(html);

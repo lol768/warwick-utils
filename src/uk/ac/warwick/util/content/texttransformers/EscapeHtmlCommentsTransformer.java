@@ -20,7 +20,6 @@ public final class EscapeHtmlCommentsTransformer implements TextTransformer {
 
 		html = new HtmlCommentEscapingTransformer().transform(html,
 				new TextPatternTransformer.Callback() {
-					@SuppressWarnings("unchecked")
 					public String transform(final String input) {
 						Matcher matcher = HTML_COMMENT
 								.matcher(input);

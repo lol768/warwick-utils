@@ -3,10 +3,7 @@ package uk.ac.warwick.util.core.jodatime;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Duration;
-import org.joda.time.DurationFieldType;
 import org.joda.time.ReadableDateTime;
-import org.joda.time.Weeks;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.LenientChronology;
 

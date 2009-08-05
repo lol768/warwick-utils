@@ -38,6 +38,7 @@ public class WebServiceHttpMethodExecutorTest extends TestCase {
         // this depends on us having a website. That is probably the case.
 
         int result = ex.execute();
+        assertEquals(200, result);
 
         // assert that we have sent a cookie
         assertEquals(ex.getClient().getState().getCookies().length, 1);

@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.collections;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.Iterables;
-
 import junit.framework.TestCase;
+
+import com.google.common.collect.Iterables;
 
 public class PairIteratorTests extends TestCase {
 
@@ -14,11 +13,11 @@ public class PairIteratorTests extends TestCase {
 	final List<String> longer = Arrays.asList("bish", "bosh", "bash", "bang");
 
 	public void testConstructors() {
-		PairIterator<String, String> pi = new PairIterator<String, String>(
+		new PairIterator<String, String>(
 				shorter, longer);
-		pi = new PairIterator<String, String>(longer.iterator(), shorter
+		new PairIterator<String, String>(longer.iterator(), shorter
 				.iterator());
-		Iterator<Pair<String, String>> i = PairIterator.of(shorter, longer)
+		PairIterator.of(shorter, longer)
 				.iterator();
 	}
 

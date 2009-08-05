@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 
 import org.springframework.web.util.NestedServletException;
 
+@SuppressWarnings("unchecked")
 public class ExceptionUtilsTest extends TestCase {
 
 	public void testTopException() {

@@ -7,7 +7,7 @@ public final class FileNameExtensionSplitterTest extends TestCase {
 	public void testNoExtension() {
 		String fileName = "abcde";
 		assertEquals(fileName, FileUtils.getFileNameWithoutExtension(fileName));
-		assertEquals("", FileUtils.getExtension(fileName));
+		assertEquals("", FileUtils.getLowerCaseExtension(fileName));
 	}
 	
 	public void testMoreThanOneExtension() {
@@ -16,7 +16,7 @@ public final class FileNameExtensionSplitterTest extends TestCase {
 		String fileName = fileNameWithBadExtension + "." + extension;
 		
 		assertEquals("fileName", fileNameWithBadExtension, FileUtils.getFileNameWithoutExtension(fileName));
-		assertEquals("extension", extension, FileUtils.getExtension(fileName));
+		assertEquals("extension", extension, FileUtils.getLowerCaseExtension(fileName));
 	}
 	
 	public void testExtension() {
@@ -25,7 +25,7 @@ public final class FileNameExtensionSplitterTest extends TestCase {
 		String fileName = fileNameWithOutExtension + "." + extension;
 		
 		assertEquals("fileName", fileNameWithOutExtension, FileUtils.getFileNameWithoutExtension(fileName));
-		assertEquals("extension", extension, FileUtils.getExtension(fileName));
+		assertEquals("extension", extension, FileUtils.getLowerCaseExtension(fileName));
 	}
 	
 	public void testWithTrailingSlash() {
@@ -33,7 +33,7 @@ public final class FileNameExtensionSplitterTest extends TestCase {
 		String fileName = fileNameWithOutExtension;
 		
 		assertEquals("fileName", fileName, FileUtils.getFileNameWithoutExtension(fileName + "."));
-		assertEquals("extension", "", FileUtils.getExtension(fileName));
+		assertEquals("extension", "", FileUtils.getLowerCaseExtension(fileName));
 	}
 	
 	public void testCompareExtensions(){

@@ -12,7 +12,9 @@ import uk.ac.warwick.userlookup.User;
 
 public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHttpMethodExecutor {
     
-    private boolean setCookie;
+	private static final long serialVersionUID = -2713163190560555670L;
+
+	private boolean setCookie;
 
     private boolean substituteTags;
     

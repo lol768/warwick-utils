@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import uk.ac.warwick.util.content.texttransformers.AbstractSquareTagTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
-import uk.ac.warwick.util.core.HttpUtils;
 
 public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
     
@@ -71,19 +70,6 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
                 }
 
                 return result;
-            }
-
-            /**
-             * Alter entered address, adding http:// if it looks like
-             * it's a full web address.
-             */
-            private String normaliseAddress(final String enteredAddress) {
-                String normalisedAddress = enteredAddress;
-                if (HttpUtils.isAbsoluteAddress(normalisedAddress) &&
-                        !normalisedAddress.toLowerCase().startsWith("http://")) {
-                    normalisedAddress = "http://" + normalisedAddress;
-                }
-                return normalisedAddress;
             }
         };
     }        

@@ -34,7 +34,6 @@ public final class CustomEscapingTransformer implements TextTransformer {
 
 		html = new FourSlashEscapingTransformer().transform(html,
 				new TextPatternTransformer.Callback() {
-					@SuppressWarnings("unchecked")
 					public String transform(final String input) {
 						Matcher matcher = EXP_TEXTILE_BLOCK_ESC_NO_LINE_BREAKS_PAIR_MATCH
 								.matcher(input);
@@ -52,7 +51,6 @@ public final class CustomEscapingTransformer implements TextTransformer {
 
 		html = new ThreeSlashEscapingTransformer().transform(html,
 				new TextPatternTransformer.Callback() {
-					@SuppressWarnings("unchecked")
 					public String transform(final String input) {
 						Matcher matcher = EXP_TEXTILE_BLOCK_ESC_AND_CODE_PAIR_MATCH
 								.matcher(input);
@@ -68,7 +66,6 @@ public final class CustomEscapingTransformer implements TextTransformer {
 
 		html = new TwoSlashEscapingTransformer().transform(html,
 				new TextPatternTransformer.Callback() {
-					@SuppressWarnings("unchecked")
 					public String transform(final String input) {
 						Matcher matcher = EXP_TEXTILE_BLOCK_ESC_PAIR_MATCH
 								.matcher(input);

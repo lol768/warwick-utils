@@ -78,10 +78,12 @@ public final class CollectionUtils {
 	 * Obviously if the collection has any duplicate elements, at least
 	 * one of these will be lost in the returned Set.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E> Set<E> toSet(final Collection<E> collection) {
 		if (collection instanceof Set) {
 			return (Set<E>)collection;
 		}
+		
 		final Set<E> set = new HashSet<E>();
 		set.addAll(collection);
 		return set;
