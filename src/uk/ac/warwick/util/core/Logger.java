@@ -132,17 +132,7 @@ public class Logger extends org.apache.log4j.Logger {
      * provided for legacy support.
      */
     private static Logger getLoggerImpl( String name ) {
-
-        //NOTE: this can throw a class cast exception in some situations because
-        //of a bug in log4j with some RepositorySelector implementations. It
-        //looks like you can set your own RepositorySelector which implements
-        //getLogger which can decide to ignore loggerFactory and return whatever
-        //it wants to return.
-        Logger log = (Logger)
-            org.apache.log4j.Logger.getLogger( name, loggerFactory );
-       
-        return log;
-
+        return new Logger(name);
     }
    
     public void info( String format, Object... args ) {
