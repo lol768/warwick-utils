@@ -10,7 +10,7 @@ public final class ExceptionUtils {
     private ExceptionUtils() {
     }
 
-    public static Throwable retrieveException(final Exception e, final Class clazz) {
+    public static Throwable retrieveException(final Exception e, final Class<? extends Throwable> clazz) {
         for (Throwable t: retrieveExceptions(e)) {
             if (t.getClass().equals(clazz)) {
                 return t;
@@ -45,7 +45,7 @@ public final class ExceptionUtils {
      * As long as the provided throwable is not null, this method
      * will not return null.
      */
-    public static Throwable getInterestingThrowable(final Throwable e, Class[] uninterestingExceptions) {
+    public static Throwable getInterestingThrowable(final Throwable e, Class<? extends Throwable>[] uninterestingExceptions) {
         if (isUninteresting(e, uninterestingExceptions)) {
             Throwable nestedE = getCause(e);
             if (nestedE != null) {

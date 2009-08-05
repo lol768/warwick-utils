@@ -34,7 +34,7 @@ public final class AnnotationFilteringEventListener implements PostLoadEventList
 
     private final List<ObjectListener> listeners;
 
-    private final Class annotationClass;
+    private final Class<?> annotationClass;
 
     public AnnotationFilteringEventListener(final String clazz, final List<ObjectListener> theListeners)
             throws ClassNotFoundException {
