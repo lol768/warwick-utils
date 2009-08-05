@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -28,6 +30,15 @@ public final class TaskExecutionService implements ExecutorService {
 
     public TaskExecutionService() {
         this(Executors.newCachedThreadPool());
+    }
+    
+    public TaskExecutionService(int threadLimit) {
+		// This is effectively the same as using a cached thread pool, but puts
+		// a limit on the number of threads.
+    	
+    	this(new ThreadPoolExecutor(0, threadLimit,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>()));
     }
     
     public TaskExecutionService(final ExecutorService executor) {
