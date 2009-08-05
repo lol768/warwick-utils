@@ -14,8 +14,8 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
         String input = "Test abc <a href='abc' target=\"_blank\">Link</a> xyz";
         TagTransformer transformer = new TagTransformer("a");
         TextPatternTransformer.Callback callback = new TextPatternTransformer.Callback() {
-            public String transform(final String input) {
-                return input;
+            public String transform(final String i) {
+                return i;
             }
         };
         String result = transformer.transform(input, callback);
@@ -28,7 +28,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
         String expected = "Test abc REPLACE xyz";
         TagTransformer transformer = new TagTransformer("a");
         String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String input) {
+            public String transform(final String i) {
                 return "REPLACE";
             }        
         });
@@ -41,8 +41,8 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
         String expected = "Test abc START<a href='abc' target=\"_blank\">Link</a>END xyz";
         TagTransformer transformer = new TagTransformer("a");
         String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String input) {
-                return "START" + input + "END";
+            public String transform(final String i) {
+                return "START" + i + "END";
             }        
         });
         
@@ -54,8 +54,8 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
         String expected = "Test abc <A HREF='ABC' TARGET=\"_BLANK\">LINK</A> xyz";
         TagTransformer transformer = new TagTransformer("a");
         String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String input) {
-                return input.toUpperCase();
+            public String transform(final String i) {
+                return i.toUpperCase();
             }        
         });
         

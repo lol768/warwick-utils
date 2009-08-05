@@ -83,13 +83,13 @@ public final class Textile2 {
 	}
 
 	public Textile2(boolean addNoFollow, EnumSet<TransformationOptions> options) {
-		EnumSet<TransformerFeature> features = EnumSet.copyOf(DEFAULT_FEATURESET);
+		EnumSet<TransformerFeature> theFeatures = EnumSet.copyOf(DEFAULT_FEATURESET);
 		
 		if (addNoFollow) {
-			features.add(TransformerFeature.noFollowLinks);
+			theFeatures.add(TransformerFeature.noFollowLinks);
 		}
 		
-		this.features = features;
+		this.features = theFeatures;
 		this.options = options == null ? DEFAULT_OPTIONS : options;
 		
 		setupTransformers(null);

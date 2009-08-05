@@ -74,6 +74,7 @@ import org.apache.log4j.spi.LoggerFactory;
  * never expanded/formatted unless the debug level is enabled.
  *
  */
+@SuppressWarnings("deprecation")
 public class Logger extends org.apache.log4j.Logger {
 
     /**
@@ -114,7 +115,8 @@ public class Logger extends org.apache.log4j.Logger {
      * Obtain a new logger to use with the Log5j system.  This is mostly
      * provided for legacy support.
      */
-    public static Logger getLogger( Class clazz ) {
+    @SuppressWarnings("unchecked")
+	public static Logger getLogger( Class clazz ) {
         return getLoggerImpl( clazz.getName() );
     }
     /**

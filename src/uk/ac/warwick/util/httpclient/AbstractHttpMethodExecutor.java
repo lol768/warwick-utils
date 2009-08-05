@@ -182,7 +182,6 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
                 result = DateUtil.parseDate(value);
             } catch (DateParseException e) {
                 LOGGER.error("Could not parse last-modified header for page",e);
-                result = null;
             }
         }
         return result;
@@ -250,8 +249,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         }
     }
     
-    public final String escapeQueryString(String url) {
-    	String escapedUrl = url;
+    public final String escapeQueryString(final String theUrl) {
+    	String escapedUrl = theUrl;
     	
     	// if the URL has a query string, escape that query string since HttpClient 3.1 is really anal about it
     	if (escapedUrl.indexOf('?') != -1) {
@@ -312,9 +311,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
 		this.headers.add(new Header(name, value));
 	}
 	
-	protected void addHeaders(HttpMethod method) {
+	protected void addHeaders(HttpMethod theMethod) {
 		for (Header header : headers) {
-        	method.addRequestHeader(header);
+			theMethod.addRequestHeader(header);
         }
 	}
 
