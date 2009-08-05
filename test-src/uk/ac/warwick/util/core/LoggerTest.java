@@ -11,10 +11,37 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
+import org.springframework.util.StopWatch;
 
 
 public class LoggerTest {
 	private static final Logger LOGGER = Logger.getLogger();
+	
+	private static final org.apache.log4j.Logger LOGGER2 = org.apache.log4j.Logger.getLogger(LoggerTest.class); 
+	
+//	@Test public void speed() {
+//		final List<String> messages = new ArrayList<String>();
+//		
+//		for(int i=0; i<100000;i++) {
+//			LOGGER2.info("Message");
+//			LOGGER.info("MSAASFE");
+//		}
+//		StopWatch w = new StopWatch();
+//		
+//		w.start("log5j");
+//		for(int i=0; i<1000000;i++) {
+//			LOGGER.info("Message %d", i);
+//		}
+//		w.stop();
+//		
+//		w.start("log4j");
+//		for(int i=0; i<1000000;i++) {
+//			LOGGER2.info("Message " + i);
+//		}
+//		w.stop();
+//		
+//		System.out.println(w.prettyPrint());
+//	}
 	
 	@Test public void logging() {
 		final List<String> messages = new ArrayList<String>();

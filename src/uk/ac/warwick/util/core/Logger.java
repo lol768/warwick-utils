@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Formatter;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.Priority;
 import org.apache.log4j.or.ObjectRenderer;
 import org.apache.log4j.spi.LoggerFactory;
@@ -75,25 +76,7 @@ import org.apache.log4j.spi.LoggerFactory;
  *
  */
 @SuppressWarnings("deprecation")
-public class Logger extends org.apache.log4j.Logger {
-
-    /**
-     * FIXME:
-     *
-     * There is a bug where if you create a category with the same name as an
-     * already registered via log4j.xml you will get an NPE.
-     *
-     * I think we should release a 2.0 version that uses a delegate model.
-     * Instead of super.info we would call delegate.info.
-     *
-     * We would also NOT extend org.apache.log5j.Logger but instead mimic the
-     * API.
-     */
-   
-    /**
-     * Use our own LoggerFactory impl.
-     */
-    private final static LoggerFactory loggerFactory = new LoggerFactoryImpl();
+public class Logger {
 
     /**
      * Cache Formatters in ThreadLocal variables for additional performance.
@@ -102,13 +85,27 @@ public class Logger extends org.apache.log4j.Logger {
 
     private static ThrowableRenderer throwableRenderer = new ThrowableRenderer();
    
+    private final org.apache.log4j.Logger logger;
+    
     /**
      * Create a new logger class using the caller's classname as the name of the
      * category.
      * @deprecated
      */
     Logger( String name ) {
-        super( name );
+        logger = org.apache.log4j.Logger.getLogger(name);
+    }
+    
+    private Logger(org.apache.log4j.Logger l) {
+    	logger = l;
+    }
+    
+    public String getName() {
+    	return logger.getName();
+    }
+    
+    public void addAppender(Appender a) {
+    	logger.addAppender(a);
     }
 
     /**
@@ -132,96 +129,100 @@ public class Logger extends org.apache.log4j.Logger {
      * provided for legacy support.
      */
     private static Logger getLoggerImpl( String name ) {
-        return new Logger(name);
+        //NOTE: this can throw a class cast exception in some situations because
+        //of a bug in log4j with some RepositorySelector implementations. It
+        //looks like you can set your own RepositorySelector which implements
+        //getLogger which can decide to ignore loggerFactory and return whatever
+        //it wants to return.
+    	org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger( name );
+        return new Logger(log);
+
     }
    
     public void info( String format, Object... args ) {
-
-        if ( ! isInfoEnabled() ) return;
-       
-        super.info( sprintf( format, args ) );
+        if ( ! logger.isInfoEnabled() ) return;
+        logger.info( sprintf( format, args ) );
     }
 
     public void info( String format,
                       Throwable t,
                       Object... args ) {
 
-        if ( ! isInfoEnabled() ) return;
-       
-        super.info( sprintf( format, args ), t );
+        if ( ! logger.isInfoEnabled() ) return;
+        logger.info( sprintf( format, args ), t );
     }
 
     public void debug( String format, Object... args ) {
 
-        if ( ! isDebugEnabled() ) return;
+        if ( ! logger.isDebugEnabled() ) return;
        
-        super.debug( sprintf( format, args ) );
+        logger.debug( sprintf( format, args ) );
     }
 
     public void debug( String format,
                        Throwable t,
                        Object... args ) {
 
-        if ( ! isDebugEnabled() ) return;
+        if ( ! logger.isDebugEnabled() ) return;
        
-        super.debug( sprintf( format, args ), t );
+        logger.debug( sprintf( format, args ), t );
     }
 
     public void error( String format, Object... args ) {
 
-        if ( ! isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
        
-        super.error( sprintf( format, args ) );
+        logger.error( sprintf( format, args ) );
     }
 
     public void error( String format,
                        Throwable t,
                        Object... args ) {
 
-        if ( ! isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
        
-        super.error( sprintf( format, args ) + throwableRenderer.doRender( t ) );
+        logger.error( sprintf( format, args ) + throwableRenderer.doRender( t ) );
     }
 
     public void error( String format,
                        Throwable t ) {
 
-        if ( ! isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
        
-        super.error( sprintf( format ) + throwableRenderer.doRender( t ) );
+        logger.error( sprintf( format ) + throwableRenderer.doRender( t ) );
     }
 
 
     public void fatal( String format, Object... args ) {
 
-        if ( ! isEnabledFor( Priority.FATAL ) ) return;
+        if ( ! logger.isEnabledFor( Priority.FATAL ) ) return;
        
-        super.fatal( sprintf( format, args ) );
+        logger.fatal( sprintf( format, args ) );
     }
 
     public void fatal( String format,
                        Throwable t,
                        Object... args ) {
 
-        if ( ! isEnabledFor( Priority.FATAL ) ) return;
+        if ( ! logger.isEnabledFor( Priority.FATAL ) ) return;
        
-        super.fatal( sprintf( format, args ), t );
+        logger.fatal( sprintf( format, args ), t );
     }
 
     public void warn( String format, Object... args ) {
 
-        if ( ! isEnabledFor( Priority.WARN ) ) return;
+        if ( ! logger.isEnabledFor( Priority.WARN ) ) return;
        
-        super.warn( sprintf( format, args ) );
+        logger.warn( sprintf( format, args ) );
     }
 
     public void warn( String format,
                       Throwable t,
                       Object... args ) {
 
-        if ( ! isEnabledFor( Priority.WARN ) ) return;
+        if ( ! logger.isEnabledFor( Priority.WARN ) ) return;
        
-        super.warn( sprintf( format, args ), t );
+        logger.warn( sprintf( format, args ), t );
     }
 
     /*
@@ -245,16 +246,13 @@ public class Logger extends org.apache.log4j.Logger {
      */
     public static String sprintf( String format,
                                   Object... args ) {
-
+    	if (!format.contains("%")) return format;
         Formatter f = getFormatter();
         f.format( format, args );
-       
         StringBuilder sb = (StringBuilder)f.out();
         String message = sb.toString();
         sb.setLength( 0 );
-
         return message;
-
     }
 
     /**
@@ -264,17 +262,6 @@ public class Logger extends org.apache.log4j.Logger {
         return formatterCache.get();
     }
 
-}
-
-/**
- * Used to swap in our log5j impl in place of the log4j one.
- */
-class LoggerFactoryImpl implements LoggerFactory {
-
-    public org.apache.log4j.Logger makeNewLoggerInstance(String name) {
-        return new uk.ac.warwick.util.core.Logger( name );
-    }
-   
 }
 
 /**
