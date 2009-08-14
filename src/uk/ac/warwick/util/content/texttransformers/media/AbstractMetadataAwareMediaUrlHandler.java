@@ -12,6 +12,17 @@ public abstract class AbstractMetadataAwareMediaUrlHandler extends MediaUrlHandl
 			metadataHandler.handle(url, parameters);
 		}
 		
+		// sanitise width and height parameters to contain only numbers. if this
+		// ends up as empty string then the defaults will be used in the
+		// freemarker
+		if (parameters.containsKey("width")) {
+			parameters.put("width", parameters.get("width").toString().replaceAll("[^0-9]+", ""));
+		}
+		
+		if (parameters.containsKey("height")) {
+			parameters.put("height", parameters.get("height").toString().replaceAll("[^0-9]+", ""));
+		}
+		
 		return getHtmlInner(url, parameters);
 	}
 	
