@@ -88,24 +88,34 @@ public final class DateTimeUtils {
                 (dateTime.isAfter(earliest) && dateTime.isBefore(latest)));
     }
     
+    /**
+     * Returns a new DateTime object, which is the current time normally but
+     * during a test it may be set to a different time.
+     * 
+     * It's been deprecated because JodaTime allows us to set the apparent
+     * time to a fixed time and back to system time at will, so there's no
+     * need to use this factory method. Just make DateTimes as normal. Go nuts!
+     * 
+     * @deprecated
+     */
     public static DateTime newDateTime() {
-        if (mockDateTime == null) {
-            return new DateTime(); 
-        }
-        return mockDateTime;
+    	// UTL-57 - now relies on JodaTime's build-in time bending ability
+        return new DateTime();
     }
     
     /**
      * NOT threadsafe. Used for testing.
-     * Does an action with a mockdatetime. only makes a difference if the
-     * code inside uses DateTimeUtils.newDateTime()
+     * Does an action with a mockdatetime.
+     * 
+     * Now that we use JodaTime's DateTimeUtils, this should work even where you
+     * directly do "new DateTime()" or create any other Joda instants. UTL-57
      */
     public static void useMockDateTime(final DateTime dt, final Callback callback) {
         try {
-            mockDateTime = dt;
+        	org.joda.time.DateTimeUtils.setCurrentMillisFixed(dt.getMillis());
             callback.doSomething();
         } finally {
-            mockDateTime = null;
+            org.joda.time.DateTimeUtils.setCurrentMillisSystem();
         }
     }
     
