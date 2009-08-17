@@ -15,7 +15,6 @@ import org.joda.time.chrono.LenientChronology;
 public final class DateTimeUtils {
 	
 	private static final int DAYS_PER_WEEK = 7;
-	private static DateTime mockDateTime;
 	
     private DateTimeUtils() {}
     
