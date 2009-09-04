@@ -1,0 +1,43 @@
+package uk.ac.warwick.util.core;
+
+
+/**
+ * A ThreadSafeStopWatch encapsulates a StopWatch class wrapped around a
+ * ThreadLocal. This class fails silently if undefined behaviour is invoked,
+ * i.e. if nested start/stop calls are attempted, the nested call will be
+ * completely ignored.
+ * 
+ * @author Mat Mannion
+ */
+public final class ThreadSafeStopWatch {
+
+    private static ThreadLocal<StopWatch> stopWatch = createNewStopWatch();
+
+    private ThreadSafeStopWatch() {
+    }
+
+    public static void start(final String taskName) {
+        stopWatch.get().start(taskName);
+    }
+
+    public static void stop() {
+        stopWatch.get().stop();
+    }
+
+    public static String prettyPrint() {
+        return stopWatch.get().prettyPrint();
+    }
+
+    public static void destroy() {
+        stopWatch = createNewStopWatch();
+    }
+
+    private static ThreadLocal<StopWatch> createNewStopWatch() {
+        return new ThreadLocal<StopWatch>() {
+            protected synchronized StopWatch initialValue() {
+                return new StopWatch();
+            }
+        };
+    }
+
+}

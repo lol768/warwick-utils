@@ -448,6 +448,17 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, input);
     }
+    
+    public void testNastyBlocking() throws Exception {
+    	String input = readResourceToString("/htmlClean/sbtwo-3275.html");
+    	
+    	long start = System.currentTimeMillis();
+    	cleaner.clean(input);
+    	long stop = System.currentTimeMillis();
+    	
+    	// assert that this took less than 5 seconds. It should take MUCH less than that!
+    	assertTrue((stop-start) < 5000);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
