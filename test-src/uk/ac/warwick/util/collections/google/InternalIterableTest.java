@@ -1,14 +1,11 @@
 package uk.ac.warwick.util.collections.google;
 
-import static com.google.common.base.Predicates.isEqualTo;
-import static com.google.common.base.Predicates.isNull;
-import static com.google.common.base.Predicates.not;
-import static com.google.common.collect.Iterables.find;
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.base.Predicates.*;
+import static com.google.common.collect.Iterables.*;
+import static com.google.common.collect.Lists.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -21,14 +18,13 @@ import junit.framework.TestCase;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.Comparators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.PrimitiveArrays;
+import com.google.common.collect.Ordering;
 
 public class InternalIterableTest extends TestCase {
 
     private InternalIterable<String> words = InternalIterable.of(newArrayList("ham", "home", "from", "fish", "have", "ham"));
-    private static Comparator<String> alpha = Comparators.naturalOrder();
+    private static Ordering<String> alpha = Ordering.natural();
 
 
     /*
@@ -120,7 +116,7 @@ public class InternalIterableTest extends TestCase {
          * Verify that we can find a word that doesn't begin with 'h' in the
          * first list...
          */
-        assertEquals("fish", find(words, isEqualTo("fish")));
+        assertEquals("fish", find(words, equalTo("fish")));
 
         /*
          * ...and that we can't find a word that doesn't begin with 'h' in the
@@ -128,7 +124,7 @@ public class InternalIterableTest extends TestCase {
          */
 
         try {
-            find(hWords, isEqualTo("fish"));
+            find(hWords, equalTo("fish"));
             fail();
         } catch (NoSuchElementException e) {
             // expected
@@ -148,7 +144,7 @@ public class InternalIterableTest extends TestCase {
 
         Iterable<Boolean> results = words.transform(startsWithH);
 
-        Iterator<Boolean> expectedResults = PrimitiveArrays.asList(new boolean[] { true, true, false, false, true, true })
+        Iterator<Boolean> expectedResults = Lists.newArrayList(true, true, false, false, true, true)
                 .iterator();
         for (Boolean result: results) {
             Boolean e = expectedResults.next();
@@ -185,11 +181,10 @@ public class InternalIterableTest extends TestCase {
     public void testSort() {
         Iterable<String> sorted = words.sort(alpha);
         assertEquals("fish", sorted.iterator().next());
-        Comparator<String> reverse = new Comparator<String>() {
+        Ordering<String> reverse = new Ordering<String>() {
             public int compare(String o1, String o2) {
                 return o2.compareTo(o1);
             }
-
         };
         sorted = words.sort(reverse);
         assertEquals("home", sorted.iterator().next());

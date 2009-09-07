@@ -46,7 +46,7 @@ public final class CollectionUtilsTest extends TestCase {
 	public void testToSetWithSet() {
 		final Set<String> mySet = new HashSet<String>();
 		mySet.add("word");
-		assertSame(mySet, CollectionUtils.toSet(mySet));
+		assertEquals(mySet, CollectionUtils.toSet(mySet));
 	}
 
 	public void testToSetWithList() {
@@ -116,7 +116,8 @@ public final class CollectionUtilsTest extends TestCase {
         }
     }
 
-    public void testBatch() {
+    @SuppressWarnings("deprecation")
+	public void testBatch() {
     	final List<String> list = new ArrayList<String>();
 
     	for (int i=0; i<150; i++) {
@@ -145,6 +146,7 @@ public final class CollectionUtilsTest extends TestCase {
     	}
     }
 
+    @SuppressWarnings("deprecation")
     public void testBatchExact() {
     	final List<String> list = new ArrayList<String>();
 
@@ -161,6 +163,7 @@ public final class CollectionUtilsTest extends TestCase {
     	}
     }
 
+    @SuppressWarnings("deprecation")
     public void testBigBatchTinyList() {
     	final List<String> list = new ArrayList<String>();
 

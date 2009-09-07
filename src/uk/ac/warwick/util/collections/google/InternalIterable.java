@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.collections.google;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 /**
  * A class to allow Ruby-style internal iterator methods on java Iterables.
@@ -83,8 +82,8 @@ public final class InternalIterable<T> implements Iterable<T> {
      * n.b. there is no version of this method that doesn't take a comparator, (and thus uses natural order)
      * because we don't constrain the Iterables to contain only Comparable objects.
      */
-    public InternalIterable<T> sort(final Comparator<T> comparator ){
-        return new InternalIterable<T>(Lists.sortedCopy(delegate,comparator));
+    public InternalIterable<T> sort(final Ordering<T> comparator){
+        return new InternalIterable<T>(comparator.sortedCopy(delegate));
     }
 
     /**
@@ -100,7 +99,7 @@ public final class InternalIterable<T> implements Iterable<T> {
      * At each step, memo is set to the value returned by Injector.apply. 
      * The first parameter lets you supply an initial value for memo. 
      */
-    public <F> F inject(final F initialMemo,final  Injector<F,T> injector) {
+    public <F> F inject(final F initialMemo, final Injector<F,T> injector) {
         F memo = initialMemo;
         for (T element: delegate) {
             memo = injector.apply(memo, element);

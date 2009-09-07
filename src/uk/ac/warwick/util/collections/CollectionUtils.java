@@ -6,13 +6,16 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
 
@@ -59,17 +62,8 @@ public final class CollectionUtils {
         return map;
     }
 
-	@SuppressWarnings("unchecked")
 	public static <Y, X extends Y> Collection<X> filterByClass(final Collection<Y> collection, final Class<X> clazz) {
-        final List<X> results = new ArrayList<X>();
-
-        for (final Y obj : collection) {
-            if (clazz.isInstance(obj)) {
-                results.add((X)obj);
-            }
-        }
-
-        return results;
+		return Lists.newArrayList(Iterables.filter(collection, clazz));
     }
 
 	/**
@@ -78,15 +72,8 @@ public final class CollectionUtils {
 	 * Obviously if the collection has any duplicate elements, at least
 	 * one of these will be lost in the returned Set.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <E> Set<E> toSet(final Collection<E> collection) {
-		if (collection instanceof Set) {
-			return (Set<E>)collection;
-		}
-		
-		final Set<E> set = new HashSet<E>();
-		set.addAll(collection);
-		return set;
+		return Sets.newHashSet(collection);
 	}
 
 	/**
@@ -147,14 +134,11 @@ public final class CollectionUtils {
         return list.subList(fromIndex, toIndex);
     }
 
+	/**
+	 * @deprecated Use Lists.partition(list, batchSize) from Google Collections 1.0 or later
+	 */
 	public static <T> List<List<T>> batch(final List<T> list, final int batchSize) {
-		final List<List<T>> result = new ArrayList<List<T>>();
-
-		for (int i=0; i < list.size(); i+=batchSize) {
-			result.add(list.subList(i, Math.min(i+batchSize, list.size())));
-		}
-
-		return result;
+		return Lists.partition(list, batchSize);
 	}
 
 	/**

@@ -18,6 +18,9 @@
 	<target name="init" depends="clean">
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${build.dir}"/>
+		
+		<mkdir dir="${build.dir}/cobertura" />
+		<delete file="cobertura.ser" />
 	</target>
 
 	<target name="compile" depends="init">
@@ -128,6 +131,36 @@
 			<fileset dir="${test-src.dir}/resources" />
 		</copy>
 	</target>
+	
+	<taskdef classpathref="external.libs.path" resource="tasks.properties"/>
+	
+	<target name="_instrument" depends="compile">
+		<mkdir dir="${build.dir}/instrumented" />
+		
+		<cobertura-instrument todir="${build.dir}/instrumented">
+			<ignore regex="org.apache.log4j.*" />
+			
+			<fileset dir="${build.dir}/all" />
+		</cobertura-instrument>
+	</target>
+	
+	<target name="test-coverage" depends="_instrument,test">
+		<cobertura-report destdir="${build.dir}/cobertura" format="xml">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+				<exclude name="**/CVS/**/*.*" />
+			</fileset>
+		</cobertura-report>
+	</target>
+	
+	<target name="test-coverage-html" depends="_instrument,test">
+		<cobertura-report destdir="${build.dir}/cobertura">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+				<exclude name="**/CVS/**/*.*" />
+			</fileset>
+		</cobertura-report>
+	</target>
 
 	<target name="package" depends="compile">
 		<copy file="META-INF/MANIFEST.MF" tofile="${build.dir}/MANIFEST.MF"/>
@@ -154,7 +187,7 @@
 		<delete dir="${build.dir}"/>
 	</target>
 
-	<target name="test" depends="compile,_compiletests">
+	<target name="test" depends="compile,_compiletests,_instrument">
 		<mkdir dir="${unit-test.report.dir}" />
 		<path id="test.run.class.path">
 			<path refid="external.libs.path" />
@@ -163,6 +196,9 @@
 			<pathelement path="${build.dir}/unit-tests/resources" />
 		</path>
 		<junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="yes" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
+			<!-- When we instrument we still include the original classes, we just put the instrumented ones first -->
+			<classpath location="${build.dir}/instrumented" />
+			
 			<classpath refid="test.run.class.path" />
 			<formatter type="xml" />
 			<batchtest todir="${unit-test.report.dir}">

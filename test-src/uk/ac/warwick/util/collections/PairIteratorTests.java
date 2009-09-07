@@ -1,11 +1,10 @@
 package uk.ac.warwick.util.collections;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
-
-import com.google.common.collect.Iterables;
 
 public class PairIteratorTests extends TestCase {
 
@@ -43,8 +42,20 @@ public class PairIteratorTests extends TestCase {
 
 	public void testIteratePastEndOfOneCollection() {
 		Iterable<Pair<String, String>> pi = PairIterator.of(shorter, longer);
-		Pair<String, String> pair = Iterables.skip(pi, 3).iterator().next();
+		Pair<String, String> pair = skip(pi, 3).iterator().next();
 		assertEquals("bang", pair.getRight());
 		assertNull(pair.getLeft());
+	}
+	
+	private static <T> Iterable<T> skip(final Iterable<T> iterable, final int skip) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				Iterator<T> iterator = iterable.iterator();
+				for (int i=0; i<skip; i++) {
+					iterator.next();
+				}
+				return iterator;
+			}
+		};
 	}
 }

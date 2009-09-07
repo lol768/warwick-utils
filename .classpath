@@ -36,11 +36,11 @@
 	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring.jar" sourcepath="external-libs/src/spring-2.5.5-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/yuicompressor/yuicompressor-2.4.2.jar"/>
-	<classpathentry kind="lib" path="external-libs/google-collect/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="lib" path="external-libs/javacsv/javacsv.jar"/>
 	<classpathentry kind="lib" path="external-libs/jodatime/joda-time-hibernate-1.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/jruby/jruby-1.3.0RC1.jar" sourcepath="external-libs/src/jruby-1.3.0RC1-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/jodatime/joda-time-1.6.jar" sourcepath="external-libs/src/joda-time-1.6-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/google-collect/google-collect-1.0-rc2.jar" sourcepath="external-libs/src/google-collect-1.0-rc2-src.zip"/>
 	<classpathentry kind="lib" path="ruby-src/redcloth_scan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

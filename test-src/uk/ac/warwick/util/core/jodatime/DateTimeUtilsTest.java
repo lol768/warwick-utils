@@ -91,6 +91,7 @@ public final class DateTimeUtilsTest {
     }
     
     @Test
+    @SuppressWarnings("deprecation")
     public void mockDateTime() {
     	final DateTime d = new DateTime(2009,8,17, 12,40,20,0);
     	DateTimeUtils.useMockDateTime(new DateTime(2009,8,17, 12,40,20,0), new Callback() {

@@ -21,9 +21,9 @@ import java.io.PrintStream;
 import java.util.Formatter;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.apache.log4j.or.ObjectRenderer;
-import org.apache.log4j.spi.LoggerFactory;
 
 /**
  * (Swiped from Log5J - http://code.google.com/p/log5j)
@@ -261,6 +261,10 @@ public class Logger {
     private static Formatter getFormatter() {
         return formatterCache.get();
     }
+
+	public void setLevel(Level level) {
+		logger.setLevel(level);
+	}
 
 }
 
