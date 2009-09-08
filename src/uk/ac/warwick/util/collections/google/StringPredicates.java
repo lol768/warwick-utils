@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.collections.google;
 
-import com.google.common.base.Predicate;
 
  
 public final class StringPredicates {
@@ -9,8 +8,8 @@ public final class StringPredicates {
         // utility class
     }
 
-    public static Predicate<String> startsWith(final String s) {
-        return new Predicate<String>() {
+    public static BasePredicate<String> startsWith(final String s) {
+        return new BasePredicate<String>() {
             public boolean apply(String test) {
                 if (s== null || test == null) return false;
                 
@@ -18,8 +17,8 @@ public final class StringPredicates {
             }            
         };
     }
-    public static Predicate<String> isStartOf(final String s){
-        return new Predicate<String>() {
+    public static BasePredicate<String> isStartOf(final String s){
+        return new BasePredicate<String>() {
             public boolean apply(String test) {
                 if (s== null || test == null) return false;
                 
