@@ -162,7 +162,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	/**
 	 * Returns a predicate that always evaluates to {@code false}.
 	 */
-	public static <T> Predicate<T> alwaysFalse() {
+	public static <T> BasePredicate<T> alwaysFalse() {
 		return new WrappedPredicate<T>(Predicates.<T> alwaysFalse());
 	}
 
@@ -170,7 +170,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * Returns a predicate that evaluates to {@code true} if the object
 	 * reference being tested is null.
 	 */
-	public static <T> Predicate<T> isNull() {
+	public static <T> BasePredicate<T> isNull() {
 		return new WrappedPredicate<T>(Predicates.<T> isNull());
 	}
 
@@ -178,7 +178,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * Returns a predicate that evaluates to {@code true} if the object
 	 * reference being tested is not null.
 	 */
-	public static <T> Predicate<T> notNull() {
+	public static <T> BasePredicate<T> notNull() {
 		return new WrappedPredicate<T>(Predicates.<T> notNull());
 	}
 
@@ -186,7 +186,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * Returns a predicate that evaluates to {@code true} if the given predicate
 	 * evaluates to {@code false}.
 	 */
-	public static <T> Predicate<T> not(Predicate<T> predicate) {
+	public static <T> BasePredicate<T> not(Predicate<T> predicate) {
 		return new WrappedPredicate<T>(Predicates.<T> not(predicate));
 	}
 
@@ -199,7 +199,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * {@code components} is empty, the returned predicate will always evaluate
 	 * to {@code true}.
 	 */
-	public static <T> Predicate<T> and(
+	public static <T> BasePredicate<T> and(
 			Iterable<? extends Predicate<? super T>> components) {
 		return new WrappedPredicate<T>(Predicates.<T> and(components));
 	}
@@ -213,7 +213,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * components} is empty, the returned predicate will always evaluate to
 	 * {@code true}.
 	 */
-	public static <T> Predicate<T> and(Predicate<? super T>... components) {
+	public static <T> BasePredicate<T> and(Predicate<? super T>... components) {
 		return new WrappedPredicate<T>(Predicates.<T> and(components));
 	}
 
@@ -223,7 +223,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * order, and evaluation will be "short-circuited" as soon as a false
 	 * predicate is found.
 	 */
-	public static <T> Predicate<T> and(Predicate<? super T> first,
+	public static <T> BasePredicate<T> and(Predicate<? super T> first,
 			Predicate<? super T> second) {
 		return new WrappedPredicate<T>(Predicates.<T> and(first, second));
 	}
@@ -237,7 +237,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * {@code components} is empty, the returned predicate will always evaluate
 	 * to {@code false}.
 	 */
-	public static <T> Predicate<T> or(
+	public static <T> BasePredicate<T> or(
 			Iterable<? extends Predicate<? super T>> components) {
 		return new WrappedPredicate<T>(Predicates.<T> or(components));
 	}
@@ -251,7 +251,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * {@code components} is empty, the returned predicate will always evaluate
 	 * to {@code false}.
 	 */
-	public static <T> Predicate<T> or(Predicate<? super T>... components) {
+	public static <T> BasePredicate<T> or(Predicate<? super T>... components) {
 		return new WrappedPredicate<T>(Predicates.<T> or(components));
 	}
 
@@ -261,7 +261,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * order, and evaluation will be "short-circuited" as soon as as soon as a
 	 * true predicate is found.
 	 */
-	public static <T> Predicate<T> or(Predicate<? super T> first,
+	public static <T> BasePredicate<T> or(Predicate<? super T> first,
 			Predicate<? super T> second) {
 		return new WrappedPredicate<T>(Predicates.<T> or(first, second));
 	}
@@ -270,7 +270,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * Returns a predicate that evaluates to {@code true} if the object being
 	 * tested {@code equals()} the given target or both are null.
 	 */
-	public static <T> Predicate<T> equalTo(T target) {
+	public static <T> BasePredicate<T> equalTo(T target) {
 		return new WrappedPredicate<T>(Predicates.<T> equalTo(target));
 	}
 
@@ -284,7 +284,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * using {@link com.google.common.collect.Iterables#filter(Iterable, Class)}
 	 * in preference.
 	 */
-	public static Predicate<Object> instanceOf(Class<?> clazz) {
+	public static BasePredicate<Object> instanceOf(Class<?> clazz) {
 		return new WrappedPredicate<Object>(Predicates.instanceOf(clazz));
 	}
 
@@ -301,7 +301,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * @param target
 	 *            the collection that may contain the function input
 	 */
-	public static <T> Predicate<T> in(Collection<? extends T> target) {
+	public static <T> BasePredicate<T> in(Collection<? extends T> target) {
 		return new WrappedPredicate<T>(Predicates.<T> in(target));
 	}
 
@@ -311,7 +311,7 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	 * 
 	 * @return the composition of the provided function and predicate
 	 */
-	public static <A, B> Predicate<A> compose(Predicate<B> predicate,
+	public static <A, B> BasePredicate<A> compose(Predicate<B> predicate,
 			Function<A, ? extends B> function) {
 		return new WrappedPredicate<A>(Predicates.<A, B> compose(predicate,
 				function));
