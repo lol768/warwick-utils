@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.web;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -22,6 +23,10 @@ public class URLBuilder {
 		port = existingUrl.getPort();
 		path = existingUrl.getPath();
 		query = existingUrl.getQuery();
+	}
+	
+	public URLBuilder(String urlString) throws MalformedURLException {
+		this(new URL(urlString));
 	}
 
 	public URL toURL() throws MalformedURLException {
@@ -75,5 +80,9 @@ public class URLBuilder {
 	public URLBuilder setQuery(String query) {
 		this.query = query;
 		return this;
+	}
+	
+	public URLBuilder setQuery(URLQuery query) throws UnsupportedEncodingException {
+		return setQuery(query.toQueryString());
 	}
 }
