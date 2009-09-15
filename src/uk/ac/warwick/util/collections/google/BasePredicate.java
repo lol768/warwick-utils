@@ -112,8 +112,8 @@ public abstract class BasePredicate<T> implements Predicate<T> {
 	/**
 	 * Returns a filtered copy of the input list, with order retained.
 	 */
-	public List<T> filteredCopy(List<T> unfiltered) {
-		return Lists.newArrayList(filter((Iterable<T>) unfiltered));
+	public List<T> filteredCopy(Iterable<T> unfiltered) {
+		return Lists.newArrayList(filter(unfiltered));
 	}
 
 	/**
