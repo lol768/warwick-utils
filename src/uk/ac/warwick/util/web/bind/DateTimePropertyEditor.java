@@ -3,6 +3,8 @@ package uk.ac.warwick.util.web.bind;
 import java.beans.PropertyEditorSupport;
 
 import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.chrono.LenientChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.StringUtils;
@@ -26,21 +28,34 @@ public final class DateTimePropertyEditor extends PropertyEditorSupport {
     }
     
     public DateTimePropertyEditor(String pattern, boolean isAllowEmpty) {
-        this(new String[] { pattern }, isAllowEmpty);
+        this(pattern, isAllowEmpty, false);
+    }
+    
+    public DateTimePropertyEditor(String pattern, boolean isAllowEmpty, boolean isLenient) {
+    	this(new String[] { pattern }, isAllowEmpty, isLenient);
     }
     
     public DateTimePropertyEditor(String[] patterns) {
         this(patterns, true);
     }
-
+    
     public DateTimePropertyEditor(String[] patterns, boolean isAllowEmpty) {
+        this(patterns, isAllowEmpty, false);
+    }
+
+    public DateTimePropertyEditor(String[] patterns, boolean isAllowEmpty, boolean isLenient) {
         if (patterns.length == 0) {
             throw new IllegalArgumentException("At least one pattern must be specified");
         }
         
         this.dateFormats = new DateTimeFormatter[patterns.length];
         for (int i=0;i<patterns.length;i++) {
-            dateFormats[i] = DateTimeFormat.forPattern(patterns[i]);
+        	if (isLenient) {
+        		dateFormats[i] = DateTimeFormat.forPattern(patterns[i])
+        			.withChronology(LenientChronology.getInstance(ISOChronology.getInstance()));
+        	} else {
+        		dateFormats[i] = DateTimeFormat.forPattern(patterns[i]);
+        	}
         }
         
         this.allowEmpty = isAllowEmpty;
@@ -59,7 +74,7 @@ public final class DateTimePropertyEditor extends PropertyEditorSupport {
                 try {
                     parsed = format.parseDateTime(text);
                     break;
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {  
                     // ignore until we have tried all formats
                     parsed = null;
                 }

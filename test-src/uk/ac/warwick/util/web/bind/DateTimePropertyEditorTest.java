@@ -37,5 +37,21 @@ public final class DateTimePropertyEditorTest {
         assertEquals(DateTimeConstants.JANUARY, output.getMonthOfYear());
         assertEquals(2009, output.getYear());
     }
+    
+    @Test
+    public void lenientParsing() throws Exception {
+    	DateTimePropertyEditor editor = new DateTimePropertyEditor("ddMMyyHHmm", false, true);
+    	editor.setAsText("3109090900");
+    	
+    	DateTime output = (DateTime)editor.getValue();
+        assertNotNull(output);
+        assertEquals(0, output.getMillisOfSecond());
+        assertEquals(9, output.getHourOfDay());
+        assertEquals(0, output.getMinuteOfHour());
+        assertEquals(1, output.getDayOfMonth());
+        assertEquals(DateTimeConstants.OCTOBER, output.getMonthOfYear());
+        assertEquals(2009, output.getYear());
+        assertEquals("0110090900", editor.getAsText());
+    }
 
 }
