@@ -27,6 +27,17 @@ public final class EmailTagTextTransformerTest {
 	}
 	
 	@Test
+	public void noScriptForHtmlComments() throws Exception {
+		String input = "<!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff --> <p>[email]m.mannion@warwick.ac.uk[/email]</p><!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff --> <!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff -->";
+		
+		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
+		String output = transformer.transform(input);
+		
+		// Only one instance of this.
+		assertEquals("Should only have one email address wrapped in HTML", output.indexOf("<span id"), output.lastIndexOf("<span id"));
+	}
+	
+	@Test
 	public void retainsExistingScripts() throws Exception {
 		String input = "<html><head><script src=\"blah\"></script></head><body>[email]m.mannion@warwick.ac.uk[/email]</body></html>";
 		

@@ -73,8 +73,31 @@ public final class EmailTagTextTransformer implements TextTransformer {
         	return insertScript(html, emails);
         }
 	}
-
+	
 	private String doEmailTransform(String text, Map<String, String> emails) {
+		// Treat tags in comments differently to those not in comments
+		Pattern htmlComment = Pattern.compile("<!--(.*?)-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+		Matcher matcher = htmlComment.matcher(text);
+        StringBuilder sb = new StringBuilder();
+        
+        int lastMatch = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+        
+        while (matcher.find()) {
+            startIndex = matcher.start();
+            endIndex = matcher.end();
+            sb.append(doEmailTransform(text.substring(lastMatch, startIndex), emails, false));
+            sb.append(doEmailTransform(text.substring(startIndex, endIndex), emails, true));
+            lastMatch = endIndex;
+        }
+        
+        sb.append(doEmailTransform(text.substring(endIndex), emails, false));
+        
+        return sb.toString();
+	}
+
+	private String doEmailTransform(String text, Map<String, String> emails, boolean isComment) {
 		Matcher matcher = EMAIL_TAG_PATTERN.matcher(text);
         StringBuilder sb = new StringBuilder();
         
@@ -87,7 +110,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
             endIndex = matcher.end();
             sb.append(text.substring(lastMatch, startIndex));
             
-            sb.append(replaceWithSpan(text.substring(startIndex, endIndex), emails, matcher));
+            sb.append(replaceWithSpan(text.substring(startIndex, endIndex), emails, matcher, isComment));
             
             lastMatch = endIndex;
         }
@@ -117,7 +140,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
 	}
 
 	private String replaceWithSpan(String input,
-			Map<String, String> emails, Matcher matcher) {
+			Map<String, String> emails, Matcher matcher, boolean isComment) {
 		Map<String, Object> parameters = getParameters(matcher);
 		String contents = getContents(matcher);
 		if (contents == null) {
@@ -160,14 +183,16 @@ public final class EmailTagTextTransformer implements TextTransformer {
 		sb.append("</a>");
 		String js = generateJavascriptCode(sb, r, uniqueId);
 		
-		emails.put(uniqueId, js);
+		if (!isComment) {
+			emails.put(uniqueId, js);
+		}
 
-		return generateSpanCode(parameters,	caption, email, r, uniqueId);
+		return generateSpanCode(parameters,	caption, email, r, uniqueId, isComment);
 	}
 	
 	private String generateSpanCode(
 			final Map<String, Object> parameters, final String caption,
-			final String email, final Random r, final String uniqueId) {
+			final String email, final Random r, final String uniqueId, final boolean isComment) {
 		String modifiedEmail = email.replaceAll("@", " at ");
 		modifiedEmail = modifiedEmail.replaceAll("\\.", " dot ");
 
@@ -176,13 +201,18 @@ public final class EmailTagTextTransformer implements TextTransformer {
 		}
 
 		StringBuilder spanSb = new StringBuilder();
-		spanSb.append("<span id=\"" + uniqueId + "\">");
+		
+		if (!isComment) {
+			spanSb.append("<span id=\"" + uniqueId + "\">");
+		}
 
 		for (int i = 0; i < modifiedEmail.length(); i++) {
 			spanSb.append(convertChar(modifiedEmail.charAt(i), r));
 		}
 		
-		spanSb.append("</span>");
+		if (!isComment) {
+			spanSb.append("</span>");
+		}
 		
 		return spanSb.toString();
 	}
