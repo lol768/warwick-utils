@@ -7,8 +7,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
@@ -79,6 +81,15 @@ public class URLQuery {
 	}
 	
 	/**
+	 * Similar to {@link #add(URLQuery)}, but this will remove any existing
+	 * parameters with the same name as ones found in other.
+	 */
+	public URLQuery override(URLQuery other) {
+		removeKeys(other.getKeys());
+		return add(other);
+	}
+	
+	/**
 	 * Returns the query string. NO question mark as that is not
 	 * part of the query.
 	 */
@@ -96,6 +107,14 @@ public class URLQuery {
 			sb.append(encode(pair.getRight()));
 		}
 		return sb.toString();
+	}
+	
+	public Set<String> getKeys() {
+		Set<String> keys = new HashSet<String>();
+		for (Pair<String,String> pair : query){
+			keys.add(pair.getLeft());
+		}
+		return keys;
 	}
 	
 	/**
