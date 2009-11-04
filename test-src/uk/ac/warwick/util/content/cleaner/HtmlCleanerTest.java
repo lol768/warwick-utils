@@ -460,6 +460,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	assertTrue((stop-start) < 5000);
     }
 
+    public void testIEIndenting() throws Exception {
+    	String input = readResourceToString("/htmlClean/input8.html");
+    	String expected = readResourceToString("/htmlClean/output8.html");
+    	
+    	verify(expected, input);
+    }
+
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
         assertEquals(expected, output);

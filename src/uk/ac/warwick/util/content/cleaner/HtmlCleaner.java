@@ -71,9 +71,9 @@ public final class HtmlCleaner {
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>"), "</p>", ""));
         
         // TinyMCE 3 indents use padding-left - [SBTWO-3017]
-        this.regexReplacements.add(Triple.of(Pattern.compile("\\bstyle=(\"padding-left:\\s*\\d{2,}px;\")"), "padding-left", "tinymce_indent=$1"));
-        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\btinymce_indent=(\"padding-left:\\s*\\d{2,}px;\")(?:\\sstyle=\"[^\"]*\")?"), "tinymce_indent", "style=$1"));
-        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\<table\\sstyle=\"padding(-left:\\s*\\d{2,}px;)\""), "<table", "<table style=\"margin$1\""));
+        this.regexReplacements.add(Triple.of(Pattern.compile("\\bstyle=(\"padding-left:\\s*\\d{2,}px;?\")",Pattern.CASE_INSENSITIVE), "padding-left", "tinymce_indent=$1"));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\btinymce_indent=(\"padding-left:\\s*\\d{2,}px;?\")(?:\\sstyle=\"[^\"]*\")?",Pattern.CASE_INSENSITIVE), "tinymce_indent", "style=$1"));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\<table\\sstyle=\"padding(-left:\\s*\\d{2,}px;?)\"",Pattern.CASE_INSENSITIVE), "<table", "<table style=\"margin$1\""));
     }
     
     public String clean(final String input) {
