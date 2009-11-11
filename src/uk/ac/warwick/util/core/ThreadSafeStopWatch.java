@@ -29,7 +29,7 @@ public final class ThreadSafeStopWatch {
     }
 
     public static void destroy() {
-        stopWatch = createNewStopWatch();
+        stopWatch.remove();
     }
 
     private static ThreadLocal<StopWatch> createNewStopWatch() {
