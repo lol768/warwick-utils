@@ -10,7 +10,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Maps;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
@@ -155,6 +158,22 @@ public class URLQuery {
 			}
 		}
 	}
+
+    /**
+     * A very simple conversion of this URLQuery to a map.
+     * <p>
+     * Note that if there is more than one instance of a key in the query, only
+     * the FINAL key/value pair will be returned.
+     */
+    public Map<String, String> toMap() {
+        Map<String, String> map = Maps.newHashMap();
+
+        for (Pair<String, String> pair: query) {
+            map.put(pair.getLeft(), pair.getRight());
+        }
+
+        return map;
+    }
 	
 	/**
 	 * For access by another URLQuery instance, used in {@link #add(URLQuery)}.

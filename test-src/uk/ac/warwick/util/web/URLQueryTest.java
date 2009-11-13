@@ -1,7 +1,10 @@
 package uk.ac.warwick.util.web;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -13,6 +16,17 @@ public class URLQueryTest {
 		assertEquals("1", query.getFirst("one one"));
 		assertEquals("2", query.getFirst("two"));
 		assertEquals("http://www2.warwick.ac.uk/page?escaped=yes", query.getFirst("target"));
+	}
+	
+	@Test public void toMap() throws Exception {
+	    String string = "one+one=1&two=2&target=http%3A%2F%2Fwww2.warwick.ac.uk%2Fpage%3Fescaped%3Dyes";
+        URLQuery query = new URLQuery(string);
+        
+        Map<String, String> map = query.toMap();
+        assertEquals(3, map.size());
+        assertEquals("1", map.get("one one"));
+        assertEquals("2", map.get("two"));
+        assertEquals("http://www2.warwick.ac.uk/page?escaped=yes", map.get("target"));
 	}
 	
 	@Test public void emptyValue() throws Exception {
