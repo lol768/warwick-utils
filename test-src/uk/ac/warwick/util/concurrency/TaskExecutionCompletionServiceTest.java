@@ -42,7 +42,7 @@ public final class TaskExecutionCompletionServiceTest {
 			}
 		});
 		
-		completionService.waitForCompletion(false);
+		assertEquals(0, completionService.waitForCompletion(false).size());
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public final class TaskExecutionCompletionServiceTest {
 			});
 		}
 		
-		completionService.waitForCompletion(true);
+		assertEquals(100, completionService.waitForCompletion(true).size());
 		
 		assertEquals(100, monitor.completedTasks);
 	}
