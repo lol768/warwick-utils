@@ -234,6 +234,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     public void comment(final char[] data, final int start, final int length) throws SAXException {
+    	if (start < 0 || length < 0) {
+    		return;
+    	}
         String characters = String.copyValueOf(data, start, length);
         buffer.append("<!--" + characters + "-->");
     }
