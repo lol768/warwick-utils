@@ -30,6 +30,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
     public static final String HTML_TAG = "html";
     
+    public static final int MAX_STACK_SIZE = 1000;
+    
     private static final Logger LOGGER = Logger.getLogger(CleanerWriter.class);
 
     private final Set<String> inlineTags = toSet(new String[] { "a", "abbr", "acronym", "span", "b", "basefont", "u", "em",
@@ -65,7 +67,10 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
     private boolean elementJustOpened;
 
-    private Stack<String> tagStack;
+    // As long as pushTag() and popTag() are used,
+    // these two stacks should stay the same size.
+    private Stack<StackElement> tagStack;
+    private Stack<String> tagNameStack;
 
     private ContentType lastContentType = ContentType.none;
 
@@ -92,7 +97,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         preformattedTagDepth = 0;
         inHead = false;
         elementJustOpened = false;
-        tagStack = new Stack<String>();
+        tagStack = new Stack<StackElement>();
+        tagNameStack = new Stack<String>();
     }
 
     public String getOutput() {
@@ -126,35 +132,52 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
      */
     public void startElement(final String uri, final String localName, final String qName, final Attributes atts)
             throws SAXException {
+    	String tagName = localName;
         // Slight hack to ignore <html>, <body>, and everything inside
         // <head>
-        if (handleUnwantedSurroundingsStart(localName, atts))
+        if (handleUnwantedSurroundingsStart(localName, atts)) {
+        	pushTag(new StackElement(tagName, tagName, false));
             return;
+        }
 
         if (localName.equals("script")) {
             inScript = true;
         }
 
-        String tagName = localName;
-
         if (preformattedTagDepth == 0) {
             tagName = handleReplacements(localName);
         }
-
-        pushTag(tagName);
-
-        beforeElementStart(tagName);
-        
-        String renderedTag = contentWriter.renderStartTag(tagName,atts);
         
         Map<String, String> attributes = new HashMap<String, String>();
-        
         for (int i = 0; i < atts.getLength(); i++) {
             String name = atts.getLocalName(i);
             String value = atts.getValue(i);
-            
             attributes.put(name, value);
         }
+        
+        AttributesImpl attsImpl = new AttributesImpl(atts);
+        
+        /**
+         * [UTL-64]
+         * When Chrome/Safari use spans for formatting, TinyMCE
+         * will put the alternate element name in mce_name.
+         */
+        String mceName = attsImpl.getValue("mce_name");
+        if (mceName != null) {
+        	tagName = mceName;
+        	// remove all attributes.
+        	attsImpl.clear();
+        }
+
+        /**
+         * If we have changed tagName, it will go on the
+         * stack and get remembered for the close element. 
+         */
+        pushTag(new StackElement(localName, tagName, true));
+
+        beforeElementStart(tagName);
+        
+        String renderedTag = contentWriter.renderStartTag(tagName,attsImpl);
         
         buffer.append(contentFilter.handleTagString(renderedTag, tagName, attributes));
 
@@ -187,31 +210,28 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
      * it's not an inline tag.
      */
     public void endElement(final String uri, final String localName, final String qName) throws SAXException {
+    	String tagName = localName;
         // Slight hack to ignore <html>, <body>, and everything inside
         // <head>
-        if (handleUnwantedSurroundingsEnd(localName))
+        if (handleUnwantedSurroundingsEnd(tagName)) {
+        	popTag(tagName);
             return;
+        }
 
         if (localName.equals("script")) {
             this.inScript = false;
         }
 
-        String tagName = localName;
-
         if (this.preformattedTagDepth == 0) {
             tagName = handleReplacements(localName);
         }
         
-        boolean tagWeShouldIgnore = false;
-        if (!popTag(tagName)) {
-            tagWeShouldIgnore = true;
-        }
-
-        if (tagWeShouldIgnore || contentWriter.isSelfCloser(tagName)) {
+        StackElement poppedTag = popTag(tagName);
+        if (poppedTag == null || !poppedTag.isPrint() || contentWriter.isSelfCloser(poppedTag.getTagName())) {
             return;
         }
 
-        doEndElement(tagName);
+        doEndElement(poppedTag.getTagName());
     }
 
     private void doEndElement(final String tagName) {
@@ -238,7 +258,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     		return;
     	}
         String characters = String.copyValueOf(data, start, length);
-        buffer.append("<!--" + characters + "-->");
+        buffer.append("<!--");
+        buffer.append(characters);
+        buffer.append("-->");
     }
 
     private void appendIndentSpaces() {
@@ -255,7 +277,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private boolean handleUnwantedSurroundingsStart(final String localName, final Attributes atts) {
         boolean skipTag = false;
         if (localName.equals(HTML_TAG) || localName.equals(BODY_TAG) || localName.equals(HEAD_TAG)
-                || !filter.isTagAllowed(localName, tagStack, false, atts)) {
+                || !filter.isTagAllowed(localName, tagNameStack, false, atts)) {
             skipTag = true;
         }
         if (localName.equals(HEAD_TAG)) {
@@ -270,7 +292,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private boolean handleUnwantedSurroundingsEnd(final String localName) {
         boolean skipTag = false;
         if (localName.equals(HTML_TAG) || localName.equals(BODY_TAG) || localName.equals(HEAD_TAG)
-                || !filter.isTagAllowed(localName, tagStack, true, null)) {
+                || !filter.isTagAllowed(localName, tagNameStack, true, null)) {
             skipTag = true;
         }
         if (localName.equals(HEAD_TAG)) {
@@ -313,43 +335,28 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         return extraLineBreak.contains(tagName);
     }
 
-    private void pushTag(final String localName) {
-        tagStack.push(localName);
+    private void pushTag(final StackElement element) {
+        tagStack.push(element);
+        tagNameStack.push(element.getTagName());
     }
 
+
     /**
-     * Pop a tag off the stack, checking that it's the same tag that was
-     * pushed on. If not, then there has been a mismatch of opening and
-     * closing tags which should never ever happen in XML.
+     * Pop a tag off the stack, and return it.
      * 
-     * Returns whether the tag matched in the stack. If false, it's
-     * most likely one of those situations, so the caller should ignore
-     * the closing tag.
+     * We used to check that the element matched the stack
+     * element and just skip it if it didn't match - but 
+     * we want to be able to replace one element with another
+     * so by returning the element from the stack, we can
+     * correctly close the replaced element.
      */
-    private boolean popTag(final String localName) {
+    private StackElement popTag(final String localName) {
         if (tagStack.empty()) {
             //Strange... but we press on
-            return false;
+            return null;
         }
-        
-        boolean found;
-        
-        String top = tagStack.peek();
-        if (top.equals(localName)) {
-            tagStack.pop();
-            found = true;
-        } else {
-            /*
-            It may get here as part of what seems like a bug in TagSoup, where eg
-            <b><strong> may only result in one startElement, but two endElements.
-            So if we just don't do anything, things will be fine.
-           */
-           //throw new IllegalStateException("Closing tag '" + localName + "' doesn't match top of stack '" + top + "'");
-           found = false;
-           LOGGER.warn("HTML cleanup encountered confusing combination of tags; working around it");
-        }
-        
-        return found;
+        tagNameStack.pop();
+        return tagStack.pop();
     }
 
     private String handleReplacements(final String tagName) {
@@ -408,5 +415,28 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
     public void setContentWriter(HtmlContentWriter contentWriter) {
         this.contentWriter = contentWriter;
+    }
+    
+    static class StackElement {
+    	private final String originalTagName;
+    	private final String tagName;
+    	private final boolean print;
+
+		public StackElement(String originalTagName, String tagName,
+				boolean print) {
+			super();
+			this.originalTagName = originalTagName;
+			this.tagName = tagName;
+			this.print = print;
+		}
+		public final String getOriginalTagName() {
+			return originalTagName;
+		}
+		public final String getTagName() {
+			return tagName;
+		}
+		public final boolean isPrint() {
+			return print;
+		}
     }
 }

@@ -47,6 +47,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         assertFalse("remove MS word's stupid tags", output.contains("<time"));
         assertFalse("remove MS word's stupid tags", output.contains("<date"));
     }
+    
+    public void testSpanner() throws Exception {
+    	String input = "<p class=\"MsoNormal\">A <span style=\"\">&nbsp; </span> B</p>";
+    	String output = cleaner.clean(input);
+    	System.out.println(output);
+    }
 
     public void testHorribleMsWord2007Paste() throws Exception {
         String input = readResourceToString("/htmlClean/input3.html");
@@ -459,6 +465,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	// assert that this took less than 5 seconds. It should take MUCH less than that!
     	assertTrue((stop-start) < 5000);
     }
+    
+    public void testWebkitFormattingSpans() throws Exception {
+    	String input = readResourceToString("/htmlClean/input9.html");
+    	String expected = readResourceToString("/htmlClean/output9.html");
+    	verify(expected, input);
+    }
 
     public void testIEIndenting() throws Exception {
     	String input = readResourceToString("/htmlClean/input8.html");
@@ -466,6 +478,8 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, input);
     }
+    
+    
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
