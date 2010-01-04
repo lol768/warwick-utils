@@ -80,6 +80,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, input);
     }
+    
+    public void testHorribleMsWord2007PasteTinyMCE3Chrome() throws Exception {
+    	String input = readResourceToString("/htmlClean/input6-chrome.html");
+    	String expected = readResourceToString("/htmlClean/output6-chrome.html");
+    	verify(expected, input);
+    }
 
     public void testStrongTagsNotNested() {
         String input = "<p><strong>bold <strong>text</strong></strong></p>";

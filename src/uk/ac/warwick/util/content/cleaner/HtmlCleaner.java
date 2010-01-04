@@ -47,6 +47,7 @@ public final class HtmlCleaner {
         this.straightReplacements.put("mce_thref=", "href=");
         this.straightReplacements.put("mce_tsrc=", "src=");
         this.straightReplacements.put(NewWindowLinkTextTransformer.HTML_IMAGE, "");
+        this.straightReplacements.put("\u00b7", "&#183;");
         
         this.regexReplacements = Lists.newArrayList();
         this.regexReplacements.add(Triple.of(Pattern.compile("<br mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "<br mce_bogus", ""));
@@ -65,7 +66,17 @@ public final class HtmlCleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if supportfields]", ""));// MS Word lists
         
         // MS Word lists
-        this.regexReplacements.add(Triple.of(Pattern.compile("<p[^>]*class=\"?Mso(?:[A-Z][a-z]+)+\"?[^>]*>(?:<!--\\[if !supportLists\\]-->)?(?:<\\/?(?:span|font)[^>]*>)*&#183;(?:<\\/?(?:span|font)[^>]*>)*(?:&nbsp;)+\\s*(?:<\\/?(?:span|font)[^>]*>)*(?:<!--\\[endif\\]-->)?(.*?)(?:<\\/?(?:span|font)[^>]*>)*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "&#183;", "<li>$1</li>"));
+        this.regexReplacements.add(Triple.of(Pattern.compile("<p[^>]*class=\"?Mso(?:[A-Z][a-z]+)+\"?[^>]*>" +
+        		"(?:<!--\\[if !supportLists\\]-->)?" +
+        		"(?:<\\/?(?:span|font)[^>]*>)*" +
+        		"(?:&#183;|\u00b7)" +
+        		"(?:<\\/?(?:span|font)[^>]*>)*" +
+        		"(?:&nbsp;)+\\s*" +
+        		"(?:<\\/?(?:span|font)[^>]*>)*" +
+        		"(?:<!--\\[endif\\]-->)?" +
+        		"(.*?)" +
+        		"(?:<\\/?(?:span|font)[^>]*>)*" +
+        		"</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "&#183;", "<li>$1</li>"));
         
         this.postParseRegexReplacements = Lists.newArrayList();
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>"), "</p>", ""));
@@ -129,10 +140,19 @@ public final class HtmlCleaner {
         }
         
         // Do this regex seperately; it's nasty!
+        text = doComplexOfficeTags(text);
+        
+        text = text.replaceAll("<!--\\[(.+?)]-->", "");
+        
+        return text;
+    }
+
+	private String doComplexOfficeTags(String text) {
         if (text.indexOf("Mso") != -1 && text.indexOf("</o:p>") != -1) {
         	// Since this is a nasty regular expression, split it into some sub-expressions.
         	Pattern outerPattern = Pattern.compile("<p[^>]*class=\"?Mso[a-z]+\"?[^>]*>(.*?)</p>", Pattern.CASE_INSENSITIVE);
         	Pattern innerPattern = Pattern.compile("(?:<\\?xml[^>]*>)?(?:<b style[^>]*>)?<o:p>(?:<font[^>]*>)?&nbsp;(?:</font>)?</o:p>(</b>)?", Pattern.CASE_INSENSITIVE);
+        	Pattern innerPattern2 = Pattern.compile("<span [^>]*mce_name=\"strong\"[^>]*><o:p>(?:<font[^>]*>)?&nbsp;(?:</font>)?</o:p></span>", Pattern.CASE_INSENSITIVE);
         	
         	Matcher outerMatcher = outerPattern.matcher(text);
         	
@@ -151,9 +171,10 @@ public final class HtmlCleaner {
                 String inner = text.substring(startIndex, endIndex);
                 
                 Matcher innerMatcher = innerPattern.matcher(outerMatcher.group(1));
+                Matcher innerMatcher2 = innerPattern2.matcher(outerMatcher.group(1));
                 
                 // only append inner if we don't match the inner pattern
-                if (!innerMatcher.matches()) {              	
+                if (!innerMatcher.matches() && !innerMatcher2.matches()) {              	
                 	sb.append(inner);
                 }
                 
@@ -164,11 +185,8 @@ public final class HtmlCleaner {
             
             text = sb.toString();
         }
-        
-        text = text.replaceAll("<!--\\[(.+?)]-->", "");
-        
-        return text;
-    }
+		return text;
+	}
 
     /**
      * More simple find and replaces
