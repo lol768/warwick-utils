@@ -136,7 +136,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         // Slight hack to ignore <html>, <body>, and everything inside
         // <head>
         if (handleUnwantedSurroundingsStart(localName, atts)) {
-        	pushTag(new StackElement(tagName, tagName, false));
+        	pushTag(new StackElement(tagName, tagName, atts, false));
             return;
         }
 
@@ -173,7 +173,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
          * If we have changed tagName, it will go on the
          * stack and get remembered for the close element. 
          */
-        pushTag(new StackElement(localName, tagName, true));
+        pushTag(new StackElement(localName, tagName, attsImpl, true));
 
         beforeElementStart(tagName);
         
@@ -292,7 +292,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private boolean handleUnwantedSurroundingsEnd(final String localName) {
         boolean skipTag = false;
         if (localName.equals(HTML_TAG) || localName.equals(BODY_TAG) || localName.equals(HEAD_TAG)
-                || !filter.isTagAllowed(localName, tagNameStack, true, null)) {
+                || !filter.isTagAllowed(localName, tagNameStack, true, peekTag(localName).getAttributes())) {
             skipTag = true;
         }
         if (localName.equals(HEAD_TAG)) {
@@ -358,6 +358,14 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         tagNameStack.pop();
         return tagStack.pop();
     }
+    
+    private StackElement peekTag(final String localName) {
+        if (tagStack.empty()) {
+            //Strange... but we press on
+            return null;
+        }
+        return tagStack.peek();
+    }
 
     private String handleReplacements(final String tagName) {
         if (tagReplacements.containsKey(tagName)) {
@@ -420,13 +428,15 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     static class StackElement {
     	private final String originalTagName;
     	private final String tagName;
+    	private final Attributes attributes;
     	private final boolean print;
 
-		public StackElement(String originalTagName, String tagName,
+		public StackElement(String originalTagName, String tagName, Attributes atts,
 				boolean print) {
 			super();
 			this.originalTagName = originalTagName;
 			this.tagName = tagName;
+			this.attributes = atts;
 			this.print = print;
 		}
 		public final String getOriginalTagName() {
@@ -437,6 +447,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 		}
 		public final boolean isPrint() {
 			return print;
+		}
+		public final Attributes getAttributes() {
+		    return attributes;
 		}
     }
 }

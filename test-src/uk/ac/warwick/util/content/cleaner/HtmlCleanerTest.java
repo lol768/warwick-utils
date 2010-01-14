@@ -50,8 +50,9 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     
     public void testSpanner() throws Exception {
     	String input = "<p class=\"MsoNormal\">A <span style=\"\">&nbsp; </span> B</p>";
-    	String output = cleaner.clean(input);
-    	System.out.println(output);
+    	String output = cleaner.clean(input).trim();
+    	
+    	assertEquals("<p>A &nbsp;  B</p>", output);
     }
 
     public void testHorribleMsWord2007Paste() throws Exception {
@@ -485,6 +486,19 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	verify(expected, input);
     }
     
+    public void testSBTWO3564LotsOfSpans() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-3564.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-3564-expected.html");
+        
+        verify(expected, input);
+    }
+    
+    public void testSBTWO3564MsoStyles() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-3564-2.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-3564-2-expected.html");
+        
+        verify(expected, input);
+    }
     
 
     private void verify(String expected, String input) {

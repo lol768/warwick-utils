@@ -13,7 +13,8 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 	private static final Pattern ALIGN_STYLE = Pattern.compile("\\s*text-align:\\s*[a-z]+;?\\s*", Pattern.CASE_INSENSITIVE);
 	
     private static final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
-            "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname" });
+            "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname",
+            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata"});
     
     private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
@@ -61,14 +62,16 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         
         // [SBTWO-1090] Unwanted class markup
         if (attributeName.equalsIgnoreCase("class")) {
-            allowed &= isAllowedClassName(attributeValue);
+            allowed &= isAllowedClassName(tagName, attributeValue);
         }
         
         return allowed;
     }
     
-    private boolean isAllowedClassName(final String className) {
+    private boolean isAllowedClassName(final String tagName, final String className) {
         if (className.startsWith("mce") || className.startsWith("Mso")) {
+            return false;
+        } else if (tagName.equalsIgnoreCase("span") && className.matches("style\\d+")) {
             return false;
         }
         return true;
@@ -120,23 +123,24 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 		return !tagName.equals("span") && ALIGN_STYLE.matcher(attributeValue).matches();
 	}
 
-    private boolean isTagAllowed(final String tagName, final boolean hasAttsOrClosing) {
+    private boolean isTagAllowed(final String tagName, final boolean hasAtts, final boolean closingTag) {
         boolean result = true;
         if (disallowedTags.contains(tagName)) {
             result = false;
         }
-        if (!hasAttsOrClosing) {
+        if (!hasAtts && !closingTag) {
             if (disallowedNoAttributesTags.contains(tagName)) {
                 result = false;
             }
         }
+        
         return result;
     }
 
     public boolean isTagAllowed(final String tagName, final Stack<String> tagStack, final boolean isClosingTag, final Attributes atts) {
         boolean hasAttributes = hasAttributes(tagName, atts);
         
-        boolean allowed = isTagAllowed(tagName, hasAttributes || isClosingTag);
+        boolean allowed = isTagAllowed(tagName, hasAttributes, isClosingTag);
 
         if (disallowNested.contains(tagName)
                 && ((isClosingTag && !removedNestedTags.isEmpty() && removedNestedTags.pop().equals(tagName)) || (!isClosingTag && tagStack

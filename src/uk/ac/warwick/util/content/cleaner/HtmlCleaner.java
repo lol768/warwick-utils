@@ -29,6 +29,7 @@ public final class HtmlCleaner {
     public static final Logger LOGGER = Logger.getLogger(HtmlCleaner.class); 
 
     private final Map<String,String> straightReplacements;
+    private final Map<String,String> postParseStraightReplacements;
     private final List<Triple<Pattern,String,String>> regexReplacements;
     private final List<Triple<Pattern,String,String>> postParseRegexReplacements;
     
@@ -78,8 +79,11 @@ public final class HtmlCleaner {
         		"(?:<\\/?(?:span|font)[^>]*>)*" +
         		"</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "&#183;", "<li>$1</li>"));
         
+        this.postParseStraightReplacements = new HashMap<String,String>();
+        this.postParseStraightReplacements.put("<strong></strong>", "");
+        
         this.postParseRegexReplacements = Lists.newArrayList();
-        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>"), "</p>", ""));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>\n*"), "</p>", ""));
         
         // TinyMCE 3 indents use padding-left - [SBTWO-3017]
         this.regexReplacements.add(Triple.of(Pattern.compile("\\bstyle=(\"padding-left:\\s*\\d{2,}px;?\")",Pattern.CASE_INSENSITIVE), "padding-left", "tinymce_indent=$1"));
@@ -142,6 +146,8 @@ public final class HtmlCleaner {
         // Do this regex seperately; it's nasty!
         text = doComplexOfficeTags(text);
         
+        text = doOfficeStyles(text);
+        
         text = text.replaceAll("<!--\\[(.+?)]-->", "");
         
         return text;
@@ -187,12 +193,54 @@ public final class HtmlCleaner {
         }
 		return text;
 	}
+	
+	private String doOfficeStyles(String text) {
+	    if (text.toLowerCase().indexOf("<style") != -1 && text.indexOf("mso-") != -1) {	        
+	        Pattern styles = Pattern.compile("<style[^>]*>(.*)</style>\\s*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	        Pattern officeStyle = Pattern.compile("^\\s*mso-.*$", Pattern.MULTILINE);
+	        
+	        Matcher matcher = styles.matcher(text);
+	        
+	        StringBuilder sb = new StringBuilder();
+	        
+	        int lastMatch = 0;
+            int startIndex = 0;
+            int endIndex = 0;
+            
+            while (matcher.find()) {
+                startIndex = matcher.start();
+                endIndex = matcher.end();
+
+                sb.append(text.substring(lastMatch, startIndex));
+                
+                String inner = text.substring(startIndex, endIndex);
+                
+                // only append inner if we don't match the inner pattern
+                if (!officeStyle.matcher(matcher.group(1)).find()) {
+                    sb.append(inner);
+                }
+                
+                lastMatch = endIndex;
+            }
+            
+            sb.append(text.substring(endIndex));
+            
+            text = sb.toString();
+	    }
+	    
+	    return text;
+	}
 
     /**
      * More simple find and replaces
      */
     private String doPostParsingCleanup(final String output) {
     	String text = output;
+    	
+        for (String key : postParseStraightReplacements.keySet()) {
+            text = text.replace(key, postParseStraightReplacements.get(key));
+        }
+    	
     	for (Triple<Pattern,String,String> replacement : postParseRegexReplacements) {
     		int attempts = 10;
         	while (text.toLowerCase().indexOf(replacement.getMiddle()) != -1 && replacement.getLeft().matcher(text).find() && (attempts-- > 0)) {
