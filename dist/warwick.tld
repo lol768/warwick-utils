@@ -124,4 +124,20 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+  
+  <tag>
+  	<description>List all values in an enum</description>
+  	<name>enumValues</name>
+  	<tag-class>uk.ac.warwick.util.web.tags.EnumValuesTag</tag-class>
+  	<attribute>
+  		<name>var</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  	<attribute>
+  		<name>className</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  </tag>
 </taglib>

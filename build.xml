@@ -33,6 +33,8 @@
 		<mkdir dir="${build.dir}/ant" />
 		<mkdir dir="${build.dir}/mail" />
 		<mkdir dir="${build.dir}/content" />
+		<mkdir dir="${build.dir}/cache" />
+		<mkdir dir="${build.dir}/test" />
 
 		<!-- let's compile in parallel for no particular reason! -->
 		<parallel failonany="true" threadcount="2">
@@ -79,6 +81,19 @@
 			<!-- content library -->
 			<javac fork="true" destdir="${build.dir}/content" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"
 				includes="uk/ac/warwick/util/content/**" />
+			
+			<!-- cache library -->
+			<javac fork="true" destdir="${build.dir}/cache" srcdir="${src.dir}" classpathref="external.libs.path" target="1.5" debug="on"
+				includes="uk/ac/warwick/util/cache/**" />
+			
+			<path id="test.compile.class.path">
+				<path refid="external.libs.path" />
+				<path path="${build.dir}/all" />
+				<pathelement path="${build.dir}/unit-tests/resources" />
+			</path>
+			
+			<!-- test library -->
+			<javac fork="true" destdir="${build.dir}/test" srcdir="${test-src.dir}" classpathref="test.compile.class.path" target="1.5" debug="on" />
 			
 			<!-- Copy freemarker templates into /all and /content -->
 			<copy todir="${build.dir}/all/freemarker">
@@ -175,8 +190,11 @@
 		<jar basedir="${build.dir}/httpclient" destfile="${dist.dir}/${jar.name}-httpclient.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		<jar basedir="${build.dir}/content" destfile="${dist.dir}/${jar.name}-content.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/cache" destfile="${dist.dir}/${jar.name}-cache.jar" manifest="${build.dir}/MANIFEST.MF"/>
+		<jar basedir="${build.dir}/test" destfile="${dist.dir}/${jar.name}-test.jar" manifest="${build.dir}/MANIFEST.MF"/>
 		
 		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${src.dir}" />
+		<zip destfile="${dist.dir}/${jar.name}-test-${jar.version}-src.zip" basedir="${test-src.dir}" />
 
 		<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
 		<copy file="WEB-INF/tld/textile.tld" tofile="${dist.dir}/textile.tld" />

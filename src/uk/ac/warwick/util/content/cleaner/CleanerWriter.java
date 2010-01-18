@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -32,7 +31,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     
     public static final int MAX_STACK_SIZE = 1000;
     
-    private static final Logger LOGGER = Logger.getLogger(CleanerWriter.class);
+//    private static final Logger LOGGER = Logger.getLogger(CleanerWriter.class);
 
     private final Set<String> inlineTags = toSet(new String[] { "a", "abbr", "acronym", "span", "b", "basefont", "u", "em",
             "strong", "i", "strike", "img", "del", "ins", "sup", "sub", "code", "br", "tt", "cite", "label", "big", "small",
