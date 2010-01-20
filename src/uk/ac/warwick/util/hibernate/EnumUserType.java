@@ -28,12 +28,8 @@ public abstract class EnumUserType<E extends Enum<E>> implements UserType {
     }
 
     public final Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
-        E result = null;
-        if (!resultSet.wasNull()) {
-            String name = resultSet.getString(names[0]);
-            result = Enum.valueOf(clazz, name);
-        }
-        return result;
+        String name = resultSet.getString(names[0]);
+        return name == null ? null : Enum.valueOf(clazz, name);
     }
 
     @SuppressWarnings("unchecked")

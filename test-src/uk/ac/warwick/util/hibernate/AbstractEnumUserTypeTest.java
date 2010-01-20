@@ -29,7 +29,6 @@ public abstract class AbstractEnumUserTypeTest<E extends Enum<E>> {
             final ResultSet rs = m.mock(ResultSet.class, "rs_" + enumValue.name());            
             m.checking(new Expectations() {{
                 one(rs).getString(columnName); will(returnValue(enumValue.name()));
-                one(rs).wasNull(); will(returnValue(false));
             }});
             
             E returnedValue = (E)type.nullSafeGet(rs, new String[] {columnName}, null);
@@ -63,7 +62,7 @@ public abstract class AbstractEnumUserTypeTest<E extends Enum<E>> {
         final String columnName = "ENUM_VALUE";
         final ResultSet rs = m.mock(ResultSet.class, "rs");            
         m.checking(new Expectations() {{
-            one(rs).wasNull(); will(returnValue(true));
+            one(rs).getString(columnName); will(returnValue(null));
         }});
         
         E returnedValue = (E)type.nullSafeGet(rs, new String[] {columnName}, null);
