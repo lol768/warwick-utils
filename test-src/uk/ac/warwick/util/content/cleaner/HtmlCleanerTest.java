@@ -500,6 +500,19 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         verify(expected, input);
     }
     
+    public void testSBTWO3574ChromeBoldening() throws Exception {
+    	String input = 
+    		"<p>Hello, " + 
+    		  "<span mce_name=\"strong\" mce_style=\"font-weight: bold;\" class=\"Apple-style-span\" style=\"font-weight: bold; \">" +
+    		      "my" +
+    		      "<span class=\"Apple-style-span\" style=\"font-weight: normal;\" mce_style=\"font-weight: normal;\" mce_fixed=\"1\">" +
+    		        " <em>name</em> is" +
+    		      "</span>" +
+    		  " Nick</span>" +
+    		"</p>";
+    	String expected = "<p>Hello, <strong>my</strong> <em>name</em> is<strong> Nick</strong></p>";
+    	verify(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();

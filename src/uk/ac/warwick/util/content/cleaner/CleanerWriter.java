@@ -132,10 +132,12 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     public void startElement(final String uri, final String localName, final String qName, final Attributes atts)
             throws SAXException {
     	String tagName = localName;
+        
+        StackElement inverse = null;
         // Slight hack to ignore <html>, <body>, and everything inside
         // <head>
         if (handleUnwantedSurroundingsStart(localName, atts)) {
-        	pushTag(new StackElement(tagName, tagName, atts, false));
+        	pushTag(new StackElement(tagName, tagName, atts, false, inverse));
             return;
         }
 
@@ -156,6 +158,32 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         
         AttributesImpl attsImpl = new AttributesImpl(atts);
         
+        /** UTL-67 
+         * Chrome sometimes creates a bold span with an unbolding span
+         * inside it. This bit of processing will detect the unbolding span
+         * and replace it with the inverse of the bold, by closing and re-opening
+         * the tag.
+         */
+        if (localName.equals("span")) {
+	        String clazz = attsImpl.getValue("class");
+	        if (clazz != null && clazz.contains("Apple-style-span")) {
+	        	String style = attsImpl.getValue("style");
+	        	if (style != null && style.matches(".*font-weight:\\s*normal.*"))
+	        	for (int i=tagStack.size()-1; i>0; i--) {
+	        		StackElement tag = tagStack.get(i);
+	        		if (tag.getTagName().matches("strong|em|u")) {
+	        			/*
+	        			 * We have found a tag inside a <strong> that wants to 
+	        			 * reset it back to normal.
+	        			 */
+	        			inverse = tag;
+	        			break;
+	        		}
+	        	}
+	        }
+        }
+
+        
         /**
          * [UTL-64]
          * When Chrome/Safari use spans for formatting, TinyMCE
@@ -172,11 +200,16 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
          * If we have changed tagName, it will go on the
          * stack and get remembered for the close element. 
          */
-        pushTag(new StackElement(localName, tagName, attsImpl, true));
+        pushTag(new StackElement(localName, tagName, attsImpl, true, inverse));
 
         beforeElementStart(tagName);
         
-        String renderedTag = contentWriter.renderStartTag(tagName,attsImpl);
+        String renderedTag;
+        if (inverse == null) {
+        	renderedTag = contentWriter.renderStartTag(tagName,attsImpl);
+        } else {
+        	renderedTag = contentWriter.renderEndTag(inverse.getTagName());
+        }
         
         buffer.append(contentFilter.handleTagString(renderedTag, tagName, attributes));
 
@@ -230,21 +263,22 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
             return;
         }
 
-        doEndElement(poppedTag.getTagName());
+        doEndElement(poppedTag);
     }
 
-    private void doEndElement(final String tagName) {
+    private void doEndElement(final StackElement tag) {
+    	String tagName = tag.getTagName();
         if (isPreformatted(tagName)) {
             this.preformattedTagDepth--;
         }
         if (isInlineTag(tagName)) {
-            renderClosingTag(tagName);
+            renderClosingTag(tag);
         } else {
             tagDepth--;
             if (this.lastContentType == ContentType.elementEnd) {
                 appendIndentSpaces();
             }
-            renderClosingTag(tagName);
+            renderClosingTag(tag);
             renderLineBreaksAfterTagClose(tagName);
         }
 
@@ -314,8 +348,14 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         }
     }
 
-    private void renderClosingTag(final String localName) {
-        buffer.append(contentWriter.renderEndTag(localName));
+    private void renderClosingTag(final StackElement tag) {
+    	String html;
+    	if (tag.inverse == null) {
+    		html = contentWriter.renderEndTag(tag.getTagName());
+    	} else {
+    		html = contentWriter.renderStartTag(tag.inverse.getTagName(), tag.inverse.getAttributes());
+    	}
+        buffer.append(html);
     }
 
     private boolean isInlineTag(final String tagName) {
@@ -429,14 +469,31 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     	private final String tagName;
     	private final Attributes attributes;
     	private final boolean print;
-
+    	
+    	/**
+    	 * If this property is present, it means we want to print out its inverse.
+    	 * So if this was a <strong> tag, then outputting this tag would print a </strong>
+    	 * at the start and <strong> at the end. Only makes sense if this is inside
+    	 * another <strong> tag, so that it temporarily turns off boldening.
+    	 */
+    	private StackElement inverse;
+    	
+    	/**
+    	 * 
+    	 * @param originalTagName The tag name as it was parsed
+    	 * @param tagName The tag name to render - usually the same as originalTagName but you can rename a tag if you want.
+    	 * @param atts The Attributes for this tag
+    	 * @param print Whether to print this tag - you should always add all tags even if you don't want to print them.
+    	 * @param inverse Can be null (usually will be.)
+    	 */
 		public StackElement(String originalTagName, String tagName, Attributes atts,
-				boolean print) {
+				boolean print, StackElement tinverse) {
 			super();
 			this.originalTagName = originalTagName;
 			this.tagName = tagName;
 			this.attributes = atts;
 			this.print = print;
+			this.inverse = tinverse;
 		}
 		public final String getOriginalTagName() {
 			return originalTagName;
@@ -449,6 +506,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 		}
 		public final Attributes getAttributes() {
 		    return attributes;
+		}
+		public final StackElement getInverse() {
+			return inverse;
 		}
     }
 }
