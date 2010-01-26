@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 
 import uk.ac.warwick.util.collections.Triple;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
+import uk.ac.warwick.util.core.ObjectProvider;
 
 import com.google.common.collect.Lists;
 
@@ -24,7 +25,7 @@ import com.google.common.collect.Lists;
  * 
  * @author cusebr
  */
-public final class HtmlCleaner {
+public final class HtmlCleaner implements Cleaner {
     
     public static final Logger LOGGER = Logger.getLogger(HtmlCleaner.class); 
 
@@ -34,6 +35,12 @@ public final class HtmlCleaner {
     private final List<Triple<Pattern,String,String>> postParseRegexReplacements;
     
     private final HtmlContentWriter contentWriter;
+    
+    private ObjectProvider<TagAndAttributeFilter> filterProvider = new ObjectProvider<TagAndAttributeFilter>() {
+        public TagAndAttributeFilter newInstance() {
+            return new TagAndAttributeFilterImpl();
+        }
+    };
     
     private boolean allowJavascriptHandlers = true;
     
@@ -96,7 +103,7 @@ public final class HtmlCleaner {
         
         Parser parser = new Parser();
         
-        TagAndAttributeFilter filter = new TagAndAttributeFilterImpl();
+        TagAndAttributeFilter filter = filterProvider.newInstance();
         filter.setAllowJavascriptHandlers(isAllowJavascriptHandlers());
         
         CleanerWriter handler = new CleanerWriter(filter);
@@ -297,5 +304,9 @@ public final class HtmlCleaner {
 
 	public void setAllowJavascriptHandlers(boolean allowJavascriptHandlers) {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
-	};
+	}
+
+    public void setFilterProvider(ObjectProvider<TagAndAttributeFilter> filterProvider) {
+        this.filterProvider = filterProvider;
+    }
 }
