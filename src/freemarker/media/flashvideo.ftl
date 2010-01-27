@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 Event.onDOMReady(function(){
-  object${uniqueId} = new FlashObject("${url}",'object${uniqueId}',"${width?default(425)?number?c}","${height?default(350)?number?c}");
+  object${uniqueId} = new FlashObject("${url}",'object${uniqueId}',"<#if width?default('')?string?contains('%')>${width}<#else>${width?default(640)?number?c}</#if>","<#if height?default('')?string?contains('%')>${height}<#else>${height?default(360)?number?c}</#if>");
   object${uniqueId}.addParam("wmode","transparent");
   object${uniqueId}.align = "${align}";
   object${uniqueId}.write("video_${uniqueId}");

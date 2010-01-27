@@ -201,7 +201,12 @@
 	</target>
 
 	<target name="clean">
-		<delete dir="${dist.dir}"/>
+		<delete>
+			<fileset dir="${dist.dir}">
+				<include name="**/*" />
+				<exclude name="**/CVS/**/*.*" />
+			</fileset>
+		</delete>
 		<delete dir="${build.dir}"/>
 	</target>
 
