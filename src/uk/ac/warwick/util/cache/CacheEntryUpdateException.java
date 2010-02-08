@@ -9,6 +9,14 @@ package uk.ac.warwick.util.cache;
 public class CacheEntryUpdateException extends Exception {
 	private static final long serialVersionUID = -3544723761000900132L;
 	
+	public CacheEntryUpdateException(String message) {
+        super(message);
+    }
+	
+	public CacheEntryUpdateException(String message, Throwable cause) {
+        super(message, cause);
+    }
+	
 	public CacheEntryUpdateException(Throwable cause) {
 		super(cause);
 	}
