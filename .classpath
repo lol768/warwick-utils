@@ -42,6 +42,6 @@
 	<classpathentry kind="lib" path="ruby-src/redcloth_scan.jar"/>
 	<classpathentry kind="lib" path="external-libs/ehcache/ehcache-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="external-libs/sso-client/sso-client-1.72.jar"/>
-	<classpathentry kind="lib" path="external-libs/json/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/json/json-20070829.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

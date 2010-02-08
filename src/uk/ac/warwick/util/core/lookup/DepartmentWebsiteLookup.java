@@ -1,11 +1,9 @@
 package uk.ac.warwick.util.core.lookup;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONObject;
 
 import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
@@ -69,13 +67,10 @@ public final class DepartmentWebsiteLookup {
         
         private final String apiUrl;
         
-        private final JSONParser parser = new JSONParser();
-        
         public WebsiteLookupEntryFactory(String goApiUrl) {
             this.apiUrl = goApiUrl;
         }
         
-        @SuppressWarnings("unchecked")
         public String create(String code) throws CacheEntryUpdateException {
             String goPath = "dep-code-" + code;
             
@@ -89,13 +84,13 @@ public final class DepartmentWebsiteLookup {
                     throw new CacheEntryUpdateException("Expected SC_OK but returned " + statusCode);
                 }
                 
-                Map<String, Object> obj = (Map<String, Object>)parser.parse(ex.retrieveContentsAsString());
-                boolean isFound = ((Boolean)obj.get("found")).booleanValue();
+                JSONObject obj = new JSONObject(ex.retrieveContentsAsString());
+                boolean isFound = obj.getBoolean("found");
                 
                 if (isFound) {
-                    Map<String, Object> redirect = (Map<String, Object>)obj.get("redirect");
+                    JSONObject redirect = obj.getJSONObject("redirect");
                     
-                    return (String) redirect.get("target");
+                    return redirect.getString("target");
                 } else {
                     return null;
                 }
