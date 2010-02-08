@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -32,7 +34,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	
 	// Uses an unbounded queue, so when all threads are busy it will queue up
 	// waiting jobs and do them next
-	private final ExecutorService threadPool = Executors.newFixedThreadPool(5);
+	private static ExecutorService threadPool = new ThreadPoolExecutor(1, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	
 	private final CacheStore<K,V> store;
 	
@@ -51,7 +53,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	public BasicCache(CacheStore<K,V> cacheStore, CacheEntryFactory<K,V> factory, long timeoutSeconds) {
 		this._entryFactory = factory;
 		this._timeOutMillis = timeoutSeconds * MILLISECS_IN_SECS;
-
+		
 		/*
 		 * This creates an Ehcache based store if Ehcache is available. Otherwise
 		 * it uses a synchronized HashMap.
@@ -299,5 +301,16 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 
 	public void shutdown() {
 		store.shutdown();
+	}
+
+	/**
+	 * Replace the static thread pool with a new one, if you have special requirements
+	 * for the number of threads or whatnot. Signals to the current threadpool to shutdown.
+	 */
+	public static final void setThreadPool(ExecutorService threadPool) {
+		if (BasicCache.threadPool != null) {
+			BasicCache.threadPool.shutdown();
+		}
+		BasicCache.threadPool = threadPool;
 	}
 }
