@@ -132,6 +132,12 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         List<Attribute> attributes = parser.getAttributes();
         for (Attribute a : attributes) {
             String name = a.getName().toLowerCase();
+            
+            if (getAllowedParameters() == null) {
+                result.put(name, a.getValue());
+                continue;
+            }
+            
             for (String allowedParameter : getAllowedParameters()) {
                 if (name.equals(allowedParameter)) {
                     result.put(name, a.getValue());
