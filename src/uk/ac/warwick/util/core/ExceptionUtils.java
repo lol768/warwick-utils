@@ -57,11 +57,13 @@ public final class ExceptionUtils {
     
     @SuppressWarnings("unchecked")
     private static boolean isUninteresting(Throwable e, Class[] uninterestingExceptions) {
-        for (Class clazz : uninterestingExceptions) {
-            if (clazz.isAssignableFrom(e.getClass())) {
-                return true;
-            }
-        }
+    	if (e != null) {
+	        for (Class clazz : uninterestingExceptions) {
+	            if (clazz.isAssignableFrom(e.getClass())) {
+	                return true;
+	            }
+	        }
+    	}
         return false;
     }
 
