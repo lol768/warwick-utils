@@ -3,6 +3,7 @@ package uk.ac.warwick.util.core;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ public final class StringUtils {
 	private static final Pattern LEADING_SPACE_PATTERN = Pattern.compile("^\\s+", Pattern.DOTALL);
 
 	public static final String DEFAULT_ENCODING = "ISO-8859-1";
+	public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
 
     private static final int HIGH_CHAR = 127;
 
@@ -29,36 +31,28 @@ public final class StringUtils {
     }
 
     /**
-     * Always use this instead of new String(bytes) because of encoding issues.
-     * See SBTWO-167
+     * Never use <code>new String(bytes)</code> - use this if you
+     * KNOW the bytes to be in {@value #DEFAULT_ENCODING}, otherwise
+     * use the two-argument String constructor to specify the charset
+     * after finding out what it is. Never assume a charset. 
      */
     public static String create(final byte[] bytes) {
         if (bytes == null || bytes.length == 0) {
             return "";
         }
-
-        try {
-            return new String(bytes, DEFAULT_ENCODING);
-        } catch (final UnsupportedEncodingException e) {
-            throw new IllegalStateException(DEFAULT_ENCODING + " not supported!", e);
-        }
+        return new String(bytes, DEFAULT_CHARSET);
     }
 
     /**
-     * Always use this instead of new String(bytes) because of encoding issues.
-     * See SBTWO-167
+     * Never use <code>s.getBytes()</code> - use this if you
+     * KNOW that you want to get an array of {@value #DEFAULT_ENCODING}
+     * bytes. Otherwise use the two-argument method to specify the
+     * charset after finding out what it is.
+     * 
+     * Never assume a charset!
      */
     public static byte[] create(final String s) {
-        String text = s;
-        if (s == null || s.length() == 0) {
-            text = "";
-        }
-
-        try {
-            return text.getBytes(DEFAULT_ENCODING);
-        } catch (final UnsupportedEncodingException e) {
-            throw new IllegalStateException(DEFAULT_ENCODING + " not supported!", e);
-        }
+        return nullGuard(s).getBytes(DEFAULT_CHARSET);
     }
 
     
