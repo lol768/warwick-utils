@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Mat Mannion
  */
-public final class TaskExecutionService implements ExecutorService {
+public final class TaskExecutionService implements ExecutorService, CompletionServiceProvider {
     
     private static final Logger LOGGER = Logger.getLogger(TaskExecutionService.class);
 
