@@ -64,7 +64,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 			URL url = getClass().getResource(location);
 			if (url == null) {
 				LOGGER.info("No custom "+location+" found, using default configuration");
-				String defaultUrl = "/ehcache-config.xml";
+				String defaultUrl = "/ehcache-default.xml";
 				url = getClass().getResource(defaultUrl);
 				if (url == null) {
 					throw new IllegalStateException("Could not load " + defaultUrl);

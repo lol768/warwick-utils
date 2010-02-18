@@ -110,6 +110,11 @@
 
 			<copy todir="${build.dir}/all/">
 				<fileset includes="**/*.rb" dir="${ruby-src.dir}" />
+				<fileset includes="**/*.xml" dir="${src.dir}" />
+			</copy>
+
+			<copy todir="${build.dir}/cache">
+				<fileset includes="**/*.xml" dir="${src.dir}" />
 			</copy>
 
 			<copy todir="${build.dir}/content/">
