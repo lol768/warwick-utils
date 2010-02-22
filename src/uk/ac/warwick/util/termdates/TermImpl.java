@@ -11,15 +11,16 @@ import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 @Configurable
 public final class TermImpl implements Term {
     
-    private transient TermFactory termFactory;
+    private final TermFactory termFactory;
 
-    private DateTime startDate;
+    private final DateTime startDate;
 
-    private DateTime endDate;
+    private final DateTime endDate;
 
-    private TermType termType;
+    private final TermType termType;
 
-    public TermImpl(final DateTime start, final DateTime end, final TermType type) {
+    public TermImpl(final TermFactory factory, final DateTime start, final DateTime end, final TermType type) {
+        this.termFactory = factory;
         this.startDate = start;
         this.endDate = end;
         this.termType = type;
@@ -160,10 +161,6 @@ public final class TermImpl implements Term {
         
         end = nextAutumnTerm.getStartDate().minusWeeks(1).withDayOfWeek(DateTimeConstants.SUNDAY);
         return end;
-    }
-
-    public void setTermFactory(TermFactory termFactory) {
-        this.termFactory = termFactory;
     }
 
 }

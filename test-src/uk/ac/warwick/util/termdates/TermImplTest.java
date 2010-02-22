@@ -2,8 +2,6 @@ package uk.ac.warwick.util.termdates;
 
 import static org.junit.Assert.*;
 
-import java.util.LinkedList;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
@@ -11,7 +9,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 import uk.ac.warwick.util.termdates.Term.TermType;
-import uk.ac.warwick.util.termdates.spring.TermFactoryBean;
 
 public class TermImplTest {
     
@@ -30,7 +27,7 @@ public class TermImplTest {
         DateTime secondMonday = new DateTime().withDate(2007,DateTimeConstants.APRIL,30);
         DateTime happyMondays = new DateTime().withDate(2007,DateTimeConstants.MAY,14);
         
-        TermImpl term = new TermImpl(start, end, TermType.summer);
+        TermImpl term = new TermImpl(null, start, end, TermType.summer);
         
         assertEquals(1, term.getWeekNumber(firstMonday));
         assertEquals(2, term.getWeekNumber(secondMonday));
@@ -44,22 +41,11 @@ public class TermImplTest {
         assertEquals(2, term.getWeekNumber(secondMonday));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void getAcademicWeekNumber() throws Exception {
-        TermFactoryBean bean = new TermFactoryBean();
-        
-        LinkedList<Term> dates = (LinkedList<Term>)bean.createInstance();
-        
         TermFactoryImpl factory = new TermFactoryImpl();
-        factory.setTermDates(dates);
-        
-        for (Term date : dates) {
-            ((TermImpl)date).setTermFactory(factory);
-        }
         
         // Check for 2009/10
-        
         DateTime week1start = new DateTime(2009, DateTimeConstants.OCTOBER, 5, 0, 0, 0, 0);
         DateTime week1 = new DateTime(2009, DateTimeConstants.OCTOBER, 7, 16, 39, 10, 0);
         DateTime week7 = new DateTime(2009, DateTimeConstants.NOVEMBER, 17, 16, 39, 10, 0);

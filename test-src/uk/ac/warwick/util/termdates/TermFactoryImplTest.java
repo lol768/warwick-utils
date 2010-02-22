@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.termdates.spring;
+package uk.ac.warwick.util.termdates;
 
 import static org.junit.Assert.*;
 
@@ -9,23 +9,21 @@ import org.joda.time.DateTimeConstants;
 import org.junit.Test;
 
 import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
-import uk.ac.warwick.util.termdates.Term;
 
-public final class TermFactoryBeanTest {
+public final class TermFactoryImplTest {
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void createInstance() throws Exception {
-        TermFactoryBean bean = new TermFactoryBean();
-        
-        List<Term> dates = (List<Term>)bean.createInstance();
-        
+    public void constructor() throws Exception {
+        TermFactoryImpl bean = new TermFactoryImpl();
+
+        List<Term> dates = bean.getTermDates();
+
         Term thirdTerm = dates.get(2);
         DateTime thirdTermStart = thirdTerm.getStartDate();
         DateTime april23rd = new DateTime().withDate(2007, DateTimeConstants.APRIL, 23);
-        
+
         assertTrue(DateTimeUtils.isSameDay(thirdTermStart, april23rd));
-        
+
         assertEquals(1, thirdTerm.getWeekNumber(april23rd));
     }
 
