@@ -4,15 +4,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Interval;
+import org.joda.time.MutableDateTime;
 import org.joda.time.base.BaseDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.termdates.Term.TermType;
+
+import com.google.common.collect.Lists;
 
 public final class TermFactoryImpl implements TermFactory {
     
@@ -75,6 +82,40 @@ public final class TermFactoryImpl implements TermFactory {
         return getTermFromDate(term.getEndDate().plusDays(1));
     }
     
+    public Interval getAcademicWeek(BaseDateTime date, int weekNumber) throws TermNotFoundException {
+        List<Pair<Integer, Interval>> weeks = getAcademicWeeksForYear(date);
+        for (Pair<Integer, Interval> week : weeks) {
+            if (week.getLeft() == weekNumber) {
+                return week.getRight();
+            }
+        }
+        
+        throw new TermNotFoundException("Couldn't find interval for academic week");
+    }
+    
+    public List<Pair<Integer, Interval>> getAcademicWeeksForYear(BaseDateTime date) throws TermNotFoundException {
+        List<Pair<Integer, Interval>> weeks = Lists.newArrayList();
+        
+        // Roll back to autumn term
+        Term autumnTerm = getTermFromDate(date);
+        while (autumnTerm.getTermType() != TermType.autumn) {
+            autumnTerm = getPreviousTerm(autumnTerm);
+        }
+        
+        MutableDateTime dt = autumnTerm.getStartDate().withMillisOfDay(0).withDayOfWeek(DateTimeConstants.MONDAY).toMutableDateTime();
+        int weekNumber = autumnTerm.getAcademicWeekNumber(dt);
+        while (weekNumber > 0) {            
+            DateTime start = dt.toDateTime();
+            dt.addWeeks(1);
+            DateTime end = dt.toDateTime();
+            
+            weeks.add(Pair.of(weekNumber, new Interval(start, end)));
+            weekNumber = autumnTerm.getAcademicWeekNumber(dt);
+        };
+        
+        return weeks;
+    }
+
     public void setTermDates(final LinkedList<Term> termDates) {
         this.termDates = termDates;
     }
