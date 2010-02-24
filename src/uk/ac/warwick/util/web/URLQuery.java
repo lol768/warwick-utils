@@ -32,7 +32,7 @@ public class URLQuery {
 	
 	public URLQuery() {}
 	
-	public URLQuery (final String query) throws UnsupportedEncodingException {
+	public URLQuery (final String query) {
 		this();
 		String q = StringUtils.nullGuard(query);
 		if (q.startsWith("?")) {
@@ -96,7 +96,7 @@ public class URLQuery {
 	 * Returns the query string. NO question mark as that is not
 	 * part of the query.
 	 */
-	public String toQueryString() throws UnsupportedEncodingException {
+	public String toQueryString() {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (Pair<String,String> pair : query) {
@@ -125,7 +125,7 @@ public class URLQuery {
 	 * question mark UNLESS it is empty. Handy for quickly appending to
 	 * the end of a URL.
 	 */
-	public String toQueryStringPrefixed() throws UnsupportedEncodingException {
+	public String toQueryStringPrefixed() {
 		String result = toQueryString();
 		if (result.isEmpty()) {
 			return "";
@@ -134,12 +134,20 @@ public class URLQuery {
 		}
 	}
 	
-	private String encode(String unencoded) throws UnsupportedEncodingException {
-		return URLEncoder.encode(unencoded, charset.name());
+	private String encode(String unencoded) {
+	    try {
+	        return URLEncoder.encode(unencoded, charset.name());
+	    } catch (UnsupportedEncodingException e) {
+	        throw new IllegalStateException("Illegal charset; " + charset.name());
+	    }
 	}
 	
-	private String decode(String encoded) throws UnsupportedEncodingException {
-		return URLDecoder.decode(encoded, charset.name());
+	private String decode(String encoded) {
+        try {
+            return URLDecoder.decode(encoded, charset.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Illegal charset; " + charset.name());
+        }
 	}
 
 	/**

@@ -43,5 +43,9 @@
 	<classpathentry kind="lib" path="external-libs/ehcache/ehcache-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="external-libs/sso-client/sso-client-1.72.jar"/>
 	<classpathentry kind="lib" path="external-libs/json/json-20070829.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpclient-4.0.1.jar" sourcepath="external-libs/src/httpcomponents-client-4.0.1-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpcore-nio-4.0.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpmime-4.0.1.jar" sourcepath="external-libs/src/httpcomponents-client-4.0.1-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpcore-4.0.1.jar" sourcepath="external-libs/src/httpcomponents-core-4.0.1-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

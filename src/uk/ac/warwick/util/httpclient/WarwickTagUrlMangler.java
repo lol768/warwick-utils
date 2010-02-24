@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.httpclient;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 
 import uk.ac.warwick.userlookup.User;
@@ -21,7 +22,19 @@ public class WarwickTagUrlMangler {
         return newUrl;
     }
     
+    public final URI substituteWarwickTags(final URI uri, final User user) {
+        return URI.create(substituteWarwickTags(uri.toString(), user));
+    }
+    
     private String replaceAndEncode(final String str, final String token, final String value, final String encoding) {
+        // Because of encoding issues, this may be un-encoded, url encoded (for the query), or partially url encoded (for a part of the path)
+        String replaced = replaceAndEncodeToken(str, token, value, "UTF-8");
+        replaced = replaceAndEncodeToken(replaced, token.replace("<", "%3C").replace(">", "%3E").replace("/", "%2F"), value, "UTF-8");
+        replaced = replaceAndEncodeToken(replaced, token.replace("<", "%3C").replace(">", "%3E"), value, "UTF-8");
+        return replaced;
+    }
+    
+    private String replaceAndEncodeToken(final String str, final String token, final String value, final String encoding) {
         try {
             if (StringUtils.hasLength(value)) {
                 return str.replaceAll(token, URLEncoder.encode(value, encoding));
