@@ -9,8 +9,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
