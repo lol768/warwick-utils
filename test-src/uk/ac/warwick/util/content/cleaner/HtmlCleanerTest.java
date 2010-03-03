@@ -513,6 +513,18 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	String expected = "<p>Hello, <strong>my</strong> <em>name</em> is<strong> Nick</strong></p>";
     	verify(expected, input);
     }
+    
+    public void testUTL72BackgroundEqBackground() throws Exception {
+        String input = "Here is a <em background=\"background\" align=\"align\">Rubbish</em> How magic";
+        String expected = "Here is a <em>Rubbish</em> How magic";
+        verifyNoLineBreaks(expected, input);
+    }
+    
+    public void testUTL72InvalidStyle() throws Exception {
+        String input = "Here is a <div style=\"background-image: url(background);\">Rubbish</div> How magic";
+        String expected = "Here is a <div>Rubbish</div> How magic";
+        verifyNoLineBreaks(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();

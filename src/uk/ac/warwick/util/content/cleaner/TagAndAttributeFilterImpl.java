@@ -24,6 +24,11 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     private static final Set<String> disallowNested = CleanerWriter.toSet(new String[] { "b", "i", "strong", "em", "p", "sup", "sub",
             "script", "code", "pre", "a", "form" });
+    
+    /** UTL-72 Attributes that are not allowed to be set to themselves, e.g. background="background" */
+    private static final Set<String> disallowedSelfAttributes = CleanerWriter.toSet(new String[] {
+            "background", "width", "height", "src", "href", "colspan", "align"
+    });
 
     private static final Map<String, Set<String>> disallowedAttributes;
 
@@ -60,9 +65,17 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         // [SBTWO-1024] Don't allow empty attributes
         allowed &= isAllowedBlankAttribute(attributeName, attributeValue);
         
+        // [UTL-72] Don't allow attributes set to themselves
+        allowed &= isAllowedAttributeValue(attributeName, attributeValue);
+        
         // [SBTWO-1090] Unwanted class markup
         if (attributeName.equalsIgnoreCase("class")) {
             allowed &= isAllowedClassName(tagName, attributeValue);
+        }
+        
+        // [UTL-72] Unwanted styles
+        if (attributeName.equalsIgnoreCase("style")) {
+            allowed &= isAllowedStyle(tagName, attributeValue);
         }
         
         return allowed;
@@ -72,6 +85,21 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         if (className.startsWith("mce") || className.startsWith("Mso")) {
             return false;
         } else if (tagName.equalsIgnoreCase("span") && className.matches("style\\d+")) {
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean isAllowedStyle(final String tagName, final String style) {
+        if (style.indexOf("url(background)") != -1) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private boolean isAllowedAttributeValue(final String attributeName, final String attributeValue) {
+        if (disallowedSelfAttributes.contains(attributeName.toLowerCase()) && attributeName.equalsIgnoreCase(attributeValue)) {
             return false;
         }
         return true;
