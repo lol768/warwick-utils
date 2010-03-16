@@ -18,7 +18,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     
     private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
-    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "onerror", "onsuccess", "onfailure" });
+    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure" });
 
     private static final Set<String> allowedEmptyAttributes = CleanerWriter.toSet(new String[] { "alt" });
 
@@ -82,7 +82,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     }
     
     private boolean isAllowedClassName(final String tagName, final String className) {
-        if (className.startsWith("mce") || className.startsWith("Mso")) {
+        if (className.startsWith("mce") || className.startsWith("_mce") || className.startsWith("Mso")) {
             return false;
         } else if (tagName.equalsIgnoreCase("span") && className.matches("style\\d+")) {
             return false;
@@ -115,7 +115,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     private boolean isAllowedAttributeForAllTags(final String attributeName) {
     	for (String attribute : disallowedAttributesAllTags) {
-    		if (attribute.equalsIgnoreCase(attributeName) || ("mce_" + attribute).equalsIgnoreCase(attributeName)) {
+    		if (attribute.equalsIgnoreCase(attributeName) || ("mce_" + attribute).equalsIgnoreCase(attributeName) || ("_mce_" + attribute).equalsIgnoreCase(attributeName)) {
     			return false;
     		}
     	}
@@ -138,7 +138,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
             if (tagName.equals(tag)) {
                 for (String attribute: disallowedAttributes.get(tag)) {
                 	// do a little bit of fudging to look for mce_ attributes too
-                    if (attributeName.equals(attribute) || attributeName.equals("mce_" + attribute)) {
+                    if (attributeName.equals(attribute) || attributeName.equals("mce_" + attribute) || attributeName.equals("_mce_" + attribute)) {
                         return false;
                     }
                 }

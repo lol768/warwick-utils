@@ -73,8 +73,11 @@ public final class DefaultHtmlContentWriter implements HtmlContentWriter {
                 for (String tag : MCE_TAGS) {
                     if (name.equals(tag) && containsAttribute(atts, "mce_"+tag)) {
                         continue attributeLoop;
+                    } else if (name.equals(tag) && containsAttribute(atts, "_mce_"+tag)) {
+                        continue attributeLoop;
                     }
-                    if (name.equals("mce_" + tag)) {
+                    
+                    if (name.equals("mce_" + tag) || name.equals("_mce_" + tag)) {
                         name = tag;
                     }
                 }
@@ -102,7 +105,7 @@ public final class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     private boolean containsMceAttributes(final Attributes atts) {
         for (int i = 0; i < atts.getLength(); i++) {
-            if (atts.getLocalName(i).startsWith("mce_")) {
+            if (atts.getLocalName(i).startsWith("mce_") || atts.getLocalName(i).startsWith("_mce_")) {
                 return true;
             }
         }

@@ -54,6 +54,8 @@ public final class HtmlCleaner implements Cleaner {
         this.straightReplacements = new HashMap<String,String>();
         this.straightReplacements.put("mce_thref=", "href=");
         this.straightReplacements.put("mce_tsrc=", "src=");
+        this.straightReplacements.put("_mce_thref=", "href=");
+        this.straightReplacements.put("_mce_tsrc=", "src=");
         this.straightReplacements.put(NewWindowLinkTextTransformer.HTML_IMAGE, "");
         this.straightReplacements.put("\u00b7", "&#183;");
         

@@ -190,6 +190,10 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
          * will put the alternate element name in mce_name.
          */
         String mceName = attsImpl.getValue("mce_name");
+        if (mceName == null || "".equals(mceName)) {
+            mceName = attsImpl.getValue("_mce_name");
+        }
+        
         if (mceName != null) {
         	tagName = mceName;
         	// remove all attributes.

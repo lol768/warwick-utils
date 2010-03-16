@@ -367,6 +367,16 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         verify(expected, input);
     }
 
+    public void testNoMceMarkupNewUnderscoredVersion() {
+        String input = "<h3 class=\"_mceItemHidden\">A title</h3>";
+        String expected = "<h3>A title</h3>";
+        verify(expected, input);
+
+        input = "<p>A <a _mce_href=\"#somewhere\">stupid link</a>. <img _mce_src='sheep.gif' border=3 /> sheep lol</p>";
+        expected = "<p>A <a href=\"#somewhere\">stupid link</a>. <img src=\"sheep.gif\" border=\"3\" /> sheep lol</p>";
+        verify(expected, input);
+    }
+
     public void testNoCrappyMsWordEmptyTags() {
         String input = "<span> </span><span>Also, the loss of confidence internally in the current email system requires us to set challenging objectives to accelerate progress with the email replacement project.<span>&nbsp; </span>Work has started on plans to enable all staff to send and receive email via Exchange as soon as possible.<span>&nbsp; </span>By reprioritising work within IT Services, and obtaining extra help, this process will be well underway by Christmas, retaining Groupwise only as a temporary archive.<span>&nbsp; </span>Full migration from Groupwise to Outlook will then take place over the following few months. After consultation with the Email Project Board I will provide a revised timetable for migration as soon as it is available. In moving forward I recognise that there remains an outstanding issue regarding the proposed restriction of attachment size to a maximum of 10 MB.<span>&nbsp; </span>I will ensure that we provide an appropriate method for the distribution of larger attachments which addresses this issue without unduly impacting on the efficiency of the system.</span><p><span></span></p>\n\n<span> </span><span> </span><p><span></span></p>";
         String expected = "Also, the loss of confidence internally in the current email system requires us to set challenging objectives to accelerate progress with the email replacement project.&nbsp; Work has started on plans to enable all staff to send and receive email via Exchange as soon as possible.&nbsp; By reprioritising work within IT Services, and obtaining extra help, this process will be well underway by Christmas, retaining Groupwise only as a temporary archive.&nbsp; Full migration from Groupwise to Outlook will then take place over the following few months. After consultation with the Email Project Board I will provide a revised timetable for migration as soon as it is available. In moving forward I recognise that there remains an outstanding issue regarding the proposed restriction of attachment size to a maximum of 10 MB.&nbsp; I will ensure that we provide an appropriate method for the distribution of larger attachments which addresses this issue without unduly impacting on the efficiency of the system.";
