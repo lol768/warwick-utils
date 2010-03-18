@@ -535,6 +535,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         String expected = "Here is a <div>Rubbish</div> How magic";
         verifyNoLineBreaks(expected, input);
     }
+    
+    public void testSBTWO3709() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-3709.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-3709-expected.html");
+        
+        verify(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();

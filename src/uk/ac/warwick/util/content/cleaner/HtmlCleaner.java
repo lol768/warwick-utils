@@ -2,9 +2,7 @@ package uk.ac.warwick.util.content.cleaner;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +11,7 @@ import org.ccil.cowan.tagsoup.Parser;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
@@ -29,8 +28,8 @@ public final class HtmlCleaner implements Cleaner {
     
     public static final Logger LOGGER = Logger.getLogger(HtmlCleaner.class); 
 
-    private final Map<String,String> straightReplacements;
-    private final Map<String,String> postParseStraightReplacements;
+    private final List<Pair<String,String>> straightReplacements;
+    private final List<Pair<String,String>> postParseStraightReplacements;
     private final List<Triple<Pattern,String,String>> regexReplacements;
     private final List<Triple<Pattern,String,String>> postParseRegexReplacements;
     
@@ -51,13 +50,13 @@ public final class HtmlCleaner implements Cleaner {
     public HtmlCleaner(HtmlContentWriter theContentWriter) {
     	this.contentWriter = theContentWriter;
     	
-        this.straightReplacements = new HashMap<String,String>();
-        this.straightReplacements.put("mce_thref=", "href=");
-        this.straightReplacements.put("mce_tsrc=", "src=");
-        this.straightReplacements.put("_mce_thref=", "href=");
-        this.straightReplacements.put("_mce_tsrc=", "src=");
-        this.straightReplacements.put(NewWindowLinkTextTransformer.HTML_IMAGE, "");
-        this.straightReplacements.put("\u00b7", "&#183;");
+        this.straightReplacements = Lists.newArrayList();
+        this.straightReplacements.add(Pair.of("mce_thref=", "href="));
+        this.straightReplacements.add(Pair.of("mce_tsrc=", "src="));
+        this.straightReplacements.add(Pair.of("_mce_thref=", "href="));
+        this.straightReplacements.add(Pair.of("_mce_tsrc=", "src="));
+        this.straightReplacements.add(Pair.of(NewWindowLinkTextTransformer.HTML_IMAGE, ""));
+        this.straightReplacements.add(Pair.of("\u00b7", "&#183;"));
         
         this.regexReplacements = Lists.newArrayList();
         this.regexReplacements.add(Triple.of(Pattern.compile("<br mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "<br mce_bogus", ""));
@@ -88,8 +87,8 @@ public final class HtmlCleaner implements Cleaner {
         		"(?:<\\/?(?:span|font)[^>]*>)*" +
         		"</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "&#183;", "<li>$1</li>"));
         
-        this.postParseStraightReplacements = new HashMap<String,String>();
-        this.postParseStraightReplacements.put("<strong></strong>", "");
+        this.postParseStraightReplacements = Lists.newArrayList();
+        this.postParseStraightReplacements.add(Pair.of("<strong></strong>", ""));
         
         this.postParseRegexReplacements = Lists.newArrayList();
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>\n*"), "</p>", ""));
@@ -98,6 +97,7 @@ public final class HtmlCleaner implements Cleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("\\bstyle=(\"padding-left:\\s*\\d{2,}px;?\")",Pattern.CASE_INSENSITIVE), "padding-left", "tinymce_indent=$1"));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\btinymce_indent=(\"padding-left:\\s*\\d{2,}px;?\")(?:\\sstyle=\"[^\"]*\")?",Pattern.CASE_INSENSITIVE), "tinymce_indent", "style=$1"));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\<table\\sstyle=\"padding(-left:\\s*\\d{2,}px;?)\"",Pattern.CASE_INSENSITIVE), "<table", "<table style=\"margin$1\""));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\s*\\<p\\>\\s*(\\<br(\\s*\\/)?\\>)?\\s*\\<\\/p\\>\\s*$",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
     }
     
     public String clean(final String input) {
@@ -137,8 +137,8 @@ public final class HtmlCleaner implements Cleaner {
     private String doPreParsingCleanup(final String input) {
         String text = encodeLoneTags(input);
         
-        for (String key : straightReplacements.keySet()) {
-            text = text.replace(key, straightReplacements.get(key));
+        for (Pair<String, String> replacement : straightReplacements) {
+            text = text.replace(replacement.getLeft(), replacement.getRight());
         }
         
         for (Triple<Pattern,String,String> replacement : regexReplacements) {        	
@@ -204,8 +204,8 @@ public final class HtmlCleaner implements Cleaner {
 	}
 	
 	private String doOfficeStyles(String text) {
-	    if (text.toLowerCase().indexOf("<style") != -1 && text.indexOf("mso-") != -1) {	        
-	        Pattern styles = Pattern.compile("<style[^>]*>(.*)</style>\\s*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    if ((text.toLowerCase().indexOf("<style") != -1 || text.toLowerCase().indexOf("<mce:style") != -1) && text.indexOf("mso-") != -1) {	        
+	        Pattern styles = Pattern.compile("<(?:mce\\:)?style[^>]*>(.*?)</(?:mce\\:)?style>\\s*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	        Pattern officeStyle = Pattern.compile("^\\s*mso-.*$", Pattern.MULTILINE);
 	        
 	        Matcher matcher = styles.matcher(text);
@@ -246,8 +246,8 @@ public final class HtmlCleaner implements Cleaner {
     private String doPostParsingCleanup(final String output) {
     	String text = output;
     	
-        for (String key : postParseStraightReplacements.keySet()) {
-            text = text.replace(key, postParseStraightReplacements.get(key));
+        for (Pair<String, String> replacement : postParseStraightReplacements) {
+            text = text.replace(replacement.getLeft(), replacement.getRight());
         }
     	
     	for (Triple<Pattern,String,String> replacement : postParseRegexReplacements) {
