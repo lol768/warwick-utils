@@ -58,7 +58,7 @@ public final class OracleEmptyStringUserType implements UserType {
     public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
 
         if (value != null) {
-            String v = escape((String) value);
+            String v = escape(value.toString());
             Hibernate.STRING.nullSafeSet(st, v, index);
         } else {
             Hibernate.STRING.nullSafeSet(st, value, index);
