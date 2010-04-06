@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.web;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -112,7 +113,7 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
         
         if (StringUtils.hasText(requestedUrl)) {
             try {
-                return new URLBuilder(requestedUrl).setQuery("").toURL().toExternalForm();
+                return new URLBuilder(requestedUrl).toURL().getPath();
             } catch (MalformedURLException e) {
                 return super.getRequestURI();
             }
@@ -137,6 +138,65 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     
     private String getRequestedURL() {
         return getHeader(REQUESTED_URI_HEADER_NAME);
+    }
+    
+    private URL getURL() throws MalformedURLException {
+        String requestedUrl = getRequestedURL();
+        
+        if (StringUtils.hasText(requestedUrl)) {
+            return new URLBuilder(requestedUrl).toURL();
+        }
+        
+        return null;
+    }
+
+    @Override
+    public String getQueryString() {
+        try {
+            URL url = getURL();
+            return url == null ? null : url.getQuery();
+        } catch (MalformedURLException e) {
+            return super.getQueryString();
+        }
+    }
+
+    @Override
+    public String getScheme() {
+        try {
+            URL url = getURL();
+            return url == null ? null : url.getProtocol();
+        } catch (MalformedURLException e) {
+            return super.getScheme();
+        }
+    }
+
+    @Override
+    public String getServerName() {
+        try {
+            URL url = getURL();
+            return url == null ? null : url.getHost();
+        } catch (MalformedURLException e) {
+            return super.getServerName();
+        }
+    }
+
+    @Override
+    public int getServerPort() {
+        try {
+            URL url = getURL();
+            if (url != null) {
+                return url.getPort() > 0 ? url.getPort() : url.getDefaultPort(); 
+            }
+            
+            return super.getServerPort();
+        } catch (MalformedURLException e) {
+            return super.getServerPort();
+        }
+    }
+
+    @Override
+    public boolean isSecure() {
+        return getServerPort() == 443 || getServerPort() == 8443;
     }
 
 }
