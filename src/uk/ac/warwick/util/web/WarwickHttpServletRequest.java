@@ -154,7 +154,7 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     public String getQueryString() {
         try {
             URL url = getURL();
-            return url == null ? null : url.getQuery();
+            return url == null ? super.getQueryString() : url.getQuery();
         } catch (MalformedURLException e) {
             return super.getQueryString();
         }
@@ -164,7 +164,7 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     public String getScheme() {
         try {
             URL url = getURL();
-            return url == null ? null : url.getProtocol();
+            return url == null ? super.getScheme() : url.getProtocol();
         } catch (MalformedURLException e) {
             return super.getScheme();
         }
@@ -174,7 +174,7 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     public String getServerName() {
         try {
             URL url = getURL();
-            return url == null ? null : url.getHost();
+            return url == null ? super.getServerName() : url.getHost();
         } catch (MalformedURLException e) {
             return super.getServerName();
         }

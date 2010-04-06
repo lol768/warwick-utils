@@ -44,7 +44,7 @@ public class WarwickHttpServletRequestTest {
         
         original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "http://start.warwick.ac.uk/something?yes=no");
         
-        assertEquals("http://start.warwick.ac.uk/something", wrapped.getRequestURI());
+        assertEquals("/something", wrapped.getRequestURI());
     }
 
     @Test
@@ -55,6 +55,56 @@ public class WarwickHttpServletRequestTest {
         original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "http://start.warwick.ac.uk/something?yes=no");
         
         assertEquals("http://start.warwick.ac.uk/something?yes=no", wrapped.getRequestURL().toString());
+    }
+    
+    @Test
+    public void getScheme() {
+        MockHttpServletRequest original = new MockHttpServletRequest();
+        WarwickHttpServletRequest wrapped = new WarwickHttpServletRequest(original, Sets.<String>newHashSet());
+        
+        original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "https://start.warwick.ac.uk/something?yes=no");
+        
+        assertEquals("https", wrapped.getScheme());
+    }
+    
+    @Test
+    public void getServerName() {
+        MockHttpServletRequest original = new MockHttpServletRequest();
+        WarwickHttpServletRequest wrapped = new WarwickHttpServletRequest(original, Sets.<String>newHashSet());
+        
+        original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "https://start.warwick.ac.uk/something?yes=no");
+        
+        assertEquals("start.warwick.ac.uk", wrapped.getServerName());
+    }
+    
+    @Test
+    public void getServerPort() {
+        MockHttpServletRequest original = new MockHttpServletRequest();
+        WarwickHttpServletRequest wrapped = new WarwickHttpServletRequest(original, Sets.<String>newHashSet());
+        
+        original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "https://start.warwick.ac.uk/something?yes=no");
+        
+        assertEquals(443, wrapped.getServerPort());
+    }
+    
+    @Test
+    public void getQueryString() {
+        MockHttpServletRequest original = new MockHttpServletRequest();
+        WarwickHttpServletRequest wrapped = new WarwickHttpServletRequest(original, Sets.<String>newHashSet());
+        
+        original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "https://start.warwick.ac.uk/something?yes=no");
+        
+        assertEquals("yes=no", wrapped.getQueryString());
+    }
+    
+    @Test
+    public void isSecure() {
+        MockHttpServletRequest original = new MockHttpServletRequest();
+        WarwickHttpServletRequest wrapped = new WarwickHttpServletRequest(original, Sets.<String>newHashSet());
+        
+        original.addHeader(WarwickHttpServletRequest.REQUESTED_URI_HEADER_NAME, "https://start.warwick.ac.uk/something?yes=no");
+        
+        assertTrue(wrapped.isSecure());
     }
 
 }
