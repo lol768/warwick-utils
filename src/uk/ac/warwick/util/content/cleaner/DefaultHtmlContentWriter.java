@@ -23,7 +23,7 @@ public final class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     private final BodyContentFilter contentFilter;
 
-    private final Set<String> selfClosers = new HashSet<String>(Arrays.asList(new String[] { "img", "br", "hr", "input", "area" }));
+    private final Set<String> selfClosers = new HashSet<String>(Arrays.asList(new String[] { "img", "br", "hr", "input", "area", "param" }));
 
     public DefaultHtmlContentWriter(TagAndAttributeFilter tagAndAttributeFilter, BodyContentFilter cFilter) {
         this.filter = tagAndAttributeFilter;

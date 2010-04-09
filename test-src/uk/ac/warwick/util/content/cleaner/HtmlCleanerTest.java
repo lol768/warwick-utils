@@ -542,6 +542,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         
         verify(expected, input);
     }
+    
+    public void testHTML5Video() throws Exception {
+        String input = readResourceToString("/htmlClean/video-tag.html");
+        String expected = readResourceToString("/htmlClean/video-tag.html");
+        
+        verifyNoLineBreaks(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
@@ -549,7 +556,8 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     }
 
     private void verifyNoLineBreaks(String expected, String input) {
-        String output = cleaner.clean(input).trim().replaceAll("\n", "").replaceAll("\t", "");
+        String output = cleaner.clean(input).trim().replaceAll("\n", "").replaceAll("\t", "").replaceAll(">\\s+<", "><");
+        expected = expected.trim().replaceAll("\n", "").replaceAll("\t", "").replaceAll(">\\s+<", "><");
         assertEquals(expected, output);
     }
 

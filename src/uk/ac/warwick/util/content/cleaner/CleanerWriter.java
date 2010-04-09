@@ -297,7 +297,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         String characters = String.copyValueOf(data, start, length);
         buffer.append("<!--");
         buffer.append(characters);
-        buffer.append("-->");
+        buffer.append("-->\n");
     }
 
     private void appendIndentSpaces() {

@@ -120,6 +120,10 @@ public final class HtmlCleaner implements Cleaner {
             parser.setContentHandler(handler);
 
             parser.setProperty(Parser.lexicalHandlerProperty, handler);
+            
+            // HTML 5 Schema
+            parser.setProperty(Parser.schemaProperty, new HTML5Schema());
+            
             parser.parse(is);
         } catch (IOException e) {
             throw new IllegalStateException(e);
