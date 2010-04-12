@@ -17,7 +17,9 @@ public final class FlvMediaUrlHandlerTest {
 	
 	private final Mockery m = new JUnit4Mockery();
 
-	private final FlvMediaUrlHandler handler = new FlvMediaUrlHandler("playerLocation", "newPlayerLocation");
+	private final FlvMediaUrlHandler handler = new FlvMediaUrlHandler(
+	        "http://www2.warwick.ac.uk/static_war/render/flvplayer.swf", 
+	        "http://www2.warwick.ac.uk/static_war/render/flvplayer-4.2.swf");
 	
 	private final MetadataHandler metadataHandler = m.mock(MetadataHandler.class);
 
@@ -51,25 +53,27 @@ public final class FlvMediaUrlHandlerTest {
 		parameters.put("align", "left");
 		
 		m.checking(new Expectations() {{
-			one(metadataHandler).handle("file.mp4", parameters); will(new Action() {
+			one(metadataHandler).handle("../big_buck_bunny.mp4", parameters); will(new Action() {
 				public void describeTo(Description description) {
 					description.appendText("populate metadata");
 				}
 				public Object invoke(Invocation invocation) throws Throwable {
-					parameters.put("width", "1,024");
-					parameters.put("height", "768");
+					parameters.put("width", "6,40");
+					parameters.put("height", "360");
+					parameters.put("previewimage", "http://augustus.warwick.ac.uk/services/its/elab/about/people/mmannion/big_buck_bunny.mp4?preview");
+					parameters.put("mime_type", "video/mp4");
 					return null;
 				}
 				
 			});
 		}});
 		
-		String html = handler.getHtml("file.mp4", parameters);
+		String html = handler.getHtml("../big_buck_bunny.mp4", parameters);
 		
 		System.out.println(html);
 		
 		assertTrue(html.startsWith("<notextile>"));
-		assertTrue(html.contains("\"1024\",\"788\""));
+		assertTrue(html.contains("\"640\",\"380\""));
 		
 		m.assertIsSatisfied();
 	}
