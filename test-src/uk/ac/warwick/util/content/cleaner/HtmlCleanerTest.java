@@ -406,7 +406,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
      * only needed while editing, so strip them out completely.
      */
     public void testMceBogus() {
-        String input = "<p>Some test, la la!<br mce_bogus=\"1\" /></p>";
+        String input = "<p>Some test, la la!<br _mce_bogus=\"1\" /></p>";
         String expected = "<p>Some test, la la!</p>";
         verify(expected, input);
 
