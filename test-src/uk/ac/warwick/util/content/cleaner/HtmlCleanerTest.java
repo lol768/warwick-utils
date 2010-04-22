@@ -549,6 +549,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         
         verifyNoLineBreaks(expected, input);
     }
+    
+    public void testRemoveInvisibleSandwiches() throws Exception {
+    	String range = "Something happens<span id='_mce_start' style='display:none;line-height:0'>&#65279;</span> and I get my invisible sandwiches<span id='_mce_end' style='display:none;line-height:0'>&#65279;</span> for breakfast.";
+    	String expected = "Something happens and I get my invisible sandwiches for breakfast.";
+    	
+    	verify(expected, range);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();

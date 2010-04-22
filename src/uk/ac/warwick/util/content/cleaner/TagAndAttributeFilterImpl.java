@@ -73,6 +73,11 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
             allowed &= isAllowedClassName(tagName, attributeValue);
         }
         
+        // [SBTWO-3769] Unwanted IDs
+        if (attributeName.equalsIgnoreCase("id")) {
+            allowed &= isAllowedId(tagName, attributeValue);
+        }
+        
         // [UTL-72] Unwanted styles
         if (attributeName.equalsIgnoreCase("style")) {
             allowed &= isAllowedStyle(tagName, attributeValue);
@@ -87,6 +92,14 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         } else if (tagName.equalsIgnoreCase("span") && className.matches("style\\d+")) {
             return false;
         }
+        return true;
+    }
+    
+    private boolean isAllowedId(final String tagName, final String id) {
+        if (id.startsWith("mce_") || id.startsWith("_mce")) {
+            return false;
+        }
+        
         return true;
     }
     

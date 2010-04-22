@@ -57,6 +57,7 @@ public final class HtmlCleaner implements Cleaner {
         this.straightReplacements.add(Pair.of("_mce_tsrc=", "src="));
         this.straightReplacements.add(Pair.of(NewWindowLinkTextTransformer.HTML_IMAGE, ""));
         this.straightReplacements.add(Pair.of("\u00b7", "&#183;"));
+        this.straightReplacements.add(Pair.of("&#65279;", ""));
         
         this.regexReplacements = Lists.newArrayList();
         this.regexReplacements.add(Triple.of(Pattern.compile("<br _?mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "_bogus", ""));
