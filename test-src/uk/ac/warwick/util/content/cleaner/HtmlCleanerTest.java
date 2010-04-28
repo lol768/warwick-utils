@@ -445,7 +445,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     }
     
     public void testDontTrimTinyMCE3Indents() throws Exception {
-    	String input = "<h2 style=\"padding-left: 270px;\">blah blah blah</h2>\n\n<p style=\"padding-left: 60px;\">blah blah blah</p>";
+    	String input = "<h2 style=\"padding-left: 270px; \">blah blah blah</h2>\n\n<p style=\"padding-left: 60px;\">blah blah blah</p>";
     	String expected = input;
     	
     	verify(expected, input);
