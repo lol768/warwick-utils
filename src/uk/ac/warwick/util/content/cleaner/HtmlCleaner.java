@@ -61,7 +61,7 @@ public final class HtmlCleaner implements Cleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[endif]", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if supportfields]", ""));// MS Word lists
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if !mso\\]>.*?<!-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if !mso]", ""));// MS Word
-        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if gte vml 1\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if gte vml]", ""));// MS Word VML
+        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if gte vml 1\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if gte vml 1]", ""));// MS Word VML
         
         this.regexReplacements.add(Triple.of(Pattern.compile("<br _?mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "_bogus", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* _?mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
