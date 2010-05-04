@@ -477,6 +477,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	
     	verify(expected, range);
     }
+    
+    public void testSbtwo3782_orphanLightboxLink() throws Exception {
+    	String input = "<P><STRONG><A title='koala.jpg <a href=\"koala.jpg\">View original image</a>' href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg?maxWidth=800&amp;maxHeight=600\" rel=lightbox[all] _mce_href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"></A><BR></STRONG></P>";
+    	String expected = "<p><strong><br />\n  </strong></p>";
+    	verify(expected, input);
+    }
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();

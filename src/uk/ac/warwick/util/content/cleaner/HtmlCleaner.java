@@ -101,7 +101,9 @@ public final class HtmlCleaner implements Cleaner {
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\btinymce_indent=(\"padding-left:\\s*\\d{2,}px;?\\s*\")(?:\\sstyle=\"[^\"]*\")?",Pattern.CASE_INSENSITIVE), "tinymce_indent", "style=$1"));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<table\\sstyle=\"padding(-left:\\s*\\d{2,}px;?\\s*)\"",Pattern.CASE_INSENSITIVE), "<table", "<table style=\"margin$1\""));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\s*<p>\\s*(<br\\s*/?>)?\\s*</p>\\s*$",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
-        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(?:<smarttagtype.+?>.+?</smarttagtype>\\s)+</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "smarttagtype", ""));
+        
+        // SBTWO-3782 - remove contentless lightbox links
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<a .*rel=\"lightbox.+?></a>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
     }
     
     public String clean(final String input) {

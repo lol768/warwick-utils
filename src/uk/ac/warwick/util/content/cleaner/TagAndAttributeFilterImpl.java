@@ -14,7 +14,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 	
     private static final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
             "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname",
-            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata"});
+            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype"});
     
     private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
@@ -71,15 +71,11 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         // [SBTWO-1090] Unwanted class markup
         if (attributeName.equalsIgnoreCase("class")) {
             allowed &= isAllowedClassName(tagName, attributeValue);
-        }
-        
-        // [SBTWO-3769] Unwanted IDs
-        if (attributeName.equalsIgnoreCase("id")) {
+        } else if (attributeName.equalsIgnoreCase("id")) {
+        	// [SBTWO-3769] Unwanted IDs
             allowed &= isAllowedId(tagName, attributeValue);
-        }
-        
-        // [UTL-72] Unwanted styles
-        if (attributeName.equalsIgnoreCase("style")) {
+        } else if (attributeName.equalsIgnoreCase("style")) {
+            // [UTL-72] Unwanted styles
             allowed &= isAllowedStyle(tagName, attributeValue);
         }
         
