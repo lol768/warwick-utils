@@ -19,10 +19,7 @@ import uk.ac.warwick.util.core.ObjectProvider;
 import com.google.common.collect.Lists;
 
 /**
- * Substitute for the JScript cleanup routine. TODO make this much more
- * configurable and less hardcoded
- * 
- * @author cusebr
+ * Substitute for the JScript cleanup routine. 
  */
 public final class HtmlCleaner implements Cleaner {
     
@@ -60,20 +57,25 @@ public final class HtmlCleaner implements Cleaner {
         this.straightReplacements.add(Pair.of("&#65279;", ""));
         
         this.regexReplacements = Lists.newArrayList();
+        
+        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[endif]", ""));
+        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if supportfields]", ""));// MS Word lists
+        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if !mso\\]>.*?<!-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if !mso]", ""));// MS Word
+        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if gte vml 1\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if gte vml]", ""));// MS Word VML
+        
         this.regexReplacements.add(Triple.of(Pattern.compile("<br _?mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "_bogus", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* _?mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce:style([^>]*)>\\<\\!\\-\\-(.*?)\\-\\-\\></mce:style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</mce:style>", "<style$1>$2</style>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<mce:", "<$1$2>$3</$1>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</script>", "$1"));
         this.regexReplacements.add(Triple.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "middle", "$1 align=\"center\""));
+        //this.regexReplacements.add(Triple.of(Pattern.compile("<mce:style([^>]*)>.+?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<mce:style", ""));
         
         // MS Word idiocy
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<meta[^>]+>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<meta", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</title>", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<link[^>]+>(?:</link>)?(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<link", "<p>$1$2</p>"));
-        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[endif]", ""));
-        this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if supportfields]", ""));// MS Word lists
         
         // MS Word lists
         this.regexReplacements.add(Triple.of(Pattern.compile("<p[^>]*class=\"?Mso(?:[A-Z][a-z]+)+\"?[^>]*>" +
@@ -90,6 +92,7 @@ public final class HtmlCleaner implements Cleaner {
         
         this.postParseStraightReplacements = Lists.newArrayList();
         this.postParseStraightReplacements.add(Pair.of("<strong></strong>", ""));
+        this.postParseStraightReplacements.add(Pair.of("  +", " "));
         
         this.postParseRegexReplacements = Lists.newArrayList();
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>\n*"), "</p>", ""));
@@ -99,6 +102,7 @@ public final class HtmlCleaner implements Cleaner {
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\btinymce_indent=(\"padding-left:\\s*\\d{2,}px;?\\s*\")(?:\\sstyle=\"[^\"]*\")?",Pattern.CASE_INSENSITIVE), "tinymce_indent", "style=$1"));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<table\\sstyle=\"padding(-left:\\s*\\d{2,}px;?\\s*)\"",Pattern.CASE_INSENSITIVE), "<table", "<table style=\"margin$1\""));
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\s*<p>\\s*(<br\\s*/?>)?\\s*</p>\\s*$",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(?:<smarttagtype.+?>.+?</smarttagtype>\\s)+</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "smarttagtype", ""));
     }
     
     public String clean(final String input) {
@@ -139,7 +143,7 @@ public final class HtmlCleaner implements Cleaner {
      * Do simple find-and-replaces that should be done before
      * SAX parsing.
      */
-    private String doPreParsingCleanup(final String input) {
+    String doPreParsingCleanup(final String input) {
         String text = encodeLoneTags(input);
         
         for (Pair<String, String> replacement : straightReplacements) {
