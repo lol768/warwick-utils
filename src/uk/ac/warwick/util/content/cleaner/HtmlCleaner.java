@@ -103,7 +103,7 @@ public final class HtmlCleaner implements Cleaner {
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("\\s*<p>\\s*(<br\\s*/?>)?\\s*</p>\\s*$",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
         
         // SBTWO-3782 - remove contentless lightbox links
-        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<a .*rel=\"lightbox.+?></a>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</p>", ""));
+        this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<a [^>]+rel=\"lightbox\\[[^>]+></a>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "lightbox[", ""));
     }
     
     public String clean(final String input) {
