@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.core.logging;
 
-import org.apache.log4j.Priority;
-import org.apache.log4j.Logger;
-
 import java.text.MessageFormat;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
+import org.apache.log4j.Logger;
 
 /**
  * A JULI (java.util.logging) handler that redirects java.util.logging messages to Log4J
@@ -19,8 +18,10 @@ public final class JULToLog4JHandler extends Handler {
     @Override
     public void publish(LogRecord record) {
         org.apache.log4j.Logger log4j = getTargetLogger(record.getLoggerName());
-        Priority priority = toLog4j(record.getLevel());
-        log4j.log(priority, toLog4jMessage(record), record.getThrown());
+        org.apache.log4j.Level level = toLog4j(record.getLevel());
+        if (level != org.apache.log4j.Level.OFF) {
+        	log4j.log(level, toLog4jMessage(record), record.getThrown());
+        }
     }
 
     static Logger getTargetLogger(String loggerName) {
@@ -62,6 +63,8 @@ public final class JULToLog4JHandler extends Handler {
             log4jLevel = org.apache.log4j.Level.WARN;
         } else if (Level.INFO == level) {
             log4jLevel = org.apache.log4j.Level.INFO;
+        } else if (Level.FINE == level) {
+            log4jLevel = org.apache.log4j.Level.DEBUG;
         } else if (Level.OFF == level) {
             log4jLevel = org.apache.log4j.Level.OFF;
         } else {

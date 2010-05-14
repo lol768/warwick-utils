@@ -6,7 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-logging/commons-logging.jar"/>
-	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar"/>
+	<classpathentry kind="lib" path="external-libs/log4j/log4j.jar" sourcepath="/home/mat/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9-sources.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-codec/commons-codec.jar"/>
 	<classpathentry kind="lib" path="external-libs/servlet-api/servlet-api.jar"/>
 	<classpathentry kind="lib" path="external-libs/jsp-api/jsp-api.jar"/>
