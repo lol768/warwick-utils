@@ -109,17 +109,12 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
      */
     @Override
     public String getRequestURI() {
-        String requestedUrl = getRequestedURL();
-        
-        if (StringUtils.hasText(requestedUrl)) {
-            try {
-                return new URLBuilder(requestedUrl).toURL().getPath();
-            } catch (MalformedURLException e) {
-                return super.getRequestURI();
-            }
+    	try {
+    		URL url = getURL();
+    		return url == null ? super.getRequestURI() : url.getPath();
+        } catch (MalformedURLException e) {
+            return super.getRequestURI();
         }
-        
-        return super.getRequestURI();
     }
 
     /**
@@ -144,7 +139,7 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
         String requestedUrl = getRequestedURL();
         
         if (StringUtils.hasText(requestedUrl)) {
-            return new URLBuilder(requestedUrl).toURL();
+            return new URL(requestedUrl);
         }
         
         return null;
