@@ -39,6 +39,16 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         assertEquals(transformer.parameters.get("allowed2"), "two");
         assertEquals(transformer.parameters.get("allowed3"), null);
     }
+    
+    public void testNonBreakingSpaces() {
+    	String input = "[tag-name allowed1=one&nbsp; allowed2='two']bam[/tag-name]";
+        transformer.transform(input);
+        
+        assertTrue(transformer.parameters.containsKey("allowed1"));
+        assertTrue(transformer.parameters.containsKey("allowed2"));
+        assertEquals("one", transformer.parameters.get("allowed1"));
+        assertEquals("two", transformer.parameters.get("allowed2"));
+    }
 
     public void testEscapedAttributes() {
         String input = "[tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/tag-name]";

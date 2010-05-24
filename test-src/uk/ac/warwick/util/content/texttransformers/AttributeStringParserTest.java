@@ -25,6 +25,14 @@ public class AttributeStringParserTest extends TestCase {
         assertEquals("value2", parser.getValue("param2"));
     }
     
+    public void testNoQuotesNbsp() {
+        String input = " param1=value1&nbsp; param2=value2 ";
+        AttributeStringParser parser = new AttributeStringParser(input);
+        //List<Attribute> attrs = parser.getAttributes();
+        assertEquals("value1", parser.getValue("param1"));
+        assertEquals("value2", parser.getValue("param2"));
+    }
+    
     public void testEscapedQuotes() {
     	String input = "param1=&#8217;value1&#8217; param2=&#8221;value2&#8221; param3=&quot;value3&quot;";
     	AttributeStringParser parser = new AttributeStringParser(input);

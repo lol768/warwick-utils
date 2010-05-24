@@ -57,9 +57,10 @@ public final class AttributeStringParser {
         		Matcher unquotedMatcher = UNQUOTED.matcher(text);
         		value = "";
         		if (unquotedMatcher.find()) {
-        			value = unquotedMatcher.group();
+        			value = unquotedMatcher.group()
+        				.replaceAll("(&nbsp;)+", ""); // SBTWO-3811
         		}
-        		text = text.substring(unquotedMatcher.group().length());
+        		text = text.substring(unquotedMatcher.group().length()).trim();
         	}
         	attributes.add(new Attribute(name, value));
         	matcher = NAME_EQUALS.matcher(text);
