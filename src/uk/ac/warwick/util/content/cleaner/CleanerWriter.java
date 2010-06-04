@@ -73,6 +73,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
     private ContentType lastContentType = ContentType.none;
 
+	private boolean printingContent = true;
+
     public CleanerWriter(final TagAndAttributeFilter theFilter) {
         this.buffer = new TrackingStringBuilder();
         this.filter = theFilter;
@@ -105,6 +107,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     public void characters(final char[] ch, final int start, final int length) throws SAXException {
+    	if (!isPrintingContent()) {
+    		return;
+    	}
         String characters = String.copyValueOf(ch, start, length);
         // javascript tags are cleverly unconverted, so
         // we shouldn't try to process it
@@ -137,7 +142,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         // Slight hack to ignore <html>, <body>, and everything inside
         // <head>
         if (handleUnwantedSurroundingsStart(localName, atts)) {
-        	pushTag(new StackElement(tagName, tagName, atts, false, inverse));
+        	pushTag(new StackElement(tagName, tagName, atts, false, true, inverse));
             return;
         }
 
@@ -199,12 +204,21 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         	// remove all attributes.
         	attsImpl.clear();
         }
+        
+        boolean printTag = true;
+        boolean printContent = true;
+        
+        // Don't print style tags inside paragraphs.
+        if (tagName.equals("style") && isInside("p")) {
+        	printContent = false;
+        	printTag = false;
+        }
 
         /**
          * If we have changed tagName, it will go on the
          * stack and get remembered for the close element. 
          */
-        pushTag(new StackElement(localName, tagName, attsImpl, true, inverse));
+        pushTag(new StackElement(localName, tagName, attsImpl, printTag, printContent, inverse));
 
         beforeElementStart(tagName);
         
@@ -215,7 +229,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         	renderedTag = contentWriter.renderEndTag(inverse.getTagName());
         }
         
-        buffer.append(contentFilter.handleTagString(renderedTag, tagName, attributes));
+        if (printTag) {
+        	buffer.append(contentFilter.handleTagString(renderedTag, tagName, attributes));
+        }
 
         if (tagName.equals("br") && !isInPreformattedArea()) {
             buffer.append("\n");
@@ -227,6 +243,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     private void beforeElementStart(final String localName) {
+    	if (!isPrintingContent()) {
+    		return;
+    	}
         if (isPreformatted(localName)) {
             preformattedTagDepth++;
         }
@@ -239,6 +258,10 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
                 tagDepth++;
             }
         }
+    }
+    
+    private boolean isPrintingContent() {
+    	return printingContent ;
     }
 
     /**
@@ -291,7 +314,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     public void comment(final char[] data, final int start, final int length) throws SAXException {
-    	if (start < 0 || length < 0) {
+    	if (!isPrintingContent() || start < 0 || length < 0) {
     		return;
     	}
         String characters = String.copyValueOf(data, start, length);
@@ -365,6 +388,10 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private boolean isInlineTag(final String tagName) {
         return inlineTags.contains(tagName);
     }
+    
+    private boolean isInside(final String tagName) {
+    	return tagNameStack.contains(tagName);
+    }
 
     private boolean isPreformatted(final String tagName) {
         return preformattedTags.contains(tagName);
@@ -381,6 +408,10 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private void pushTag(final StackElement element) {
         tagStack.push(element);
         tagNameStack.push(element.getTagName());
+        
+        if (!element.isPrintContent()) {
+        	printingContent = false;
+        }
     }
 
 
@@ -399,7 +430,23 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
             return null;
         }
         tagNameStack.pop();
-        return tagStack.pop();
+        
+        StackElement element = tagStack.pop();
+        
+        if (!element.isPrintContent()) {
+        	// just closed a tag that was suppressing output -
+        	// if there are no similar elements still on the stack,
+        	// turn printing back on.
+        	boolean anotherTagStopsPrinting = false;
+        	for (StackElement e : tagStack) {
+        		if (!e.isPrintContent()) {
+        			break;
+        		}
+        	}
+        	printingContent = !anotherTagStopsPrinting;
+        }
+        
+		return element;
     }
     
     private StackElement peekTag(final String localName) {
@@ -473,6 +520,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     	private final String tagName;
     	private final Attributes attributes;
     	private final boolean print;
+    	private boolean printContent;
     	
     	/**
     	 * If this property is present, it means we want to print out its inverse.
@@ -488,15 +536,17 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     	 * @param tagName The tag name to render - usually the same as originalTagName but you can rename a tag if you want.
     	 * @param atts The Attributes for this tag
     	 * @param print Whether to print this tag - you should always add all tags even if you don't want to print them.
+    	 * @param printContent Whether to print the contents of this tag. If false, we stop printing anything until after this tag is closed.
     	 * @param inverse Can be null (usually will be.)
     	 */
 		public StackElement(String originalTagName, String tagName, Attributes atts,
-				boolean print, StackElement tinverse) {
+				boolean print, boolean printContent, StackElement tinverse) {
 			super();
 			this.originalTagName = originalTagName;
 			this.tagName = tagName;
 			this.attributes = atts;
 			this.print = print;
+			this.printContent = printContent;
 			this.inverse = tinverse;
 		}
 		public final String getOriginalTagName() {
@@ -513,6 +563,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 		}
 		public final StackElement getInverse() {
 			return inverse;
+		}
+		public boolean isPrintContent() {
+			return printContent;
 		}
     }
 }

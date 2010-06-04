@@ -86,14 +86,38 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     /**
      * This behaviour wasn't our design but the parser does do this (and is
      * strictly correct), so we may as well have a test to verify that it
-     * happens. It's not a problem because we only clean the contents of body,
-     * and even if we were doing it on the whole of html, it wouldn't strip
-     * style tags from the head because they're allowed there.
+     * happens.
+     * 
+     * Note that this is only when there is no surrounding body tag - see {@link #testStyleTagsNotStrippedFromBody()}.
      */
-    public void testStyleTagsAreStrippedFromBody() {
+    public void testStyleTagsAreStripped() {
         String input = "<style type='text/css'>body { color: magenta; }</style>";
         String expected = "body { color: magenta; }";
         verify(expected, input);
+    }
+    
+    /**
+     * When wrapped in <html><body>, the parser
+     * DOES keep style tags (though the html and body tags are removed).
+     */
+    public void testStyleTagsNotStrippedFromBody() {
+    	String expected = "<style type=\"text/css\">body { color: magenta; }</style>";
+    	String input = "<html><body>"+expected+"</body><html>";
+    	verify(expected, input);
+    }
+    
+    /**
+     * One of the regexes attempting to strip styles inside paragraphs was stripping styles
+     * BETWEEN paragraphs, so check that this doesn't happen.
+     */
+    public void testStyleTagBetweenParagraphs() {
+    	String input = "<html><body>" +
+    			"<p>One</p>\n <style>Two</style>\n <p>Three</p>\n" +
+    			"</body></html>";
+    	
+    	String expected = "<p>One</p>\n\n<style>Two</style>\n<p>Three</p>";
+    	
+    	verify(expected, input);
     }
 
     /**
@@ -489,6 +513,10 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	//String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg  &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;\" href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg?maxWidth=800&amp;maxHeight=600\" rel=\"lightbox[all]\" _mce_href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"><img src=\"koala.jpg\"></a><br></strong> badgers</p>";
     	String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;\" rel=\"lightbox[all]\" href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"><img src=\"koala.jpg\" border=\"0\" /></a><br />\n  </strong> badgers</p>";
     	verify(expected, input);
+    }
+    
+    private void verify(String input) {
+    	verify(input,input);
     }
 
     private void verify(String expected, String input) {

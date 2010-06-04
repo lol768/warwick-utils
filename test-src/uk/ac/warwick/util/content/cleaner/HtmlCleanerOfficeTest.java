@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.jmock.MockObjectTestCase;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
 public class HtmlCleanerOfficeTest extends MockObjectTestCase {
@@ -13,6 +14,13 @@ public class HtmlCleanerOfficeTest extends MockObjectTestCase {
 
     public void setUp() {
         cleaner = new HtmlCleaner();
+    }
+    
+    public void testAwfulBogusStyles() throws Exception {
+    	String input = readResourceToString("/htmlClean/sbtwo-3828.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-3828-expected.html");
+        
+        verify(expected, input);
     }
 
     public void testSBTWO3709() throws Exception {
@@ -120,6 +128,7 @@ public class HtmlCleanerOfficeTest extends MockObjectTestCase {
 
     private String readResourceToString(final String filename) throws IOException {
         InputStream is = getClass().getResourceAsStream(filename);
+        Assert.notNull(is, "Couldn't get an inputstream for " + filename);
         String input = FileCopyUtils.copyToString(new InputStreamReader(is));
         return input;
     }

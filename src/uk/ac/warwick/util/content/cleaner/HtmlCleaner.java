@@ -64,8 +64,8 @@ public final class HtmlCleaner implements Cleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if gte vml 1\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if gte vml 1]", ""));// MS Word VML
         
         this.regexReplacements.add(Triple.of(Pattern.compile("<br _?mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "_bogus", ""));
-        this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* _?mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce:style([^>]*)>\\<\\!\\-\\-(.*?)\\-\\-\\></mce:style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</mce:style>", "<style$1>$2</style>"));
+        this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* _?mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<mce:", "<$1$2>$3</$1>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</script>", "$1"));
         this.regexReplacements.add(Triple.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "middle", "$1 align=\"center\""));
@@ -73,7 +73,8 @@ public final class HtmlCleaner implements Cleaner {
         // MS Word idiocy
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<meta[^>]+>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<meta", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</title>", "<p>$1$2</p>"));
-        this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", "<p>$1$2</p>"));
+        // Now handled in CleanerWriter.
+        //this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<style[^<]*</style>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<link[^>]+>(?:</link>)?(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<link", "<p>$1$2</p>"));
         
         // MS Word lists
