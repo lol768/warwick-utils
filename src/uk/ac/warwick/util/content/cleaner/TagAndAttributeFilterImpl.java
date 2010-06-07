@@ -139,7 +139,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     private boolean isAllowedAttributeForTag(final String tagName, final String attributeName, final String attributeValue) {
     	
     	// Specifically allow style if it's for alignment, even if we otherwise don't allow style
-    	if (isAlignStyle(tagName, attributeValue)) {
+    	if (isAlignStyle(tagName, attributeValue) || isStrikethrough(tagName,attributeName,attributeValue)) {
     		return true;
     	}
     	
@@ -155,6 +155,15 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
         }
         return true;
     }
+
+    /**
+     * Allow span-style strikethroughs so that we can convert it to a strike later on. Normally we would strip
+     * spans with style tags.
+     */
+	private boolean isStrikethrough(String tagName, String attributeName,
+			String attributeValue) {
+		return tagName.equals("span") && attributeName.equals("style") && CleanerWriter.STRIKETHROUGH_CSS.matcher(attributeValue).matches();
+	}
 
 	private boolean isAlignStyle(final String tagName, final String attributeValue) {
 		return !tagName.equals("span") && ALIGN_STYLE.matcher(attributeValue).matches();

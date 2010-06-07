@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -19,6 +20,10 @@ import uk.ac.warwick.util.core.StringUtils;
 /**
  * A basic handler that strips out a selection of tags and attributes but
  * otherwise passes the content back out as provided by the parser.
+ * 
+ * TODO split this out into the part that handles the stack and printing it out,
+ * 	from the bits of custom "if it's a span with this attribute change it to this" etc.
+ *  
  */
 public final class CleanerWriter implements ContentHandler, LexicalHandler {
     public static final int INDENT_DEPTH = 2;
@@ -30,6 +35,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     public static final String HTML_TAG = "html";
     
     public static final int MAX_STACK_SIZE = 1000;
+
+	static final Pattern STRIKETHROUGH_CSS = Pattern.compile("^\\s*text-decoration:\\s*line-through;?\\s*$", Pattern.CASE_INSENSITIVE);
     
 //    private static final Logger LOGGER = Logger.getLogger(CleanerWriter.class);
 
@@ -207,6 +214,14 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         
         boolean printTag = true;
         boolean printContent = true;
+        
+        if (tagName.equals("span")) {
+        	String style = attsImpl.getValue("style");
+        	if (style != null && STRIKETHROUGH_CSS.matcher(style).matches()) {
+        		tagName = "strike";
+        		attsImpl.clear();
+        	}
+        }
         
         // Don't print style tags inside paragraphs.
         if (tagName.equals("style") && isInside("p")) {

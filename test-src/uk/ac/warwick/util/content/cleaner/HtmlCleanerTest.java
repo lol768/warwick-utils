@@ -16,6 +16,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     public void setUp() {
         cleaner = new HtmlCleaner();
     }
+    
+    public void testSBTWO3795_strikethrough() throws Exception {
+    	String input = "<html><body>I am afraid of <span style=\"text-decoration: line-through; \" _mce_style=\"text-decoration: line-through;\">ghosts</span>tigers </body></html>";
+    	String expected = "I am afraid of <strike>ghosts</strike>tigers";
+    	
+    	verify(expected, input);
+    }
 
     public void testBasicSanity() throws Exception {
         String input = readResourceToString("/htmlClean/input1.html");
