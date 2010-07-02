@@ -522,6 +522,13 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	verify(expected, input);
     }
     
+    public void testSBTWO3830() throws Exception {
+    	String input = "<p>Something <span class=\"Apple-style-span\" style=\"font-weight: normal;\" mce_style=\"font-weight: normal;\">wonderful</span> has happened.</p>";
+    	String expected = "<p>Something wonderful has happened.</p>";
+    	
+    	verify(expected, input);
+    }
+    
     private void verify(String input) {
     	verify(input,input);
     }

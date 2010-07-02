@@ -83,7 +83,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     }
     
     private boolean isAllowedClassName(final String tagName, final String className) {
-        if (className.startsWith("mce") || className.startsWith("_mce") || className.startsWith("Mso")) {
+        if (className.startsWith("mce") || className.startsWith("_mce") || className.startsWith("Mso") || className.startsWith("Apple-")) {
             return false;
         } else if (tagName.equalsIgnoreCase("span") && className.matches("style\\d+")) {
             return false;
