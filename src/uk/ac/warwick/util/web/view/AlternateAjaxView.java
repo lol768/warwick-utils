@@ -26,7 +26,7 @@ import org.springframework.web.servlet.View;
  * if the two views share templates.
  * 
  * <pre><code>
- * myFormView.(class)=uk.ac.warwick.sbr.web.view.AlternateAjaxView
+ * myFormView.(class)=uk.ac.warwick.util.web.view.AlternateAjaxView
  * myFormView.standardView(ref)=myStandardFormView
  * myFormView.ajaxView(ref)=myAjaxFormView
  * </code></pre>
