@@ -529,6 +529,20 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     	verify(expected, input);
     }
     
+    public void testSBTWO3874() {
+        String input = "<th align='center'>       \n        \n\n\n      \n</TH>";
+        String expected = 
+            "<table>\n" +
+            "  <tbody>\n" +
+            "    <tr>\n" +
+            "      <th align=\"center\">&nbsp;</th>\n" +
+            "    </tr>\n" +
+            "  </tbody>\n" +
+            "</table>";
+        
+        verify(expected, input);
+    }
+    
     private void verify(String input) {
     	verify(input,input);
     }
