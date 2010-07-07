@@ -13,7 +13,7 @@ import uk.ac.warwick.util.core.HtmlUtils;
  * 
  * @author Mat Mannion
  */
-public final class DefaultHtmlContentWriter implements HtmlContentWriter {
+public class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     public static final String[] MCE_TAGS = new String[] {"href","src","style","coords","shape"};
     
