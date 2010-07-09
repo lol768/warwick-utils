@@ -12,7 +12,8 @@ Event.onDOMReady(function(){
 			width: ${width?default(425)?number?c},
 			height: ${height?default(350)?number?c},
 			<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
-			controls: 'controls'
+			controls: 'controls',
+			preload: 'meta'
 		});
 		var supportsVideo = !!vidEl.canPlayType;
 		var supportsCodec = supportsVideo && vidEl.canPlayType('video/mp4');
