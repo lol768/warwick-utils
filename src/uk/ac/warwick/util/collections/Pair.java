@@ -20,8 +20,8 @@ public final class Pair<L,R> {
 	}
 	
 	public boolean isEqual(Pair<L, R> other) {
-	    return other.getLeft() != null && other.getLeft().equals(left)
-	        && other.getRight() != null && other.getRight().equals(right);
+	    return ((left == null && other.getLeft() == null) || (other.getLeft() != null && other.getLeft().equals(left)))
+	        && ((right == null && other.getRight() == null) || (other.getRight() != null && other.getRight().equals(right)));
 	}
 	
 	@SuppressWarnings("unchecked")
