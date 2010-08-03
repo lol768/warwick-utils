@@ -2,14 +2,14 @@ package uk.ac.warwick.util.content.texttransformers;
 
 import java.util.List;
 
-import uk.ac.warwick.util.content.cleaner.HtmlCleaner;
+import uk.ac.warwick.util.content.cleaner.Cleaner;
 import uk.ac.warwick.util.core.HtmlUtils;
 
 public final class BodyCleanupHtmlTransformer implements TextTransformer {
     
-    private final HtmlCleaner cleaner;
+    private final Cleaner cleaner;
     
-    public BodyCleanupHtmlTransformer(final HtmlCleaner theCleaner) {
+    public BodyCleanupHtmlTransformer(final Cleaner theCleaner) {
         this.cleaner = theCleaner;
     }
     
