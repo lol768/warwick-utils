@@ -130,12 +130,24 @@ public abstract class JSONView implements View {
     }
     
     public static JSONView of(final JSONObject object) {
+        return JSONView.of(object, new String[0]);        
+    }
+    
+    public static JSONView of(final JSONObject object, final String... error) {
         return new JSONView() {
             @Override
             public JSONObject render(Map<String, Object> model, List<String> errors) throws Exception {
+                for (String err : error) {
+                    errors.add(err);
+                }
+                
                 return object;
             }            
         };
+    }
+    
+    public static JSONView errors(final String... error) {
+        return JSONView.of(new JSONObject(), error);
     }
 
 }
