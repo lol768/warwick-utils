@@ -33,8 +33,12 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
 
     private URL base;
 
-    public RelativeLinkTextTransformer(final String theBase) throws MalformedURLException {
-        this.base = new URL(theBase);
+    public RelativeLinkTextTransformer(final String theBase) {
+        try {
+            this.base = new URL(theBase);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
     
     public String transform(final String text) {
