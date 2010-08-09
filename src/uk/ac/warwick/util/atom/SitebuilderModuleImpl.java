@@ -25,6 +25,8 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         allowSearchEngines = module.isAllowSearchEngines();
         showInLocalNavigation = module.isShowInLocalNavigation();
         pageName = module.getPageName();
+        deleted = module.isDeleted();
+        spanRhs = module.isSpanRhs();
         head = module.getHead();
     }
     
