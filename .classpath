@@ -47,5 +47,8 @@
 	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpcore-nio-4.0.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpmime-4.0.1.jar" sourcepath="external-libs/src/httpcomponents-client-4.0.1-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/commons-httpclient4/httpcore-4.0.1.jar" sourcepath="external-libs/src/httpcomponents-core-4.0.1-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/rome/jdom.jar"/>
+	<classpathentry kind="lib" path="external-libs/rome/modules-0.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/rome/rome-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
