@@ -26,9 +26,10 @@ public class SitebuilderModuleParserTest extends TestCase {
         Entry entry = (Entry) entries.get(0);
         
         SitebuilderModule module = (SitebuilderModule) entry.getModule(SitebuilderModule.MODULE_URI);
+        
         assertEquals("nickles", module.getPageName());
-        assertTrue(module.isAllowSearchEngines());
-        assertFalse(module.isShowInLocalNavigation());
-        assertTrue(module.isSpanRhs());
+        assertTrue(module.getAllowSearchEngines());
+        assertFalse(module.getShowInLocalNavigation());
+        assertTrue(module.getSpanRhs());
     }
 }

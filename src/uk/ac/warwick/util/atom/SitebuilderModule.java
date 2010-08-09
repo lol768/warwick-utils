@@ -31,16 +31,16 @@ public interface SitebuilderModule extends Module {
     String getPageName();
     void setPageName(String name);
     
-    Boolean isAllowSearchEngines();
+    Boolean getAllowSearchEngines();
     void setAllowSearchEngines(final Boolean allowSearchEngines);
     
-    Boolean isShowInLocalNavigation();
+    Boolean getShowInLocalNavigation();
     void setShowInLocalNavigation(final Boolean showInLocalNavigation);
     
-    Boolean isDeleted();
+    Boolean getDeleted();
     void setDeleted(final Boolean deleted);
     
-    Boolean isSpanRhs();
+    Boolean getSpanRhs();
     void setSpanRhs(final Boolean span);
     
     String getHead();

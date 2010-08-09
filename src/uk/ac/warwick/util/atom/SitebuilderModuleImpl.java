@@ -22,15 +22,15 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     
     public void copyFrom(Object obj) {
         SitebuilderModule module = (SitebuilderModule) obj;
-        allowSearchEngines = module.isAllowSearchEngines();
-        showInLocalNavigation = module.isShowInLocalNavigation();
+        allowSearchEngines = module.getAllowSearchEngines();
+        showInLocalNavigation = module.getShowInLocalNavigation();
         pageName = module.getPageName();
-        deleted = module.isDeleted();
-        spanRhs = module.isSpanRhs();
+        deleted = module.getDeleted();
+        spanRhs = module.getSpanRhs();
         head = module.getHead();
     }
     
-    public Boolean isAllowSearchEngines() {
+    public Boolean getAllowSearchEngines() {
         return allowSearchEngines;
     }
 
@@ -38,7 +38,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         this.allowSearchEngines = allowSearchEngines;
     }
 
-    public Boolean isShowInLocalNavigation() {
+    public Boolean getShowInLocalNavigation() {
         return showInLocalNavigation;
     }
 
@@ -55,7 +55,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         this.pageName = pageName;
     }
 
-    public Boolean isDeleted() {
+    public Boolean getDeleted() {
         return deleted;
     }
 
@@ -63,7 +63,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         this.deleted = deleted;
     }
 
-    public Boolean isSpanRhs() {
+    public Boolean getSpanRhs() {
         return spanRhs;
     }
 

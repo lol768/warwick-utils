@@ -49,24 +49,24 @@ public final class SitebuilderModuleGenerator implements ModuleGenerator {
             element.addContent(element(SitebuilderModule.ELEMENT_NAME, sbm.getPageName()));
         }
         
-        if (sbm.isAllowSearchEngines() != null) {
+        if (sbm.getAllowSearchEngines() != null) {
             element.addContent(element(SitebuilderModule.ELEMENT_SEARCHABLE, 
-                    sbm.isAllowSearchEngines().toString()));
+                    sbm.getAllowSearchEngines().toString()));
         }
         
-        if (sbm.isShowInLocalNavigation() != null) {
+        if (sbm.getShowInLocalNavigation() != null) {
             element.addContent(element(SitebuilderModule.ELEMENT_VISIBLE, 
-                    sbm.isShowInLocalNavigation().toString()));
+                    sbm.getShowInLocalNavigation().toString()));
         }
         
-        if (sbm.isDeleted() != null) {
+        if (sbm.getDeleted() != null) {
             element.addContent(element(SitebuilderModule.ELEMENT_DELETED,
-                    sbm.isDeleted().toString()));
+                    sbm.getDeleted().toString()));
         }
         
-        if (sbm.isSpanRhs() != null) {
+        if (sbm.getSpanRhs() != null) {
             element.addContent(element(SitebuilderModule.ELEMENT_SPAN_RHS,
-                    sbm.isSpanRhs().toString()));
+                    sbm.getSpanRhs().toString()));
         }
         
     }
