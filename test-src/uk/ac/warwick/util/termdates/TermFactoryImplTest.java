@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.termdates.Term.TermType;
 
 public final class TermFactoryImplTest {
 
@@ -146,6 +147,32 @@ public final class TermFactoryImplTest {
             ), 
             factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 52)
         );
+    }
+    
+    @Test
+    public void sbtwo3948() throws Exception {
+        TermFactoryImpl factory = new TermFactoryImpl();
+        
+        DateTime monday = new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime();
+        
+        // This should be week 1 of the Summer term
+        Term term = factory.getTermFromDate(monday);
+        
+        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 27), term.getStartDate());
+        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 2), term.getEndDate());
+        assertEquals(TermType.summer, term.getTermType());
+        
+        assertEquals(1, term.getWeekNumber(monday));
+        assertEquals(30, term.getAcademicWeekNumber(monday));
+        assertEquals(21, term.getCumulativeWeekNumber(monday));
+        
+        assertEquals(1, term.getWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
+        assertEquals(30, term.getAcademicWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
+        assertEquals(21, term.getCumulativeWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
+        
+        assertEquals(2, term.getWeekNumber(monday.plusWeeks(1)));
+        assertEquals(31, term.getAcademicWeekNumber(monday.plusWeeks(1)));
+        assertEquals(22, term.getCumulativeWeekNumber(monday.plusWeeks(1)));
     }
 
 }

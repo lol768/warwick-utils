@@ -57,15 +57,17 @@ public final class TermImpl implements Term {
     }
 
     public int getWeekNumber(final BaseDateTime dt) {
-        boolean firstDayOfTerm = DateTimeUtils.isSameDay(dt, startDate);
+        DateTime startOfFirstWeek = startDate.withDayOfWeek(DateTimeConstants.MONDAY);
+        
+        boolean firstDayOfTerm = DateTimeUtils.isSameDay(dt, startOfFirstWeek);
 
-        if (dt.isBefore(startDate) && !firstDayOfTerm) {
+        if (dt.isBefore(startOfFirstWeek) && !firstDayOfTerm) {
             return WEEK_NUMBER_BEFORE_START;
         }
 
         int result = WEEK_NUMBER_AFTER_END;
 
-        MutableDateTime theWeek = startDate.toMutableDateTime();
+        MutableDateTime theWeek = startOfFirstWeek.toMutableDateTime();
 
         for (int week = 1; week <= NUMBER_OF_WEEKS_IN_TERM; week++) {
             theWeek.addWeeks(1);
