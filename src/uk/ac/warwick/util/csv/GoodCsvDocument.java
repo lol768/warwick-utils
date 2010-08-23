@@ -3,11 +3,13 @@ package uk.ac.warwick.util.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 
 import org.springframework.util.Assert;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+import com.google.common.collect.Lists;
 
 /**
  * A CSV document object which uses an external library and should
@@ -31,7 +33,9 @@ public final class GoodCsvDocument<T> extends AbstractCSVDocument<T> {
      * confusing.
      */
     @Override
-    public void read(final Reader source) throws IOException,CSVException {
+    public List<T> read(final Reader source) throws IOException,CSVException {
+        List<T> readLines = Lists.newArrayList();
+        
         CsvReader delegate = new CsvReader(source);
         while (delegate.readRecord()) {
             if (delegate.getColumnCount() == 0) {
@@ -43,11 +47,16 @@ public final class GoodCsvDocument<T> extends AbstractCSVDocument<T> {
                 getReader().setColumn(o, i, values[i]);
             }
             getReader().end(o);
-            if (isStoreLines()) {
-                getLines().add(o);
-            }
+            
+            readLines.add(o);
         }
         getReader().endData();
+        
+        if (isStoreLines()) {
+            getLines().addAll(readLines);
+        }
+        
+        return readLines;
     }
     
     /**

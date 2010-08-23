@@ -11,10 +11,12 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Lists;
+
 /**
  * This class represents a CSV document.
  * 
- * This is the original version, which is considerably less good than the
+ * @deprecated This is the original version, which is considerably less good than the
  * alternate version, but I don't want to break HelpText so this is left
  * in for now for HelpText to use. There's no technical reason why it
  * couldn't use the new one though.
@@ -72,7 +74,9 @@ public final class CSVDocument<T> extends AbstractCSVDocument<T> {
         }
     }
 
-    public void read(final Reader source) throws IOException,CSVException {
+    public List<T> read(final Reader source) throws IOException,CSVException {
+        List<T> readLines = Lists.newArrayList();
+        
         String line;
         BufferedReader br = new BufferedReader(source);
         while ((line = br.readLine()) != null) {
@@ -86,11 +90,16 @@ public final class CSVDocument<T> extends AbstractCSVDocument<T> {
                 getReader().setColumn(o, i, cols[i]);
             }
             getReader().end(o);
-            if (isStoreLines()) {
-                getLines().add(o);
-            }
+            
+            readLines.add(o);
         }
         getReader().endData();
+        
+        if (isStoreLines()) {
+            getLines().addAll(readLines);
+        }
+        
+        return readLines;
     }
     
     /**

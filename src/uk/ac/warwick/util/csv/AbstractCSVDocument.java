@@ -36,7 +36,7 @@ public abstract class AbstractCSVDocument<T> {
      * that the concrete class has read in.
      * @throws CSVException 
      */
-    public abstract void read(final Reader source) throws IOException, CSVException;
+    public abstract List<T> read(final Reader source) throws IOException, CSVException;
     
     public abstract int validate(final Reader source) throws IOException,CSVException;
 
@@ -44,7 +44,7 @@ public abstract class AbstractCSVDocument<T> {
         return lines.size();
     }
 
-    public final Object getRow(final int i) {
+    public final T getRow(final int i) {
         return lines.get(i);
     }
 
