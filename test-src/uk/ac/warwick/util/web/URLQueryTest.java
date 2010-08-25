@@ -43,6 +43,10 @@ public class URLQueryTest {
 		assertEquals("", query.toQueryString());
 	}
 	
+	@Test(expected=IllegalArgumentException.class) public void invalidEncoding() throws Exception {
+	    new URLQuery("value=50%");
+	}
+	
 	@Test public void generating() throws Exception {
 		URLQuery query = new URLQuery("old=yes").add("new", "yes").add("strength", "50%").add("url", "http://example.com/");
 		assertEquals("old=yes&new=yes&strength=50%25&url=http%3A%2F%2Fexample.com%2F", query.toQueryString());

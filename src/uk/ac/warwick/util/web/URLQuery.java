@@ -32,7 +32,7 @@ public class URLQuery {
 	
 	public URLQuery() {}
 	
-	public URLQuery (final String query) {
+	public URLQuery (final String query) throws IllegalArgumentException {
 		this();
 		String q = StringUtils.nullGuard(query);
 		if (q.startsWith("?")) {
