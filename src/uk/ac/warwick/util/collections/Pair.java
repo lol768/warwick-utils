@@ -1,11 +1,17 @@
 package uk.ac.warwick.util.collections;
 
+import java.io.Serializable;
+
 /**
- * Container for a pair of objects
+ * Container for a pair of objects.
+ * 
+ * Will be Serializable if and only if both L and R are Serializable.
  * @see PairIterator
  * 
  */
-public final class Pair<L,R> {
+public final class Pair<L,R> implements Serializable {
+    private static final long serialVersionUID = 3671033033084202618L;
+    
     private final L left;
     private final R right;
 	public Pair (L left, R right){
@@ -42,7 +48,7 @@ public final class Pair<L,R> {
         return "<" + (left == null ? "null" : left.toString()) + "," + (right == null ? "null" : right.toString()) + ">";
     }
     
-    public static<L,R> Pair<L,R>of(L left, R right){
+    public static <L,R> Pair<L,R> of(L left, R right){
 		return new Pair<L,R>(left, right);
 	}
 }
