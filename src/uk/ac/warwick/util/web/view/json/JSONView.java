@@ -3,6 +3,7 @@ package uk.ac.warwick.util.web.view.json;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,10 @@ public abstract class JSONView implements View {
     }
     
     public static JSONView of(final JSONObject object, final String... error) {
+        return JSONView.of(object, Arrays.asList(error));
+    }
+    
+    public static JSONView of(final JSONObject object, final Iterable<String> error) {
         return new JSONView() {
             @Override
             public JSONObject render(Map<String, Object> model, List<String> errors) throws Exception {
@@ -147,6 +152,10 @@ public abstract class JSONView implements View {
     }
     
     public static JSONView errors(final String... error) {
+        return JSONView.errors(Arrays.asList(error));
+    }
+    
+    public static JSONView errors(final Iterable<String> error) {
         return JSONView.of(new JSONObject(), error);
     }
 
