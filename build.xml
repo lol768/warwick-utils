@@ -114,7 +114,7 @@
 			</copy>
 
 			<copy todir="${build.dir}/cache">
-				<fileset excludes="**/*.java" dir="${src.dir}" />
+				<fileset includes="**/*cache*.xml" dir="${src.dir}" />
 			</copy>
 
 			<copy todir="${build.dir}/content/">
