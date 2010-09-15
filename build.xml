@@ -201,6 +201,24 @@
 		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${src.dir}" />
 		<zip destfile="${dist.dir}/${jar.name}-test-${jar.version}-src.zip" basedir="${test-src.dir}" />
 
+		<typedef name="yui" classname="uk.ac.warwick.util.ant.YUICompressorFilter">
+        <classpath>
+            <pathelement location="${build.dir}/all" />
+            <fileset dir="external-libs/yuicompressor" includes="*.jar" />
+            <fileset dir="external-libs/ant" includes="*.jar" />
+        </classpath>
+    </typedef>
+		<copy todir="dist/static/scripts">
+			<fileset dir="static/scripts" includes="**/*.js" />
+			<filterchain>
+        <tokenfilter>
+          <filetokenizer />
+          <yui />
+        </tokenfilter>
+				<concatfilter prepend="static/js-prefix.txt" />
+      </filterchain>
+	  </copy>
+		
 		<copy file="WEB-INF/tld/warwick.tld" tofile="${dist.dir}/warwick.tld" />
 		<copy file="WEB-INF/tld/textile.tld" tofile="${dist.dir}/textile.tld" />
 	</target>
