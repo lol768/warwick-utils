@@ -105,7 +105,15 @@ public class YUICompressorFilter implements TokenFilter.Filter {
             if (line < 0) {
             	System.err.println("\n[WARN] " + message);
             } else {
-            	System.err.println("\n[WARN] " + line + ':' + lineOffset + ':' + message);
+                System.err.println("\n[WARN] " + line + ':' + lineOffset + ": " + lineSource.replace("\t", "    "));
+                
+                String secondLine = "\n[WARN] ";
+                for (int i=0; i<= lineOffset + ((Math.floor(Math.log10(line)))+1) + ((Math.floor(Math.log10(lineOffset)))+1) + 1; i++) {
+                    secondLine += " ";
+                }
+                
+                secondLine += "^ " + message; 
+                System.err.println(secondLine);
             }
         }
 
@@ -114,7 +122,15 @@ public class YUICompressorFilter implements TokenFilter.Filter {
             if (line < 0) {
                 System.err.println("\n[ERROR] " + message);
             } else {
-            	System.err.println("\n[ERROR] " + line + ':' + lineOffset + ':' + message);
+            	System.err.println("\n[ERROR] " + line + ':' + lineOffset + ": " + lineSource.replace("\t", "    "));
+            	
+            	String secondLine = "\n[ERROR] ";
+            	for (int i=0; i<= lineOffset + ((Math.floor(Math.log10(line)))+1) + ((Math.floor(Math.log10(lineOffset)))+1) + 1; i++) {
+            	    secondLine += " ";
+            	}
+            	
+            	secondLine += "^ " + message; 
+            	System.err.println(secondLine);
             }
         }
 
