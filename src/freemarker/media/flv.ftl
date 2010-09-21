@@ -61,8 +61,8 @@ Event.onDOMReady(function(){
 		    title: 'Click to play'
 		  });
 		  var container = $('video_${uniqueId}');
-      container.insert(posterImage);
-      var startVideo = function(event){
+  		  container.insert(posterImage);
+      	var startVideo = function(event){
         vidEl.insert(new Element('source', {
           src: '${url}',
           type: '${mime_type?default('video/mp4')}',
@@ -80,9 +80,10 @@ Event.onDOMReady(function(){
 		} else {
 		  insertFlash();
 		}
+	<#else>
+		<#-- FLV Video -->
+		insertFlash();
 	</#if>
-
-	
 });
 </script>
 
