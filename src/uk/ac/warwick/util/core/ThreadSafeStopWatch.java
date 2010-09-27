@@ -20,8 +20,11 @@ public final class ThreadSafeStopWatch {
         stopWatch.get().start(taskName);
     }
 
-    public static void stop() {
-        stopWatch.get().stop();
+    /**
+     * Stop the current task, returning the time it took in millis
+     */
+    public static long stop() {
+        return stopWatch.get().stop();
     }
 
     public static String prettyPrint() {

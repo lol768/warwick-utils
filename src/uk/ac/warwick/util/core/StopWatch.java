@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.ac.warwick.util.collections.Pair;
+
 public final class StopWatch {
 
     public static final Comparator<Task> TIME_COMPARATOR = new Comparator<Task>() {
@@ -57,17 +59,20 @@ public final class StopWatch {
      * 
      * @see #start
      */
-    public void stop() throws IllegalStateException {
+    public long stop() throws IllegalStateException {
         //ignore fails
         if (hasRunningTask()) {
-            getCurrentTask().stop();
+            long lastTime = getCurrentTask().stop().getRight();
 
             if (!getCurrentTask().isRunning()) {
-                long lastTime = getCurrentTask().getTimeMillis();
                 this.totalTimeMillis += lastTime;
                 ++this.taskCount;
             }
+            
+            return lastTime;
         }
+        
+        return -1; // Some kind of failure condition has caused us not to return
     }
 
     public Task getCurrentTask() {
@@ -194,17 +199,15 @@ public final class StopWatch {
             }
         }
 
-        public boolean stop() {
+        public Pair<Boolean, Long> stop() {
             if (hasRunningSubTask()) {
-                boolean hasNoSubTasks = getCurrentSubTask().stop();
-
-                return hasNoSubTasks;
+                return getCurrentSubTask().stop();
             } else {
                 endTime = System.currentTimeMillis();
                 running = false;
                 timeMillis = endTime - startTime;
 
-                return true;
+                return Pair.of(true, timeMillis);
             }
         }
 
