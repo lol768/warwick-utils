@@ -2,6 +2,7 @@ package uk.ac.warwick.util.concurrency;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
@@ -74,6 +75,10 @@ public final class TaskExecutionCompletionService<T> extends ExecutorCompletionS
             try {
                 results.add(take().get());
             } catch (ExecutionException e) {
+                if (throwOnException) {
+                    throw e;
+                }
+            } catch (CancellationException e) {
                 if (throwOnException) {
                     throw e;
                 }

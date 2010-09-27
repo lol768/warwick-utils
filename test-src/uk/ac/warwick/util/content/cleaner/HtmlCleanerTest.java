@@ -549,7 +549,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
-        assertEquals(expected, output);
+        assertEquals(expected.replace("\r", ""), output.replace("\r", ""));
         
         // Check that subsequent cleanups are idempotent
         verifyIdempotence(expected, false);
@@ -580,7 +580,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     }
 
     private String trimLineBreaks(String clean) {
-    	return clean.trim().replaceAll("\n", "").replaceAll("\t", "").replaceAll(">\\s+<", "><");
+    	return clean.trim().replace("\n", "").replace("\t", "").replace("\r", "").replaceAll(">\\s+<", "><");
 	}
 
 	private String readResourceToString(final String filename) throws IOException {

@@ -117,12 +117,12 @@ public class HtmlCleanerOfficeTest extends MockObjectTestCase {
     
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
-        assertEquals(expected, output);
+        assertEquals(expected.replace("\r", ""), output.replace("\r", ""));
     }
 
     private void verifyNoLineBreaks(String expected, String input) {
-        String output = cleaner.clean(input).trim().replaceAll("\n", "").replaceAll("\t", "").replaceAll(">\\s+<", "><");
-        expected = expected.trim().replaceAll("\n", "").replaceAll("\t", "").replaceAll(">\\s+<", "><");
+        String output = cleaner.clean(input).trim().replace("\n", "").replace("\t", "").replaceAll(">\\s+<", "><");
+        expected = expected.trim().replace("\n", "").replace("\t", "").replaceAll(">\\s+<", "><");
         assertEquals(expected, output);
     }
 
