@@ -10,8 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -20,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -29,6 +32,7 @@ import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
@@ -66,6 +70,14 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     private final HttpContext context = new BasicHttpContext();
     
     private HttpResponse response;
+    
+    private boolean followRedirects;
+    private boolean followRedirectsSet;
+
+    private boolean http10Only;
+
+    private boolean useExpect = true;
+    private boolean useExpectSet;
     
     public AbstractHttpMethodExecutor(Method method) {
         this(method, null);
@@ -122,10 +134,10 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
 
     private void createRequest() {
-        HttpUriRequest request;
+        HttpUriRequest r;
         switch (methodType) {
             case get:
-                request = new HttpGet(parseRequestUrl(requestUrl));
+                r = new HttpGet(parseRequestUrl(requestUrl));
                 break;
             case post:
                 HttpPost postRequest = new HttpPost(parseRequestUrl(requestUrl));
@@ -146,20 +158,32 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
                     }
                 }
                 
-                request = postRequest;
+                r = postRequest;
                 break;
             case head:
-                request = new HttpHead(parseRequestUrl(requestUrl));
+                r = new HttpHead(parseRequestUrl(requestUrl));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported request type: " + methodType);
         } 
         
-        this.request = request;
+        this.request = r;
+        
+        if (followRedirectsSet) {
+            HttpClientParams.setRedirecting(r.getParams(), followRedirects);
+        }
+        
+        if (http10Only) {
+            HttpProtocolParams.setVersion(r.getParams(), HttpVersion.HTTP_1_0);
+        }
+        
+        if (useExpectSet) {
+            HttpProtocolParams.setUseExpectContinue(r.getParams(), useExpect);
+        }
         
         // Add headers
         for (Header header : headers) {
-            request.addHeader(header);
+            r.addHeader(header);
         }
     }
     
@@ -299,6 +323,19 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         if (response == null) {
             throw new IllegalStateException("Request has not yet been executed");
         }
+    }
+    
+    public void setFollowRedirects(boolean follow) {
+        followRedirectsSet = true;
+        followRedirects = follow;
+    }
+    
+    public void setHttp10Only(boolean http1) {
+        this.http10Only = http1;
+    }
+    public void setUseExpectContinueHeader(boolean expect) {
+        this.useExpectSet = true;
+        this.useExpect   = expect;
     }
 
 }

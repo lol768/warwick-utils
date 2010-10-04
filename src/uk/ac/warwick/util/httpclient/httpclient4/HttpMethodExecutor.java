@@ -59,6 +59,17 @@ public interface HttpMethodExecutor extends Serializable {
         }
     };
     
+    // In case you just need the status code.
+    ResponseHandler<Void> IGNORE_RESPONSE = new ResponseHandler<Void>() {
+        public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                entity.consumeContent();
+            }
+            return null;
+        }
+    };
+    
     public interface StreamCallback {
         void doWithStream(InputStream stream);
     }
@@ -148,6 +159,8 @@ public interface HttpMethodExecutor extends Serializable {
      */
     void setSubstituteWarwickTags(final boolean substituteTags);
 
+    void setFollowRedirects(final boolean redirects);
+    
     /**
      * Whether to set the SSO cookie
      * 
@@ -196,5 +209,8 @@ public interface HttpMethodExecutor extends Serializable {
      * Sets the Http Client Factory to get the HttpClient for the request.
      */
     void setHttpClientFactory(HttpClientFactory factory);
+    
+    void setHttp10Only(boolean http1);
+    void setUseExpectContinueHeader(boolean expect);
 
 }
