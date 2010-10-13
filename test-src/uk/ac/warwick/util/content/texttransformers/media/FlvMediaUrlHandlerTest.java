@@ -70,12 +70,24 @@ public final class FlvMediaUrlHandlerTest {
 		
 		String html = handler.getHtml("../big_buck_bunny.mp4", parameters);
 		
-		System.out.println(html);
-		
 		assertTrue(html.startsWith("<notextile>"));
 		assertTrue(html.contains("\"640\",\"380\""));
 		
 		m.assertIsSatisfied();
+	}
+	
+	@Test
+	public void withPercentageWidthAndAutoHeight() throws Exception {
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("random", new java.util.Random());
+        parameters.put("align", "left");
+        parameters.put("width", "100%");
+        parameters.put("height", "auto");
+        
+        String html = handler.getHtml("file.mp4", parameters);
+        
+        assertTrue(html.startsWith("<notextile>"));
+        assertTrue(html.contains("\"100%\",\"\""));
 	}
 
 }

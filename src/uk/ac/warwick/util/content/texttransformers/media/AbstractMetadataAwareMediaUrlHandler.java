@@ -16,14 +16,28 @@ public abstract class AbstractMetadataAwareMediaUrlHandler extends MediaUrlHandl
 		// ends up as empty string then the defaults will be used in the
 		// freemarker
 		if (parameters.containsKey("width")) {
-			parameters.put("width", parameters.get("width").toString().replaceAll("[^0-9]+", ""));
+			parameters.put("width", sanitise(parameters.get("width").toString()));
 		}
 		
 		if (parameters.containsKey("height")) {
-			parameters.put("height", parameters.get("height").toString().replaceAll("[^0-9]+", ""));
+			parameters.put("height", sanitise(parameters.get("height").toString()));
 		}
 		
 		return getHtmlInner(url, parameters);
+	}
+	
+	private String sanitise(String dimension) {
+	    dimension = dimension.trim();
+	    if (dimension.equalsIgnoreCase("auto")) { return "auto"; }
+	    
+	    boolean percentage = false; 
+	    if (dimension.endsWith("%")) {
+	        percentage = true;
+	        dimension = dimension.substring(0, dimension.length()-1);
+	    }
+	    
+	    dimension = dimension.replaceAll("[^0-9]+", "");
+	    return percentage ? dimension + "%" : dimension;
 	}
 	
 	/**

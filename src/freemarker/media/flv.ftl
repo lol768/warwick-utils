@@ -1,4 +1,11 @@
 <#assign uniqueId = random.nextInt(1000000)?c />
+<#macro dimension value append=0><#compress>
+	<#if value?string?ends_with("%")>
+		${value}
+	<#elseif value?string != 'auto'>
+		${(value?number + append)?c}
+	</#if>
+</#compress></#macro>
 
 <div align="${align}">
 	<div id="video_${uniqueId}" class="media_tag_video"></div>
@@ -23,18 +30,18 @@ Event.onDOMReady(function(){
     url = '${url}'.toAbsoluteUrl();
   </#if>
   <#if newPlayer && !url?starts_with('rtmp://')>
-    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","${width?default(425)?number?c}","${(height?default(350)?number + 20)?c}");
+    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
     object${uniqueId}.addVariable("file", url);
     <#if previewimage?default("") != ''>
       object${uniqueId}.addVariable("image", "${previewimage?default("")}");
     </#if>
     object${uniqueId}.addVariable("stretching", "${stretching?default("fill")}");
   <#else>
-    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","${width?default(425)?number?c}","${(height?default(350)?number + 20)?c}");
+    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
   </#if>
     object${uniqueId}.addParam("wmode","transparent");
-    object${uniqueId}.addVariable("width",${width?default(425)?number?c});
-    object${uniqueId}.addVariable("height",${(height?default(350)?number + 20)?c});
+    object${uniqueId}.addVariable("width","<@dimension value=width?default(425) />");
+    object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=20 />");
     object${uniqueId}.addParam("allowfullscreen","true");
     object${uniqueId}.addVariable("showdownload","false");
     object${uniqueId}.align = "${align}";
@@ -45,8 +52,8 @@ Event.onDOMReady(function(){
 	  
 		/* Attempt HTML5 Video */ 
 		var vidEl = new Element('video', {
-			width: ${width?default(425)?number?c},
-			height: ${height?default(350)?number?c},
+			width: '<@dimension value=width?default(425) />',
+			height: '<@dimension value=height?default(350) />',
 			<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
 			controls: 'controls',
 			preload: 'meta',
@@ -55,7 +62,7 @@ Event.onDOMReady(function(){
 		var supportsVideo = !!vidEl.canPlayType;
 		var supportsCodec = supportsVideo && vidEl.canPlayType('video/mp4');
 		
-		if (supportsCodec) {		  
+		if (supportsCodec) {
 		  var posterImage = new Element('img', {
 		    src: '${previewimage?default("")}',
 		    title: 'Click to play'
@@ -66,8 +73,8 @@ Event.onDOMReady(function(){
         vidEl.insert(new Element('source', {
           src: '${url}',
           type: '${mime_type?default('video/mp4')}',
-          width: ${width?default(425)?number?c},
-          height: ${height?default(350)?number?c}
+          width: '<@dimension value=width?default(425) />',
+          height: '<@dimension value=height?default(350) />'
         }));
         // Place video in container's place, with container inside the video as fallback
         posterImage.remove();
