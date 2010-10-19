@@ -48,7 +48,7 @@ Event.onDOMReady(function(){
     object${uniqueId}.write('video_${uniqueId}');
   };
 
-	<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4')>
+	<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v')>
 	  
 		/* Attempt HTML5 Video */ 
 		var vidEl = new Element('video', {
