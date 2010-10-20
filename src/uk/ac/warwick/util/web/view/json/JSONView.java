@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.View;
 
@@ -38,7 +39,7 @@ public abstract class JSONView implements View {
     public final void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSONObject results = new JSONObject();
         JSONArray errors = new JSONArray();
-        JSONObject data = new JSONObject();
+        JSONObject data = null;
         
         List<String> errorsList = Lists.newArrayList();
         
@@ -62,7 +63,7 @@ public abstract class JSONView implements View {
             String contentType = getContentType();
             
             // jsonp - referer check is mandatory because otherwise any website would be able to get our information
-            String callback = ServletRequestUtils.getStringParameter(request, "jsonp");
+            String callback = getParam(request, "jsonp", "callback");
             if (StringUtils.hasText(callback) && jsonpRequestValidator.isAllow(request)) {
                 writer.write(callback + "(");
                 results.write(writer);
@@ -71,7 +72,17 @@ public abstract class JSONView implements View {
                 // For JSONP requests we should serve application/javascript as the content type
                 contentType = "application/javascript";
             } else {
-                results.write(writer);
+                String assignment = getParam(request, "assign");
+                if (StringUtils.hasText(assignment) && jsonpRequestValidator.isAllow(request)) {
+                    writer.write("var " + assignment + " = ");
+                    results.write(writer);
+                    writer.write(";");
+                    
+                    // For JSONP requests we should serve application/javascript as the content type
+                    contentType = "application/javascript";                    
+                } else {
+                    results.write(writer);
+                }
             }
             
             writer.flush();
@@ -80,6 +91,17 @@ public abstract class JSONView implements View {
         } finally {
             writer.close();
         }
+    }
+    
+    private String getParam(HttpServletRequest request, String... params) throws ServletRequestBindingException {
+        for (String param : params) {
+            String result = ServletRequestUtils.getStringParameter(request, param);
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        return null;
     }
     
     private void writeToResponse(HttpServletResponse response, ByteArrayOutputStream baos, String contentType) throws IOException {
