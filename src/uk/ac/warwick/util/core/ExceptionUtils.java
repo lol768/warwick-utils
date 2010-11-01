@@ -10,7 +10,7 @@ public final class ExceptionUtils {
     private ExceptionUtils() {
     }
 
-    public static Throwable retrieveException(final Exception e, final Class<? extends Throwable> clazz) {
+    public static Throwable retrieveException(final Throwable e, final Class<? extends Throwable> clazz) {
         for (Throwable t: retrieveExceptions(e)) {
             if (t.getClass().equals(clazz)) {
                 return t;
@@ -20,7 +20,7 @@ public final class ExceptionUtils {
         return null;
     }
 
-    public static List<Throwable> retrieveExceptions(final Exception e) {
+    public static List<Throwable> retrieveExceptions(final Throwable e) {
         List<Throwable> exceptions = new ArrayList<Throwable>();
         walkExceptions(exceptions, e);
         return exceptions;
