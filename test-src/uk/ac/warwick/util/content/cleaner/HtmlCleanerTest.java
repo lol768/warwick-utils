@@ -543,6 +543,12 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         verify(expected, input);
     }
     
+    public void testSBTWO4051() {
+        String input = "<img src=\"http://java-monkey.warwick.ac.uk/services/its/elab/about/people/nickhowes/pagetypes/news/809-3.jpg\" _mce_src=\"809-3.jpg\" mce_src=\"809-3.jpg\" alt=\"Moomins\">";
+        String expected = "<img src=\"809-3.jpg\" alt=\"Moomins\" border=\"0\" />";
+        verify(expected, input);
+    }
+    
     private void verify(String input) {
     	verify(input,input);
     }

@@ -59,6 +59,7 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
 
         boolean containsMce = containsMceAttributes(atts);
         
+        Set<String> usedAttributes = new HashSet<String>();
 
         attributeLoop: for (int i = 0; i < atts.getLength(); i++) {
             String name = atts.getLocalName(i);
@@ -90,7 +91,10 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
             String attrName = contentFilter.handleAttributeName(name, tagName);
             String attrValue = contentFilter.handleAttributeValue(htmlEscapeAll(value), tagName, name);
 
-            result.append(" " + attrName + "=" + "\"" + attrValue + "\"");
+            // don't put in an attribute twice
+            if (usedAttributes.add(attrName)) {
+                result.append(" " + attrName + "=" + "\"" + attrValue + "\"");
+            }
             
         }
 
