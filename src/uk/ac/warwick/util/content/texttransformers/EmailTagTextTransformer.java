@@ -30,10 +30,6 @@ public final class EmailTagTextTransformer implements TextTransformer {
 
 	private static final String[] ALLOWED_PARAMETERS = new String[] { "address" };
 
-	private static final Pattern HEADEND = Pattern.compile("(</head>)",Pattern.CASE_INSENSITIVE);
-	
-    private static final Pattern HTMLSTART = Pattern.compile("(<html[^>]*?>)",Pattern.CASE_INSENSITIVE);
-
 	public String transform(String text) {
 		String result = text;
 		if (text.indexOf("[email") != -1) {

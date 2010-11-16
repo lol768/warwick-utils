@@ -99,7 +99,7 @@ public final class EmailTagTextTransformerTest {
 		CompositeTextTransformer transformer = new CompositeTextTransformer(Arrays.asList(
 				new MediaUrlTransformer(new HashMap<String, MediaUrlHandler>() {{
 					put("mp3", new AudioMediaUrlHandler("wimpy", "opo"));
-				}}),
+				}}, null),
 				new EmailTagTextTransformer()
 		));
 		String output = transformer.transform(input);

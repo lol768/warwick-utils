@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.collect.Lists;
+
 import uk.ac.warwick.util.core.StringUtils;
 
 /**
@@ -108,21 +110,80 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         
         int lastMatch = 0;
         int startIndex = 0;
-        int endIndex = 0;    
+        int endIndex = 0;
+        
+        List<String> heads = Lists.newArrayList();
         
         while (matcher.find()) {
             startIndex = matcher.start();
             endIndex = matcher.end();
-            sb.append(new TagTransformer().transform(html.substring(lastMatch, startIndex), getCallback()));
+            
+            String transformed = new TagTransformer().transform(html.substring(lastMatch, startIndex), getCallback());
+            sb.append(extractHeads(transformed, heads));
             sb.append(html.substring(startIndex, endIndex));
             lastMatch = endIndex;
         }
         
-        sb.append(new TagTransformer().transform(html.substring(endIndex), getCallback()));
+        String transformed = new TagTransformer().transform(html.substring(endIndex), getCallback());
+        sb.append(extractHeads(transformed, heads));
+        
+        if (heads.isEmpty()) {
+            return sb.toString();
+        } else {
+            String output = sb.toString();
+            for (String head : heads) {
+                output = injectHead(output, head);
+            }
+            
+            return output;
+        }
+    }
+    
+    static String extractHeads(String html, List<String> heads) {
+        if (html.indexOf("<head") == -1) {
+            return html;
+        }
+        
+        Matcher m = HEAD_MATCHER.matcher(html);
+        
+        StringBuilder sb = new StringBuilder();
+        
+        int lastMatch = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+        while (m.find()) {
+            startIndex = m.start();
+            endIndex = m.end();
+            
+            sb.append(html.substring(lastMatch, startIndex).trim());
+            
+            heads.add(m.group(1));
+            
+            lastMatch = endIndex;
+        }
+        
+        sb.append(html.substring(endIndex).trim());
         
         return sb.toString();
     }
     
+    private String injectHead(String originalHtml, String head) {
+        String html = originalHtml;
+        
+        if (!HTMLSTART.matcher(html).find()) {
+            //if originalHtml is just body, wrap it in tags
+            html = "<html><head>" + head +"</head><body>" + 
+                        html + 
+                        "</body></html>";
+        } else if (!HEADEND.matcher(html).find()) {
+            //if there is html but no head, add a head
+            html = HTMLSTART.matcher(html).replaceFirst("$1<head>"+head.replace("$", "\\$")+"</head>");
+        } else {
+            html = HEADEND.matcher(html).replaceFirst(head.replace("$", "\\$")+"$1");
+        }
+        return html;
+    }
+
     protected final Map<String, Object> extractParameters(final String string) {
         if (string == null) {
             return new HashMap<String, Object>();

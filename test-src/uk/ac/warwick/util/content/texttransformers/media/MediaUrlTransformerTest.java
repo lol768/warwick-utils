@@ -1,23 +1,28 @@
 package uk.ac.warwick.util.content.texttransformers.media;
 
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class MediaUrlTransformerTest extends TestCase {
-    public void testTagMatchingPatternWorks() {
-        Pattern p = new MediaUrlTransformer(null).getTagPattern();
+public class MediaUrlTransformerTest {
+    
+    @Test
+    public void tagMatchingPatternWorks() {
+        Pattern p = new MediaUrlTransformer(null, null).getTagPattern();
         String input = "Test words [media]Contents[/media] More words";
         Matcher m = p.matcher(input);
         assertTrue(m.find());
         assertEquals("Contents", m.group(3));
     }
     
-    public void testTagMatchingPatternWorksOnMultipleTags() {
-        Pattern p = new MediaUrlTransformer(null).getTagPattern();
+    @Test
+    public void tagMatchingPatternWorksOnMultipleTags() {
+        Pattern p = new MediaUrlTransformer(null, null).getTagPattern();
         String input = "Test words [media]Contents[/media] More words [media]Contents 2[/media] More words";
         Matcher m = p.matcher(input);
         assertTrue(m.find());
@@ -26,7 +31,8 @@ public class MediaUrlTransformerTest extends TestCase {
         assertEquals("Contents 2", m.group(3));
     }
     
-    public void testTransforming() {
+    @Test
+    public void transforming() {
         Map<String,MediaUrlHandler> handlers = new HashMap<String,MediaUrlHandler>();
         handlers.put("uppercase", new MediaUrlHandler() {
             public boolean recognises(String url) {
@@ -36,7 +42,7 @@ public class MediaUrlTransformerTest extends TestCase {
                 return url.toUpperCase();
             }
         });
-        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers);
+        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, null);
         
         String input = "test words [media]golden trumpet[/media] test words";
         String expected = "test words GOLDEN TRUMPET test words";
@@ -45,7 +51,8 @@ public class MediaUrlTransformerTest extends TestCase {
         assertEquals(expected, output);   
     }
     
-    public void testParameters() {
+    @Test
+    public void parameters() {
         Map<String,MediaUrlHandler> handlers = new HashMap<String,MediaUrlHandler>();
         handlers.put("uppercase", new MediaUrlHandler() {
             public boolean recognises(String url) {
@@ -60,7 +67,7 @@ public class MediaUrlTransformerTest extends TestCase {
                 return result;
             }
         });
-        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers);
+        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, null);
         
         String input = "test words [media width=100 height=\"200\" type='uppercase']trumpet[/media] test words";
         String expected = "test words TRUMPET(width:100,height:200,type:uppercase) test words";
@@ -73,7 +80,8 @@ public class MediaUrlTransformerTest extends TestCase {
      * But if a type parameter is handed to the media URL it should override all this
      * and use the specified handler.
      */
-    public void testContentTypeOverride() {
+    @Test
+    public void contentTypeOverride() {
         Map<String,MediaUrlHandler> handlers = new HashMap<String,MediaUrlHandler>();
         handlers.put("uppercase", new MediaUrlHandler() {
             public boolean recognises(String url) {
@@ -91,7 +99,7 @@ public class MediaUrlTransformerTest extends TestCase {
                 return url.toLowerCase();
             }
         });
-        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers);
+        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, null);
         
         String input = "test words [media]golden trumpet[/media] test words [media type='lowercase']Super LowerCase[/media] test words";
         String expected = "test words GOLDEN TRUMPET test words super lowercase test words";
@@ -106,7 +114,8 @@ public class MediaUrlTransformerTest extends TestCase {
      * want to throw an exception as it's feasibly something users could do, best not
      * to chuck up errors. 
      */
-    public void testBadContentType() {
+    @Test
+    public void badContentType() {
         Map<String,MediaUrlHandler> handlers = new HashMap<String,MediaUrlHandler>();
         handlers.put("uppercase", new MediaUrlHandler() {
             public boolean recognises(String url) {
@@ -117,7 +126,7 @@ public class MediaUrlTransformerTest extends TestCase {
             }
         });
         
-        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers);
+        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, null);
         String input = "test words [media type='somemadeuptype']golden trumpet[/media] test words";
         String output = transformer.transform(input);
         assertEquals(input, output);

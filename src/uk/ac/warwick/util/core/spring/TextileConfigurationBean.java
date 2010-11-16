@@ -13,6 +13,7 @@ public final class TextileConfigurationBean extends AbstractFactoryBean {
 	private String flvPlayerLocation;
 	private String newFlvPlayerLocation;
 	private String latexLocation;
+	private String closeButtonImgUrl;
 
 	protected TextileConfiguration createInstance() throws Exception {
 		TextileConfiguration config = new TextileConfiguration();
@@ -24,6 +25,7 @@ public final class TextileConfigurationBean extends AbstractFactoryBean {
 		config.setFlvPlayerLocation(flvPlayerLocation);
 		config.setNewFlvPlayerLocation(newFlvPlayerLocation);
 		config.setLatexLocation(latexLocation);
+		config.setCloseButtonImgUrl(closeButtonImgUrl);
 		
 		TextileConfiguration.setInstance(config);
 		
@@ -90,5 +92,13 @@ public final class TextileConfigurationBean extends AbstractFactoryBean {
 	public void setLatexLocation(String latexLocation) {
 		this.latexLocation = latexLocation;
 	}
+
+    public String getCloseButtonImgUrl() {
+        return closeButtonImgUrl;
+    }
+
+    public void setCloseButtonImgUrl(String closeButtonImgUrl) {
+        this.closeButtonImgUrl = closeButtonImgUrl;
+    }
 
 }

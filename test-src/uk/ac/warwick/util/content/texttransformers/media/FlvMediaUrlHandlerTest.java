@@ -89,5 +89,17 @@ public final class FlvMediaUrlHandlerTest {
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("\"100%\",\"\""));
 	}
+	
+	@Test
+	public void withTitle() throws Exception {
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("random", new java.util.Random());
+        parameters.put("align", "left");
+        parameters.put("title", "Click here for a good time");
+        
+        String html = handler.getHtml("file.mp4", parameters);
+        
+        System.out.println(html);
+	}
 
 }

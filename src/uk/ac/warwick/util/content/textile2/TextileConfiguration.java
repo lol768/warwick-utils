@@ -37,6 +37,7 @@ public final class TextileConfiguration {
 			config.setFlvPlayerLocation(System.getProperty("textile.media.flvPlayerLocation"));
 			config.setNewFlvPlayerLocation(System.getProperty("textile.media.newFlvPlayerLocation"));
 			config.setLatexLocation(System.getProperty("textile.latex.location"));
+			config.setCloseButtonImgUrl(System.getProperty("textile.popup.closeButtonUrl"));
 			
 			TextileConfiguration.setInstance(config);
 		}
@@ -61,6 +62,7 @@ public final class TextileConfiguration {
 	private String flvPlayerLocation;
 	private String newFlvPlayerLocation;
 	private String latexLocation;
+	private String closeButtonImgUrl;
 	
 	public TextileConfiguration() {}
 
@@ -120,5 +122,13 @@ public final class TextileConfiguration {
 	public void setLatexLocation(String latexLocation) {
 		this.latexLocation = latexLocation;
 	}
+
+    public String getCloseButtonImgUrl() {
+        return closeButtonImgUrl;
+    }
+
+    public void setCloseButtonImgUrl(String closeButtonImgUrl) {
+        this.closeButtonImgUrl = closeButtonImgUrl;
+    }
 
 }

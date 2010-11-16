@@ -32,7 +32,7 @@ public class ListOfUrlsForHandlingTest extends TestCase {
         handlers.put("vimeo", new VimeoMediaUrlHandler());
         handlers.put("myspace", new MySpaceMediaUrlHandler());
                 
-        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers);
+        MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, "");
         
         for (String tag : readResourceToLines("/mediaTagList.txt")) {
             /*

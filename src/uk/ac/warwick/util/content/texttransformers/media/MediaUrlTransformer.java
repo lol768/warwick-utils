@@ -9,16 +9,18 @@ import uk.ac.warwick.util.content.texttransformers.AbstractSquareTagTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
 
-public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
+public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
     
-    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackVersion", "stretching"};
+    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackVersion", "stretching", "title", "description"};
     private static final Logger LOGGER = Logger.getLogger(MediaUrlTransformer.class);
     
-    private Map<String, MediaUrlHandler> handlers;
+    private final Map<String, MediaUrlHandler> handlers;
+    private final String closeButtonImgUrl;
     
-    public MediaUrlTransformer(final Map<String, MediaUrlHandler> theHandlers) {
+    public MediaUrlTransformer(final Map<String, MediaUrlHandler> theHandlers, final String theCloseButtonImgUrl) {
         super("media");
-        handlers = theHandlers;
+        this.handlers = theHandlers;
+        this.closeButtonImgUrl = theCloseButtonImgUrl;
     }
     
     protected String[] getAllowedParameters() {
@@ -44,6 +46,7 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer  {
                 }
                 
                 parameters.put("random", new java.util.Random());
+                parameters.put("closeButtonImgUrl", closeButtonImgUrl);
                 
                 // "type" overrides the content type
                 if (parameters.containsKey("type")) {

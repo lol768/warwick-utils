@@ -148,7 +148,7 @@ public final class Textile2 {
 			mediaHandlers.put("vimeo", new VimeoMediaUrlHandler());
 			mediaHandlers.put("myspace", new MySpaceMediaUrlHandler());
 		
-			transformers.add(new MediaUrlTransformer(mediaHandlers));
+			transformers.add(new MediaUrlTransformer(mediaHandlers, config.getCloseButtonImgUrl()));
 		}
 		
 		if (features.contains(TransformerFeature.latex)) {
