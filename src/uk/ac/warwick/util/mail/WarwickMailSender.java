@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.mail;
 
+import java.util.concurrent.Future;
+
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.MailException;
@@ -13,6 +15,6 @@ import org.springframework.mail.SimpleMailMessage;
  */
 public interface WarwickMailSender {
     MimeMessage createMimeMessage();
-    void send(MimeMessage message) throws MailException;
-    void send(SimpleMailMessage message) throws MailException;
+    Future<Boolean> send(MimeMessage message) throws MailException;
+    Future<Boolean> send(SimpleMailMessage message) throws MailException;
 }

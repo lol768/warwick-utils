@@ -41,14 +41,14 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         return mailSender.createMimeMessage();
     }
     
-    public void send(MimeMessage message) throws MailException {
+    public Future<Boolean> send(MimeMessage message) throws MailException {
         // if we wanted to block and wait, we could do a .get() on the future
-        sendAndReturnFuture(message);
+        return sendAndReturnFuture(message);
     }
 
-    public void send(SimpleMailMessage message) throws MailException {
+    public Future<Boolean> send(SimpleMailMessage message) throws MailException {
         // if we wanted to block and wait, we could do a .get() on the future
-        sendAndReturnFuture(message);
+        return sendAndReturnFuture(message);
     }
 
     /**
@@ -62,6 +62,8 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         try {
             validateRecipients(message.getAllRecipients());
             validateRecipients(message.getFrom());
+            
+            message.setSender(new InternetAddress("no-reply@warwick.ac.uk"));
         } catch (MessagingException e) {
             throw new MailParseException(e);
         }
