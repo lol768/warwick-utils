@@ -27,6 +27,14 @@
 		<example> ${warwick:html(myText)} </example>
 	</function>
 	
+  <function>
+    <description> Escapes only special HTML characters. </description>
+    <name>specialHtml</name>
+    <function-class>uk.ac.warwick.util.web.tags.Functions</function-class>
+    <function-signature>java.lang.String specialHtml(java.lang.String)</function-signature>
+    <example> ${warwick:specialHtml(myText)} </example>
+  </function>
+	
 	<tag>
 		<name>collectionGrouper</name>
 		<tag-class>uk.ac.warwick.util.web.tags.CollectionGrouperTag</tag-class>

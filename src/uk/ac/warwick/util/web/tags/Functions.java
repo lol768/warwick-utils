@@ -2,6 +2,8 @@ package uk.ac.warwick.util.web.tags;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import uk.ac.warwick.util.core.StringUtils;
+
 
 /**
  * Collection of generic JSTL functions, 
@@ -16,5 +18,9 @@ public class Functions {
     
     public static String html(final String text) {
         return StringEscapeUtils.escapeHtml(text);
+    }
+    
+    public static String specialHtml(final String text) {
+        return StringUtils.htmlEscapeSpecialCharacters(text);
     }
 }
