@@ -1,9 +1,13 @@
 package uk.ac.warwick.util.string;
 
+import static uk.ac.warwick.userlookup.cache.Pair.*;
+import static uk.ac.warwick.util.core.StringUtils.*;
+
 import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.userlookup.cache.Pair;
 import uk.ac.warwick.util.core.StringUtils;
 
 public class StringUtilsTest extends TestCase {
@@ -65,4 +69,23 @@ public class StringUtilsTest extends TestCase {
 		assertEquals("", StringUtils.safeSubstring(input, 30, 40));
 		assertEquals("", StringUtils.safeSubstring(null, 1000, 3213));
 	}
+
+	@SuppressWarnings("unchecked")
+    public void testHtmlEscapeSpecialCharacters() {
+	    for (Pair<String,String> pair: Arrays.asList(
+	            of("Regular string", "Regular string"),
+	            of("Some <b>bold</b> text", "Some &lt;b&gt;bold&lt;/b&gt; text"),
+	            of("Ben & Jerry's", "Ben &amp; Jerry's"),
+	            of("I have to go to A&E", "I have to go to A&amp;E"),
+	            of("a - \u1234", "a - \u1234"),    // doesn't deal with non-ASCII characters
+	            of("&Agrave; < bient&ocirc;t", "&Agrave; &lt; bient&ocirc;t"), // doesn't touch existing HTML entities
+	            of("I think & &there4; I am", "I think &amp; &there4; I am"),
+	            of("Dec entity: &#1234;!", "Dec entity: &#1234;!"),
+	            of("Hex entity: &#x123;!", "Hex entity: &#x123;!"),
+	            of("<esc/> 3 &times; 4 = 12, A&E", "&lt;esc/&gt; 3 &times; 4 = 12, A&amp;E") // example in JIRA
+	    )) {
+	        assertEquals(pair.getSecond(), htmlEscapeSpecialCharacters(pair.getFirst()));
+	    }
+	}
+	
 }

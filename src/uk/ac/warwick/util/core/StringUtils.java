@@ -25,6 +25,16 @@ public final class StringUtils {
 
     private static final int HIGH_CHAR = 127;
 
+    // Pattern to match an HTML entity where the initial & has been escaped
+    private static final String ESCAPED_AMP_ENTITIES = "&amp;" +
+    		"(" +
+    		"#x[0-9A-Fa-f]+" + // hex entities
+    		"|" +
+    		"#[0-9]+" + // decimal entities
+    		"|" +
+    		"[A-Za-z0-9]+" + // named entities
+    		");";
+
     private StringUtils() {
 
     }
@@ -229,7 +239,8 @@ public final class StringUtils {
 
     /**
      * Escapes all non-ASCII characters into HTML entities, so you
-     * can output the result into any HTML page.
+     * can output the result into any HTML page. Existing HTML entities and
+     * special HTML characters like angle brackets are not changed.
      */
     public static String htmlEscapeHighCharacters(final String input) {
         StringReader reader = new StringReader(input);
@@ -254,6 +265,30 @@ public final class StringUtils {
 
     }
 
+    /**
+     * Converts a small set of characters into HTML entities:
+     * 
+     * - <
+     * - >
+     * - & when not part of an HTML entity (eg A&E, Penn & Teller)
+     * 
+     * This basically disables any tags, while still allowing the use of
+     * HTML entities for non-ASCII characters.
+     * 
+     * DOESN'T escape any non-ASCII characters. See {@link #htmlEscapeHighCharacters(String)}.
+     */
+    public static String htmlEscapeSpecialCharacters(final String input) {
+        /*
+         * Ampersand encoding works by encoding ALL ampersands first, then
+         * reversing this for any that starts an HTML entity.     
+         */
+        return input
+            .replaceAll("&", "&amp;")
+            .replaceAll(ESCAPED_AMP_ENTITIES, "&$1;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;");
+    }
+    
     /* remove leading whitespace */
     public static String ltrim(final String source) {
         return LEADING_SPACE_PATTERN.matcher(source).replaceAll("");
