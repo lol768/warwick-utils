@@ -12,6 +12,7 @@ import org.hibernate.usertype.UserType;
 import org.hibernate.util.EqualsHelper;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.joda.time.ReadableInstant;
 import org.joda.time.chrono.ISOChronology;
 
 /**
@@ -47,9 +48,15 @@ public final class DateTimeDataType implements UserType {
     public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, Types.TIMESTAMP);
-        } else {
-            Timestamp ts = new Timestamp(((DateTime)value).getMillis());
+        } else if (value instanceof ReadableInstant) {
+            Timestamp ts = new Timestamp(((ReadableInstant)value).getMillis());
             st.setTimestamp(index, ts);
+        } else if (value instanceof Timestamp) {
+            st.setTimestamp(index, (Timestamp)value);
+        } else if (value instanceof java.sql.Date) {
+            st.setDate(index, (java.sql.Date)value);
+        } else {
+            throw new IllegalStateException("value is a " + value.getClass().getName());
         }
     }
 
