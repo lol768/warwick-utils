@@ -10,6 +10,9 @@
 	<path id="external.libs.path" description="All external libraries">
 		<fileset dir="${external.libs.dir}" includes="**/*.jar" />
 	</path>
+	<path id="external.libs.path.noant" description="All external libraries except ant">
+	    <fileset dir="${external.libs.dir}" includes="**/*.jar" excludes="ant/**" />
+	</path>
 
 	<target name="build-all" depends="clean,init,compile,test,package" />
 
@@ -236,7 +239,7 @@
 	<target name="test" depends="compile,_compiletests,_instrument">
 		<mkdir dir="${unit-test.report.dir}" />
 		<path id="test.run.class.path">
-			<path refid="external.libs.path" />
+			<path refid="external.libs.path.noant" />
 			<path path="${build.dir}/all" />
 			<path path="${build.dir}/unit-tests" />
 			<pathelement path="${build.dir}/unit-tests/resources" />

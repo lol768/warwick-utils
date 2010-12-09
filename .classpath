@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry excluding="resources/" kind="src" path="test-src"/>
+	<classpathentry excluding="resources|resources/" kind="src" path="test-src"/>
 	<classpathentry kind="src" path="ruby-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="external-libs/commons-lang/commons-lang.jar"/>
@@ -28,7 +28,6 @@
 	<classpathentry kind="lib" path="external-libs/hibernate/hibernate3.jar"/>
 	<classpathentry kind="lib" path="external-libs/tagsoup/tagsoup-1.2.jar" sourcepath="external-libs/src/tagsoup-1.2-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/freemarker/freemarker-2.3.14.jar" sourcepath="external-libs/src/freemarker-2.3.14-src.zip"/>
-	<classpathentry kind="lib" path="test-src/resources"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-aspects.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-test.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar"/>
@@ -50,5 +49,7 @@
 	<classpathentry kind="lib" path="external-libs/rome/jdom.jar"/>
 	<classpathentry kind="lib" path="external-libs/rome/modules-0.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/rome/rome-1.0.jar"/>
+	<classpathentry kind="lib" path="external-libs/ant/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="test-src/resources"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

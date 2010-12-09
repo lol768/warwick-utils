@@ -1,0 +1,34 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant"  name="Batch Hash task test" default="run">
+
+	<taskdef name="batchhash" classname="uk.ac.warwick.util.ant.BatchHashTask" />
+	
+	<property name="static.dir" value="hash-static" />
+	<property name="target.props.file" value="${java.io.tmpdir}/statichashes.properties" />
+	
+	<target name="init">
+		
+		<delete file="${target.props.file}" />
+  </target>
+	
+  <target name="run" depends="init">
+    <batchhash propertyfile="${target.props.file}" maxhashlength="12">
+  	  <fileset dir="${static.dir}" includes="**" />
+  	</batchhash>
+  </target>
+	
+	<target name="missing-fileset" depends="init">
+	  <batchhash propertyfile="x">
+		</batchhash>
+	</target>
+	
+	<target name="missing-propertyfile" depends="init">
+	  <batchhash>
+	  	<fileset dir="static" includes="**/*.css" />
+	  </batchhash>
+	</target>
+	
+	<target name="cleanup" depends="init">
+
+  </target>
+
+</project>
