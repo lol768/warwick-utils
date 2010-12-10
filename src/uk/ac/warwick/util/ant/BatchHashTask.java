@@ -3,7 +3,6 @@ package uk.ac.warwick.util.ant;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +17,6 @@ import java.util.Properties;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
 
 /**
@@ -104,11 +102,16 @@ public class BatchHashTask extends Task {
     private String digest(File baseDir, String file, MessageDigest digester) throws UnsupportedEncodingException, IOException {
         digester.reset();
 
-        BufferedInputStream input = new BufferedInputStream(new FileInputStream(new File(baseDir, file)));
-        int read = 0;
-        byte[] buffer = new byte[8096];
-        while((read = input.read(buffer)) > 0) {
-            digester.update(buffer, 0, read);
+        InputStream input = null;
+        try {
+            input = new BufferedInputStream(new FileInputStream(new File(baseDir, file)), 8096);
+            int read = 0;
+            byte[] buffer = new byte[8096];
+            while((read = input.read(buffer)) > 0) {
+                digester.update(buffer, 0, read);
+            }
+        } finally {
+            if (input != null) input.close();
         }
         
         BigInteger integer = new BigInteger(digester.digest());
