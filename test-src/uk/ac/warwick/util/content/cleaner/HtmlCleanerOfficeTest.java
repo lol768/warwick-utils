@@ -103,7 +103,13 @@ public class HtmlCleanerOfficeTest extends MockObjectTestCase {
     	verify(expected, input);
     }
     
-    
+    // still some cond comments hanging around, making stuff invisible in IE
+    public void testWordConditionalCommentEngulsion2() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-4125.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-4125-expected.html");
+        
+        verify(expected, input);
+    }
 
     /**
      * Word 2003 and Word 2007 are horrible at pasting stuff. We should strip
