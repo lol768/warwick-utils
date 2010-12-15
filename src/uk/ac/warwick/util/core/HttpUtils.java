@@ -26,10 +26,10 @@ public final class HttpUtils {
             final String paramValue) {
         String result = url;
 
-        // trim trailing slash.
-        if (result.charAt(result.length() - 1) == '/') {
-            result = result.substring(0, result.length() - 1);
-        }
+//        // trim trailing slash.
+//        if (result.charAt(result.length() - 1) == '/') {
+//            result = result.substring(0, result.length() - 1);
+//        }
 
         String paramString;
         try {
