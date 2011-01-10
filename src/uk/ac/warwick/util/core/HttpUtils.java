@@ -114,7 +114,7 @@ public final class HttpUtils {
                 Cookie cookie = cookies[i];
                 if (cookie.getName().equals(name)) {
                     return cookie;
-                }
+                } 
             }
         }
         return null;
