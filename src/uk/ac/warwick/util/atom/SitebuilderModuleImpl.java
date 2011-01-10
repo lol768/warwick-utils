@@ -11,6 +11,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     private Boolean deleted;
     private Boolean spanRhs;
     private String head;
+    private String comment;
     
     public SitebuilderModuleImpl() {
         super(SitebuilderModule.class, SitebuilderModule.MODULE_URI);
@@ -28,6 +29,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         deleted = module.getDeleted();
         spanRhs = module.getSpanRhs();
         head = module.getHead();
+        comment = module.getComment();
     }
     
     public Boolean getAllowSearchEngines() {
@@ -78,5 +80,14 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     public void setHead(String head) {
         this.head = head;
     }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+    
 
 }

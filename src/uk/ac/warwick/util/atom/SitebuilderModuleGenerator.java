@@ -69,6 +69,8 @@ public final class SitebuilderModuleGenerator implements ModuleGenerator {
                     sbm.getSpanRhs().toString()));
         }
         
+        // edit-comment not present because it's only parsed as input. 
+        
     }
 
     private Element element(String name, String value) {

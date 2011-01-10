@@ -27,6 +27,7 @@ public interface SitebuilderModule extends Module {
     String ELEMENT_HEAD = "head";
     String ELEMENT_DELETED = "deleted";
     String ELEMENT_SPAN_RHS = "span-rhs";
+    String ELEMENT_COMMENT = "edit-comment";
 
     String getPageName();
     void setPageName(String name);
@@ -45,4 +46,7 @@ public interface SitebuilderModule extends Module {
     
     String getHead();
     void setHead(String head);
+    
+    String getComment();
+    void setComment(String comment);
 }
