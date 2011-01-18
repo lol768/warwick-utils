@@ -1,9 +1,5 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
@@ -16,6 +12,7 @@ import org.apache.http.protocol.HttpContext;
 import uk.ac.warwick.sso.client.SSOProxyCookieHelper;
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.httpclient.WarwickTagUrlMangler;
+import uk.ac.warwick.util.web.Uri;
 
 public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHttpMethodExecutor {
     
@@ -29,10 +26,14 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     
     private final User user;
     
-    public AbstractWarwickAwareHttpMethodExecutor(Method method, String requestUrl, String theCookieDomain, User user) throws MalformedURLException {
-        super(method, parse(requestUrl));
+    public AbstractWarwickAwareHttpMethodExecutor(Method method, Uri requestUrl, String theCookieDomain, User user) {
+        super(method, requestUrl);
         this.cookieDomain = theCookieDomain;
         this.user = user;
+    }
+    
+    public AbstractWarwickAwareHttpMethodExecutor(Method method, String requestUrl, String theCookieDomain, User user) {
+        this(method, parse(requestUrl), theCookieDomain, user);
     }
     
     final boolean isSetCookie() {
@@ -52,20 +53,15 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     @Override
-    void beforeExecution(HttpUriRequest request, HttpContext context) {
+    void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception {
         if ((isWarwickServer(getUrl())) && user.isLoggedIn() && isSetCookie()) {
             request.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 
-            URL targetURL;
-            try {
-                targetURL = request.getURI().toURL();
-            } catch (final MalformedURLException e) {
-                throw new IllegalStateException("URL is invalid: " + getUrl(), e);
-            }
+            Uri targetUri = Uri.fromJavaUri(request.getURI());
             CookieStore store = new BasicCookieStore();
             
             // This is a httpclient3 cookie at the moment, so we'll have to translate it
-            org.apache.commons.httpclient.Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetURL, user);
+            org.apache.commons.httpclient.Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetUri.toJavaUrl(), user);
             if (cookie != null) {
                 BasicClientCookie proxyCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
                 proxyCookie.setDomain(cookie.getDomain());
@@ -86,7 +82,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     @Override
-    URI parseRequestUrl(URI requestUrl) {
+    Uri parseRequestUrl(Uri requestUrl) {
         return substituteWarwickTags(requestUrl);
     }
 
@@ -94,14 +90,12 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
         return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
     }
 
-    private URI substituteWarwickTags(final URI urlToSubstitute) {
-        URI newUrl = urlToSubstitute;
-
+    private Uri substituteWarwickTags(final Uri urlToSubstitute) {
         if (isSubstituteTags()) {
-        	newUrl = new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
+        	return new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
+        } else {
+            return urlToSubstitute;
         }
-
-        return newUrl;
     }
 
 

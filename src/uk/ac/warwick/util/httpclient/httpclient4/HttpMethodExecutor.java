@@ -3,9 +3,6 @@ package uk.ac.warwick.util.httpclient.httpclient4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +18,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * A HttpMethodExecutor is a wrapper for the Apache HttpClient that sets a lot
@@ -123,7 +121,7 @@ public interface HttpMethodExecutor extends Serializable {
      * @return
      * @throws URISyntaxException 
      */
-    URI getURI() throws URISyntaxException;
+    Uri getUri();
     
     /**
      * Returns the specified header from the response. 
@@ -148,9 +146,9 @@ public interface HttpMethodExecutor extends Serializable {
      * The url to fetch from
      * 
      * @param url
-     * @throws MalformedURLException 
      */
-    void setUrl(final String url) throws MalformedURLException;
+    void setUrl(final String url);
+    void setUrl(final Uri url);
 
     /**
      * Whether to substitute Warwick tags (<warwick_username/> etc) for values

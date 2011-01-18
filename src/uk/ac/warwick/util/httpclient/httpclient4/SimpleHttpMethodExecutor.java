@@ -1,10 +1,9 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
+
+import uk.ac.warwick.util.web.Uri;
 
 public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor {
 
@@ -14,7 +13,7 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor {
         super(method);
     }
 
-    public SimpleHttpMethodExecutor(Method method, String requestUrl) throws MalformedURLException {
+    public SimpleHttpMethodExecutor(Method method, String requestUrl) {
         super(method, parse(requestUrl));
     }
 
@@ -24,7 +23,7 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor {
     }
 
     @Override
-    URI parseRequestUrl(URI requestUrl) {
+    Uri parseRequestUrl(Uri requestUrl) {
         return requestUrl;
     }
 

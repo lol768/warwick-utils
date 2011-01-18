@@ -12,7 +12,7 @@ public final class EyespotMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "playArg");
         return "http://eyespot.com/flash/flvplayer.swf?contextId=11&vurl=http%3A%2F%2Fdownloads.eyespot.com%2Fplay%3Fr%3D" + videoId;
     }

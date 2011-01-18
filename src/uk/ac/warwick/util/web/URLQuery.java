@@ -23,6 +23,8 @@ import uk.ac.warwick.util.core.StringUtils;
  * <p>
  * <i>Not thread-safe.</i>
  * 
+ * @deprecated Use {@link UriBuilder}
+ * 
  * @author cusebr
  */
 public class URLQuery {

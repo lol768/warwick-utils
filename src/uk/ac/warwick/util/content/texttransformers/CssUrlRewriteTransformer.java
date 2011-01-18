@@ -1,9 +1,9 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * Takes CSS as input and rewrites url() references to be
@@ -11,12 +11,16 @@ import java.util.regex.Pattern;
  */
 public final class CssUrlRewriteTransformer extends TextPatternTransformer {
 	
-	private URL base;
+	private final Uri base;
 	
 	private Pattern pattern;
 	
-	public CssUrlRewriteTransformer(String theBase) throws MalformedURLException {
-		base = new URL(theBase);
+	public CssUrlRewriteTransformer(String theBase) {
+		this(Uri.parse(theBase));
+	}
+	
+	public CssUrlRewriteTransformer(Uri theBase) {
+	    this.base = theBase;
 	}
 	
 	public String transform(String input) {
@@ -40,18 +44,14 @@ public final class CssUrlRewriteTransformer extends TextPatternTransformer {
             Matcher matcher = getPattern().matcher(input);
             if (matcher.find()) {
             	String url = matcher.group(2);
-            	return "url("+parseUrl(url)+")";
+            	return "url("+parseUrl(url).toString()+")";
             }
             return input;
         }
 	}
 
-	private String parseUrl(final String url) {
+	private Uri parseUrl(final String url) {
         // take the URL and, if necessary, absolute it
-        try {
-            return (new URL(base, url).toExternalForm());
-        } catch (MalformedURLException e) {
-            return url;
-        }
+	    return base.resolve(Uri.parse(url));
     }
 }

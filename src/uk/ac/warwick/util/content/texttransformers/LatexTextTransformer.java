@@ -1,11 +1,10 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
 import uk.ac.warwick.util.core.HtmlUtils;
+import uk.ac.warwick.util.core.HttpUtils;
 
 public final class LatexTextTransformer extends AbstractSquareTagTransformer {
     
@@ -37,14 +36,8 @@ public final class LatexTextTransformer extends AbstractSquareTagTransformer {
                     return input;
                 }
                 
-                String urlEncodedLatex;
+                String urlEncodedLatex = HttpUtils.utf8Encode(contents.replaceAll(" ", "~"));
 				String htmlEncodedLatex = HtmlUtils.htmlEscape(contents);
-				try {
-					urlEncodedLatex = URLEncoder.encode(contents.replaceAll(" ", "~"), "utf-8");
-				} catch (UnsupportedEncodingException e) {
-					throw new IllegalStateException(
-							"Latex URL encoding failed");
-				}
 				
 				return "<notextile><img class=\"latex\" src=\"" + latexUrl
 						+ "?" + urlEncodedLatex + "\" alt=\"" + htmlEncodedLatex + "\"></notextile>";

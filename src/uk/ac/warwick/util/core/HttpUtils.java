@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.core;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
@@ -118,5 +119,21 @@ public final class HttpUtils {
             }
         }
         return null;
+    }
+    
+    public static String utf8Encode(String input) {
+        try {
+            return URLEncoder.encode(input, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String utf8Decode(String input) {
+        try {
+            return URLDecoder.decode(input, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -12,7 +12,7 @@ public final class MySpaceMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "videoid");
         return "http://lads.myspace.com/videos/vplayer.swf?m=" + videoId + "&type=video";
     }

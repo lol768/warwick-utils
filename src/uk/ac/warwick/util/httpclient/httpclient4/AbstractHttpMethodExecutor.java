@@ -2,15 +2,10 @@ package uk.ac.warwick.util.httpclient.httpclient4;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.http.Header;
-import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -39,7 +34,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.web.URLBuilder;
+import uk.ac.warwick.util.web.Uri;
 
 import com.google.common.collect.Lists;
 
@@ -51,7 +46,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     private HttpUriRequest request;
     
-    private URI requestUrl;
+    private Uri requestUrl;
     
     private final Method methodType;
     
@@ -83,7 +78,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this(method, null);
     }
     
-    public AbstractHttpMethodExecutor(Method method, URI requestUrl) {
+    public AbstractHttpMethodExecutor(Method method, Uri requestUrl) {
         this.methodType = method;
         this.requestUrl = requestUrl;
     }
@@ -101,7 +96,11 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
             HttpConnectionParams.setSoTimeout(params, retrievalTimeout);
         }
         
-        beforeExecution(request, context);
+        try {
+            beforeExecution(request, context);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
         
         Pair<HttpResponse, Pair<Integer, T>> response = factory.getClient().execute(request, new ResponseHandler<Pair<HttpResponse, Pair<Integer, T>>>() {
             public Pair<HttpResponse, Pair<Integer, T>> handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
@@ -137,10 +136,10 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         HttpUriRequest r;
         switch (methodType) {
             case get:
-                r = new HttpGet(parseRequestUrl(requestUrl));
+                r = new HttpGet(parseRequestUrl(requestUrl).toJavaUri());
                 break;
             case post:
-                HttpPost postRequest = new HttpPost(parseRequestUrl(requestUrl));
+                HttpPost postRequest = new HttpPost(parseRequestUrl(requestUrl).toJavaUri());
                 if (multipartBody != null && !multipartBody.isEmpty()) {
                     MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
                     
@@ -161,7 +160,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
                 r = postRequest;
                 break;
             case head:
-                r = new HttpHead(parseRequestUrl(requestUrl));
+                r = new HttpHead(parseRequestUrl(requestUrl).toJavaUri());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported request type: " + methodType);
@@ -187,8 +186,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         }
     }
     
-    abstract URI parseRequestUrl(URI requestUrl);
-    abstract void beforeExecution(HttpUriRequest request, HttpContext context);
+    abstract Uri parseRequestUrl(Uri requestUrl);
+    abstract void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception;
 
     /* Methods that only make sense before execution */
     public final void addHeader(String name, String value) {
@@ -232,17 +231,23 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         
         this.postBody = postBody;
     }
+    
+    public final void setUrl(Uri url) {
+        assertNotExecuted();
+        
+        this.requestUrl = url;
+    }
 
-    public final void setUrl(String url) throws MalformedURLException {
+    public final void setUrl(String url) {
         assertNotExecuted();
         
         this.requestUrl = parse(url);
     }
     
-    protected static final URI parse(String uri) throws MalformedURLException {
+    protected static final Uri parse(String uri) {
         if (uri == null) { return null; }
         
-        return new URLBuilder(uri).toURI();
+        return Uri.parse(uri);
     }
 
     /* Methods that can be called either before or after execution */
@@ -291,23 +296,15 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     public final String getRedirectUrl() {
         assertExecuted();
         
-        try {
-            return getURI().toString();
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Invalid URI", e);
-        }
+        return getUri().toString();
     }
 
-    public final URI getURI() throws URISyntaxException {
+    public final Uri getUri() {
         assertExecuted();
         
         HttpUriRequest finalRequest = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
         if (finalRequest != null) {
-            try {
-                return new URL(request.getURI().toURL(), finalRequest.getURI().toString()).toURI();
-            } catch (MalformedURLException e) {
-                throw new URISyntaxException(finalRequest.getURI().toString(), e.getMessage());
-            }
+            return Uri.fromJavaUri(request.getURI()).resolve(Uri.fromJavaUri(finalRequest.getURI()));
         } else {
             throw new IllegalStateException("Couldn't find target in context");
         }

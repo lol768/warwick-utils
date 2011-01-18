@@ -12,7 +12,7 @@ public final class SelfcastTVMediaUrlHandler extends AbstractFlashPlayerMediaUrl
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "ref");
         return "http://www.selfcasttv.com/Selfcast/selfcast.swf?video_1=/" + videoId;
     }

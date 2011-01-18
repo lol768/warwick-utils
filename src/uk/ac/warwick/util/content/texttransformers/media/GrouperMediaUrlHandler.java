@@ -12,7 +12,7 @@ public final class GrouperMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "id");
         return "http://grouper.com/mtg/mtgPlayer.swf?v=1.7&vurl=http%3a%2f%2fgrouper.com%2frss%2fflv.ashx%3fid%3d" + videoId + "%26rf%3d-1&vfver=8&ap=0&extid=-1";
     }

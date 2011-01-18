@@ -1,150 +1,108 @@
 package uk.ac.warwick.util.web;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.BitSet;
 
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
-import org.springframework.util.StringUtils;
+import uk.ac.warwick.util.web.Uri.UriException;
 
 /**
  * URL is immutable, but sometimes you want to just change
  * one part of a URL. This simplifies the task.
  * 
  * Setters return the builder for method chaining.
+ * 
+ * @deprecated Use {@link UriBuilder}
  */
 public class URLBuilder {
-    private static final BitSet ALLOWED_PATH_CHARACTERS;
-    
-    static {
-        ALLOWED_PATH_CHARACTERS = new BitSet(256);
-        
-        //standard URL characters
-        ALLOWED_PATH_CHARACTERS.set(';');
-        ALLOWED_PATH_CHARACTERS.set('/');
-        ALLOWED_PATH_CHARACTERS.set('?');
-        ALLOWED_PATH_CHARACTERS.set(':');
-        ALLOWED_PATH_CHARACTERS.set('@');
-        ALLOWED_PATH_CHARACTERS.set('&');
-        ALLOWED_PATH_CHARACTERS.set('=');
-        ALLOWED_PATH_CHARACTERS.set('+');
-        ALLOWED_PATH_CHARACTERS.set('$');
-        ALLOWED_PATH_CHARACTERS.set(',');
-        ALLOWED_PATH_CHARACTERS.set('-');
-        ALLOWED_PATH_CHARACTERS.set('_');
-        ALLOWED_PATH_CHARACTERS.set('.');
-        ALLOWED_PATH_CHARACTERS.set('!');
-        ALLOWED_PATH_CHARACTERS.set('~');
-        ALLOWED_PATH_CHARACTERS.set('*');
-        ALLOWED_PATH_CHARACTERS.set('\'');
-        ALLOWED_PATH_CHARACTERS.set('(');
-        ALLOWED_PATH_CHARACTERS.set(')');
-        
-        // ignore already escaped characters
-        ALLOWED_PATH_CHARACTERS.set('%');
-        
-        // alphanumeric
-        for (int i = 'a'; i <= 'z'; i++) {
-            ALLOWED_PATH_CHARACTERS.set(i);
-        }
-        for (int i = 'A'; i <= 'Z'; i++) {
-            ALLOWED_PATH_CHARACTERS.set(i);
-        }
-        for (int i = '0'; i <= '9'; i++) {
-            ALLOWED_PATH_CHARACTERS.set(i);
-        }
-    }
-    
-	private String protocol;
-	private String host;
-	private int port = -1;
-	private String path;
-	private String query;
+    private final UriBuilder builder;
 	
 	public URLBuilder(URL existingUrl) {
-		protocol = existingUrl.getProtocol();
-		host = existingUrl.getHost();
-		port = existingUrl.getPort();
-		path = existingUrl.getPath();
-		query = existingUrl.getQuery();
-		
-		sanitise();
+		this.builder = new UriBuilder(Uri.fromJavaUrl(existingUrl));
 	}
 	
-	public URLBuilder(String urlString) throws MalformedURLException {
-		this(new URL(urlString));
+	public URLBuilder(String urlString) {
+		this.builder = new UriBuilder(Uri.parse(urlString));
 	}
 
-	public URL toURL() throws MalformedURLException {
-		String file = path;
-		if (query != null && !query.isEmpty()) {
-			file += "?" + query;
-		}
-		return new URL(protocol,host,port,file);
+	public URL toURL() {
+		return builder.toUri().toJavaUrl();
 	}
 	
-	public URI toURI() throws MalformedURLException {
-	    try {
-	        return toURL().toURI();
-	    } catch (URISyntaxException e) {
-	        throw new MalformedURLException(e.getMessage());
-	    }
+	public URI toURI() {
+	    return builder.toUri().toJavaUri();
 	}
 	
 	@Override
 	public String toString() {
 	    try {
 	        return toURL().toExternalForm();
-	    } catch (MalformedURLException e) {
-	        return "**MALFORMED** " + protocol + "://" + host + ":" + port + path + (query == null ? "" : "?" + query);
+	    } catch (UriException e) {
+	        return "**MALFORMED** " + builder.toString();
 	    }
 	}
 
 	public String getProtocol() {
-		return protocol;
+		return builder.getScheme();
 	}
 
 	public URLBuilder setProtocol(String protocol) {
-		this.protocol = protocol;
+		builder.setScheme(protocol);
 		return this;
 	}
 
 	public String getHost() {
-		return host;
+		return getServerName(builder.getAuthority());
 	}
 
 	public URLBuilder setHost(String host) {
-		this.host = host;
+	    int port = getServerPort(builder.getAuthority());
+	    if (port > 0) { host += ":" + port; }
+	    
+		builder.setAuthority(host);
 		return this;
 	}
 
 	public int getPort() {
-		return port;
+		return getServerPort(builder.getAuthority());
 	}
 
 	public URLBuilder setPort(int port) {
-		this.port = port;
+		builder.setAuthority(getServerName(builder.getAuthority()) + ":" + port);
 		return this;
 	}
+    
+    private String getServerName(String authority) {
+        if (authority.indexOf(":") == -1) {
+            return authority;
+        }
+        
+        return authority.substring(0, authority.lastIndexOf(":"));
+    }
+    
+    private int getServerPort(String authority) {
+        if (authority.indexOf(":") == -1) {
+            return 0;
+        }
+        
+        String[] parts = authority.split(":");
+        return Integer.parseInt(parts[parts.length-1]);
+    }
 
 	public String getPath() {
-		return path;
+		return builder.getPath();
 	}
 
 	public URLBuilder setPath(String path) {
-		this.path = path;
+		builder.setPath(path);
 		return this;
 	}
 
 	public String getQuery() {
-		return query;
+		return builder.getQuery();
 	}
 
 	public URLBuilder setQuery(String query) {
-		this.query = query;
+		builder.setQuery(query);
 		return this;
 	}
 	
@@ -153,33 +111,6 @@ public class URLBuilder {
 	}
 	
 	public void sanitise() {
-	    if (StringUtils.hasText(path) && !"/".equals(path)) {
-	        try {
-    	        StringBuilder pathSb = new StringBuilder();
-    	        URLCodec codec = new URLCodec("UTF-8");
-    	        
-    	        String[] parts = path.split("\\/");
-    	        for (int i = 0; i < parts.length ; i++) {
-    	            String part = parts[i];
-    	            
-    	            if (StringUtils.hasText(part)) {
-    	                pathSb.append(codec.encode(part));
-    	            }
-    	            
-    	            // Only append / at the end if it was there originally
-    	            if (i != parts.length-1 || path.endsWith("/")) {
-    	                pathSb.append("/");
-    	            }
-    	        }
-    	        
-    	        path = pathSb.toString();
-	        } catch (EncoderException e) {
-	            throw new IllegalArgumentException("Couldn't sanitise path; " + path);
-	        }
-	    }
-	    
-	    if (StringUtils.hasText(query)) {
-	        setQuery(new URLQuery(query));
-	    }
+	    // no-op
 	}
 }

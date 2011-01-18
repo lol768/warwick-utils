@@ -1,48 +1,74 @@
 package uk.ac.warwick.util.httpclient;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map.Entry;
 
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.core.StringUtils;
+import uk.ac.warwick.util.web.Uri;
+import uk.ac.warwick.util.web.UriBuilder;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class WarwickTagUrlMangler {
 
-    public final String substituteWarwickTags(final String urlToSubstitute, final User user) {
-           String newUrl = urlToSubstitute;
+    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
+        UriBuilder builder = new UriBuilder(urlToSubstitute);
 
-            newUrl = replaceAndEncode(newUrl, "<warwick_username/>", user.getFullName(), "UTF-8");
-            newUrl = replaceAndEncode(newUrl, "<warwick_userid/>", user.getUserId(), "UTF-8");
-            newUrl = replaceAndEncode(newUrl, "<warwick_useremail/>", user.getEmail(), "UTF-8");
-            newUrl = replaceAndEncode(newUrl, "<warwick_token/>", user.getOldWarwickSSOToken(), "UTF-8");
-            newUrl = replaceAndEncode(newUrl, "<warwick_idnumber/>", user.getWarwickId(), "UTF-8");
-            newUrl = replaceAndEncode(newUrl, "<warwick_deptcode/>", user.getDepartmentCode(),"UTF-8");
+        replaceAndEncode(builder, "<warwick_username/>", user.getFullName());
+        replaceAndEncode(builder, "<warwick_userid/>", user.getUserId());
+        replaceAndEncode(builder, "<warwick_useremail/>", user.getEmail());
+        replaceAndEncode(builder, "<warwick_token/>", user.getOldWarwickSSOToken());
+        replaceAndEncode(builder, "<warwick_idnumber/>", user.getWarwickId());
+        replaceAndEncode(builder, "<warwick_deptcode/>", user.getDepartmentCode());
 
-        return newUrl;
+        return builder.toUri();
+    }
+
+    private void replaceAndEncode(final UriBuilder builder, final String token, final String value) {
+        // Because of encoding issues, this may be un-encoded, url encoded (for
+        // the query), or partially url encoded (for a part of the path)
+        replaceAndEncodeToken(builder, token, value);
+        replaceAndEncodeToken(builder, token.replace("<", "%3C").replace(">", "%3E").replace("/", "%2F"), value);
+        replaceAndEncodeToken(builder, token.replace("<", "%3C").replace(">", "%3E"), value);
     }
     
-    public final URI substituteWarwickTags(final URI uri, final User user) {
-        return URI.create(substituteWarwickTags(uri.toString(), user));
-    }
-    
-    private String replaceAndEncode(final String str, final String token, final String value, final String encoding) {
-        // Because of encoding issues, this may be un-encoded, url encoded (for the query), or partially url encoded (for a part of the path)
-        String replaced = replaceAndEncodeToken(str, token, value, "UTF-8");
-        replaced = replaceAndEncodeToken(replaced, token.replace("<", "%3C").replace(">", "%3E").replace("/", "%2F"), value, "UTF-8");
-        replaced = replaceAndEncodeToken(replaced, token.replace("<", "%3C").replace(">", "%3E"), value, "UTF-8");
-        return replaced;
-    }
-    
-    private String replaceAndEncodeToken(final String str, final String token, final String value, final String encoding) {
-        try {
-            if (StringUtils.hasLength(value)) {
-                return str.replaceAll(token, URLEncoder.encode(value, encoding));
-            }
-            return str.replaceAll(token, "");
-
-        } catch (final UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Cannot encode " + value + " for token " + token);
+    private void replaceAndEncodeToken(final UriBuilder builder, final String token, final String value) {
+        String path = builder.getPath();
+        if (path.indexOf(token) != -1) {
+            builder.setPath(replace(path, token, value));
         }
+        
+        for (Entry<String, List<String>> param : Sets.newHashSet(builder.getQueryParameters().entrySet())) {
+            boolean hasChanged = false;
+            List<String> newValues = Lists.newArrayList();
+            for (String paramValue : param.getValue()) {
+                if (paramValue.indexOf(token) != -1) {
+                    hasChanged = true;
+                    newValues.add(replace(paramValue, token, value));
+                } else {
+                    newValues.add(paramValue);
+                }
+            }
+            
+            if (hasChanged) {
+                builder.putQueryParameter(param.getKey(), newValues);
+            }
+            
+            if (param.getKey().indexOf(token) != -1) {
+                String newKey = replace(param.getKey(), token, value);
+
+                builder.getQueryParameters().remove(param.getKey());
+                
+                for (String v : newValues) {
+                    builder.addQueryParameter(newKey, v);
+                }
+            }
+        }
+    }
+
+    private String replace(final String str, final String token, final String value) {
+        return str.replace(token, StringUtils.hasLength(value) ? value : "");
     }
 }

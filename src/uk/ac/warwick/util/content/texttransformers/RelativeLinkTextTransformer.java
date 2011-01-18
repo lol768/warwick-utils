@@ -1,9 +1,9 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * Converts relative links to absolute links given a base.
@@ -31,14 +31,14 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
     private static final String[] PATTERNS = new String[] { MATCH_HREF_QUOTES, MATCH_HREF_QUOTE, MATCH_HREF_NOQUOTES,
             MATCH_SRC_QUOTES, MATCH_SRC_QUOTE, MATCH_SRC_NOQUOTES };
 
-    private URL base;
+    private final Uri base;
 
+    public RelativeLinkTextTransformer(final Uri theBase) {
+        this.base = theBase;
+    }
+    
     public RelativeLinkTextTransformer(final String theBase) {
-        try {
-            this.base = new URL(theBase);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(e);
-        }
+        this(Uri.parse(theBase));
     }
     
     public String transform(final String text) {
@@ -95,7 +95,7 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         while (m.find()) {
             String url = m.group(MATCH_URL);
 
-            url = parseUrl(url);
+            url = parseUrl(url).toString();
 
             m.appendReplacement(sb, m.group(MATCH_INTRO) + url + m.group(MATCH_OUTRO));
         }
@@ -105,13 +105,9 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         return sb.toString();
     }
 
-    private String parseUrl(final String url) {
+    private Uri parseUrl(final String url) {
         // take the URL and, if necessary, absolute it
-        try {
-            return (new URL(base, url).toExternalForm());
-        } catch (MalformedURLException e) {
-            return url;
-        }
+        return base.resolve(Uri.parse(url));
     }
 
 }

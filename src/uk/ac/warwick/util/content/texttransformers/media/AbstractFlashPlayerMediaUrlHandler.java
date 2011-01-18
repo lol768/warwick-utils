@@ -1,10 +1,10 @@
 package uk.ac.warwick.util.content.texttransformers.media;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import uk.ac.warwick.util.web.Uri;
 
 public abstract class AbstractFlashPlayerMediaUrlHandler extends MediaUrlHandler {
     
@@ -15,12 +15,8 @@ public abstract class AbstractFlashPlayerMediaUrlHandler extends MediaUrlHandler
      */
     public abstract String getFlashUrl(String url);
     
-    protected final URL toURL(final String url) {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("URL was malformed",e);
-        }
+    protected final Uri toUri(final String url) {
+        return Uri.parse(url);
     }
     
     public final String getHtml(final String url, final Map<String,Object> parameters) {

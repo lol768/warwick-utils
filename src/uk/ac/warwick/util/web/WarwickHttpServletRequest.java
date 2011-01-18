@@ -1,7 +1,5 @@
 package uk.ac.warwick.util.web;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -10,7 +8,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.util.StringUtils;
 
-import uk.ac.warwick.util.web.URLBuilder;
+import uk.ac.warwick.util.web.Uri.UriException;
 
 public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     
@@ -34,8 +32,8 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
             
             if (StringUtils.hasText(requestedUrl)) {
                 try {
-                    return new URLBuilder(requestedUrl).getHost();
-                } catch (MalformedURLException e) {
+                    return Uri.parse(requestedUrl).getAuthority();
+                } catch (UriException e) {
                     return super.getHeader(name);
                 }
             }
@@ -109,12 +107,8 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
      */
     @Override
     public String getRequestURI() {
-    	try {
-    		URL url = getURL();
-    		return url == null ? super.getRequestURI() : url.getPath();
-        } catch (MalformedURLException e) {
-            return super.getRequestURI();
-        }
+	    Uri url = getUri();
+		return url == null ? super.getRequestURI() : url.getPath();
     }
 
     /**
@@ -135,11 +129,11 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
         return getHeader(REQUESTED_URI_HEADER_NAME);
     }
     
-    private URL getURL() throws MalformedURLException {
+    private Uri getUri() {
         String requestedUrl = getRequestedURL();
         
         if (StringUtils.hasText(requestedUrl)) {
-            return new URL(requestedUrl);
+            return Uri.parse(requestedUrl);
         }
         
         return null;
@@ -147,45 +141,57 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public String getQueryString() {
-        try {
-            URL url = getURL();
-            return url == null ? super.getQueryString() : url.getQuery();
-        } catch (MalformedURLException e) {
-            return super.getQueryString();
-        }
+        Uri url = getUri();
+        return url == null ? super.getQueryString() : url.getQuery();
     }
 
     @Override
     public String getScheme() {
-        try {
-            URL url = getURL();
-            return url == null ? super.getScheme() : url.getProtocol();
-        } catch (MalformedURLException e) {
-            return super.getScheme();
-        }
+        Uri url = getUri();
+        return url == null ? super.getScheme() : url.getScheme();
     }
 
     @Override
     public String getServerName() {
-        try {
-            URL url = getURL();
-            return url == null ? super.getServerName() : url.getHost();
-        } catch (MalformedURLException e) {
-            return super.getServerName();
-        }
+        Uri url = getUri();
+        return url == null ? super.getServerName() : getServerName(url.getAuthority());
     }
 
     @Override
     public int getServerPort() {
-        try {
-            URL url = getURL();
-            if (url != null) {
-                return url.getPort() > 0 ? url.getPort() : url.getDefaultPort(); 
-            }
-            
-            return super.getServerPort();
-        } catch (MalformedURLException e) {
-            return super.getServerPort();
+        Uri url = getUri();
+        if (url != null) {
+            int port = getServerPort(url.getAuthority());
+            return port > 0 ? port : getDefaultPort(url.getScheme()); 
+        }
+        
+        return super.getServerPort();
+    }
+    
+    private String getServerName(String authority) {
+        if (authority.indexOf(":") == -1) {
+            return authority;
+        }
+        
+        return authority.substring(0, authority.lastIndexOf(":"));
+    }
+    
+    private int getServerPort(String authority) {
+        if (authority.indexOf(":") == -1) {
+            return 0;
+        }
+        
+        String[] parts = authority.split(":");
+        return Integer.parseInt(parts[parts.length-1]);
+    }
+    
+    private int getDefaultPort(String scheme) {
+        if ("http".equals(scheme)) { 
+            return 80;
+        } else if ("https".equals(scheme)) {
+            return 443;
+        } else {
+            throw new IllegalStateException("Invalid scheme: " + scheme);
         }
     }
 

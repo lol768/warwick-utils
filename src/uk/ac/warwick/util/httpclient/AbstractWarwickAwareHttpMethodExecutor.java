@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 
 import uk.ac.warwick.sso.client.SSOProxyCookieHelper;
 import uk.ac.warwick.userlookup.User;
+import uk.ac.warwick.util.web.Uri;
 
 public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHttpMethodExecutor {
     
@@ -69,13 +70,11 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     public final String substituteWarwickTags(final String urlToSubstitute, final User user) {
-        String newUrl = urlToSubstitute;
-
         if (isSubstituteTags()) {
-        	newUrl = new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
+            return new WarwickTagUrlMangler().substituteWarwickTags(Uri.parse(urlToSubstitute), user).toString();
+        } else {
+            return urlToSubstitute;
         }
-
-        return newUrl;
     }
 
 

@@ -12,7 +12,7 @@ public final class GoogleMediaUrlHandler extends AbstractFlashPlayerMediaUrlHand
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "docid");
         return "http://video.google.com/googleplayer.swf?docId=" + videoId;
     }

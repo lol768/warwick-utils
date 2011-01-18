@@ -12,7 +12,7 @@ public final class JumpcutMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
 
     @Override
     public String getFlashUrl(final String url) {
-        String params = toURL(url).getQuery();
+        String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "id");
         return "http://www.jumpcut.com/media/flash/jump.swf?id=" + videoId + "&asset_type=movie&asset_id=" + videoId + "&eb=1";
     }

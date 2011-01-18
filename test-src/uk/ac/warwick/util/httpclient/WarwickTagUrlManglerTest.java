@@ -2,6 +2,7 @@ package uk.ac.warwick.util.httpclient;
 
 import junit.framework.TestCase;
 import uk.ac.warwick.userlookup.User;
+import uk.ac.warwick.util.web.Uri;
 
 
 public class WarwickTagUrlManglerTest extends TestCase{
@@ -10,9 +11,9 @@ public class WarwickTagUrlManglerTest extends TestCase{
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		String testUrl = "http://www2.warwick.ac.uk/foo/<warwick_deptcode/>/bar";
 		User u = new User();
-		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(testUrl, u));	
+		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());	
 		u.setDepartmentCode("IN");
-		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(testUrl, u));	
+		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());	
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -27,9 +28,9 @@ public class WarwickTagUrlManglerTest extends TestCase{
 		u.setToken("token_foo");
 		u.setWarwickId("123WarwickID");
 		
-		String testUrl="<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_token/>|<warwick_idnumber/>|<warwick_deptcode/>";
-		String result = "Fred+Test|AUserId|somewhere%40something|token_foo|123WarwickID|IN";
-		assertEquals(result, mangler.substituteWarwickTags(testUrl, u));
+		String testUrl="http://www.warwick.ac.uk/?yes=<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_token/>|<warwick_idnumber/>|<warwick_deptcode/>";
+		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7Ctoken_foo%7C123WarwickID%7CIN";
+		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
 		
 	}
 	

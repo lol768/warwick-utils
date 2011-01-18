@@ -1,11 +1,10 @@
 package uk.ac.warwick.util.web.view.json;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
+
+import uk.ac.warwick.util.web.Uri;
 
 public final class SameOriginHostJSONPRequestValidator implements JSONPRequestValidator {
     
@@ -13,9 +12,9 @@ public final class SameOriginHostJSONPRequestValidator implements JSONPRequestVa
     
     private boolean validByDefault = true;
     
-    public SameOriginHostJSONPRequestValidator(String host) throws MalformedURLException {
+    public SameOriginHostJSONPRequestValidator(String host) {
         if (host.indexOf("://") != -1) {
-            this.host = new URL(host).getHost();
+            this.host = Uri.parse(host).getAuthority();
         } else {
             this.host = host;
         }
@@ -24,11 +23,7 @@ public final class SameOriginHostJSONPRequestValidator implements JSONPRequestVa
     public boolean isAllow(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         if (StringUtils.hasText(referer)) {
-            try {
-                return new URL(referer).getHost().equals(host);
-            } catch (MalformedURLException e) {
-                return false;
-            }
+            return Uri.parse(referer).getAuthority().equals(host);
         }
         
         // No referer - by default, request is valid.
