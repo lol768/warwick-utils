@@ -500,7 +500,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
     }
 
-    public static Set<String> toSet(final String[] array) {
+    public static Set<String> toSet(String... array) {
         return new TreeSet<String>(Arrays.asList(array));
     }
 

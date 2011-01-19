@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.content.cleaner;
 
+import static uk.ac.warwick.util.content.cleaner.CleanerWriter.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -12,23 +14,23 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
 	private static final Pattern ALIGN_STYLE = Pattern.compile("\\s*text-align:\\s*[a-z]+;?\\s*", Pattern.CASE_INSENSITIVE);
 	
-    private static final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
+    private static final Set<String> disallowedTags = toSet( "u", "font", "placetype", "placename",
             "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname",
-            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype", "big", "small"});
+            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype", "big", "small");
     
-    private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span", "blockquote" });
+    private static final Set<String> disallowedNoAttributesTags = toSet( "span", "blockquote" );
 
-    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure", "sizset", "sizcache" });
+    private static final Set<String> disallowedAttributesAllTags = toSet( "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure", "sizset", "sizcache" );
 
-    private static final Set<String> allowedEmptyAttributes = CleanerWriter.toSet(new String[] { "alt" });
+    private static final Set<String> allowedEmptyAttributes = toSet( "alt" );
 
-    private static final Set<String> disallowNested = CleanerWriter.toSet(new String[] { "b", "i", "strong", "em", "p", "sup", "sub",
-            "script", "code", "pre", "a", "form" });
+    private static final Set<String> disallowNested = toSet( "b", "i", "strong", "em", "p", "sup", "sub",
+            "script", "code", "pre", "a", "form" );
     
     /** UTL-72 Attributes that are not allowed to be set to themselves, e.g. background="background" */
-    private static final Set<String> disallowedSelfAttributes = CleanerWriter.toSet(new String[] {
+    private static final Set<String> disallowedSelfAttributes = toSet(
             "background", "width", "height", "src", "href", "colspan", "align"
-    });
+    );
 
     private static final Map<String, Set<String>> disallowedAttributes;
 
@@ -39,18 +41,18 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     static {
     	disallowedAttributes = new HashMap<String, Set<String>>();
         //disallowedAttributes.put("div", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("span", CleanerWriter.toSet(new String[] { "style", "lang" }));
-        disallowedAttributes.put("h1", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("h2", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("h3", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("h4", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("h5", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("h6", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("b", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("i", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("p", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("strong", CleanerWriter.toSet(new String[] { "style" }));
-        disallowedAttributes.put("em", CleanerWriter.toSet(new String[] { "style" }));
+        disallowedAttributes.put("span", toSet( "style", "lang" ));
+        disallowedAttributes.put("h1", toSet( "style" ));
+        disallowedAttributes.put("h2", toSet( "style" ));
+        disallowedAttributes.put("h3", toSet( "style" ));
+        disallowedAttributes.put("h4", toSet( "style" ));
+        disallowedAttributes.put("h5", toSet( "style" ));
+        disallowedAttributes.put("h6", toSet( "style" ));
+        disallowedAttributes.put("b", toSet( "style" ));
+        disallowedAttributes.put("i", toSet( "style" ));
+        disallowedAttributes.put("p", toSet( "style" ));
+        disallowedAttributes.put("strong", toSet( "style" ));
+        disallowedAttributes.put("em", toSet( "style" ));
     }
 
     public boolean isAttributeAllowed(final String tagName, final String attributeName) {
