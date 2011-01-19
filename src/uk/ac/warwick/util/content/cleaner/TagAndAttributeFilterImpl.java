@@ -18,7 +18,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     
     private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span", "blockquote" });
 
-    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure" });
+    private static final Set<String> disallowedAttributesAllTags = CleanerWriter.toSet(new String[] { "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure", "sizset", "sizcache" });
 
     private static final Set<String> allowedEmptyAttributes = CleanerWriter.toSet(new String[] { "alt" });
 
