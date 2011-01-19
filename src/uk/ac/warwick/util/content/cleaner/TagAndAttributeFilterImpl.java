@@ -14,7 +14,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 	
     private static final Set<String> disallowedTags = CleanerWriter.toSet(new String[] { "u", "font", "placetype", "placename",
             "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname",
-            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype"});
+            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype", "big", "small"});
     
     private static final Set<String> disallowedNoAttributesTags = CleanerWriter.toSet(new String[] { "span" });
 
