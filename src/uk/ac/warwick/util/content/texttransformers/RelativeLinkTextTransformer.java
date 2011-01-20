@@ -42,7 +42,30 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
     }
     
     public String transform(final String text) {
-    	// parse out nasty script tags
+        // SBTWO-3804 Don't rewrite in <pre> tags
+        Pattern noTextile = Pattern.compile("<pre>(.*?)</pre>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        Matcher matcher = noTextile.matcher(text);
+        StringBuilder sb = new StringBuilder();
+        
+        int lastMatch = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+        
+        while (matcher.find()) {
+            startIndex = matcher.start();
+            endIndex = matcher.end();
+            sb.append(rewriteIgnoreScriptTagContents(text.substring(lastMatch, startIndex)));
+            sb.append(text.substring(startIndex, endIndex));
+            lastMatch = endIndex;
+        }
+        
+        sb.append(rewriteIgnoreScriptTagContents(text.substring(endIndex)));
+        
+        return sb.toString();
+    }
+
+    private String rewriteIgnoreScriptTagContents(final String text) {
+        // parse out nasty script tags
     	Pattern noScriptTags = Pattern.compile("<script([^>]*)>(.*?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         
         Matcher matcher = noScriptTags.matcher(text);

@@ -143,4 +143,16 @@ public class RelativeLinkTextTransformerTest extends TestCase {
     	assertEquals(expected3, transformer.transform(input3));
     }
 
+    /** SBTWO-3804 */
+    public void testDontRewritePre() {
+        assertEquals("<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>\n" +
+                "<pre><a href=\"hello\">a</a>\n" +
+                "<a href=\"hello\">a</a>\n</pre>" +
+                "<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>",
+                transformer.transform("<a href=\"hello\">a</a>\n" +
+                        "<pre><a href=\"hello\">a</a>\n" +
+                        "<a href=\"hello\">a</a>\n</pre>" +
+                        "<a href=\"hello\">a</a>")
+                );
+    }
 }
