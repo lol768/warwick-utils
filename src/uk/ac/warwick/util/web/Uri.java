@@ -128,11 +128,9 @@ public final class Uri {
      * Convert a java.net.URL to a Uri.
      */
     public static Uri fromJavaUrl(URL uri) {
-        try {
-            return fromJavaUri(uri.toURI());
-        } catch (URISyntaxException e) {
-            throw new UriException(e);
-        }
+        // Don't use URL.toJavaUri() because it will throw exceptions a lot.
+        
+        return parse(uri.toExternalForm());
     }
 
     /**
