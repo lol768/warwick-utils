@@ -1,8 +1,5 @@
 package uk.ac.warwick.util.httpclient;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -10,6 +7,7 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import uk.ac.warwick.sso.client.SSOProxyCookieHelper;
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.web.Uri;
+import uk.ac.warwick.util.web.UriBuilder;
 
 public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHttpMethodExecutor {
     
@@ -47,13 +45,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
             HttpState state = getClient().getState();
             getMethod().getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 
-            URL targetURL;
-            try {
-                targetURL = new URL(escapeQueryString(getUrl()));
-            } catch (final MalformedURLException e) {
-                throw new IllegalStateException("URL is invalid: " + getUrl(), e);
-            }
-            Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetURL, user);
+            Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(getUrl().toJavaUrl(), user);
             state.addCookie(cookie);
 
             Cookie ssoCookie = new Cookie();
@@ -65,17 +57,32 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
         }
     }
 
-    private boolean isWarwickServer(final String theUrl) {
-        return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
+    private boolean isWarwickServer(final Uri uri) {
+        return uri.getAuthority().indexOf("warwick.ac.uk") > -1 || uri.getAuthority().indexOf("137.205") > -1;
     }
-
-    public final String substituteWarwickTags(final String urlToSubstitute, final User user) {
+    
+    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user) {
         if (isSubstituteTags()) {
-            return new WarwickTagUrlMangler().substituteWarwickTags(Uri.parse(urlToSubstitute), user).toString();
+            new WarwickTagUrlMangler().substituteWarwickTags(builder, user);
+        }
+        
+        return builder;
+    }
+    
+    public final Uri substituteWarwickTags(final Uri input, final User user) {
+        if (isSubstituteTags()) {
+            return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
         } else {
-            return urlToSubstitute;
+            return input;
         }
     }
 
+    public final String substituteWarwickTags(final String input, final User user) {
+        if (isSubstituteTags()) {
+            return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
+        } else {
+            return input;
+        }
+    }
 
 }

@@ -8,13 +8,14 @@ import org.apache.commons.httpclient.ConnectTimeoutException;
 
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.httpclient.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.web.Uri;
 
 public final class QueryStringEscapingTest extends TestCase {
 	
 	private void retrieveUrl(String url) throws IOException {
 		try {
 			HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.get);
-			ex.setUrl(url);
+			ex.setUrl(Uri.parse(url));
 			ex.setConnectionTimeout(500);
 		
 			int status = ex.execute();
@@ -41,7 +42,7 @@ public final class QueryStringEscapingTest extends TestCase {
 		user.setDepartmentCode("IN");
 		
 		AbstractWarwickAwareHttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, user, ".warwick.ac.uk");
-		ex.setUrl(url);
+		ex.setUrl(Uri.parse(url));
 		ex.setSubstituteWarwickTags(true);
 		
 		int status = ex.execute();
@@ -61,7 +62,7 @@ public final class QueryStringEscapingTest extends TestCase {
 		user.setDepartmentCode("insite");
 		
 		AbstractWarwickAwareHttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, user, ".warwick.ac.uk");
-		ex.setUrl(url);
+		ex.setUrl(Uri.parse(url));
 		ex.setSubstituteWarwickTags(true);
 		
 		int status = ex.execute();

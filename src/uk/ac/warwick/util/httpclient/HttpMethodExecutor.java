@@ -8,9 +8,9 @@ import java.util.Date;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.multipart.Part;
+
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * A HttpMethodExecutor is a wrapper for the Apache HttpClient that sets a lot
@@ -97,16 +97,7 @@ public interface HttpMethodExecutor extends Serializable {
      * 
      * @return String the URL
      */
-    String getUrl();
-
-    /**
-     * On the assumption that the method has executed, returns the URI of the
-     * final location that the request was made to.
-     * 
-     * @return
-     * @throws URIException
-     */
-    URI getURI() throws URIException;
+    Uri getUrl();
     
     /**
      * Returns the specified header from the response. 
@@ -128,7 +119,7 @@ public interface HttpMethodExecutor extends Serializable {
      * 
      * @param url
      */
-    void setUrl(final String url);
+    void setUrl(final Uri url);
 
     /**
      * Whether to substitute Warwick tags (<warwick_username/> etc) for values

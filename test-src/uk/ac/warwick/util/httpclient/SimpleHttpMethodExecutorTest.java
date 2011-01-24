@@ -2,12 +2,13 @@ package uk.ac.warwick.util.httpclient;
 
 import junit.framework.TestCase;
 import uk.ac.warwick.util.httpclient.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.web.Uri;
 
 public class SimpleHttpMethodExecutorTest extends TestCase {
 
     public void testItWorks() throws Exception {
         HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.get);
-        ex.setUrl("http://www.warwick.ac.uk");
+        ex.setUrl(Uri.parse("http://www.warwick.ac.uk"));
 
         // this depends on us having a website. That is probably the case.
 
@@ -25,7 +26,7 @@ public class SimpleHttpMethodExecutorTest extends TestCase {
     
     public void testUnsupportedOperation() throws Exception {
         HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.head);
-        ex.setUrl("http://www.warwick.ac.uk");
+        ex.setUrl(Uri.parse("http://www.warwick.ac.uk"));
         
         try {
             ex.retrieveContentsAsString();

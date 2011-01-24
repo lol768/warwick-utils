@@ -13,6 +13,8 @@ import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.httpclient.HttpMethodExecutor;
 import uk.ac.warwick.util.httpclient.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.httpclient.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.web.Uri;
+import uk.ac.warwick.util.web.UriBuilder;
 
 /**
  * Given a department code, will lookup the website related to that department
@@ -30,7 +32,7 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
     
     public static final String CACHE_NAME = "DepartmentWebsiteCache";
     
-    private static final String DEFAULT_GO_API_URL = "http://sitebuilder.warwick.ac.uk/sitebuilder2/api/go/redirect.json?path=";
+    private static final Uri DEFAULT_GO_API_URL = Uri.parse("http://sitebuilder.warwick.ac.uk/sitebuilder2/api/go/redirect.json");
     
     private static final long DEFAULT_CACHE_TIMEOUT = 60 * 60 * 24; // Cache for one day
     
@@ -40,7 +42,7 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
         this(DEFAULT_GO_API_URL);
     }
     
-    public GoWarwickDepartmentWebsiteLookup(String goApiUrl) {
+    public GoWarwickDepartmentWebsiteLookup(Uri goApiUrl) {
         this.cache = Caches.newCache(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), DEFAULT_CACHE_TIMEOUT);
     }
 
@@ -65,9 +67,9 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
     
     public static final class WebsiteLookupEntryFactory extends SingularCacheEntryFactory<String, String> {
         
-        private final String apiUrl;
+        private final Uri apiUrl;
         
-        public WebsiteLookupEntryFactory(String goApiUrl) {
+        public WebsiteLookupEntryFactory(Uri goApiUrl) {
             this.apiUrl = goApiUrl;
         }
         
@@ -75,7 +77,7 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
             String goPath = "dep-code-" + code;
             
             HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.get);
-            ex.setUrl(apiUrl + goPath);
+            ex.setUrl(new UriBuilder(apiUrl).addQueryParameter("path", goPath).toUri());
             
             try {
                 int statusCode = ex.execute();

@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
 import uk.ac.warwick.userlookup.User;
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * An implementation of the HttpMethodExecutor that is suitable for web services -
@@ -63,10 +64,10 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
 
     private HttpMethod createMethod() {
         HttpMethod method;
-        String substitutedUrl = escapeQueryString(substituteWarwickTags(getUrl(), user));
+        Uri substitutedUrl = substituteWarwickTags(getUrl(), user);
         if (methodType.equals(Method.post)) {
             LOGGER.debug("method is post, appending parameters");
-            method = new PostMethod(substitutedUrl);
+            method = new PostMethod(substitutedUrl.toString());
             // can't follow redirects from a POST request. HTTPClient is TeH
             // SUX0R
             method.setFollowRedirects(false);
@@ -80,9 +81,9 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
             }
         } else if (methodType.equals(Method.get)) {
             LOGGER.debug("Method is get");
-            method = new GetMethod(substitutedUrl);
+            method = new GetMethod(substitutedUrl.toString());
         } else if (methodType.equals(Method.head)) {
-            method = new HeadMethod(substitutedUrl);
+            method = new HeadMethod(substitutedUrl.toString());
             method.setFollowRedirects(true);
         } else {
             throw new IllegalArgumentException("No method type? No dice.");

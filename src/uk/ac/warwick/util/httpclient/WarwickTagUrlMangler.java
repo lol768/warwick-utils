@@ -13,9 +13,41 @@ import com.google.common.collect.Sets;
 
 public class WarwickTagUrlMangler {
 
-    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
-        UriBuilder builder = new UriBuilder(urlToSubstitute);
+    /**
+     * Only looks for the unencoded form
+     */
+    public final String substituteWarwickTags(String stringToSubstitute, final User user) {
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_userid/>", user.getUserId());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_useremail/>", user.getEmail());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_token/>", user.getOldWarwickSSOToken());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_idnumber/>", user.getWarwickId());
+        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_deptcode/>", user.getDepartmentCode());
+        return stringToSubstitute;
+    }
+    
+    private String doStringReplace(String string, String token, String value) {
+        string = replace(string, token, value);
+        string = replace(string, token.replace("<", "%3C").replace(">", "%3E").replace("/", "%2F"), value);
+        string = replace(string, token.replace("<", "%3C").replace(">", "%3E"), value);
+        
+        return string;
+    }
 
+    /**
+     * This will url-encode unencoded non-query string aware characters, so
+     * don't just Uri.parse() any old damn string
+     */
+    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
+        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user).toUri();
+    }
+
+    /**
+     * This will url-encode unencoded non-query string aware characters, so
+     * don't just Uri.parse() any old damn string
+     */
+    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user) {
         replaceAndEncode(builder, "<warwick_username/>", user.getFullName());
         replaceAndEncode(builder, "<warwick_userid/>", user.getUserId());
         replaceAndEncode(builder, "<warwick_useremail/>", user.getEmail());
@@ -23,7 +55,7 @@ public class WarwickTagUrlMangler {
         replaceAndEncode(builder, "<warwick_idnumber/>", user.getWarwickId());
         replaceAndEncode(builder, "<warwick_deptcode/>", user.getDepartmentCode());
 
-        return builder.toUri();
+        return builder;
     }
 
     private void replaceAndEncode(final UriBuilder builder, final String token, final String value) {

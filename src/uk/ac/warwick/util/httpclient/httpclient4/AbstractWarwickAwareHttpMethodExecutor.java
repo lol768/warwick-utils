@@ -89,14 +89,13 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     private boolean isWarwickServer(final String theUrl) {
         return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
     }
-
-    private Uri substituteWarwickTags(final Uri urlToSubstitute) {
+    
+    private Uri substituteWarwickTags(final Uri input) {
         if (isSubstituteTags()) {
-        	return new WarwickTagUrlMangler().substituteWarwickTags(urlToSubstitute, user);
+            return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
         } else {
-            return urlToSubstitute;
+            return input;
         }
     }
-
 
 }

@@ -11,6 +11,8 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
+import uk.ac.warwick.util.web.Uri;
+
 /**
  * A simple implementation of the http method executor that doesn't worry about
  * SSO stuff.
@@ -60,9 +62,10 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
     
     private HttpMethod createMethod() {
         HttpMethod method;
+        
         if (methodType.equals(Method.post)) {
             LOGGER.debug("method is post, appending parameters");
-            method = new PostMethod(escapeQueryString(getUrl()));
+            method = new PostMethod(getUrl().toString());
             // can't follow redirects from a POST request. HTTPClient is TeH
             // SUX0R
             method.setFollowRedirects(false);
@@ -75,9 +78,9 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor i
             }
         } else if (methodType.equals(Method.get)) {
             LOGGER.debug("Method is get");
-            method = new GetMethod(escapeQueryString(getUrl()));
+            method = new GetMethod(getUrl().toString());
         } else if (methodType.equals(Method.head)) {
-            method = new HeadMethod(escapeQueryString(getUrl()));
+            method = new HeadMethod(getUrl().toString());
             method.setFollowRedirects(true);
         } else {
             throw new IllegalArgumentException("No method type? No dice.");

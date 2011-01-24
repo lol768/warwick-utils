@@ -1,13 +1,16 @@
 package uk.ac.warwick.util.httpclient;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.web.Uri;
 
+public class WarwickTagUrlManglerTest {
 
-public class WarwickTagUrlManglerTest extends TestCase{
-
-	public void testDepartmentCodeTag() {
+    @Test
+	public void departmentCodeTag() {
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		String testUrl = "http://www2.warwick.ac.uk/foo/<warwick_deptcode/>/bar";
 		User u = new User();
@@ -17,7 +20,8 @@ public class WarwickTagUrlManglerTest extends TestCase{
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void testEverythingEver() {
+	@Test
+	public void everythingEver() {
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		User u = new User();
 		u.setFirstName("Fred");
@@ -31,7 +35,18 @@ public class WarwickTagUrlManglerTest extends TestCase{
 		String testUrl="http://www.warwick.ac.uk/?yes=<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_token/>|<warwick_idnumber/>|<warwick_deptcode/>";
 		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7Ctoken_foo%7C123WarwickID%7CIN";
 		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
-		
+	}
+	
+	@Test
+	public void plainTextReplacement() {
+	    User u = new User();
+	    
+	    WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
+	    assertEquals("don't change my spaces to %20", mangler.substituteWarwickTags("don't change my spaces to %20", u));
+	    assertEquals("here is a ", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u));
+	    
+	    u.setDepartmentCode("IN");
+	    assertEquals("here is a IN", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u));
 	}
 	
 }
