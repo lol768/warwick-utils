@@ -3,10 +3,14 @@ package uk.ac.warwick.util.core;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
+
+import uk.ac.warwick.util.collections.google.BasePredicate;
 
 /**
  * Singleton convenience methods.
@@ -111,11 +115,22 @@ public final class HttpUtils {
      */
     public static Cookie getCookie(final Cookie[] cookies, final String name) {
         if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                if (cookie.getName().equals(name)) {
-                    return cookie;
-                } 
+            return getCookie(Arrays.asList(cookies), name);
+        }
+        return null;
+    }
+    
+    public static Cookie getCookie(final Iterable<Cookie> cookies, final String name) {
+        if (cookies != null) {
+            try {
+                return new BasePredicate<Cookie>() {
+                    @Override
+                    public boolean apply(Cookie cookie) {
+                        return cookie.getName().equals(name);
+                    }
+                }.find(cookies);
+            } catch (NoSuchElementException e) {
+                return null;
             }
         }
         return null;
