@@ -67,8 +67,12 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
     private boolean isNonLocalAddress(String address) {
         // checkstyle pacifiers: these are the lower and upper bounds for the second octet
         // of the 20-bit private address space.
-        final int private20bitLower = 15;
-        final int private20bitUpper = 32;
+        final int private20bitLower = 16;
+        final int private20bitUpper = 31;
+        
+        // the address space in the 20-bit private address space that wireless hotspots provide
+        final int hotspot20bitLower = 31;
+        final int hotspot20bitUpper = 31;
         //
         boolean local = false;
         if (localAddresses.contains(address)) {
@@ -77,6 +81,8 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
             /*
              * look for private network addresses: 127.0.0.1 10.*.*.* 192.168.*.*
              * 172.[16-31].*.*
+             * 
+             * We allow 172.31.*.* as we serve that from Warwick's hotspots.
              * 
              * I am assuming for now that no-one will ever be dumb enough to
              * forge an X-forwarded-for address that appears to come from 
@@ -90,11 +96,13 @@ public final class WarwickHttpServletRequest extends HttpServletRequestWrapper {
              */
             if ("127.0.0.1".equals(address) || address.startsWith("10.") || address.startsWith("192.168") || address.startsWith("169.254")) {
                 local = true;
-            }else if (address.startsWith("172")) {
+            } else if (address.startsWith("172")) {
                 String[] bits = address.split("\\.");
                 int secondOctet = Integer.parseInt(bits[1]);
-                if (secondOctet > private20bitLower && secondOctet <private20bitUpper) {
-                    local = true;
+                if (secondOctet >= private20bitLower && secondOctet <= private20bitUpper) {
+                    if (secondOctet < hotspot20bitLower || secondOctet > hotspot20bitUpper) {
+                        local = true;
+                    }
                 }
             }
             
