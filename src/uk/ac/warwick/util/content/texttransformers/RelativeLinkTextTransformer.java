@@ -3,12 +3,17 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.warwick.util.web.Uri;
+import uk.ac.warwick.util.web.Uri.UriException;
 
 /**
  * Converts relative links to absolute links given a base.
  */
 public final class RelativeLinkTextTransformer implements TextTransformer {
+    
+    private static final Logger LOGGER = Logger.getLogger(RelativeLinkTextTransformer.class);
 
     private static final int MATCH_OUTRO = 3;
 
@@ -128,9 +133,14 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         return sb.toString();
     }
 
-    private Uri parseUrl(final String url) {
-        // take the URL and, if necessary, absolute it
-        return base.resolve(Uri.parse(url));
+    private String parseUrl(final String url) {
+        try {
+            // take the URL and, if necessary, absolute it
+            return base.resolve(Uri.parse(url)).toString();
+        } catch (UriException e) {
+            LOGGER.warn("Couldn't resolve URL " + url, e);
+            return url;
+        }
     }
 
 }
