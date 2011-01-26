@@ -90,6 +90,15 @@ public class EscapingUriParser extends DefaultUriParser {
 
     @Override
     public Uri parse(String text) {
+        return super.parse(escape(text));
+    }
+
+    @Override
+    public boolean isOpaque(String text) {
+        return super.isOpaque(escape(text));
+    }
+    
+    private static String escape(String text) {
         try {
             if (StringUtils.hasText(text)) {
                 text = text.trim();
@@ -124,13 +133,13 @@ public class EscapingUriParser extends DefaultUriParser {
                 }
             }
             
-            return super.parse(text);
+            return text;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    private String scanEscapes(String query) {
+    private static String scanEscapes(String query) {
         if (query.indexOf("%") == -1) {
             return query;
         }

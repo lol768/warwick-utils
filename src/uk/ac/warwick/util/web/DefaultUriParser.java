@@ -23,4 +23,12 @@ public class DefaultUriParser implements UriParser {
         }
     }
 
+    public boolean isOpaque(String text) {
+        try {
+            return new URI(text).isOpaque();
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
 }

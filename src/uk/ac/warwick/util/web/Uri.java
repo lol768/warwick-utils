@@ -134,6 +134,14 @@ public final class Uri {
     }
 
     /**
+     * Check if a passed text string represents an opaque Uri - we don't support
+     * opaque Uris at the moment.
+     */
+    public static boolean isOpaque(String text) {
+        return parser.isOpaque(text);
+    }
+
+    /**
      * @return a java.net.URL equal to this Uri.
      */
     public URL toJavaUrl() {

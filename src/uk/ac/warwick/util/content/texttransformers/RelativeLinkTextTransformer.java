@@ -134,6 +134,10 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
     }
 
     private String parseUrl(final String url) {
+        if (Uri.isOpaque(url)) {
+            return url;
+        }
+        
         try {
             // take the URL and, if necessary, absolute it
             return base.resolve(Uri.parse(url.trim())).toString();

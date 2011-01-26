@@ -12,4 +12,10 @@ public interface UriParser {
      * @return A new Uri, parsed into components.
      */
     Uri parse(String text);
+
+    /**
+     * Returns whether the text representation would try and create an opaque
+     * Uri, which is explicitly disallowed.
+     */
+    boolean isOpaque(String text);
 }
