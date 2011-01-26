@@ -114,6 +114,7 @@
 			<copy todir="${build.dir}/all/">
 				<fileset includes="**/*.rb" dir="${ruby-src.dir}" />
 				<fileset excludes="**/*.java" dir="${src.dir}" />
+				<fileset dir="src" includes="META-INF/*" />
 			</copy>
 
 			<copy todir="${build.dir}/cache">
@@ -122,6 +123,10 @@
 
 			<copy todir="${build.dir}/content/">
 				<fileset includes="**/*.rb" dir="${ruby-src.dir}" />
+			</copy>
+			
+			<copy todir="${build.dir}/web/">
+				<fileset dir="src" includes="META-INF/*" />
 			</copy>
 		</parallel>
 	</target>
@@ -186,7 +191,7 @@
 	</target>
 
 	<target name="package" depends="compile">
-		<copy file="META-INF/MANIFEST.MF" tofile="${build.dir}/MANIFEST.MF"/>
+		<copy file="src/META-INF/MANIFEST.MF" tofile="${build.dir}/MANIFEST.MF"/>
 		<replace file="${build.dir}/MANIFEST.MF" token="$VERSION" value="${jar.version}" />
 
 		<jar basedir="${build.dir}/all" destfile="${dist.dir}/${jar.name}-all.jar" manifest="${build.dir}/MANIFEST.MF"/>
