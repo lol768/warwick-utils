@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    
+ -->
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
+ 
+    <!-- 
+        store 10,000 distinct request paths.
+        eternal means we only evict items when we are > max size.
+        memory-only
+        LRU: clear out least recently used (either read/written)
+     -->
+    <cache name="filterCache" 
+        maxElementsInMemory="10000" 
+        eternal="true" 
+        overflowToDisk="false" 
+        memoryStoreEvictionPolicy="LRU"/>
+        
+     <!-- we don't use default cache but it's required in config -->   
+     <defaultCache
+        maxElementsInMemory="10000" 
+        eternal="true" 
+        overflowToDisk="false" 
+        memoryStoreEvictionPolicy="LRU"/> 
+</ehcache>

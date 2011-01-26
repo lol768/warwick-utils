@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName" 
+      xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sbr="http://go.warwick.ac.uk/elab-schemas"
+      xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://go.warwick.ac.uk/elab-schemas/filterstack http://go.warwick.ac.uk/elab-schemas/filters.xsd"
+>
+
+    <!-- These are required as it will resolve the references below -->
+    <bean id="loadPageFilterRender" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+    <bean id="loadPageFilterEdit" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+    <bean id="loadSiteData" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+
+  <sbr:filter-stack id="uberFilter" xmlns="http://go.warwick.ac.uk/elab-schemas/filterstack">
+    <mapping>
+        <filter ref="loadPageFilterRender" />
+        <filter ref="loadSiteData" />
+        <url-pattern>/render/*</url-pattern>
+    </mapping>
+    <mapping>
+        <filter ref="loadPageFilterEdit" />
+        <filter ref="loadSiteData" />
+        <url-pattern>/edit/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
+        <excluded-url-pattern>/edit/api/*</excluded-url-pattern>
+    </mapping>
+ </sbr:filter-stack>
+  
+</beans>
