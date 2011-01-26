@@ -203,7 +203,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         if (!executed) {
             return url;
         } else {
-            return Uri.parse(method.getPath());
+            return url.resolve(Uri.parse(method.getPath()));
         }
     }
 
