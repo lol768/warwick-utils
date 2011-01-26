@@ -136,7 +136,7 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
     private String parseUrl(final String url) {
         try {
             // take the URL and, if necessary, absolute it
-            return base.resolve(Uri.parse(url)).toString();
+            return base.resolve(Uri.parse(url.trim())).toString();
         } catch (UriException e) {
             LOGGER.warn("Couldn't resolve URL " + url, e);
             return url;

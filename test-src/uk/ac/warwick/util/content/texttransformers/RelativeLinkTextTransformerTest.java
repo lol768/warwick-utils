@@ -181,4 +181,15 @@ public class RelativeLinkTextTransformerTest {
         RelativeLinkTextTransformer linkTransformer = new RelativeLinkTextTransformer(remoteUrl);
         assertEquals(expected, linkTransformer.transform(input));
     }
+    
+    @Test
+    public void sbtwo4182() throws Exception {
+        String input = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("sbtwo-4182-input.html")));
+        String expected = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("sbtwo-4182-output.html")));
+        
+        String remoteUrl = "http://search.warwick.ac.uk/exampapers/plain?q=ec104";
+
+        RelativeLinkTextTransformer linkTransformer = new RelativeLinkTextTransformer(remoteUrl);
+        assertEquals(expected, linkTransformer.transform(input));
+    }
 }

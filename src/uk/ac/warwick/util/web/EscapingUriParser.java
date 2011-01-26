@@ -92,6 +92,8 @@ public class EscapingUriParser extends DefaultUriParser {
     public Uri parse(String text) {
         try {
             if (StringUtils.hasText(text)) {
+                text = text.trim();
+                
                 String path = text;
                 String query = "";
                 String fragment = "";
