@@ -129,6 +129,9 @@ public class EscapingUriParser extends DefaultUriParser {
                 }
                 
                 if (StringUtils.hasText(fragment)) {
+                    fragment = new String(URLCodec.encodeUrl(ALLOWED_QUERYSTRING_CHARACTERS, fragment.substring(1).getBytes("UTF-8")), "UTF-8");
+                    fragment = "#" + scanEscapes(fragment);
+                    
                     text += fragment;
                 }
             }
