@@ -19,12 +19,8 @@ import com.google.common.base.Predicate;
 
 public class DoubleFreezeBugFilter implements Filter {
 
-    /**
-     * Don't bother checking if parameter is bigger than this. Note that you can
-     * add an indefinite number of leading zeroes to the string, so if you added enough
-     * it would bypass our string check.
-     */
     private static final int TOO_LONG_TO_CHECK = 1100;
+    private RejectionHandler rejectionHandler;
     //private static final Logger LOGGER = Logger.getLogger(DoubleFreezeBugFilter.class);
     
     public void init(FilterConfig arg0) throws ServletException {}
@@ -38,7 +34,7 @@ public class DoubleFreezeBugFilter implements Filter {
         if (areHeadersGood(request) && areParametersGood(request)) {
             chain.doFilter(request, response);
         } else {
-            reject(response);
+            reject(request, response);
         }
     }
     
@@ -64,13 +60,23 @@ public class DoubleFreezeBugFilter implements Filter {
         return headerValue == null || !containsPossibleBugDouble(headerValue);
     }
     
-    private void reject(HttpServletResponse res) {
+    private void reject(HttpServletRequest req, HttpServletResponse res) {
         res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        if (rejectionHandler != null) {
+            rejectionHandler.handleRequest(req,res); 
+        }
     }
     
-//    private <T> T logReturn(T o, String name) {
-//        System.err.println(name + ": " + o);
-//        return o;
-//    }
-
+    public void setRejectionHandler(RejectionHandler controller) {
+        rejectionHandler = controller;
+    }
+    
+    static interface RejectionHandler {
+        void handleRequest(HttpServletRequest request, HttpServletResponse response);
+    }
+    
+//  private <T> T logReturn(T o, String name) {
+//      System.err.println(name + ": " + o);
+//      return o;
+//  }
 }
