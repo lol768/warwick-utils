@@ -605,11 +605,19 @@ public abstract class ParameterUtils {
 
 	private static class DoubleParser extends ParameterParser {
 
+	    /**
+	     * This value causes the JVM to spin forever if passed to Double.parseDouble().
+	     */
+	    private static final String BUG_DOUBLE = "2.2250738585072012e-308";
+	    
 		protected String getType() {
 			return "double";
 		}
 
 		protected Object doParse(String parameter) throws NumberFormatException {
+		    if (BUG_DOUBLE.equals(parameter)) {
+		        throw new NumberFormatException("Unparseable number");
+		    }
 			return Double.valueOf(parameter);
 		}
 
