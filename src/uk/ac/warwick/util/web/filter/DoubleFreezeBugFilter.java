@@ -71,7 +71,7 @@ public class DoubleFreezeBugFilter implements Filter {
         rejectionHandler = controller;
     }
     
-    static interface RejectionHandler {
+    public static interface RejectionHandler {
         void handleRequest(HttpServletRequest request, HttpServletResponse response);
     }
     
