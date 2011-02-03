@@ -13,6 +13,8 @@ import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 
+import com.google.common.collect.Maps;
+
 public final class FlvMediaUrlHandlerTest {
 	
 	private final Mockery m = new JUnit4Mockery();
@@ -99,7 +101,89 @@ public final class FlvMediaUrlHandlerTest {
         
         String html = handler.getHtml("file.mp4", parameters);
         
-        System.out.println(html);
+        assertTrue(html.startsWith("<notextile>"));
+        assertTrue(html.contains("<a href=\"file.mp4?forceOpenSave=true\""));
+        assertTrue(html.contains("Click here for a good time</a>"));
+        assertTrue(html.contains("<head>"));
 	}
+	
+	@Test
+	public void withAlternateRenditions() throws Exception {
+	    handler.setMetadataHandler(metadataHandler);
+        
+        final Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("random", new java.util.Random());
+        parameters.put("align", "left");
+        
+        m.checking(new Expectations() {{
+            one(metadataHandler).handle("file.mp4", parameters); will(new Action() {
+                public void describeTo(Description description) {
+                    description.appendText("populate metadata");
+                }
+                public Object invoke(Invocation invocation) throws Throwable {
+                    parameters.put("width", "6,40");
+                    parameters.put("height", "360");
+                    parameters.put("previewimage", "file.jpg");
+                    parameters.put("mime_type", "video/mp4");
+                    
+                    Map<String, String> alternateRenditions = Maps.newLinkedHashMap();
+                    alternateRenditions.put("video/webm", "file.webm");
+                    alternateRenditions.put("video/ogg", "file.ogg");
+                    
+                    parameters.put("alternateRenditions", alternateRenditions);                    
+                    
+                    return null;
+                }
+                
+            });
+        }});
+        
+        String html = handler.getHtml("file.mp4", parameters);
+        assertFalse(html.contains("vidEl.insert({top:new Element('source', {"));
+        assertTrue(html.startsWith("<notextile>"));
+        assertTrue(html.contains("\"640\",\"380\""));
+        
+        m.assertIsSatisfied();
+	}
+	
+	@Test
+    public void withAlternateRenditionsMP4NotFirst() throws Exception {
+	    handler.setMetadataHandler(metadataHandler);
+        
+        final Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("random", new java.util.Random());
+        parameters.put("align", "left");
+        
+        m.checking(new Expectations() {{
+            one(metadataHandler).handle("file.webm", parameters); will(new Action() {
+                public void describeTo(Description description) {
+                    description.appendText("populate metadata");
+                }
+                public Object invoke(Invocation invocation) throws Throwable {
+                    parameters.put("width", "6,40");
+                    parameters.put("height", "360");
+                    parameters.put("previewimage", "file.jpg");
+                    parameters.put("mime_type", "video/webm");
+                    
+                    Map<String, String> alternateRenditions = Maps.newLinkedHashMap();
+                    alternateRenditions.put("video/mp4", "file.mp4");
+                    alternateRenditions.put("video/ogg", "file.ogg");
+                    
+                    parameters.put("alternateRenditions", alternateRenditions);                    
+                    
+                    return null;
+                }
+                
+            });
+        }});
+        
+        String html = handler.getHtml("file.webm", parameters);
+        
+        assertTrue(html.startsWith("<notextile>"));
+        assertTrue(html.contains("vidEl.insert({top:new Element('source', {"));
+        assertTrue(html.contains("\"640\",\"380\""));
+        
+        m.assertIsSatisfied();
+    }
 
 }

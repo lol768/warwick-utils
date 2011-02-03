@@ -49,7 +49,7 @@ Event.onDOMReady(function(){
     object${uniqueId}.write('video_${uniqueId}');
   };
 
-	<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v')>
+	<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 	  
 		/* Attempt HTML5 Video */ 
 		var vidEl = new Element('video', {
@@ -61,7 +61,7 @@ Event.onDOMReady(function(){
 			autoplay: 'autoplay'
 		});
 		var supportsVideo = !!vidEl.canPlayType;
-		var supportsCodec = supportsVideo && vidEl.canPlayType('video/mp4');
+		var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 		
 		if (supportsCodec) {
 		  var posterImage = new Element('img', {
@@ -72,20 +72,33 @@ Event.onDOMReady(function(){
 		  });
 		  var container = $('video_${uniqueId}');
   		  container.insert(posterImage);
-      	var startVideo = function(event){
-        vidEl.insert(new Element('source', {
-          src: '${url}',
-          type: '${mime_type?default('video/mp4')}',
-          width: '<@dimension value=width?default(425) />',
-          height: '<@dimension value=height?default(350) />'
-        }));
-        // Place video in container's place, with container inside the video as fallback
-        posterImage.remove();
-        container.insert({after: vidEl});
-        vidEl.insert(container);
-        insertFlash();
-      };
-      container.insert(new Element('div', { className: 'media_tag_play' }).observe('click', startVideo));
+      	var startVideo = function(event){      	
+	        vidEl.insert(new Element('source', {
+	          src: '${url}',
+	          type: '${mime_type?default('video/mp4')}',
+	          width: '<@dimension value=width?default(425) />',
+	          height: '<@dimension value=height?default(350) />'
+	        }));
+	        
+	        <#if alternateRenditions?exists>
+	        	<#list alternateRenditions?keys as mime>
+	        		vidEl.insert(<#if mime == 'video/mp4' || mime == 'video/x-m4v'>{top:</#if>new Element('source', {
+			          src: '${alternateRenditions[mime]}',
+			          type: '${mime}',
+			          width: '<@dimension value=width?default(425) />',
+			          height: '<@dimension value=height?default(350) />'
+			        })<#if mime == 'video/mp4' || mime == 'video/x-m4v'>}</#if>);		
+	        	</#list>
+	        </#if>
+	        
+	        // Place video in container's place, with container inside the video as fallback
+	        posterImage.remove();
+	        container.insert({after: vidEl});
+	        vidEl.insert(container);
+	        insertFlash();
+      	};
+      	
+      	container.insert(new Element('div', { className: 'media_tag_play' }).observe('click', startVideo));
 		  posterImage.observe('click', startVideo);		
 		} else {
 		  insertFlash();
@@ -159,7 +172,7 @@ Event.onDOMReady(function(){
 			document.body.insert(overlay);
 			document.body.insert(container);
 			
-			<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v')>
+			<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 				/* Attempt HTML5 Video */ 
 				var vidEl = new Element('video', {
 					width: '<@dimension value=width?default(425) />',
@@ -168,15 +181,28 @@ Event.onDOMReady(function(){
 					controls: 'controls',
 					preload: 'meta',
 					autoplay: 'autoplay'
-				}).insert(new Element('source', {
+				});
+				
+				vidEl.insert(new Element('source', {
 		          	src: '${url}',
 		          	type: '${mime_type?default('video/mp4')}',
 		          	width: '<@dimension value=width?default(425) />',
 		          	height: '<@dimension value=height?default(350) />'
 		        }));
+	        
+		        <#if alternateRenditions?exists>
+		        	<#list alternateRenditions?keys as mime>
+		        		vidEl.insert(<#if mime == 'video/mp4' || mime == 'video/x-m4v'>{top:</#if>new Element('source', {
+				          src: '${alternateRenditions[mime]}',
+				          type: '${mime}',
+				          width: '<@dimension value=width?default(425) />',
+				          height: '<@dimension value=height?default(350) />'
+				        })<#if mime == 'video/mp4' || mime == 'video/x-m4v'>}</#if>);		
+		        	</#list>
+		        </#if>
 		        
 				var supportsVideo = !!vidEl.canPlayType;
-				var supportsCodec = supportsVideo && vidEl.canPlayType('video/mp4');
+				var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 								
 				if (supportsCodec) {
 					container.update(vidEl.insert(new Element('div', { id: 'videoFallback_${uniqueId}' })));

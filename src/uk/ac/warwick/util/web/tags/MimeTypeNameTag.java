@@ -99,6 +99,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("video/x-m4v", videoClipString);
             mimeNames.put("video/x-ms-wmv", videoClipString);
             mimeNames.put("video/ogg", videoClipString);
+            mimeNames.put("video/webm", videoClipString);
             mimeNames.put("video/3gpp", "Mobile video clip");
             
             mimeNames.put("application/ogg", "OGG application");
