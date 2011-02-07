@@ -51,5 +51,6 @@
 	<classpathentry kind="lib" path="external-libs/rome/rome-1.0.jar"/>
 	<classpathentry kind="lib" path="external-libs/ant/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="test-src/resources"/>
+	<classpathentry kind="lib" path="external-libs/commons-pool/commons-pool-1.5.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

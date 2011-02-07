@@ -17,7 +17,6 @@ dependencies:
 	userlookup.jar
 	sso-client.jar
 
-
 web
 ===
 dependencies:
@@ -38,3 +37,11 @@ all
 ===
 dependencies:
 	dependencies of all other modules.
+	
+	
+Specific classes
+
+RequestThreadFilter
+==================
+dependencies:
+  Apache Pool
