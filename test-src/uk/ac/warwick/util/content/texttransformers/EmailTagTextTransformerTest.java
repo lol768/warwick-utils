@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.media.AudioMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.MediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.MediaUrlTransformer;
@@ -21,7 +21,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "[email]m.mannion@warwick.ac.uk[/email]";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		assertTrue(output.contains("<span id"));
 	}
@@ -31,7 +31,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "<!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff --> <p>[email]m.mannion@warwick.ac.uk[/email]</p><!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff --> <!-- Here is some other [email]mat.mannion@gmail.com[/email] stuff -->";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		// Only one instance of this.
 		assertEquals("Should only have one email address wrapped in HTML", output.indexOf("<span id"), output.lastIndexOf("<span id"));
@@ -42,7 +42,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "<html><head><script src=\"blah\"></script></head><body>[email]m.mannion@warwick.ac.uk[/email]</body></html>";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		assertTrue(output.contains("<span id"));
 	}
@@ -52,7 +52,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "<p>[email]m.mannion@warwick.ac.uk[/email]</p>\n<p>[email]n.howes@warwick.ac.uk[/email]</p>";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		assertTrue(output.contains("<span id"));
 	}
@@ -62,7 +62,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "<p>Here is just a normal paragraph</p>";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		String expected = input; // no change
 		
@@ -74,7 +74,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "<notextile>[email]m.mannion@warwick.ac.uk[/email]</notextile>";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		String expected = input; // no change
 		
@@ -86,7 +86,7 @@ public final class EmailTagTextTransformerTest {
 		String input = "[email address=m.mannion@warwick.ac.uk]Email me[/email]";
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		assertTrue(output.contains("<span id"));
 	}
@@ -102,7 +102,7 @@ public final class EmailTagTextTransformerTest {
 				}}, null),
 				new EmailTagTextTransformer()
 		));
-		String output = transformer.transform(input);
+		String output = transformer.apply(new MutableContent(null, input)).getContent();
 		
 		// the main problem is that it has more than one <body> tag because it adds the html stuff in twice. laaaaame
 		Pattern p = Pattern.compile("<body>");

@@ -52,5 +52,9 @@
 	<classpathentry kind="lib" path="external-libs/ant/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="test-src/resources"/>
 	<classpathentry kind="lib" path="external-libs/commons-pool/commons-pool-1.5.5.jar"/>
+	<classpathentry kind="lib" path="external-libs/xalan/xalan.jar"/>
+	<classpathentry kind="lib" path="external-libs/xalan/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="external-libs/xalan/xml-apis.jar"/>
+	<classpathentry kind="lib" path="external-libs/nekohtml/nekohtml-1.9.14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

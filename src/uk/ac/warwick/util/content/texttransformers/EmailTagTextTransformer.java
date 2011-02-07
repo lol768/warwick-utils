@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 /**
  * Obfuscates an email address passed in the contents. It does this by writing
  * the address out using Javascript after first splitting each character into
@@ -30,12 +32,13 @@ public final class EmailTagTextTransformer implements TextTransformer {
 
 	private static final String[] ALLOWED_PARAMETERS = new String[] { "address" };
 
-	public String transform(String text) {
-		String result = text;
-		if (text.indexOf("[email") != -1) {
-			result = doTransform(text);
+	public MutableContent apply(MutableContent mc) {
+		String result = mc.getContent();
+		if (result.indexOf("[email") != -1) {
+			result = doTransform(result);
+			mc.setContent(result);
 		}
-		return result;
+		return mc;
 	}
 
 	private String doTransform(String text) {

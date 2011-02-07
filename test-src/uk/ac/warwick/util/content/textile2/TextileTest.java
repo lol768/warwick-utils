@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.EnumSet;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.RemoveLeadingNbspTransformer;
 import uk.ac.warwick.util.core.HtmlUtils;
 
@@ -127,7 +128,7 @@ public class TextileTest extends TestCase {
 				+ "&#29616;&#22312;&#26377;&#24456;&#22810;&#25171;&#22238;&#22269;&#30340;&#21495;&#30721;&#65292;&#25105;&#20174;&#21435;&#24180;&#24320;&#22987;&#19968;&#30452;&#29992;&#36825;&#20004;&#20010;&#65292;&#27809;&#20986;&#29616;&#36807;&#20160;&#20040;&#38382;&#39064;&#65292;&#20174;&#26469;&#27809;&#26377;&#20081;&#25910;&#36153;&#65292;&#36890;&#35805;&#36136;&#37327;&#19981;&#22909;&#20043;&#31867;&#30340;&#38382;&#39064;&#12290;&#27880;&#24847;&#20854;&#20182;&#21495;&#30721;&#26377;&#21487;&#33021;&#20081;&#25910;&#36153;&#65292;&#36890;&#35805;&#36136;&#37327;&#19981;&#22909;&#31561;&#31561;&#30340;&#38382;&#39064;&#65292;&#35831;&#22823;&#23478;&#23567;&#24515;&#20102;&#12290;&#36825;&#20004;&#20010;&#21495;&#30721;&#22823;&#23478;&#25918;&#24515;&#29992;";
 
 		long timeTaken = System.currentTimeMillis();
-		compare(longChinesePost, tex.process(longChinesePost));
+		compare(longChinesePost, tex.apply(new MutableContent(null, longChinesePost)).getContent());
 		System.out.println("took " + (System.currentTimeMillis() - timeTaken)
 				+ " ms");
 
@@ -1329,7 +1330,7 @@ public class TextileTest extends TestCase {
 	public final void testRemoveLeadingNbsp() {
 		String source="<p>Here is a normal paragraph</p><p>&nbsp;And with a leading nbsp</p><h1>&nbsp;And a heading&nbsp;with a leading nbsp</h1>";
 		String expected="<p>Here is a normal paragraph</p><p>And with a leading nbsp</p><h1>And a heading&nbsp;with a leading nbsp</h1>";
-		assertEquals(expected,new RemoveLeadingNbspTransformer().transform(source));
+		assertEquals(expected,new RemoveLeadingNbspTransformer().apply(new MutableContent(null, source)).getContent());
 	}
 	
 	public final void testMaliciousImgTagCodeTextile() {

@@ -1,6 +1,8 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import java.util.List;
+import uk.ac.warwick.util.content.MutableContent;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Simple composite TextTransformer which takes a list of other TextTransformers,
@@ -10,17 +12,16 @@ import java.util.List;
  */
 public class CompositeTextTransformer implements TextTransformer {
 
-    private List<TextTransformer> textTransformers;
+    private final ImmutableList<TextTransformer> textTransformers;
     
-    public CompositeTextTransformer(final List<TextTransformer> theTextTransformers) {
-        textTransformers = theTextTransformers;
+    public CompositeTextTransformer(final Iterable<? extends TextTransformer> theTextTransformers) {
+        this.textTransformers = ImmutableList.copyOf(theTextTransformers);
     }
  
-    public final String transform(final String text) {
-        String transformedText = text;
+    public final MutableContent apply(MutableContent mc) {
         for (TextTransformer transformer : textTransformers) {
-            transformedText = transformer.transform(transformedText);
+            mc = transformer.apply(mc);
         }
-        return transformedText;
+        return mc;
     }
 }

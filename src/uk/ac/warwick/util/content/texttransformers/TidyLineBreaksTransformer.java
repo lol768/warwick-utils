@@ -1,9 +1,11 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public class TidyLineBreaksTransformer implements TextTransformer {
 
-	public String transform(final String text) {
-		String html = text;
+    public MutableContent apply(MutableContent mc) {
+		String html = mc.getContent();
 
 		// Windows line breaks
 		html = html.replaceAll("\r\n", "\n");
@@ -21,7 +23,8 @@ public class TidyLineBreaksTransformer implements TextTransformer {
 		// punctuation at the end
 		html = html.replaceAll("\"$", "\" ");
 
-		return html;
+		mc.setContent(html);
+		return mc;
 	}
 
 }

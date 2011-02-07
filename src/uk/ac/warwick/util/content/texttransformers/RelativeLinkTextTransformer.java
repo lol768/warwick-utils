@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.Uri.UriException;
 
@@ -46,7 +47,9 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         this(Uri.parse(theBase));
     }
     
-    public String transform(final String text) {
+    public MutableContent apply(MutableContent mc) {
+        String text = mc.getContent();
+        
         // SBTWO-3804 Don't rewrite in <pre> tags
         Pattern noTextile = Pattern.compile("<pre>(.*?)</pre>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         Matcher matcher = noTextile.matcher(text);
@@ -66,7 +69,8 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         
         sb.append(rewriteIgnoreScriptTagContents(text.substring(endIndex)));
         
-        return sb.toString();
+        mc.setContent(sb.toString());
+        return mc;
     }
 
     private String rewriteIgnoreScriptTagContents(final String text) {

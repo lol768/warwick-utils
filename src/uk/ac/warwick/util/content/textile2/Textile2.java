@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.textile2.jruby.JRubyTextileTextTransformer;
 import uk.ac.warwick.util.content.texttransformers.BadLinkRemovingTransformer;
 import uk.ac.warwick.util.content.texttransformers.CompositeTextTransformer;
@@ -43,7 +44,7 @@ import uk.ac.warwick.util.content.texttransformers.media.YouTubeMediaUrlHandler;
  * 
  * @author Mat Mannion
  */
-public final class Textile2 {
+public final class Textile2 implements TextTransformer {
 	
 	public static final EnumSet<TransformerFeature> DEFAULT_FEATURESET = EnumSet.of(
 			TransformerFeature.backslashes, 
@@ -181,8 +182,8 @@ public final class Textile2 {
 		transformer = new CompositeTextTransformer(transformers);
 	}
 
-	public String process(String content) {
-		return transformer.transform(content);
+	public MutableContent apply(MutableContent content) {
+		return transformer.apply(content);
 	}
 
 }

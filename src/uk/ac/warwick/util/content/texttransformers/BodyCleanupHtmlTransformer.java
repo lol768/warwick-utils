@@ -2,6 +2,7 @@ package uk.ac.warwick.util.content.texttransformers;
 
 import java.util.List;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.Cleaner;
 import uk.ac.warwick.util.core.HtmlUtils;
 
@@ -13,7 +14,8 @@ public final class BodyCleanupHtmlTransformer implements TextTransformer {
         this.cleaner = theCleaner;
     }
     
-    public String transform(final String text) {
+    public MutableContent apply(MutableContent mc) {
+        String text = mc.getContent();
         String result;
         List<String> bodies = HtmlUtils.extractContent(text, "<body", "</body>");
         
@@ -25,6 +27,7 @@ public final class BodyCleanupHtmlTransformer implements TextTransformer {
             result = cleaner.clean(text);
         }
         
-        return result;
+        mc.setContent(result);
+        return mc;
     }
 }

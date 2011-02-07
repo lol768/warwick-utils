@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 
 /**
  * @todo This basically disables any of Textile's uses for square brackets. This needs
@@ -20,18 +22,23 @@ public final class SquareBracketEscapingTransformer extends WrappingTextTransfor
     }
 
     @Override
-    public String preTransform(final String input) {
-        String text = input;
+    public MutableContent preTransform(final MutableContent mc) {
+        String text = mc.getContent();
         for (String tag : TAGS_TO_ESCAPE) {
             text = text.replaceAll("\\["+tag+"(.*?)\\]", OPEN_BRACKET +tag+"$1" + CLOSE_BRACKET)
                    .replaceAll("\\[/"+tag+"\\]", OPEN_BRACKET + "/"+tag + CLOSE_BRACKET);
         }
-        return text;
+        
+        mc.setContent(text);
+        return mc;
     }
 
     @Override
-    public String postTransform(final String text) {
-        return text.replaceAll(OPEN_BRACKET, "[").replaceAll(CLOSE_BRACKET, "]");
+    public MutableContent postTransform(final MutableContent mc) {
+        String text = mc.getContent();
+        text = text.replaceAll(OPEN_BRACKET, "[").replaceAll(CLOSE_BRACKET, "]");
+        mc.setContent(text);
+        return mc;
     }
 
 }

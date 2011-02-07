@@ -8,6 +8,7 @@ import org.jruby.Ruby;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.jruby.runtime.builtin.IRubyObject;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextTransformer;
 
 
@@ -65,8 +66,11 @@ public final class JRubyTextileTextTransformer implements TextTransformer {
         service = (TextileService) JavaEmbedUtils.rubyToJava(runtime, rawRubyObject, TextileService.class);
 	}
 
-	public String transform(final String text) {
-		return service.textileToHtml(text, hardBreaks);
+	public MutableContent apply(final MutableContent mc) {
+	    String text = mc.getContent();
+		text = service.textileToHtml(text, hardBreaks);
+		mc.setContent(text);
+		return mc;
 	}
 
     public boolean isHardBreaks() {

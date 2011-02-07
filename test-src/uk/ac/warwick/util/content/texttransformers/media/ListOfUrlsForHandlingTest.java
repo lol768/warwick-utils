@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.MutableContent;
 
 public class ListOfUrlsForHandlingTest extends TestCase {
     public void testNothingDies() throws IOException {      
@@ -39,7 +40,7 @@ public class ListOfUrlsForHandlingTest extends TestCase {
              * Not actually doing anything with the result at the
              * moment, just checking that an exception isn't thrown.
              */
-            transformer.transform(tag);
+            transformer.apply(new MutableContent(null, tag));
         }
     }
     

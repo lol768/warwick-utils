@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public class MediaUrlTransformerTest {
     
     @Test
@@ -46,7 +48,7 @@ public class MediaUrlTransformerTest {
         
         String input = "test words [media]golden trumpet[/media] test words";
         String expected = "test words GOLDEN TRUMPET test words";
-        String output = transformer.transform(input);
+        String output = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, output);   
     }
@@ -71,7 +73,7 @@ public class MediaUrlTransformerTest {
         
         String input = "test words [media width=100 height=\"200\" type='uppercase']trumpet[/media] test words";
         String expected = "test words TRUMPET(width:100,height:200,type:uppercase) test words";
-        String output = transformer.transform(input);
+        String output = transformer.apply(new MutableContent(null, input)).getContent();
         assertEquals(expected, output);        
     }
     
@@ -103,7 +105,7 @@ public class MediaUrlTransformerTest {
         
         String input = "test words [media]golden trumpet[/media] test words [media type='lowercase']Super LowerCase[/media] test words";
         String expected = "test words GOLDEN TRUMPET test words super lowercase test words";
-        String output = transformer.transform(input);
+        String output = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, output);
     }
@@ -128,7 +130,7 @@ public class MediaUrlTransformerTest {
         
         MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, null);
         String input = "test words [media type='somemadeuptype']golden trumpet[/media] test words";
-        String output = transformer.transform(input);
+        String output = transformer.apply(new MutableContent(null, input)).getContent();
         assertEquals(input, output);
     }
 }

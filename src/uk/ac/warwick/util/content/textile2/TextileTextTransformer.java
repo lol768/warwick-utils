@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextTransformer;
 
 /**
@@ -48,12 +49,12 @@ public final class TextileTextTransformer implements TextTransformer {
 		}
 	}
 
-	public String transform(final String text) {
+	public MutableContent apply(final MutableContent mc) {
 		try {
 			HttpClient client = new HttpClient();
 			PostMethod method = new PostMethod(TEXTILE_SERVICE_URL);
 			
-			NameValuePair textileData = new NameValuePair("textile", text);
+			NameValuePair textileData = new NameValuePair("textile", mc.getContent());
 			
 			method.setRequestBody(new NameValuePair[] { textileData });
 			
@@ -69,7 +70,8 @@ public final class TextileTextTransformer implements TextTransformer {
 			if (returnCode != HttpServletResponse.SC_OK) {
 				throw new IllegalStateException("Error connecting with Textile server - response code was " + returnCode);
 			}
-			return method.getResponseBodyAsString().trim();
+			mc.setContent(method.getResponseBodyAsString().trim());
+			return mc;
 		} catch (HttpException e) {
 			throw new IllegalStateException("Error connecting with Textile server - " + e.getMessage(), e);
 		} catch (IOException e) {

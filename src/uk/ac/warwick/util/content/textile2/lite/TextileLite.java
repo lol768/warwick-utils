@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.content.MutableContent;
+import uk.ac.warwick.util.content.texttransformers.TextTransformer;
+
 /**
  * Textile Java implementation of Textism's Textile Humane Web Text Generator
  * 
@@ -15,7 +18,7 @@ import java.util.regex.Pattern;
  * 
  * @author Mat Mannion
  */
-public class TextileLite implements TextileConstants {
+public class TextileLite implements TextileConstants, TextTransformer {
 
 	/**
 	 * Public Constructor
@@ -33,9 +36,8 @@ public class TextileLite implements TextileConstants {
 	 *            Textile formatted content
 	 * @return Content converted to HTML
 	 */
-	public final String process(final String origContent) {
-
-		String content = origContent;
+	public final MutableContent apply(final MutableContent mc) {
+		String content = mc.getContent();
 
 		/*
 		 * zap carriage returns
@@ -49,9 +51,10 @@ public class TextileLite implements TextileConstants {
 
 		Content textContent = new Content(content);
 
-		return textContent.getContentProcessedSoFar()
-				+ processTextile(textContent.getRemainingContent());
+		mc.setContent(textContent.getContentProcessedSoFar()
+				+ processTextile(textContent.getRemainingContent()));
 
+		return mc;
 	}
 
 	private String processTextile(String content) {

@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 /**
  * Remove any links that have protocols other than we allow
  * 
@@ -15,8 +17,7 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 
 	private static String EXP_ONLY_ALLOW_PROPER_SRC_REPLACE = " src=\"\"";
 	
-    public String transform(String content) {
-    	
+    public MutableContent apply(MutableContent mc) {
     	//generate regexes
     	String EXP_ONLY_ALLOW_PROPER_LINKS_MATCH = "(?i) href=\"(";
     	
@@ -34,10 +35,12 @@ public class BadLinkRemovingTransformer implements TextTransformer {
     	
     	EXP_ONLY_ALLOW_PROPER_SRC_MATCH += ").*?\"";
     	
+    	String content = mc.getContent();
     	content = content.replaceAll(EXP_ONLY_ALLOW_PROPER_LINKS_MATCH, EXP_ONLY_ALLOW_PROPER_LINKS_REPLACE);
 		
 		content = content.replaceAll(EXP_ONLY_ALLOW_PROPER_SRC_MATCH, EXP_ONLY_ALLOW_PROPER_SRC_REPLACE);
 		
-		return content;
+		mc.setContent(content);
+		return mc;
     }
 }

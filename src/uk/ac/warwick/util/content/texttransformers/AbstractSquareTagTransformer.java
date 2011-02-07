@@ -6,9 +6,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
-
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.core.StringUtils;
+
+import com.google.common.collect.Lists;
 
 /**
  * Abstract tag transformer which works upon 
@@ -85,8 +86,8 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     
     protected abstract String[] getAllowedParameters();
     
-    public final String transform(final String text) {
-        String html = text;
+    public final MutableContent apply(final MutableContent mc) {
+        String html = mc.getContent();
         
         //Quick escape
         if (doQuickCheck) {
@@ -99,7 +100,7 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         	}
         	
         	if (!found) {
-        		return html;
+        		return mc;
         	}
         }
         
@@ -118,25 +119,27 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
             startIndex = matcher.start();
             endIndex = matcher.end();
             
-            String transformed = new TagTransformer().transform(html.substring(lastMatch, startIndex), getCallback());
+            String transformed = TextPatternTransformer.transform(html.substring(lastMatch, startIndex), getTagPattern(), getCallback(), mc);
             sb.append(extractHeads(transformed, heads));
             sb.append(html.substring(startIndex, endIndex));
             lastMatch = endIndex;
         }
         
-        String transformed = new TagTransformer().transform(html.substring(endIndex), getCallback());
+        String transformed = TextPatternTransformer.transform(html.substring(endIndex), getTagPattern(), getCallback(), mc);
         sb.append(extractHeads(transformed, heads));
         
         if (heads.isEmpty()) {
-            return sb.toString();
+            mc.setContent(sb.toString());
         } else {
             String output = sb.toString();
             for (String head : heads) {
                 output = injectHead(output, head);
             }
             
-            return output;
+            mc.setContent(output);
         }
+        
+        return mc;
     }
     
     static String extractHeads(String html, List<String> heads) {
@@ -210,16 +213,6 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     
     public final Pattern getTagPattern() {
         return tagPattern;
-    }
-    
-    /**
-     * The class which goes through the input, matching patterns
-     * and using the callback to return the transformed text.
-     */
-    class TagTransformer extends TextPatternTransformer {
-        protected Pattern getPattern() {
-            return getTagPattern();
-        }
     }
     
     private Pattern getPatternForTagNames(final String[] theTagNames, final boolean multiline, final boolean allowEmpty, final boolean blockLevel) {

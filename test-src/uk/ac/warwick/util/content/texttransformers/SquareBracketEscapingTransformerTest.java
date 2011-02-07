@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.MutableContent;
 
 public class SquareBracketEscapingTransformerTest extends TestCase {
     
@@ -30,9 +31,9 @@ public class SquareBracketEscapingTransformerTest extends TestCase {
     private void verify(String input, String expected) {
         SquareBracketEscapingTransformer trans = new SquareBracketEscapingTransformer(new DoNothingTextTransformer());
         String text = input;
-        text = trans.preTransform(text);
+        text = trans.preTransform(new MutableContent(null, text)).getContent();
         assertEquals(expected, text);
-        text = trans.postTransform(text);
+        text = trans.postTransform(new MutableContent(null, text)).getContent();
         assertEquals(input, text);
     }
 }

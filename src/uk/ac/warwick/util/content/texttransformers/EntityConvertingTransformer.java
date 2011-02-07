@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public class EntityConvertingTransformer implements TextTransformer {
 	
 	private String EXP_ISHTML = "<.*?>";
@@ -13,7 +15,8 @@ public class EntityConvertingTransformer implements TextTransformer {
 
 	private String EXP_ENDPRESERVE = "</(code|pre|kbd|notextile|object|embed)>";
 
-	public String transform(final String content) {
+	public MutableContent apply(MutableContent mc) {
+	    String content = mc.getContent();
 		String[] segments = splitContent(EXP_ISHTML, content);
 
 		boolean inpreservation = false;
@@ -44,7 +47,8 @@ public class EntityConvertingTransformer implements TextTransformer {
 
 		}
 
-		return segmentBuffer.toString();
+		mc.setContent(segmentBuffer.toString());
+		return mc;
 	}
 
 	/**

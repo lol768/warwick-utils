@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.AbstractSquareTagTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
@@ -31,7 +32,7 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback(){
 
-            public String transform(final String input) {
+            public String transform(final String input, final MutableContent mc) {
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {
                     throw new IllegalStateException("Failed to match media tag, but shouldn't be here if it didn't");

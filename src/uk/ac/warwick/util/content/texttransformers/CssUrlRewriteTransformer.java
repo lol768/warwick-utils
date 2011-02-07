@@ -3,6 +3,7 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.web.Uri;
 
 /**
@@ -23,11 +24,12 @@ public final class CssUrlRewriteTransformer extends TextPatternTransformer {
 	    this.base = theBase;
 	}
 	
-	public String transform(String input) {
-	    return transform(input, new Handler());
-	}
-	
 	@Override
+    protected Callback getCallback() {
+        return new Handler();
+    }
+
+    @Override
 	protected Pattern getPattern() {
 		/* matches url(xx), url('xx'), url("xx") */
 		if (pattern == null) {
@@ -40,7 +42,7 @@ public final class CssUrlRewriteTransformer extends TextPatternTransformer {
 	}
 	
 	public class Handler implements Callback {
-        public String transform(String input) {
+        public String transform(String input, MutableContent mc) {
             Matcher matcher = getPattern().matcher(input);
             if (matcher.find()) {
             	String url = matcher.group(2);

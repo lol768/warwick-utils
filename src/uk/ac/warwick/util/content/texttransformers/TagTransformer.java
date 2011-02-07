@@ -17,19 +17,27 @@ import java.util.regex.Pattern;
  * This is only suitable for tags such as <a>, which can't nest.
  */
 public final class TagTransformer extends TextPatternTransformer {
-    private Pattern pattern;
+    private final Pattern pattern;
+    private final Callback callback;
     
-    TagTransformer(final String tagName) {
-        this(tagName,"<", ">");
+    TagTransformer(final String tagName, final Callback callback) {
+        this(tagName,"<", ">", callback);
     }
     
-    TagTransformer(final String tagName, final String openSymbol, final String closeSymbol) {
+    TagTransformer(final String tagName, final String openSymbol, final String closeSymbol, final Callback callback) {
         String lt = openSymbol;
         String gt = closeSymbol;
-        pattern = Pattern.compile(lt+tagName+" ([^"+gt+lt+"]+)"+gt+".+?"+lt+"/"+tagName+gt, Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
+        this.pattern = Pattern.compile(lt+tagName+" ([^"+gt+lt+"]+)"+gt+".+?"+lt+"/"+tagName+gt, Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
+        this.callback = callback;
     }
-    
+
+    @Override
     protected Pattern getPattern() {
         return pattern;
+    }
+
+    @Override
+    protected Callback getCallback() {
+        return callback;
     }
 }

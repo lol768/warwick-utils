@@ -3,6 +3,7 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
 
 /**
@@ -26,7 +27,7 @@ public final class PageSummaryTagTextTransformer extends AbstractSquareTagTransf
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback() {
 
-            public String transform(final String input) {
+            public String transform(final String input, final MutableContent mc) {
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {
                     throw new IllegalStateException("Failed to match summary tag, but shouldn't be here if it didn't");

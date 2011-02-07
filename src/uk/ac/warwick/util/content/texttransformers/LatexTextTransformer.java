@@ -2,6 +2,7 @@ package uk.ac.warwick.util.content.texttransformers;
 
 import java.util.regex.Matcher;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
 import uk.ac.warwick.util.core.HtmlUtils;
 import uk.ac.warwick.util.core.HttpUtils;
@@ -23,7 +24,7 @@ public final class LatexTextTransformer extends AbstractSquareTagTransformer {
     @Override
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback() {
-            public String transform(final String input) {
+            public String transform(final String input, final MutableContent mc) {
                 Matcher matcher = getTagPattern().matcher(input);
                 if (!matcher.matches()) {
                     throw new IllegalStateException(

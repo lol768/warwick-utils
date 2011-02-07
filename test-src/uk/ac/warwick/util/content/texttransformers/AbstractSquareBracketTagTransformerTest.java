@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
 
 public class AbstractSquareBracketTagTransformerTest extends TestCase {
@@ -20,14 +21,14 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
     public void testStandard() {
         String input = "[tag-name]contents[/tag-name]";
-        transformer.transform(input);
+        transformer.apply(new MutableContent(null, input));
 
         assertEquals("contents", transformer.contents);
     }
 
     public void testAttributes() {
         String input = "[tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/tag-name]";
-        transformer.transform(input);
+        transformer.apply(new MutableContent(null, input));
 
         assertEquals(" the contents ", transformer.contents);
 
@@ -42,7 +43,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     
     public void testNonBreakingSpaces() {
     	String input = "[tag-name allowed1=one&nbsp; allowed2='two']bam[/tag-name]";
-        transformer.transform(input);
+        transformer.apply(new MutableContent(null, input));
         
         assertTrue(transformer.parameters.containsKey("allowed1"));
         assertTrue(transformer.parameters.containsKey("allowed2"));
@@ -52,7 +53,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
     public void testEscapedAttributes() {
         String input = "[tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/tag-name]";
-        transformer.transform(input);
+        transformer.apply(new MutableContent(null, input));
 
         assertEquals("\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n", transformer.contents);
 
@@ -85,7 +86,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
 
-                public String transform(final String input) {
+                public String transform(final String input, final MutableContent mc) {
                     Matcher matcher = getTagPattern().matcher(input);
                     if (!matcher.matches()) {
                         fail("Failed to match tag, but shouldn't be here if it didn't");
@@ -105,13 +106,13 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     
     public void testStandardMulti() {
         String input = "[tag-name]contents[/tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals("contents", transformer2.contents);
         assertEquals("tag-name", transformer2.tagName);
         
         input = "[other-tag-name]contents[/other-tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals("contents", transformer2.contents);
         assertEquals("other-tag-name", transformer2.tagName);
@@ -119,7 +120,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     
     public void testDoesntMatchMismatchedTags() {
         String input = "[tag-name]contents[/other-tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         // hasn't matched
         // contents hasn't been set
@@ -128,7 +129,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
     public void testAttributesMulti() {
         String input = "[tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals(" the contents ", transformer2.contents);
 
@@ -141,7 +142,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         assertEquals(transformer2.parameters.get("allowed3"), null);
         
         input = "[other-tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/other-tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals(" the contents ", transformer2.contents);
 
@@ -156,7 +157,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
     public void testEscapedAttributesMulti() {
         String input = "[tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals("\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n", transformer2.contents);
 
@@ -170,7 +171,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         assertTrue("regex works", Pattern.matches(regex, "Sometextwithoutspaces092"));
         
         input = "[other-tag-name regex='^\\[A-Za-z0-9\\]+$']\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n[/other-tag-name]";
-        transformer2.transform(input);
+        transformer2.apply(new MutableContent(null, input));
 
         assertEquals("\nSome escaped stuff ^\\[A-Za-z0-9\\]+$\n", transformer2.contents);
 
@@ -205,7 +206,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
 
-                public String transform(final String input) {
+                public String transform(final String input, final MutableContent mc) {
                     Matcher matcher = getTagPattern().matcher(input);
                     if (!matcher.matches()) {
                         fail("Failed to match tag, but shouldn't be here if it didn't");
@@ -226,21 +227,21 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     
     public void testBlockStandard() {
         String input = "[tag-name]contents[/tag-name]";
-        transformer3.transform(input);
+        transformer3.apply(new MutableContent(null, input));
 
         assertEquals("contents", transformer3.contents);
     }
     
     public void testBlockWrapped() {
         String input = "<p>[tag-name]contents[/tag-name]</p>";
-        transformer3.transform(input);
+        transformer3.apply(new MutableContent(null, input));
 
         assertEquals("<p>contents</p>", transformer3.contents);
     }
 
     public void testBlockAttributes() {
         String input = "[tag-name allowed1=\"one\" allowed2='two' allowed3=three] the contents [/tag-name]";
-        transformer3.transform(input);
+        transformer3.apply(new MutableContent(null, input));
 
         assertEquals(" the contents ", transformer3.contents);
 
@@ -255,7 +256,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
 
     public void testAttributeEscaping() {
     	String input = "[tag-name allowed2=\"The \\\"Magic\\\" tag\" allowed1='It\\'s escaped!' ]the contents[/tag-name]";
-    	transformer3.transform(input);
+    	transformer3.apply(new MutableContent(null, input));
     	assertEquals("It's escaped!", transformer3.parameters.get("allowed1"));
     	assertEquals("The \"Magic\" tag", transformer3.parameters.get("allowed2"));
     }
@@ -278,8 +279,7 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         @Override
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
-
-                public String transform(final String input) {
+                public String transform(final String input, final MutableContent mc) {
                     Matcher matcher = getTagPattern().matcher(input);
                     if (!matcher.matches()) {
                         fail("Failed to match tag, but shouldn't be here if it didn't");

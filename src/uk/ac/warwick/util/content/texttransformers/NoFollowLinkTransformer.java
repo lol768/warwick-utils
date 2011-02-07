@@ -3,6 +3,8 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 /**
  * Add rel="nofollow" to any links that we have
  * 
@@ -12,8 +14,8 @@ public class NoFollowLinkTransformer implements TextTransformer {
 	
 	private static final Pattern MATCH_PATTERN = Pattern.compile("(\\<a\\s)(.+\\>)", Pattern.CASE_INSENSITIVE);
 	
-    public String transform(String content) {
-    	
+	public MutableContent apply(MutableContent mc) {
+	    String content = mc.getContent();
     	Matcher matcher = MATCH_PATTERN.matcher(content);
     	StringBuffer sb = new StringBuffer();
     	
@@ -23,6 +25,7 @@ public class NoFollowLinkTransformer implements TextTransformer {
     	
     	matcher.appendTail(sb);
 		
-		return sb.toString();
+		mc.setContent(sb.toString());
+		return mc;
     }
 }

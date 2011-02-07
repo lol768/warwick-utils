@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 /**
  * Really quite similar to AbstractSquareTagTransformer, but only looks for
  * single tags, and so naturally doesn't check for tag contents.
@@ -22,22 +24,22 @@ public abstract class AbstractSingleSquareTagTransformer implements TextTransfor
         tagName = theTagName;
     }
  
-    protected abstract TextPatternTransformer.Callback getCallback();
+    protected abstract TextPatternTransformer.Callback getTagCallback();
     
     protected abstract String[] getAllowedParameters();
     
-    public final String transform(final String text) {
-        String html = text;
+    public final MutableContent apply(MutableContent mc) {
+        String html = mc.getContent();
         //Quick escape
         if (doQuickCheck && html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) == -1) {
-            return html;
+            return mc;
         }
         try {
-            html = new TagTransformer().transform(html, getCallback());
+            mc = new TagTransformer().apply(mc);
         } catch (Exception e) {
             LOGGER.error("Caught exception trying to run square bracket", e);
         }
-        return html;
+        return mc;
     }
     
     public final Pattern getTagPattern() {
@@ -48,9 +50,14 @@ public abstract class AbstractSingleSquareTagTransformer implements TextTransfor
      * The class which goes through the input, matching patterns
      * and using the callback to return the transformed text.
      */
-    class TagTransformer extends TextPatternTransformer {
+    private class TagTransformer extends TextPatternTransformer {
+        @Override
         protected Pattern getPattern() {
             return getTagPattern();
+        }
+        @Override
+        protected Callback getCallback() {
+            return getTagCallback();
         }
     }
     

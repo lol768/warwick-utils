@@ -1,14 +1,17 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 
 public class RemoveNotextileTagsTransformer implements TextTransformer {
 
 	static final String NOTEXTILE_TAG_PATTERN = "<\\/?notextile>";
 
-	public String transform(final String text) {
-		String html = text;
+	public MutableContent apply(MutableContent mc) {
+		String html = mc.getContent();
 
-		return html.replaceAll(NOTEXTILE_TAG_PATTERN, "");
+		mc.setContent(html.replaceAll(NOTEXTILE_TAG_PATTERN, ""));
+		return mc;
 	}
 
 }

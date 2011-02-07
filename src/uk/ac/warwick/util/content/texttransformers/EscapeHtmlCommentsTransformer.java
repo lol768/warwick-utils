@@ -3,45 +3,46 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public final class EscapeHtmlCommentsTransformer implements TextTransformer {
 
-	static final Pattern HTML_COMMENT = Pattern
-			.compile(
-					"<\\!(\\-)+.*(\\-)+>",
-					Pattern.DOTALL);
+    static final Pattern HTML_COMMENT = Pattern.compile("<\\!(\\-)+.*(\\-)+>", Pattern.DOTALL);
 
-	public String transform(final String text) {
-		String html = text;
+    public MutableContent apply(MutableContent mc) {
+		String html = mc.getContent();
 
 		// Quick escape
 		if (!(html.indexOf("<!") > -1)) {
-			return html;
+			return mc;
 		}
 
-		html = new HtmlCommentEscapingTransformer().transform(html,
-				new TextPatternTransformer.Callback() {
-					public String transform(final String input) {
-						Matcher matcher = HTML_COMMENT
-								.matcher(input);
-						if (!matcher.matches()) {
-							throw new IllegalStateException(
-									"Failed to match any HTML comments, but shouldn't be here if it didn't");
-						}
+		mc = new HtmlCommentEscapingTransformer().apply(mc);
 
-						String inner = matcher.group(0);
-
-						return "<notextile>" + inner + "</notextile>";
-					}
-
-				});
-
-		return html;
+		return mc;
 	}
 
-	class HtmlCommentEscapingTransformer extends TextPatternTransformer {
-		protected Pattern getPattern() {
-			return HTML_COMMENT;
-		}
-	}
+    private static class HtmlCommentEscapingTransformer extends TextPatternTransformer {
+        @Override
+        protected Pattern getPattern() {
+            return HTML_COMMENT;
+        }
+
+        @Override
+        protected Callback getCallback() {
+            return new TextPatternTransformer.Callback() {
+                public String transform(final String input, final MutableContent mc) {
+                    Matcher matcher = HTML_COMMENT.matcher(input);
+                    if (!matcher.matches()) {
+                        throw new IllegalStateException("Failed to match any HTML comments, but shouldn't be here if it didn't");
+                    }
+
+                    String inner = matcher.group(0);
+
+                    return "<notextile>" + inner + "</notextile>";
+                }
+            };
+        }
+    }
 
 }

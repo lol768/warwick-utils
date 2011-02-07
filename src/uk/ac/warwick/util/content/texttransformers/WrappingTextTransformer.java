@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 
 /**
  * Abstract implementation of TextTransformer which takes does some
@@ -16,15 +18,14 @@ public abstract class WrappingTextTransformer implements TextTransformer {
         transformer = delegate;
     }
     
-    public abstract String preTransform(final String text);
-    public abstract String postTransform(final String text);
+    public abstract MutableContent preTransform(final MutableContent text);
+    public abstract MutableContent postTransform(final MutableContent text);
     
-    public final String transform(final String inputText) {
-        String text = inputText;
-        text = preTransform(text);
-        text = transformer.transform(text);
-        text = postTransform(text);
-        return text;
+    public final MutableContent apply(MutableContent mc) {
+        mc = preTransform(mc);
+        mc = transformer.apply(mc);
+        mc = postTransform(mc);
+        return mc;
     }
 
 }

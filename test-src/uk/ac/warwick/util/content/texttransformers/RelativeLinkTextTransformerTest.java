@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public class RelativeLinkTextTransformerTest {
 
     private RelativeLinkTextTransformer transformer;
@@ -22,36 +24,36 @@ public class RelativeLinkTextTransformerTest {
     @Test
     public void relativeLinks() {
         assertEquals("Go to <a href=\""+base+"child\">The Next Page</a>.",
-                transformer.transform("Go to <a href=\"child\">The Next Page</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"child\">The Next Page</a>.")).getContent()
                 );
       
         assertEquals("Go to <a href=\"http://www2.warwick.ac.uk/services/its/\">The Next Page</a>.",
-                transformer.transform("Go to <a href=\"../\">The Next Page</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"../\">The Next Page</a>.")).getContent()
                 );
     }
     
     @Test
     public void linksWithQueryStringOnly() {
         assertEquals("Go to <a href=\""+base+"?month=03\">Next month</a>.",
-                transformer.transform("Go to <a href=\"?month=03\">Next month</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"?month=03\">Next month</a>.")).getContent()
                 );
     }
     
     @Test
     public void absoluteLinks() {
         assertEquals("Go to <a href=\"http://www2.warwick.ac.uk/happiness\">The Next Page</a>.",
-                transformer.transform("Go to <a href=\"http://www2.warwick.ac.uk/happiness\">The Next Page</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"http://www2.warwick.ac.uk/happiness\">The Next Page</a>.")).getContent()
                 );
     }
     
     @Test
     public void slashFirstLinks() {
         assertEquals("Go to <a href=\"http://www2.warwick.ac.uk/craig/david\">The Next Page</a>.",
-                transformer.transform("Go to <a href=\"/craig/david\">The Next Page</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"/craig/david\">The Next Page</a>.")).getContent()
                 );
         
         assertEquals("Go to <a href=\"http://www2.warwick.ac.uk/1/craig/david\">The Next Page</a>.",
-                transformer.transform("Go to <a href=\"/1/craig/david\">The Next Page</a>.")
+                transformer.apply(new MutableContent(null, "Go to <a href=\"/1/craig/david\">The Next Page</a>.")).getContent()
                 );
     }
     
@@ -61,10 +63,11 @@ public class RelativeLinkTextTransformerTest {
                 "<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>\n" +
                 "<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>\n" +
                 "<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>",
-                transformer.transform("<a href=\"hello\">a</a>\n" +
+                transformer.apply(new MutableContent(null, 
                         "<a href=\"hello\">a</a>\n" +
                         "<a href=\"hello\">a</a>\n" +
-                        "<a href=\"hello\">a</a>")
+                        "<a href=\"hello\">a</a>\n" +
+                        "<a href=\"hello\">a</a>")).getContent()
                 );
     }
     
@@ -138,8 +141,8 @@ public class RelativeLinkTextTransformerTest {
 		input2 += "});\n";
 		input2 += "</script>";
 		
-		assertEquals(input1, transformer.transform(input1));
-		assertEquals(input2, transformer.transform(input2));
+		assertEquals(input1, transformer.apply(new MutableContent(null, input1)).getContent());
+		assertEquals(input2, transformer.apply(new MutableContent(null, input2)).getContent());
     }
     
     @Test
@@ -152,9 +155,9 @@ public class RelativeLinkTextTransformerTest {
     	String expected2 = "<script type=\"text/javascript\" src=\"http://www2.warwick.ac.uk/services/its/elab/blah/blah\"></script>"; // rewritten
     	String expected3 = "<script type=\"text/javascript\" src=\"http://www2.warwick.ac.uk/services/its/elab/blah/blah\">\nvar blah = '<a href=\"blah/blah\">';\n</script>"; // rewritten but not in content
     	
-    	assertEquals(expected1, transformer.transform(input1));
-    	assertEquals(expected2, transformer.transform(input2));
-    	assertEquals(expected3, transformer.transform(input3));
+    	assertEquals(expected1, transformer.apply(new MutableContent(null, input1)).getContent());
+    	assertEquals(expected2, transformer.apply(new MutableContent(null, input2)).getContent());
+    	assertEquals(expected3, transformer.apply(new MutableContent(null, input3)).getContent());
     }
 
     /** SBTWO-3804 */
@@ -164,10 +167,11 @@ public class RelativeLinkTextTransformerTest {
                 "<pre><a href=\"hello\">a</a>\n" +
                 "<a href=\"hello\">a</a>\n</pre>" +
                 "<a href=\"http://www2.warwick.ac.uk/services/its/elab/hello\">a</a>",
-                transformer.transform("<a href=\"hello\">a</a>\n" +
+                transformer.apply(new MutableContent(null, 
+                        "<a href=\"hello\">a</a>\n" +
                         "<pre><a href=\"hello\">a</a>\n" +
                         "<a href=\"hello\">a</a>\n</pre>" +
-                        "<a href=\"hello\">a</a>")
+                        "<a href=\"hello\">a</a>")).getContent()
                 );
     }
     
@@ -179,7 +183,7 @@ public class RelativeLinkTextTransformerTest {
         String remoteUrl = "http://www2.warwick.ac.uk/services/its/servicessupport/training/course_cat/webpublishing_courses/";
 
         RelativeLinkTextTransformer linkTransformer = new RelativeLinkTextTransformer(remoteUrl);
-        assertEquals(expected, linkTransformer.transform(input));
+        assertEquals(expected, linkTransformer.apply(new MutableContent(null, input)).getContent());
     }
     
     @Test
@@ -190,6 +194,6 @@ public class RelativeLinkTextTransformerTest {
         String remoteUrl = "http://search.warwick.ac.uk/exampapers/plain?q=ec104";
 
         RelativeLinkTextTransformer linkTransformer = new RelativeLinkTextTransformer(remoteUrl);
-        assertEquals(expected, linkTransformer.transform(input));
+        assertEquals(expected, linkTransformer.apply(new MutableContent(null, input)).getContent());
     }
 }

@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.content.MutableContent;
 
 public class CssUrlRewriteTransformerTest {
 	@Test public void rewriting() throws Exception {
@@ -16,7 +17,7 @@ public class CssUrlRewriteTransformerTest {
 		InputStream resource = getClass().getClassLoader().getResourceAsStream("style.css");
 		assertNotNull("file not foond", resource);
 		String content = FileCopyUtils.copyToString(new InputStreamReader(resource , Charset.defaultCharset()));
-		String result = transformer.transform(content);
+		String result = transformer.apply(new MutableContent(null, content)).getContent();
 		System.out.println(result);
 		
 		assertTrue("unquoted", result.contains("url(http://www2.warwick.ac.uk/services/fab.gif)"));

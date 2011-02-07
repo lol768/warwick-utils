@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers;
 
 import junit.framework.TestCase;
+import uk.ac.warwick.util.content.MutableContent;
 
 public final class NewWindowLinkTextTransformerTest extends TestCase {
 
@@ -12,13 +13,13 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
      */
     public void testTagTransformerDoNothing() {
         String input = "Test abc <a href='abc' target=\"_blank\">Link</a> xyz";
-        TagTransformer transformer = new TagTransformer("a");
-        TextPatternTransformer.Callback callback = new TextPatternTransformer.Callback() {
-            public String transform(final String i) {
+        TagTransformer transformer = new TagTransformer("a", new TextPatternTransformer.Callback() {
+            public String transform(final String i, final MutableContent mc) {
                 return i;
             }
-        };
-        String result = transformer.transform(input, callback);
+        });
+        
+        String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(input, result);
     }
@@ -26,12 +27,12 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
     public void testTagTransformerReplaceText() {
         String input = "Test abc <a href='abc' target=\"_blank\">Link</a> xyz";
         String expected = "Test abc REPLACE xyz";
-        TagTransformer transformer = new TagTransformer("a");
-        String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String i) {
+        TagTransformer transformer = new TagTransformer("a", new TextPatternTransformer.Callback() {
+            public String transform(final String i, final MutableContent mc) {
                 return "REPLACE";
             }        
         });
+        String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);
     }
@@ -39,12 +40,12 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
     public void testTagTransformerSurroundText() {
         String input = "Test abc <a href='abc' target=\"_blank\">Link</a> xyz";
         String expected = "Test abc START<a href='abc' target=\"_blank\">Link</a>END xyz";
-        TagTransformer transformer = new TagTransformer("a");
-        String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String i) {
+        TagTransformer transformer = new TagTransformer("a", new TextPatternTransformer.Callback() {
+            public String transform(final String i, final MutableContent mc) {
                 return "START" + i + "END";
             }        
         });
+        String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);
     }
@@ -52,12 +53,12 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
     public void testTagTransformerUppercase() {
         String input = "Test abc <a href='abc' target=\"_blank\">Link</a> xyz";
         String expected = "Test abc <A HREF='ABC' TARGET=\"_BLANK\">LINK</A> xyz";
-        TagTransformer transformer = new TagTransformer("a");
-        String result = transformer.transform(input, new TextPatternTransformer.Callback() {
-            public String transform(final String i) {
+        TagTransformer transformer = new TagTransformer("a", new TextPatternTransformer.Callback() {
+            public String transform(final String i, final MutableContent mc) {
                 return i.toUpperCase();
             }        
         });
+        String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);
     }
@@ -142,7 +143,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
     
     private void verify(final String input, final String expected) {
         NewWindowLinkTextTransformer parser = new NewWindowLinkTextTransformer();
-        assertEquals(expected, parser.transform(input));
+        assertEquals(expected, parser.apply(new MutableContent(null, input)).getContent());
     }
 
 }

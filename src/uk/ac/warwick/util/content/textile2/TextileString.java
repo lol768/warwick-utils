@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.HtmlCleaner;
 import uk.ac.warwick.util.content.textile2.lite.TextileLite;
 
@@ -60,7 +61,7 @@ public class TextileString {
 		String converted;
 		if (isLite()) {
 			TextileLite textile = new TextileLite();
-			converted = textile.process(textileText);
+			converted = textile.apply(new MutableContent(null, textileText)).getContent();
 		} else {
 			Textile2 textile;
 			
@@ -76,7 +77,7 @@ public class TextileString {
 			}
 						
 			try {
-				converted = textile.process(textileText);
+				converted = textile.apply(new MutableContent(null, textileText)).getContent();
 			} catch (IllegalStateException e) {
 				LOGGER.error("There was an error performing Textile2 conversion:" + e.getMessage(),e);
 				return null; // this would mean that the content is not
