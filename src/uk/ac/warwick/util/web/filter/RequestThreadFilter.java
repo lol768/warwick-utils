@@ -1,6 +1,8 @@
 package uk.ac.warwick.util.web.filter;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,14 +31,16 @@ public class RequestThreadFilter extends AbstractHttpFilter {
     // Use an object pool to reduce the number of new objects we create on a request
     private ObjectPool dataPool = new StackObjectPool(new RequestDataFactory(), 100, 50);
     
-    
-    
     public void destroy() {}
     public void init(FilterConfig config) throws ServletException {
     }
     
     public RequestData get(Thread t) {
         return map.get(t);
+    }
+    
+    public Map<Thread, RequestData> getAll() {
+        return Collections.unmodifiableMap(map);
     }
     
     public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -48,7 +52,7 @@ public class RequestThreadFilter extends AbstractHttpFilter {
                 ip = req.getRemoteHost();
             }
             data = borrowRequestData();
-            data.setData(req.getMethod(), ip, req.getRequestURL(), req.getQueryString());
+            data.init(req.getMethod(), ip, req.getRequestURL(), req.getQueryString());
             
             if (map.put(thread, data) != null) {
                 // if this happens, we're either not removing from map after request, or Thread equality
@@ -83,11 +87,13 @@ public class RequestThreadFilter extends AbstractHttpFilter {
         private String ip;
         private String query;
         private String method;
-        public void setData(String method, String ip, StringBuffer url, String queryString) {
+        private long createdTime;
+        public void init(String method, String ip, StringBuffer url, String queryString) {
             this.method = method;
             this.requestURL = url;
             this.ip = ip;
             this.query = queryString;
+            this.createdTime = System.currentTimeMillis();
         }
         /**
          * requestURL as in request.getRequestURL, ie the whole
@@ -104,6 +110,9 @@ public class RequestThreadFilter extends AbstractHttpFilter {
         }
         public String getMethod() {
             return method;
+        }
+        public long getCreatedTime() {
+            return createdTime;
         }
     }
     
