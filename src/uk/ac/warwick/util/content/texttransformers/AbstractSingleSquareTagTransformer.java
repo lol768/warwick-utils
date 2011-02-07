@@ -42,6 +42,19 @@ public abstract class AbstractSingleSquareTagTransformer implements TextTransfor
         return mc;
     }
     
+    /**
+     * Deliberately not final, allow to be overridden
+     */
+    public boolean applies(MutableContent mc) {
+        String html = mc.getContent();
+        
+        if (html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) == -1) {
+            return false;
+        }
+        
+        return getTagPattern().matcher(html).find();
+    }
+    
     public final Pattern getTagPattern() {
         return tagPattern;
     }

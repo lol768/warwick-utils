@@ -142,6 +142,26 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         return mc;
     }
     
+    /**
+     * Deliberately not final, allow to be overridden
+     */
+    public boolean applies(MutableContent mc) {
+        String html = mc.getContent();
+        boolean found = false;
+        
+        for (String tagName : tagNames) {
+            if (html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) != -1) {
+                found = true;
+            }
+        }
+        
+        if (!found) {
+            return false;
+        }
+        
+        return getTagPattern().matcher(html).find();
+    }
+    
     static String extractHeads(String html, List<String> heads) {
         if (html.indexOf("<head") == -1) {
             return html;
