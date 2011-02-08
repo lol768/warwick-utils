@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.core.StringUtils;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
@@ -87,22 +89,12 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     protected abstract String[] getAllowedParameters();
     
     public final MutableContent apply(final MutableContent mc) {
-        String html = mc.getContent();
-        
         //Quick escape
-        if (doQuickCheck) {
-        	boolean found = false;
-        	
-        	for (String tagName : tagNames) {
-        		if (html.toLowerCase().indexOf(("[" + tagName).toLowerCase()) != -1) {
-        			found = true;
-        		}
-        	}
-        	
-        	if (!found) {
-        		return mc;
-        	}
+        if (doQuickCheck && !applies(mc)) {
+        	return mc;
         }
+        
+        String html = mc.getContent();
         
         //we need to split HTML into do and don't do...
 		Pattern noTextile = Pattern.compile("<notextile>(.*?)</notextile>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -140,6 +132,36 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         }
         
         return mc;
+    }
+    
+    public final <T> List<T> collect(final MutableContent mc, final Function<String, T> function) {
+        if (!applies(mc)) {
+            return Collections.emptyList();
+        }
+        
+        List<T> transformed = Lists.newArrayList();
+        
+        String html = mc.getContent();
+        
+        Pattern noTextile = Pattern.compile("<notextile>(.*?)</notextile>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        Matcher matcher = noTextile.matcher(html);
+        
+        int lastMatch = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+        
+        while (matcher.find()) {
+            startIndex = matcher.start();
+            endIndex = matcher.end();
+            
+            transformed.addAll(TextPatternTransformer.collect(html.substring(lastMatch, startIndex), getTagPattern(), function));
+
+            lastMatch = endIndex;
+        }
+        
+        transformed.addAll(TextPatternTransformer.collect(html.substring(endIndex), getTagPattern(), function));
+        
+        return transformed;
     }
     
     /**

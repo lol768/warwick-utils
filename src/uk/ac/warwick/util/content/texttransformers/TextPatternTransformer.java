@@ -1,9 +1,13 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.ac.warwick.util.content.MutableContent;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 /**
  * A class which transforms text using three things:
@@ -44,6 +48,24 @@ public abstract class TextPatternTransformer implements TextTransformer {
         
         sb.append(theContent.substring(endIndex));
         return sb.toString();
+    }
+    
+    public static final <T> List<T> collect(final String content, final Pattern pattern, final Function<String, T> fn) {
+        Matcher matcher = pattern.matcher(content);
+        
+        List<T> transformed = Lists.newArrayList();
+        
+        int startIndex = 0;
+        int endIndex = 0;    
+        
+        while (matcher.find()) {
+            startIndex = matcher.start();
+            endIndex = matcher.end();
+        
+            transformed.add(fn.apply(content.substring(startIndex, endIndex)));
+        }
+        
+        return transformed;
     }
     
     /**
