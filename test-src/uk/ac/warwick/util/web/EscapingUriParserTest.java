@@ -29,5 +29,10 @@ public final class EscapingUriParserTest {
     public void emptyFragment() throws Exception {
         assertEquals("http://www.warwick.ac.uk/?q=yes#", new EscapingUriParser().parse("http://www.warwick.ac.uk/?q=yes#").toString());
     }
+    
+    @Test
+    public void sbtwo4221() throws Exception {
+        assertEquals("http://www2.warwick.ac.uk/fac/sci/eng/euo/modules/year3/es3b6/resources/paymentreceived?orderKey=UNIWARWICK%5EWARWICKWEB%5E094db28a2dc72dab012e01479ab07f58&paymentStatus=AUTHORISED&paymentAmount=10000&paymentCurrency=GBP&mac=29feed0776b3f295cc3172fdd857e949&jlbz=yUrpjPwfrpC2Mo1bATVuYdDNaFYgOPudeSpjsFSdXXc", new EscapingUriParser().parse("http://www2.warwick.ac.uk/fac/sci/eng/euo/modules/year3/es3b6/resources/paymentreceived?orderKey=UNIWARWICK^WARWICKWEB^094db28a2dc72dab012e01479ab07f58&paymentStatus=AUTHORISED&paymentAmount=10000&paymentCurrency=GBP&mac=29feed0776b3f295cc3172fdd857e949&jlbz=yUrpjPwfrpC2Mo1bATVuYdDNaFYgOPudeSpjsFSdXXc").toString());
+    }
 
 }
