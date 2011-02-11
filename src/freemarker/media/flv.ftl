@@ -243,7 +243,7 @@ Event.onDOMReady(function(){
 			}.bind(this);
 			document.observe('keydown', escObserver);
 	
-			overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.6;opacity:.6;filter:alpha(opacity=60);');
+			overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.9;opacity:.9;filter:alpha(opacity=90);');
 	
 			evt.stop();
 		});
