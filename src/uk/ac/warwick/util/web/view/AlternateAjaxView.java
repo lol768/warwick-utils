@@ -43,7 +43,7 @@ public final class AlternateAjaxView implements View {
     private View ajaxView;
     private String contentType = "text/html";
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String requestedWith = request.getHeader(EXPECTED_HEADER_NAME);
         boolean override = ServletRequestUtils.getBooleanParameter(request, PARAMETER, false);
