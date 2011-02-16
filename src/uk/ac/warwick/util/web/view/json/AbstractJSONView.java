@@ -35,7 +35,7 @@ abstract class AbstractJSONView<T> implements View {
     
     private boolean wrapErrors = true;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSON<?> results = getValue(model);
         
