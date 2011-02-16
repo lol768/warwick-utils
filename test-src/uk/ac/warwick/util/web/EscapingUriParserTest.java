@@ -34,5 +34,10 @@ public final class EscapingUriParserTest {
     public void sbtwo4221() throws Exception {
         assertEquals("http://www2.warwick.ac.uk/fac/sci/eng/euo/modules/year3/es3b6/resources/paymentreceived?orderKey=UNIWARWICK%5EWARWICKWEB%5E094db28a2dc72dab012e01479ab07f58&paymentStatus=AUTHORISED&paymentAmount=10000&paymentCurrency=GBP&mac=29feed0776b3f295cc3172fdd857e949&jlbz=yUrpjPwfrpC2Mo1bATVuYdDNaFYgOPudeSpjsFSdXXc", new EscapingUriParser().parse("http://www2.warwick.ac.uk/fac/sci/eng/euo/modules/year3/es3b6/resources/paymentreceived?orderKey=UNIWARWICK^WARWICKWEB^094db28a2dc72dab012e01479ab07f58&paymentStatus=AUTHORISED&paymentAmount=10000&paymentCurrency=GBP&mac=29feed0776b3f295cc3172fdd857e949&jlbz=yUrpjPwfrpC2Mo1bATVuYdDNaFYgOPudeSpjsFSdXXc").toString());
     }
+    
+    @Test
+    public void sbtwo4231() throws Exception {
+        assertEquals("http://www.google.com/url?sa=t&source=web&cd=17&ved=0CDQQFjAGOAo&url=http%3A%2F%2Fwww2.warwick.ac.uk%2Falumni%2Fknowledge%2Fblogs%2F&rct=j&q=us%20army%20contructing%20office%20email%20addres%20in%20pon%20%23%20in%20helmand%20afghanistan&ei=3VFSTbWZEsP38AbE8MHTCQ&usg=AFQjCNEXLLP1vWYq-2pT67G8T6U7RHynBw", new EscapingUriParser().parse("http://www.google.com/url?sa=t&source=web&cd=17&ved=0CDQQFjAGOAo&url=http%3A%2F%2Fwww2.warwick.ac.uk%2Falumni%2Fknowledge%2Fblogs%2F&rct=j&q=us%20army%20contructing%20office%20email%20addres%20in%20pon%20%23%20in%20helmand%20afghanistan&ei=3VFSTbWZEsP38AbE8MHTCQ&usg=AFQjCNEXLLP1vWYq-2pT67G8T6U7RHynBw").toString());
+    }
 
 }
