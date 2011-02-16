@@ -33,6 +33,7 @@ public abstract class AbstractXMLAggregationView<T extends WireFeed> implements 
             // Write content type and also length (determined via byte array).
             response.setContentType(getContentType());
             response.setContentLength(baos.size());
+            response.setCharacterEncoding(getCharacterEncoding());
 
             // Flush byte array to servlet output stream.
             ServletOutputStream out = response.getOutputStream();
