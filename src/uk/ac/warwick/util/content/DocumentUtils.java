@@ -184,6 +184,10 @@ public final class DocumentUtils {
             return getNextNonTextSibling(node.getNextSibling());
         }
     }
+    
+    public static synchronized void setDOMImplementation(DOMImplementation implementation) {
+        documentFactory = implementation;
+    }
 
     public static synchronized DOMImplementation getDOMImplementation() {
         if (documentFactory != null) {
