@@ -9,6 +9,7 @@ import uk.ac.warwick.util.core.StringUtils;
 
 public class EscapingUriParser extends DefaultUriParser {
     
+    private static final long serialVersionUID = 9212871455426260200L;
     private static final BitSet ALLOWED_QUERYSTRING_CHARACTERS;
     private static final BitSet ALLOWED_PATH_CHARACTERS;
     

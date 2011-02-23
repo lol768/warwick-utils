@@ -1,9 +1,11 @@
 package uk.ac.warwick.util.web;
 
+import java.io.Serializable;
+
 /**
  * An injectable interface for parsing Uris out of String text.
  */
-public interface UriParser {
+public interface UriParser extends Serializable {
     /**
      * Produces a new Uri from a text representation.
      * 

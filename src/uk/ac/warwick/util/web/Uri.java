@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.web;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,7 +19,9 @@ import com.google.common.collect.Maps;
  * href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>. Assumes that all url
  * components are UTF-8 encoded.
  */
-public final class Uri {
+public final class Uri implements Serializable {
+    private static final long serialVersionUID = -6701439630981472587L;
+
     private final String text;
 
     private final String scheme;

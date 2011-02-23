@@ -8,6 +8,8 @@ import java.net.URISyntaxException;
  */
 public class DefaultUriParser implements UriParser {
 
+    private static final long serialVersionUID = -3370187991220178661L;
+
     /**
      * Produces a new Uri from a text representation.
      * 
