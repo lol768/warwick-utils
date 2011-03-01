@@ -565,6 +565,8 @@ public class HtmlCleanerTest extends MockObjectTestCase {
         "<p>Hey how's it going. I like your socks. Yeah, nice socks.</p>\n\n" +
         "<p> Mysterious indenting!</p>";
         verify(expected, input);
+        
+        verify("<p>Toast. Toast. Toast.</p>", "<p>Toast.&nbsp; Toast. &nbsp;Toast.</p>");
     }
     
     private void verify(String input) {

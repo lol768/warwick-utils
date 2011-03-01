@@ -60,9 +60,9 @@ public final class HtmlCleaner implements Cleaner {
         
         //SBTWO-4230 compact spaces and nbsp
         this.regexReplacements.add(Triple.of(Pattern.compile("&nbsp;(&nbsp;)+"), "&nbsp;", "&nbsp;"));
-        this.regexReplacements.add(Triple.of(Pattern.compile(">(&nbsp;| )*&nbsp;(&nbsp;| )*<"), "&nbsp;", ">NONBREAKINGSPACE<"));
+        this.regexReplacements.add(Triple.of(Pattern.compile(">(&nbsp;| )*&nbsp;(&nbsp;| )*<"), "&nbsp;", ">_NONBREAKINGSPACE_<"));
         this.regexReplacements.add(Triple.of(Pattern.compile("&nbsp;"), "&nbsp;", " "));
-        this.regexReplacements.add(Triple.of(Pattern.compile("NONBREAKINGSPACE"), "nonbreakingspace", "&nbsp;"));
+        this.regexReplacements.add(Triple.of(Pattern.compile("_NONBREAKINGSPACE_"), "_nonbreakingspace_", "&nbsp;"));
         
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if [a-z]+ mso \\d*\\]>.*?<!\\-*\\[endif\\].*?-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[endif]", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if supportFields\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if supportfields]", ""));// MS Word lists
@@ -90,7 +90,7 @@ public final class HtmlCleaner implements Cleaner {
         		"(?:<\\/?(?:span|font)[^>]*>)*" +
         		"(?:&#183;|\u00b7)" +
         		"(?:<\\/?(?:span|font)[^>]*>)*" +
-        		"(?:&nbsp;)+\\s*" +
+        		"(?:&nbsp;)*\\s*" +
         		"(?:<\\/?(?:span|font)[^>]*>)*" +
         		"(?:<!--\\[endif\\]-->)?" +
         		"(.*?)" +
