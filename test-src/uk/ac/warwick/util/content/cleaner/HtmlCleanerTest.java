@@ -47,7 +47,7 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     public void testSpanner() throws Exception {
     	String input = "<p class=\"MsoNormal\">A <span style=\"\">&nbsp; </span> B</p>";
     	
-    	verify("<p>A &nbsp;  B</p>", input);
+    	verify("<p>A &nbsp; B</p>", input);
     }
 
     public void testStrongTagsNotNested() {
@@ -546,6 +546,24 @@ public class HtmlCleanerTest extends MockObjectTestCase {
     public void testSBTWO4051() {
         String input = "<img src=\"http://java-monkey.warwick.ac.uk/services/its/elab/about/people/nickhowes/pagetypes/news/809-3.jpg\" _mce_src=\"809-3.jpg\" mce_src=\"809-3.jpg\" alt=\"Moomins\">";
         String expected = "<img src=\"809-3.jpg\" alt=\"Moomins\" border=\"0\" />";
+        verify(expected, input);
+    }
+    
+    /**
+     * Compact non-breaking spaces and turn them into regular spaces where possible.
+     */
+    public void testSBTWO4230() {
+        String input = "<table><tr><td>&nbsp;</td><td>  &nbsp; </td></tr></table>\n" +
+        		"<p>Hey how's&nbsp;it going. &nbsp;I&nbsp;like    your    socks.&nbsp; Yeah, nice socks.</p>\n" +
+        		"<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mysterious indenting!</p>\n";
+        String expected = "<table>\n" +
+        "  <tr>\n" +
+        "    <td>&nbsp;</td>\n" +
+        "    <td>&nbsp;</td>\n" +
+        "  </tr>\n" +
+        "</table>\n\n" +
+        "<p>Hey how's it going. I like your socks. Yeah, nice socks.</p>\n\n" +
+        "<p> Mysterious indenting!</p>";
         verify(expected, input);
     }
     
