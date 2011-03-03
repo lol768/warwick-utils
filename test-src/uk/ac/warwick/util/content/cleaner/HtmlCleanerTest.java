@@ -600,12 +600,13 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         String expected = "<img src=\"809-3.jpg\" alt=\"Moomins\" border=\"0\" />";
         verify(expected, input);
     }
+<<<<<<< HtmlCleanerTest.java
+=======
     
     /**
      * Compact non-breaking spaces and turn them into regular spaces where possible.
      */
-    @Test
-    public void sbtwo4230() {
+    public void testSBTWO4230() {
         String input = "<table><tr><td>&nbsp;</td><td>  &nbsp; </td></tr></table>\n" +
         		"<p>Hey how's&nbsp;it going. &nbsp;I&nbsp;like    your    socks.&nbsp; Yeah, nice socks.</p>\n" +
         		"<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mysterious indenting!</p>\n";
@@ -625,6 +626,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     private void verify(String input) {
     	verify(input,input);
     }
+>>>>>>> 1.35
 
     private void verify(String expected, String input) {
         String output = cleaner.clean(input).trim();
