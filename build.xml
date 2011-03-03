@@ -37,21 +37,10 @@
 		<delete file="cobertura.ser" />
 	</target>
 
-	<available property="transformer.factory" classname="com.icl.saxon.TransformerFactoryImpl" value="com.icl.saxon.TransformerFactoryImpl" />
-	<available property="transformer.factory" classname="net.sf.saxon.TransformerFactoryImpl" value="net.sf.saxon.TransformerFactoryImpl" />
-	<available property="transformer.factory" classname="org.apache.xalan.processor.TransformerFactoryImpl" value="org.apache.xalan.processor.TransformerFactoryImpl" />
-	<available property="transformer.factory" classname="com.sun.org.apache.xalan.processor.TransformerFactoryImpl" value="com.sun.org.apache.xalan.processor.TransformerFactoryImpl" />
-
 	<target name="prepare-parser" depends="init">
-		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Models.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-models.xslt">
-			<factory name="${transformer.factory}" />
-		</xslt>
-		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema1.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-noentity.xslt">
-			<factory name="${transformer.factory}" />
-		</xslt>
-    <xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema2.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-entity.xslt">
-      <factory name="${transformer.factory}" />
-    </xslt>
+		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Models.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-models.xslt" classpathref="external.libs.path" />
+		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema1.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-noentity.xslt" classpathref="external.libs.path" />
+		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema2.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-entity.xslt" classpathref="external.libs.path" />
 	</target>
 
 	<!-- patch the parser class files -->
@@ -59,23 +48,23 @@
 		<copy todir="${parsed.src.dir}">
 			<fileset dir="${src.dir}" />
 		</copy>
-		
+
 		<antcall target="patch-file">
 			<param name="file-pref" value="HTML5Models" />
-      <param name="output-file" value="HTML5Models" />
+			<param name="output-file" value="HTML5Models" />
 			<param name="token" value="MODEL_DEFINITIONS" />
 		</antcall>
 		<antcall target="patch-file">
 			<param name="file-pref" value="HTML5Schema1" />
-      <param name="output-file" value="HTML5Schema" />
+			<param name="output-file" value="HTML5Schema" />
 			<param name="token" value="SCHEMA_CALLS1" />
 		</antcall>
-    <antcall target="patch-file">
-      <param name="file-pref" value="HTML5Schema2" />
-      <param name="output-file" value="HTML5Schema" />
-      <param name="token" value="SCHEMA_CALLS2" />
-    </antcall>
-		
+		<antcall target="patch-file">
+			<param name="file-pref" value="HTML5Schema2" />
+			<param name="output-file" value="HTML5Schema" />
+			<param name="token" value="SCHEMA_CALLS2" />
+		</antcall>
+
 		<replace file="${parsed.src.dir}/uk/ac/warwick/util/content/cleaner/html5/HTML5Schema.java" token="IS_POPULATED = false" value="IS_POPULATED = true" />
 	</target>
 
