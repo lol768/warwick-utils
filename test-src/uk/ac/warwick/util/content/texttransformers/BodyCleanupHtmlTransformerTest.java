@@ -1,19 +1,24 @@
 package uk.ac.warwick.util.content.texttransformers;
 
-import org.jmock.MockObjectTestCase;
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import uk.ac.warwick.util.content.MutableContent;
-import uk.ac.warwick.util.content.cleaner.HtmlCleaner;
+import uk.ac.warwick.util.content.cleaner.AbstractHtmlCleanerTest;
 
-public final class BodyCleanupHtmlTransformerTest extends MockObjectTestCase {
+public final class BodyCleanupHtmlTransformerTest extends AbstractHtmlCleanerTest {
     
     private BodyCleanupHtmlTransformer transformer;
     
+    @Before
     public void setUp() {
-        transformer = new BodyCleanupHtmlTransformer(new HtmlCleaner());
+        transformer = new BodyCleanupHtmlTransformer(cleaner);
     }
     
-    public void testTransformJustBody() {
+    @Test
+    public void transformJustBody() {
         String input = "<html><head>this is left alone <li></head>" +
                 "<body>" +
                 "<p>Test transform</p>" +
@@ -30,7 +35,8 @@ public final class BodyCleanupHtmlTransformerTest extends MockObjectTestCase {
         assertTrue(result.contains("</body>"));
     }
     
-    public void testTransformAll() {
+    @Test
+    public void transformAll() {
         String input = 
                 "<p>Test transform <ul><li></ul></p>" +
                 "<p>Remove <u>underlining</u>";

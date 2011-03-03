@@ -43,6 +43,8 @@ public class TextileString {
 	private EnumSet<TransformerFeature> features = null;
 	
 	private EnumSet<TransformationOptions> options = null;
+	
+	private HtmlCleaner cleaner = new HtmlCleaner();
 
 	public TextileString(final String theTextileText) {
 		this.textileText = theTextileText;
@@ -148,7 +150,6 @@ public class TextileString {
 	}
 
 	public final String correctHtml(final String origContent) {
-		HtmlCleaner cleaner = new HtmlCleaner();
 		cleaner.setAllowJavascriptHandlers(allowJavascriptHandlers);
 		
 		return cleaner.clean(origContent);
@@ -239,4 +240,8 @@ public class TextileString {
 	public void setOptions(EnumSet<TransformationOptions> options) {
 		this.options = options;
 	}
+
+    public HtmlCleaner getCleaner() {
+        return cleaner;
+    }
 }

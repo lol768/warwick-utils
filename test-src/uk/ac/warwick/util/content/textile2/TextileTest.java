@@ -9,6 +9,8 @@ import java.util.EnumSet;
 
 import junit.framework.TestCase;
 import uk.ac.warwick.util.content.MutableContent;
+import uk.ac.warwick.util.content.cleaner.GeneratedTestHTML5Schema;
+import uk.ac.warwick.util.content.cleaner.html5.HTML5Schema;
 import uk.ac.warwick.util.content.texttransformers.RemoveLeadingNbspTransformer;
 import uk.ac.warwick.util.core.HtmlUtils;
 
@@ -1422,6 +1424,14 @@ public class TextileTest extends TestCase {
 			boolean stripAllHtmlAfterConvert, boolean fixHtml,
 			String disallowTags, String onlyAllowTags, boolean addNoFollow) {
 		TextileString text = new TextileString(source);
+		
+		if (!HTML5Schema.IS_POPULATED) {
+            System.err.println("Using cached HTML5Schema - this should not be thrown in the build!!!");
+            
+            // FIXME We should really build a new one of these from the TSSL, rather than using pre-built ones from the build
+            text.getCleaner().setSchema(new GeneratedTestHTML5Schema());
+        }
+		
 		text.setDisallowTags(disallowTags);
 		text.setOnlyAllowTags(onlyAllowTags);
 		text.setStripAllHtmlAfterConvert(stripAllHtmlAfterConvert);

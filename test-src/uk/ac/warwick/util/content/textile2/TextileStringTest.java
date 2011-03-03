@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.warwick.util.content.cleaner.GeneratedTestHTML5Schema;
+import uk.ac.warwick.util.content.cleaner.html5.HTML5Schema;
+
 public final class TextileStringTest {
 	
 	@Before
@@ -33,6 +36,14 @@ public final class TextileStringTest {
 	
 	public String convertForums(String input) {
 		TextileString textileString = new TextileString(input);
+		
+		if (!HTML5Schema.IS_POPULATED) {
+            System.err.println("Using cached HTML5Schema - this should not be thrown in the build!!!");
+            
+            // FIXME We should really build a new one of these from the TSSL, rather than using pre-built ones from the build
+            textileString.getCleaner().setSchema(new GeneratedTestHTML5Schema());
+        }		
+		
 		textileString.setCorrectHtml(true);
 		// textileString.setOnlyAllowTags("ul,ol,li,p,strong,em,b,i,a,code,pre,script");
 		textileString.setDisallowTags("script,style,link,blink,object,applet,canvas");

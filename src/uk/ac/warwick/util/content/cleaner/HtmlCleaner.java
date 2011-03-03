@@ -8,11 +8,13 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.Parser;
+import org.ccil.cowan.tagsoup.Schema;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
+import uk.ac.warwick.util.content.cleaner.html5.HTML5Schema;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
 
@@ -39,6 +41,8 @@ public final class HtmlCleaner implements Cleaner {
     };
     
     private boolean allowJavascriptHandlers = true;
+    
+    private Schema schema = new HTML5Schema();
     
     public HtmlCleaner() {
     	this(null);
@@ -136,7 +140,7 @@ public final class HtmlCleaner implements Cleaner {
             parser.setProperty(Parser.lexicalHandlerProperty, handler);
             
             // HTML 5 Schema
-            parser.setProperty(Parser.schemaProperty, new HTML5Schema());
+            parser.setProperty(Parser.schemaProperty, schema);
             
             parser.parse(is);
         } catch (IOException e) {
@@ -328,5 +332,9 @@ public final class HtmlCleaner implements Cleaner {
 
     public void setFilterProvider(ObjectProvider<TagAndAttributeFilter> filterProvider) {
         this.filterProvider = filterProvider;
+    }
+
+    public void setSchema(Schema schema) {
+        this.schema = schema;
     }
 }
