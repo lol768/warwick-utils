@@ -2,14 +2,18 @@ package uk.ac.warwick.util.web.view.json;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 public final class CompositeJSONPRequestValidator implements JSONPRequestValidator {
     
     private final Iterable<JSONPRequestValidator> validators;
     
     public CompositeJSONPRequestValidator(JSONPRequestValidator... validators) {
-        this.validators = Lists.newArrayList(validators);
+        this(ImmutableList.copyOf(validators));
+    }
+    
+    public CompositeJSONPRequestValidator(Iterable<JSONPRequestValidator> validators) {
+        this.validators = validators;
     }
 
     public boolean isAllow(HttpServletRequest request) {

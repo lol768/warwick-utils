@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.View;
 
 import com.google.common.collect.Lists;
 
+@Configurable
 abstract class AbstractJSONView<T> implements View {
     
     private static final Logger LOGGER = Logger.getLogger(AbstractJSONView.class);
@@ -145,6 +147,10 @@ abstract class AbstractJSONView<T> implements View {
 
     public final void setJsonpRequestValidator(JSONPRequestValidator jsonpRequestValidator) {
         this.jsonpRequestValidator = jsonpRequestValidator;
+    }
+    
+    public final JSONPRequestValidator getJsonpRequestValidator() {
+        return jsonpRequestValidator;
     }
 
     public final void setWrapErrors(boolean wrapErrors) {
