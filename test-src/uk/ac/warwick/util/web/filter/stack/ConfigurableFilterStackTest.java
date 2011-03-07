@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.web.filter.stack;
 
+import static java.util.Arrays.*;
 import static org.junit.Assert.*;
 import static uk.ac.warwick.util.MockUtils.*;
 
@@ -58,9 +59,9 @@ public class ConfigurableFilterStackTest {
     @Test public void singleStackSet() throws Exception {              
         checkingFiltersRunInOrder();
         
-        List<Filter> filters = Arrays.asList(f1,f2,f3);
-        FilterStackSet set = new FilterStackSet(filters, Arrays.asList("/render/*"));
-        filter = new ConfigurableFilterStack(Arrays.asList(set));
+        List<Filter> filters = asList(f1,f2,f3);
+        FilterStackSet set = new FilterStackSet(filters, asList("/render/*"));
+        filter = new ConfigurableFilterStack(asList(set));
         filter.afterPropertiesSet();
         
         filter.doFilter(request, response, new MockFilterChain());
@@ -75,9 +76,31 @@ public class ConfigurableFilterStackTest {
     @Test public void twoStackSets() throws Exception {
         checkingFiltersRunInOrder();
         
-        FilterStackSet set1 = new FilterStackSet(Arrays.asList(f1,f2), Arrays.asList("/render/*"));
-        FilterStackSet set2 = new FilterStackSet(Arrays.asList(f3), Arrays.asList("/*"));
-        filter = new ConfigurableFilterStack(Arrays.asList(set1, set2));
+        FilterStackSet set1 = new FilterStackSet(asList(f1,f2), asList("/render/*"));
+        FilterStackSet set2 = new FilterStackSet(asList(f3), asList("/*"));
+        filter = new ConfigurableFilterStack(asList(set1, set2));
+        filter.afterPropertiesSet();
+        
+        filter.doFilter(request, response, new MockFilterChain());
+        ctx.assertIsSatisfied();
+    }
+    
+    /**
+     * Check that if you define two mappings for the same filter on the same URL,
+     * it will run the filter twice and doesn't decide to merge them together.
+     */
+    @Test public void twoStackSetsSameFilter() throws Exception {
+        ctx.checking(new Expectations(){{
+            final Sequence filterOrder = ctx.sequence("filterOrder");
+            exactly(2).of(f1).doFilter(with(same(request)), with(same(response)), with(any(FilterChain.class)));
+            will(continueFilterChain()); 
+            inSequence(filterOrder);
+        }});
+        
+        FilterStackSet set1 = new FilterStackSet(asList(f1), asList("/render/*"));
+        FilterStackSet set2 = new FilterStackSet(asList(f1), asList("/render/*"));
+        
+        filter = new ConfigurableFilterStack(asList(set1, set2));
         filter.afterPropertiesSet();
         
         filter.doFilter(request, response, new MockFilterChain());
@@ -100,9 +123,9 @@ public class ConfigurableFilterStackTest {
             never(f3);    
         }});
         
-        FilterStackSet set1 = new FilterStackSet(Arrays.asList(f1,f2), Arrays.asList("/render/*"));
-        FilterStackSet set2 = new FilterStackSet(Arrays.asList(f3), Arrays.asList("*.css"));
-        filter = new ConfigurableFilterStack(Arrays.asList(set1, set2));
+        FilterStackSet set1 = new FilterStackSet(asList(f1,f2), asList("/render/*"));
+        FilterStackSet set2 = new FilterStackSet(asList(f3), asList("*.css"));
+        filter = new ConfigurableFilterStack(asList(set1, set2));
         filter.afterPropertiesSet();
         
         MockFilterChain chain = new MockFilterChain();
@@ -120,8 +143,8 @@ public class ConfigurableFilterStackTest {
         Filter f = new GenericFilterBean(){
             public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException {}
         };
-        FilterStackSet set = new FilterStackSet(Arrays.asList(f), Arrays.asList("*.css"));
-        filter = new ConfigurableFilterStack(Arrays.asList(set));
+        FilterStackSet set = new FilterStackSet(asList(f), asList("*.css"));
+        filter = new ConfigurableFilterStack(asList(set));
         FilterConfig cfg = new MockFilterConfig("helloFilter");
         filter.init(cfg);
     }
