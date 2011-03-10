@@ -57,19 +57,25 @@ Event.onDOMReady(function(){
 			height: '<@dimension value=height?default(350) />',
 			<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
 			controls: 'controls',
-			preload: 'meta',
 			autoplay: 'autoplay'
 		});
 		var supportsVideo = !!vidEl.canPlayType;
 		var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 		
 		if (supportsCodec) {
+		  <#if previewimage?default("") != ''>
 		  var posterImage = new Element('img', {
 		    src: '${previewimage?default("")}',
 		    title: 'Click to play',
           	width: '<@dimension value=width?default(425) />',
           	height: '<@dimension value=height?default(350) />'
 		  });
+		  <#else>
+		  var posterImage = new Element('div', {
+		    style: 'background-color: #000000; width: <@dimension value=width?default(425) />px; height: <@dimension value=height?default(350) />px;',
+		    title: 'Click to play'
+		  });
+		  </#if>
 		  var container = $('video_${uniqueId}');
   		  container.insert(posterImage);
       	var startVideo = function(event){      	
@@ -179,7 +185,6 @@ Event.onDOMReady(function(){
 					height: '<@dimension value=height?default(350) />',
 					<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
 					controls: 'controls',
-					preload: 'meta',
 					autoplay: 'autoplay'
 				});
 				
