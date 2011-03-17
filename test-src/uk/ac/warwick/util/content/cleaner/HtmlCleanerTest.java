@@ -558,16 +558,16 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     
     @Test
     public void sbtwo3782_orphanLightboxLink() throws Exception {
-    	String input = "<P>Hello I like <a href=\"http://www.google.com\">Google</a>. <STRONG><A title='koala.jpg &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;' href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg?maxWidth=800&amp;maxHeight=600\" rel=lightbox[all] _mce_href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"></A><BR></STRONG></P>";
+    	String input = "<P>Hello I like <a href=\"http://www.google.com\">Google</a>. <STRONG><A title='koala.jpg' href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg\" rel=lightbox[all] _mce_href=\"koala.jpg\"></A><BR></STRONG></P>";
     	String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><br />\n  </strong></p>";
     	verify(expected, input);
     }
     
     @Test
     public void sbtwo3782_regularLightboxLink() throws Exception {
-    	String input = "<P>Hello I like <a href=\"http://www.google.com\">Google</a>. <STRONG><A title='koala.jpg &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;' href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg?maxWidth=800&amp;maxHeight=600\" rel=lightbox[all] _mce_href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"><img src=\"koala.jpg\"></A><BR></STRONG> badgers</P>";
-    	//String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg  &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;\" href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg?maxWidth=800&amp;maxHeight=600\" rel=\"lightbox[all]\" _mce_href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"><img src=\"koala.jpg\"></a><br></strong> badgers</p>";
-    	String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg &lt;a href=&quot;koala.jpg&quot;&gt;View original image&lt;/a&gt;\" rel=\"lightbox[all]\" href=\"koala.jpg?maxWidth=800&amp;maxHeight=600\"><img src=\"koala.jpg\" border=\"0\" /></a><br />\n  </strong> badgers</p>";
+    	String input = "<P>Hello I like <a href=\"http://www.google.com\">Google</a>. <STRONG><A title='koala.jpg' href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg\" rel=lightbox[all] _mce_href=\"koala.jpg\"><img src=\"koala.jpg\"></A><BR></STRONG> badgers</P>";
+    	//String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg\" href=\"http://www2-test.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes/koala.jpg\" rel=\"lightbox[all]\" _mce_href=\"koala.jpg\"><img src=\"koala.jpg\"></a><br></strong> badgers</p>";
+    	String expected = "<p>Hello I like <a href=\"http://www.google.com\">Google</a>. <strong><a title=\"koala.jpg\" rel=\"lightbox[all]\" href=\"koala.jpg\"><img src=\"koala.jpg\" border=\"0\" /></a><br />\n  </strong> badgers</p>";
     	verify(expected, input);
     }
     
