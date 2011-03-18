@@ -32,6 +32,8 @@ abstract class AbstractJSONView<T> implements View {
     
     private static final int OUTPUT_BYTE_ARRAY_INITIAL_SIZE = 4096;
     
+    private static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
+    
     @Autowired(required = true)
     private transient JSONPRequestValidator jsonpRequestValidator = JSONPRequestValidator.REJECT_ALL;
     
@@ -42,7 +44,7 @@ abstract class AbstractJSONView<T> implements View {
         JSON<?> results = getValue(model);
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
-        OutputStreamWriter writer = new OutputStreamWriter(baos, "UTF-8");
+        OutputStreamWriter writer = new OutputStreamWriter(baos, getCharacterEncoding());
         try {
             String contentType = getContentType();
             
@@ -134,6 +136,10 @@ abstract class AbstractJSONView<T> implements View {
         }
         
         return null;
+    }
+    
+    public String getCharacterEncoding() {
+        return DEFAULT_CHARACTER_ENCODING;
     }
 
     public final String getContentType() {

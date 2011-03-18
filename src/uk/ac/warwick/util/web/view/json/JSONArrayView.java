@@ -28,24 +28,24 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
         return new CombinedJSONArrayView(views);
     }
     
-    public static JSONArrayView of(final JSONArray array, final JSONPRequestValidator jsonPValidator) {
-        return JSONArrayView.of(array, jsonPValidator, new String[0]);        
+    public static JSONArrayView of(final JSONArray array, final String charEncoding, final JSONPRequestValidator jsonPValidator) {
+        return JSONArrayView.of(array, charEncoding, jsonPValidator, new String[0]);        
     }
     
-    public static JSONArrayView of(final JSONArray array, final JSONPRequestValidator jsonPValidator, final String... error) {
-        return JSONArrayView.of(array, jsonPValidator, Arrays.asList(error));
+    public static JSONArrayView of(final JSONArray array, final String charEncoding, final JSONPRequestValidator jsonPValidator, final String... error) {
+        return JSONArrayView.of(array, charEncoding, jsonPValidator, Arrays.asList(error));
     }
     
-    public static JSONArrayView of(final JSONArray array, final JSONPRequestValidator jsonPValidator, final Iterable<String> error) {
-        return new PreconfiguredJSONArrayView(array, error, jsonPValidator);
+    public static JSONArrayView of(final JSONArray array, final String charEncoding, final JSONPRequestValidator jsonPValidator, final Iterable<String> error) {
+        return new PreconfiguredJSONArrayView(array, charEncoding, error, jsonPValidator);
     }
     
-    public static JSONArrayView errors(final JSONPRequestValidator jsonPValidator, final String... error) {
-        return JSONArrayView.errors(jsonPValidator, Arrays.asList(error));
+    public static JSONArrayView errors(final String charEncoding, final JSONPRequestValidator jsonPValidator, final String... error) {
+        return JSONArrayView.errors(charEncoding, jsonPValidator, Arrays.asList(error));
     }
     
-    public static JSONArrayView errors(final JSONPRequestValidator jsonPValidator, final Iterable<String> error) {
-        return JSONArrayView.of(new JSONArray(), jsonPValidator, error);
+    public static JSONArrayView errors(final String charEncoding, final JSONPRequestValidator jsonPValidator, final Iterable<String> error) {
+        return JSONArrayView.of(new JSONArray(), charEncoding, jsonPValidator, error);
     }
     
     @Configurable
@@ -53,10 +53,12 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
         
         private final JSONArray array;
         private final Iterable<String> errs;
+        private final String characterEncoding;
         
-        public PreconfiguredJSONArrayView(JSONArray arr, Iterable<String> err, JSONPRequestValidator jsonPValidator) {
+        public PreconfiguredJSONArrayView(JSONArray arr, String charEncoding, Iterable<String> err, JSONPRequestValidator jsonPValidator) {
             this.array = arr;
             this.errs = err;
+            this.characterEncoding = charEncoding;
             
             setJsonpRequestValidator(jsonPValidator);
         }
@@ -68,6 +70,11 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
             }
             
             return array;
+        }
+
+        @Override
+        public String getCharacterEncoding() {
+            return characterEncoding;
         }
         
     }
@@ -102,6 +109,11 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
             }
             
             return combined;
+        }
+
+        @Override
+        public String getCharacterEncoding() {
+            return views.iterator().next().getCharacterEncoding();
         }
         
     }
