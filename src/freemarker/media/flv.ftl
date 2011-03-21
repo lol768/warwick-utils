@@ -30,19 +30,19 @@ Event.onDOMReady(function(){
   <#else>
     url = '${url}'.toAbsoluteUrl();
   </#if>
-  <#if newPlayer && !url?starts_with('rtmp://')>
-    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
+  <#if newPlayer>
+    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
     object${uniqueId}.addVariable("file", url);
     <#if previewimage?default("") != ''>
       object${uniqueId}.addVariable("image", "${previewimage?default("")}");
     </#if>
     object${uniqueId}.addVariable("stretching", "${stretching?default("fill")}");
   <#else>
-    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
+    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
   </#if>
     object${uniqueId}.addParam("wmode","transparent");
     object${uniqueId}.addVariable("width","<@dimension value=width?default(425) />");
-    object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=20 />");
+    object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=24 />");
     object${uniqueId}.addParam("allowfullscreen","true");
     object${uniqueId}.addVariable("showdownload","false");
     object${uniqueId}.align = "${align}";
@@ -142,20 +142,20 @@ Event.onDOMReady(function(){
 			  <#else>
 			    url = '${url}'.toAbsoluteUrl();
 			  </#if>
-			  <#if newPlayer && !url?starts_with('rtmp://')>
-			    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
+			  <#if newPlayer>
+			    object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
 			    object${uniqueId}.addVariable("file", url);
 			    <#if previewimage?default("") != ''>
 			      object${uniqueId}.addVariable("image", "${previewimage?default("")}");
 			    </#if>
 			    object${uniqueId}.addVariable("stretching", "${stretching?default("fill")}");
 			  <#else>
-			    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=20 />");
+			    object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
 			  </#if>
 			    object${uniqueId}.addVariable("autostart", "true");
 			    object${uniqueId}.addParam("wmode","transparent");
 			    object${uniqueId}.addVariable("width","<@dimension value=width?default(425) />");
-			    object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=20 />");
+			    object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=24 />");
 			    object${uniqueId}.addParam("allowfullscreen","true");
 			    object${uniqueId}.addVariable("showdownload","false");
 			    object${uniqueId}.align = "${align}";
