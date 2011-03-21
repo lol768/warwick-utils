@@ -43,7 +43,7 @@ public final class FlvMediaUrlHandlerTest {
 		parameters.put("align", "left");
 		
 		assertTrue(handler.getHtml("file.mp4", parameters).startsWith("<notextile>"));
-		assertTrue(handler.getHtml("file.mp4", parameters).contains("\"425\",\"370\""));
+		assertTrue(handler.getHtml("file.mp4", parameters).contains("\"425\",\"374\""));
 	}
 	
 	@Test
@@ -73,7 +73,7 @@ public final class FlvMediaUrlHandlerTest {
 		String html = handler.getHtml("../big_buck_bunny.mp4", parameters);
 		
 		assertTrue(html.startsWith("<notextile>"));
-		assertTrue(html.contains("\"640\",\"380\""));
+		assertTrue(html.contains("\"640\",\"384\""));
 		
 		m.assertIsSatisfied();
 	}
@@ -141,7 +141,7 @@ public final class FlvMediaUrlHandlerTest {
         String html = handler.getHtml("file.mp4", parameters);
         assertFalse(html.contains("vidEl.insert({top:new Element('source', {"));
         assertTrue(html.startsWith("<notextile>"));
-        assertTrue(html.contains("\"640\",\"380\""));
+        assertTrue(html.contains("\"640\",\"384\""));
         
         m.assertIsSatisfied();
 	}
@@ -181,7 +181,7 @@ public final class FlvMediaUrlHandlerTest {
         
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("vidEl.insert({top:new Element('source', {"));
-        assertTrue(html.contains("\"640\",\"380\""));
+        assertTrue(html.contains("\"640\",\"384\""));
         
         m.assertIsSatisfied();
     }
