@@ -56,5 +56,7 @@
 	<classpathentry kind="lib" path="external-libs/xalan/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="external-libs/xalan/xml-apis.jar"/>
 	<classpathentry kind="lib" path="external-libs/nekohtml/nekohtml-1.9.14.jar"/>
+	<classpathentry kind="lib" path="external-libs/activemq/activemq-all-5.4.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/activemq/activemq-pool-5.4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
