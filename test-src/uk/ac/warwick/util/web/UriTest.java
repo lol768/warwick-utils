@@ -272,8 +272,9 @@ public class UriTest {
     }
     
     @Test
-    public void opaque() throws Exception {
+    public void opaque() throws Exception {        
         assertEquals("mailto:m.mannion@warwick.ac.uk", Uri.parse("mailto:m.mannion@warwick.ac.uk").toString());
         assertEquals("gopher:something", Uri.parse("gopher:something").toString());
+        assertEquals("ttp://www.google.com", Uri.parse("ttp://www.google.com").toString());
     }
 }

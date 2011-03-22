@@ -10,7 +10,7 @@ public class OpaqueUri extends Uri {
     
     private final URI uri;
     
-    OpaqueUri(URI uri) {
+    OpaqueUri(URI uri) throws UriException {
         super(new UriBuilder(Uri.parse("#")));
         
         Assert.isTrue(uri.isOpaque());
