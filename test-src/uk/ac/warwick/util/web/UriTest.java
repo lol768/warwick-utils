@@ -270,4 +270,10 @@ public class UriTest {
         assertEquals(Uri.parse("http://www.go.warwick.ac.uk/shakespeare%22%3Ehttp:/go.warwick.ac.uk/shakespeare%3C/a%3E").toString(), Uri.fromJavaUrl(new URL("http://www.go.warwick.ac.uk/shakespeare\">http:/go.warwick.ac.uk/shakespeare</a>")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/pgapply.%C3%82%20%C3%82").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pgapply.Â Â ")).toString());
     }
+    
+    @Test
+    public void opaque() throws Exception {
+        assertEquals("mailto:m.mannion@warwick.ac.uk", Uri.parse("mailto:m.mannion@warwick.ac.uk").toString());
+        assertEquals("gopher:something", Uri.parse("gopher:something").toString());
+    }
 }

@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
  * href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>. Assumes that all url
  * components are UTF-8 encoded.
  */
-public final class Uri implements Serializable {
+public class Uri implements Serializable {
     private static final long serialVersionUID = -6701439630981472587L;
 
     private final String text;
@@ -103,7 +103,7 @@ public final class Uri implements Serializable {
      */
     public static Uri fromJavaUri(URI uri) {
         if (uri.isOpaque()) {
-            throw new UriException("No support for opaque Uris " + uri.toString());
+            return new OpaqueUri(uri);
         }
         
         return new UriBuilder()
