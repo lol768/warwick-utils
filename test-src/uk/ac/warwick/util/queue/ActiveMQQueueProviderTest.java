@@ -11,6 +11,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,6 +62,7 @@ public class ActiveMQQueueProviderTest {
         unrelatedQueue.send("Hello!");
         
         Mockery m = new Mockery();
+        m.setThreadingPolicy(new Synchroniser());
         final QueueListener listener = m.mock(QueueListener.class);
         m.checking(new Expectations(){{
             one(listener).onReceive(with(any(EncodeVideoJob.class)));

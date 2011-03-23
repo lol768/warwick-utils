@@ -12,6 +12,7 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.View;
 
 import com.google.common.collect.Maps;
@@ -38,7 +39,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertFalse((Boolean)map.get("ajax"));
@@ -64,7 +65,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertFalse((Boolean)map.get("ajax"));
@@ -91,7 +92,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertTrue((Boolean)map.get("ajax"));
@@ -118,7 +119,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertTrue((Boolean)map.get("ajax"));
@@ -145,7 +146,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertTrue((Boolean)map.get("ajax"));
@@ -172,7 +173,7 @@ public final class AlternateAjaxViewTest {
         }});
         
         Map<String, Object> map = Maps.newHashMap();
-        view.render(map, request, null);
+        view.render(map, request, new MockHttpServletResponse());
         
         assertTrue(map.containsKey("ajax"));
         assertTrue((Boolean)map.get("ajax"));
