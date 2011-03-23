@@ -85,6 +85,7 @@
 		<mkdir dir="${build.dir}/mail" />
 		<mkdir dir="${build.dir}/content" />
 		<mkdir dir="${build.dir}/cache" />
+		<mkdir dir="${build.dir}/queue" />
 		<mkdir dir="${build.dir}/test" />
 
 		<!-- let's compile in parallel for no particular reason! -->
@@ -126,6 +127,9 @@
 			<!-- cache library -->
 			<javac fork="true" destdir="${build.dir}/cache" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/cache/**" />
 
+      <!-- queue library -->
+      <javac fork="true" destdir="${build.dir}/queue" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/queue/**" />
+			
 			<path id="test.compile.class.path">
 				<path refid="external.libs.path" />
 				<path path="${build.dir}/all" />
@@ -241,6 +245,7 @@
 		<jar basedir="${build.dir}/ant" destfile="${dist.dir}/${jar.name}-ant.jar" manifest="${build.dir}/MANIFEST.MF" />
 		<jar basedir="${build.dir}/content" destfile="${dist.dir}/${jar.name}-content.jar" manifest="${build.dir}/MANIFEST.MF" />
 		<jar basedir="${build.dir}/cache" destfile="${dist.dir}/${jar.name}-cache.jar" manifest="${build.dir}/MANIFEST.MF" />
+		<jar basedir="${build.dir}/queue" destfile="${dist.dir}/${jar.name}-queue.jar" manifest="${build.dir}/MANIFEST.MF" />
 		<jar basedir="${build.dir}/test" destfile="${dist.dir}/${jar.name}-test.jar" manifest="${build.dir}/MANIFEST.MF" />
 
 		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${parsed.src.dir}" />

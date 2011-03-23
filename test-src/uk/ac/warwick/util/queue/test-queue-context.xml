@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
+  default-autowire="byName">
+  
+  <!-- For production, just replace this with an ActiveMQQueueProvider pointing at a tcp:// URL.
+       Everything else should be the same, so you can put most of the stuff in the common XML. -->
+  <bean id="queueProvider" 
+      class="uk.ac.warwick.util.queue.activemq.ActiveMQQueueProvider" 
+      factory-method="createEmbeddedBroker" />
+      
+  <!-- Using factory attributes to call queueProvider.getQueue(name) -->
+  <bean id="abstractQueue" abstract="true" factory-bean="queueProvider" factory-method="getQueue" />
+
+  <bean id="unimportantStuffQueue" parent="abstractQueue">
+      <constructor-arg value="UnimportantStuff" />
+      <property name="persistent" value="false" />
+      <property name="messageConverter">
+        <bean class="uk.ac.warwick.util.queue.conversion.JsonMessageConverter">
+          <property name="annotatedClasses">
+            <list>
+              <value>uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$GrabMetadataJob</value>
+              <value>uk.ac.warwick.util.queue.SendForHelp</value>
+            </list>
+          </property>
+        </bean>
+      </property>
+  </bean>
+  
+  <!-- This is passed in to the JsonMessageConverter. It's very verbose so you'll probably instead
+      define some annotations like with GrabMetadataJob, then add the class name to annotatedClasses. -->
+  <bean id="encodeVideoJobConverter" class="uk.ac.warwick.util.queue.conversion.SimpleFieldConverter">
+    <constructor-arg value="uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$EncodeVideoJob" />
+    <constructor-arg>
+      <list>
+        <value>filename</value>
+        <value>bitrate</value>
+        <value>format</value>
+      </list>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="sitebuilderJobQueue" parent="abstractQueue">
+      <constructor-arg value="SitebuilderJobs" />
+      <property name="persistent" value="true" />
+      <property name="messageConverter">
+        <bean class="uk.ac.warwick.util.queue.conversion.JsonMessageConverter">
+          <property name="objectConverters">
+            <map>
+              <entry key="EncodeVideoJob" value-ref="encodeVideoJobConverter" />
+            </map>
+          </property>
+          <!-- Annotating all your objects and using annotatedClasses instead of objectConverters
+            is recommended, as it's much neater and easier. -->
+          <property name="annotatedClasses">
+            <list>
+              <value>uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$GrabMetadataJob</value>
+            </list>
+          </property>
+        </bean>
+      </property>
+  </bean>
+
+</beans>

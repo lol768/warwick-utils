@@ -13,15 +13,6 @@
 	<classpathentry kind="lib" path="external-libs/opensaml/opensaml.jar"/>
 	<classpathentry kind="lib" path="external-libs/ant/ant.jar"/>
 	<classpathentry kind="lib" path="external-libs/packtag/packtag.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/hamcrest-core-1.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/hamcrest-library-1.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-2.3.0.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-cglib-1.0.1.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-junit3-2.3.0.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-junit4-2.3.0.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/jmock-legacy-2.3.0.jar"/>
-	<classpathentry kind="lib" path="external-libs/junit/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/objenesis-1.0.jar"/>
 	<classpathentry kind="lib" path="external-libs/javax-mail/javax-mail-1.3.3.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-httpclient/commons-httpclient-3.1.jar" sourcepath="external-libs/src/commons-httpclient-3.0.zip"/>
@@ -29,7 +20,6 @@
 	<classpathentry kind="lib" path="external-libs/tagsoup/tagsoup-1.2.jar" sourcepath="external-libs/src/tagsoup-1.2-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/freemarker/freemarker-2.3.14.jar" sourcepath="external-libs/src/freemarker-2.3.14-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-aspects.jar"/>
-	<classpathentry kind="lib" path="external-libs/spring/spring-test.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring.jar" sourcepath="external-libs/src/spring-2.5.5-src.zip"/>
 	<classpathentry kind="lib" path="external-libs/yuicompressor/yuicompressor-2.4.2.jar"/>
@@ -58,5 +48,18 @@
 	<classpathentry kind="lib" path="external-libs/nekohtml/nekohtml-1.9.14.jar"/>
 	<classpathentry kind="lib" path="external-libs/activemq/activemq-all-5.4.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/activemq/activemq-pool-5.4.2.jar"/>
+	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-core-asl-1.7.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-mapper-asl-1.7.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/hamcrest-core-1.3.0RC1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/hamcrest-library-1.3.0RC1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/hamcrest-unit-test-1.3.0RC1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-2.6.0-RC2.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-junit3-2.6.0-RC2.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-junit4-2.6.0-RC2.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-legacy-2.6.0-RC2.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-1.0.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/jmock-cglib-1.0.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/junit/junit-4.9b2.jar"/>
+	<classpathentry kind="lib" path="external-libs/spring/org.springframework.test-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
