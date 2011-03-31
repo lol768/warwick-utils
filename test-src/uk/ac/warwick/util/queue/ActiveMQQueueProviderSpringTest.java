@@ -47,22 +47,6 @@ public class ActiveMQQueueProviderSpringTest {
     @Resource(name="encodeVideoJobConverter")
     private SimpleFieldConverter encodeVideoJobConverter;
     
-    private static List<Throwable> threadThrowables;
-    @BeforeClass public static void catchAllErrors() {
-        final Thread thisThread = Thread.currentThread();
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                System.err.println("Butts");
-                if (t != thisThread) {
-                    threadThrowables.add(e);
-                }
-            }
-        });
-    }
-    @Before public void prepareThreadErrors() {
-        threadThrowables = new ArrayList<Throwable>();
-    }
-    
     @Test public void spring() {
         assertNotNull(queueProvider);
     }
@@ -98,10 +82,11 @@ public class ActiveMQQueueProviderSpringTest {
         job.setPageUrl("/services/wibble.ogg");
         
         final QueueListener listener = m.mock(QueueListener.class);
-        sitebuilderQueue.setSingleListener(listener);
         m.checking(new Expectations(){{
+            exactly(1).of(listener).isListeningToQueue(); will(returnValue(true));
             exactly(1).of(listener).onReceive(with(hasProperty("pageUrl", equal("/services/wibble.ogg"))));
         }});
+        sitebuilderQueue.setSingleListener(listener);
       
         sitebuilderQueue.send(job);
         Thread.sleep(300);
@@ -115,8 +100,8 @@ public class ActiveMQQueueProviderSpringTest {
             setThreadingPolicy(new Synchroniser());
         }};
         final QueueListener listener = m.mock(QueueListener.class);
-        unimportantStuffQueue.setSingleListener(listener);
         m.checking(new Expectations(){{
+            exactly(1).of(listener).isListeningToQueue(); will(returnValue(true));
             exactly(1).of(listener).onReceive(with(allOf(
                     isA(SendForHelp.class),
                     hasProperty("from", equal("alan@introuble.example.com")),
@@ -124,6 +109,7 @@ public class ActiveMQQueueProviderSpringTest {
                     hasProperty("transientData", is(nullValue()))
             )));
         }});
+        unimportantStuffQueue.setSingleListener(listener);
         
         SendForHelp help = new SendForHelp();
         help.setFrom("alan@introuble.example.com");

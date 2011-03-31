@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.queue.activemq;
 
+import static org.springframework.util.StringUtils.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -23,8 +24,7 @@ import uk.ac.warwick.util.queue.QueueListener;
 import uk.ac.warwick.util.queue.QueueProvider;
 
 public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
-//    private JmsTemplate jms;
-//    private JmsTemplate jmsTransient;
+    
     private ActiveMQConnectionFactory connectionFactory;
     private CachingConnectionFactory cachingConnectionFactory;
     
@@ -40,6 +40,14 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         cachingConnectionFactory = new CachingConnectionFactory();
         cachingConnectionFactory.setTargetConnectionFactory(connectionFactory);
         cachingConnectionFactory.setSessionCacheSize(10);
+    }
+    
+    public ActiveMQQueueProvider(String brokerURL, String username, String password) {
+        this(brokerURL);
+        if (hasText(username) && hasText(password)) {
+            connectionFactory.setUserName(username);
+            connectionFactory.setPassword(password);
+        }
     }
     
     /**
@@ -81,19 +89,23 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
     }
     
     class NativeQueue implements Queue, DisposableBean {
-        private ActiveMQQueue q;
+        //private ActiveMQQueue q;
         private JmsTemplate jms;
         private String name;
         private List<DefaultMessageListenerContainer> containers = new ArrayList<DefaultMessageListenerContainer>();
         
         public NativeQueue(String name) {
             this.name = name;
-            q = new ActiveMQQueue(name);
+            //q = new ActiveMQQueue(name);
             jms = new JmsTemplate(cachingConnectionFactory);
         }
         
         public void addListener(String itemType, final QueueListener listener) {
+            if (!listener.isListeningToQueue()) {
+                return;
+            }
             DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
+            container.setSessionTransacted(true);
             container.setConnectionFactory(cachingConnectionFactory);
             container.setDestinationName(name);
             // Selector is an SQL92 type condition to pick which types of messages to receive
@@ -141,4 +153,5 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         }
         
     }
+
 }

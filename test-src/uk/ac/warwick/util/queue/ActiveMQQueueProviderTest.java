@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -61,10 +61,11 @@ public class ActiveMQQueueProviderTest {
         
         unrelatedQueue.send("Hello!");
         
-        Mockery m = new Mockery();
+        Mockery m = new JUnit4Mockery();
         m.setThreadingPolicy(new Synchroniser());
         final QueueListener listener = m.mock(QueueListener.class);
         m.checking(new Expectations(){{
+            exactly(1).of(listener).isListeningToQueue(); will(returnValue(true));
             one(listener).onReceive(with(any(EncodeVideoJob.class)));
             one(listener).onReceive(with(any(GrabMetadataJob.class)));
         }});
@@ -82,6 +83,21 @@ public class ActiveMQQueueProviderTest {
         
         Thread.sleep(300);
       
+        m.assertIsSatisfied();
+    }
+    
+    @Test public void nonListeningListener() throws Exception {
+        Mockery m = new JUnit4Mockery();
+        m.setThreadingPolicy(new Synchroniser());
+        final QueueListener listener = m.mock(QueueListener.class);
+        m.checking(new Expectations(){{
+            exactly(1).of(listener).isListeningToQueue(); will(returnValue(false));
+        }});
+        queue.setSingleListener(listener);
+        
+        queue.send("Pow!");
+        
+        Thread.sleep(300);
         m.assertIsSatisfied();
     }
     
@@ -137,6 +153,9 @@ public class ActiveMQQueueProviderTest {
         }
         public int getMessagesReceived() {
             return messagesReceived;
+        }
+        public boolean isListeningToQueue() {
+            return true;
         }
         
     }
