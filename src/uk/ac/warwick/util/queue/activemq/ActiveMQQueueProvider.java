@@ -19,11 +19,13 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 
+import com.google.common.collect.Maps;
+
 import uk.ac.warwick.util.queue.Queue;
 import uk.ac.warwick.util.queue.QueueListener;
 import uk.ac.warwick.util.queue.QueueProvider;
 
-public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
+public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, MassListenerController {
     
     private ActiveMQConnectionFactory connectionFactory;
     private CachingConnectionFactory cachingConnectionFactory;
@@ -59,15 +61,6 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         return new ActiveMQQueueProvider("vm://embedded?broker.persistent=false&broker.useJmx=false");
     }
 
-//    public void setListeners(Map<MessageListener, String> mappings) {
-//        if (!listenerContainers.isEmpty()) {
-//            throw new IllegalStateException("Can't use setListeners after some listeners have already been added");
-//        }
-//        for (Entry<MessageListener,String> mapping : mappings.entrySet()) {
-//            addListener(mapping.getKey(), mapping.getValue());
-//        }
-//    }
-
     public void destroy() {
         /*
          * Need to destroy all the queues, which will destroy
@@ -88,16 +81,74 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         return queue;
     }
     
-    class NativeQueue implements Queue, DisposableBean {
+    /**
+     * You don't need to call this on startup - only
+     * after having called {@link #stopAllListeners()}.
+     */
+    public void startAllListeners() {
+        for (NativeQueue queue : queues.values()) {
+            queue.startAllListeners();
+        }
+    }
+
+    /**
+     * Stops all known listeners on all known queues from
+     * consuming messages. Is not immediate - some listeners
+     * may be in the middle of handling a message when this is
+     * called, and these tasks will run to completion.
+     */
+    public void stopAllListeners() {
+        for (NativeQueue queue : queues.values()) {
+            queue.stopAllListeners();
+        }
+    }
+    
+    class NativeQueue implements Queue, DisposableBean, MassListenerController {
         //private ActiveMQQueue q;
         private JmsTemplate jms;
         private String name;
-        private List<DefaultMessageListenerContainer> containers = new ArrayList<DefaultMessageListenerContainer>();
+        //private List<DefaultMessageListenerContainer> containers = new ArrayList<DefaultMessageListenerContainer>();
+        private Map<QueueListener, DefaultMessageListenerContainer> listeners = Maps.newHashMap();
+        
+        class ListenerContext {
+            private ListenerContext(DefaultMessageListenerContainer container, QueueListener listener) {
+                this.container = container;
+                this.listener = listener;
+            }
+            public DefaultMessageListenerContainer container;
+            public QueueListener listener;
+        }
         
         public NativeQueue(String name) {
             this.name = name;
             //q = new ActiveMQQueue(name);
             jms = new JmsTemplate(cachingConnectionFactory);
+        }
+        
+        public void stopListener(QueueListener listener) {
+            listeners.get(listener).stop();
+        }
+        
+        /* (non-Javadoc)
+         * @see uk.ac.warwick.util.queue.activemq.MassListenerController#stopAllListeners()
+         */
+        public void stopAllListeners() {
+            for (DefaultMessageListenerContainer container : listeners.values()) {
+                container.stop();
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see uk.ac.warwick.util.queue.activemq.MassListenerController#startAllListeners()
+         */
+        public void startAllListeners() {
+            for (DefaultMessageListenerContainer container : listeners.values()) {
+                container.start();
+            }
+        }
+        
+        public void startListener(QueueListener listener) {
+            listeners.get(listener).start();
         }
         
         public void addListener(String itemType, final QueueListener listener) {
@@ -124,7 +175,7 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
                 }
             });
             container.afterPropertiesSet();
-            containers.add(container);
+            listeners.put(listener, container);
         }
 
         public void send(Object message) {
@@ -136,7 +187,7 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         }
 
         public void destroy() {
-            for (DefaultMessageListenerContainer container : containers) {
+            for (DefaultMessageListenerContainer container : listeners.values()) {
                 container.destroy();
             }
         }
@@ -146,12 +197,13 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider {
         }
 
         public void setSingleListener(QueueListener listener) {
-            if (!containers.isEmpty()) {
+            if (!listeners.isEmpty()) {
                 throw new IllegalStateException("Can only set a single listener if no other listeners have been set on this queue");
             }
             addListener(null, listener);
         }
         
     }
+
 
 }

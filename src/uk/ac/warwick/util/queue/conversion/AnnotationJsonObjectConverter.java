@@ -65,6 +65,10 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
         }
     }
     
+    /**
+     * Adds this object to the given list, as well as all non-primitive
+     * properties, and all elements/values of Iterable/Map properties.
+     */
     private void gatherObjects(List<Object> objs, Object obj) {
         objs.add(obj);
         BeanWrapper wrapper = new BeanWrapperImpl(obj);
@@ -80,7 +84,7 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
                         Object[] array = null;
                         try {
                             array  = (Object[])value;
-                        } catch (ClassCastException e) { /* probably a primitive array.*/ }
+                        } catch (ClassCastException e) { /* primitive array, skip.*/ }
                         if (array != null) {
                             if (LOGGER.isDebugEnabled()) LOGGER.debug("Looping through array");
                             for (Object o : array) {
