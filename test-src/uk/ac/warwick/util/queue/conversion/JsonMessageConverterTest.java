@@ -3,8 +3,6 @@ package uk.ac.warwick.util.queue.conversion;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
@@ -15,26 +13,27 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.action.CustomAction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("service-beans.xml")
+@ContextConfiguration(locations="service-beans.xml")
 public class JsonMessageConverterTest {
     
     private Mockery m = new JUnit4Mockery();
     
+    // Specified in service-beans.xml - will have BeanFactory set on it
     private JsonMessageConverter converter;
     
     @Test public void autowiring() throws Exception {
         
-        final TestMessage myObject = new TestMessage();
-        myObject.setAge(900);
-        myObject.setName("Aska");
+        final TestItem myObject = new TestItem("Aska",900)
+            .addChild( new TestItem("Sasha", 300 ) )
+            .addChild( new TestItem("Vaska", 350 )
+                        .addChild( new TestItem("Danuta", 200 )));
+        
+        
         
         final Session session = m.mock(Session.class);
         m.checking(new Expectations(){{
@@ -45,12 +44,18 @@ public class JsonMessageConverterTest {
         TextMessage message = (TextMessage) converter.toMessage(myObject, session);
         String text = message.getText();
         
+        System.err.println(text);
+        
         assertThat( text, allOf(containsString("age"), not(containsString("testServiceBean"))));
         
-        TestMessage recreatedObject = (TestMessage) converter.fromMessage(message);
+        TestItem recreatedObject = (TestItem) converter.fromMessage(message);
         assertThat( recreatedObject, hasProperty("age", is(900)));
         assertThat( recreatedObject, hasProperty("testServiceBean", is(not(nullValue()))));
+        
+        // deep wiring
+        assertThat( recreatedObject.getChildren().get(0), hasProperty("testServiceBean", is(not(nullValue()))));
     }
+    
     
     private TextMessageAction returnTextMessage() {
         return new TextMessageAction();

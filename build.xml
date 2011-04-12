@@ -8,7 +8,7 @@
 	<property file="build.properties" />
 	<property name="build.package.base.dir" value="${build.dir}/uk/ac/warwick/util" />
 	<path id="external.libs.path" description="All external libraries">
-		<fileset dir="${external.libs.dir}" includes="**/*.jar" />
+		<fileset dir="${external.libs.dir}" includes="**/*.jar" excludes="test/**" />
 	</path>
 	<path id="external.libs.path.noant" description="All external libraries except ant">
 		<fileset dir="${external.libs.dir}" includes="**/*.jar" excludes="ant/**" />

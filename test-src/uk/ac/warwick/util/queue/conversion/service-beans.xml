@@ -14,14 +14,17 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
   default-autowire="byName">
   
+  <!-- Will automatically have the BeanFactory wired into it, so it will get Spring
+    to check for @Autowired and @Resource annotations on newly deserialized objects -->
   <bean id="converter" class="uk.ac.warwick.util.queue.conversion.JsonMessageConverter">
     <property name="annotatedClasses">
       <list>
-        <value>uk.ac.warwick.util.queue.conversion.TestMessage</value>
+        <value>uk.ac.warwick.util.queue.conversion.TestItem</value>
       </list>
     </property>
   </bean>
   
+  <!-- Do-nothing bean, just to wire in to our TestMessage object to confirm wiring works -->
   <bean id="testServiceBean" class="uk.ac.warwick.util.queue.conversion.TestServiceBean" >
     <constructor-arg value="MagicBean" />
   </bean>
