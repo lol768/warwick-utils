@@ -11,6 +11,7 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import uk.ac.warwick.util.queue.QueueException;
 
+@Deprecated // just use the annotation converter
 public class SimpleFieldConverter implements JsonObjectConverter {
 
     private List<String> fieldsList;

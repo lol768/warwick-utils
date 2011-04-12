@@ -25,7 +25,6 @@ public final class AutoWiringLoadedObjectListener implements LoadedObjectListene
     public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
         this.beanFactory = (AutowireCapableBeanFactory) beanFactory;
     }
-
     
     private void autowire(final Object object) {
         beanFactory.autowireBeanProperties(object, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false);
