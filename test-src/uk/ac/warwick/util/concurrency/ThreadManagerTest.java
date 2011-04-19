@@ -11,7 +11,7 @@ import uk.ac.warwick.util.concurrency.ThreadManager.ThreadSorting;
 
 public class ThreadManagerTest {
 
-    @Test(timeout=2000) public void list() throws Exception {
+    @Test(timeout=5000) public void list() throws Exception {
         Thread t = startForeverLooping("http-processor-23");
         
         ThreadManager ozymandias = new ThreadManager();

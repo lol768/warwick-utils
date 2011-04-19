@@ -7,7 +7,6 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
-import org.junit.Before;
 import org.junit.Test;
 
 
@@ -59,13 +58,13 @@ public class StatsdClientTest {
             synchronized(lock) { lock.wait(); }
         }
         
-        StatsdClient client = new StatsdClient("127.0.0.1", serverPort, "www2", "sb-edit-primary");
+        StatsdClient client = new StatsdClient("127.0.0.1", serverPort, "www2-test", "sb-edit-primary");
         client.increment("deploys");
         
         t.join();
         
         String text = sb.toString();
-        assertThat( text, is("apps.www2.sb-edit-primary.deploys:1|c") );
+        assertThat( text, is("apps.www2-test.sb-edit-primary.deploys:1|c") );
         
     }
     

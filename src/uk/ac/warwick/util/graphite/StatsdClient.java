@@ -40,7 +40,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-public class StatsdClient {
+public final class StatsdClient {
     private static Random RNG = new Random();
     private static Logger log = Logger.getLogger(StatsdClient.class.getName());
 
@@ -50,9 +50,27 @@ public class StatsdClient {
     private DatagramSocket _sock;
     private String _prefix = "";
 
+    /**
+     * @param host
+     * @param port
+     * @param serviceName will be truncated before the first "." if there is one.
+     * @param instanceName 
+     * @throws UnknownHostException
+     * @throws SocketException
+     */
     public StatsdClient(String host, int port, String serviceName, String instanceName) throws UnknownHostException, SocketException {
         this(InetAddress.getByName(host), port);
-        _prefix  = String.format("apps.%s.%s.", serviceName, instanceName);
+        if (serviceName.startsWith("$")) {
+            throw new IllegalArgumentException("bad app name: " + serviceName);
+        }
+        String app = serviceName.split("\\.")[0];
+        if (app.length() == 0) {
+            throw new IllegalArgumentException("app name cannot be empty");
+        }
+        if (instanceName.length() == 0) {
+            throw new IllegalArgumentException("instance name cannot be empty");
+        }
+        _prefix  = String.format("apps.%s.%s.", app, instanceName);
     }
 
     public StatsdClient(InetAddress host, int port) throws SocketException {
