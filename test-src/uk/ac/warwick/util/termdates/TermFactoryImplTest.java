@@ -8,6 +8,7 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Interval;
+import org.joda.time.PeriodType;
 import org.junit.Test;
 
 import uk.ac.warwick.util.collections.Pair;
@@ -29,6 +30,32 @@ public final class TermFactoryImplTest {
         assertTrue(DateTimeUtils.isSameDay(thirdTermStart, april23rd));
 
         assertEquals(1, thirdTerm.getWeekNumber(april23rd));
+    }
+    
+    @Test
+    public void data() throws Exception {
+        for (Term term : new TermFactoryImpl().getTermDates()) {
+            assertTrue("Term ends before it finishes (term starting "+term.getStartDate()+")", term.getStartDate().isBefore(term.getEndDate()));
+            // This usually evaluates to 9.
+            int weeks = new Interval(term.getStartDate(), term.getEndDate()).toPeriod(PeriodType.weeks()).getWeeks();
+            assertTrue( "Term has a weird length",  weeks >= 9 && weeks <= 10 );
+        }
+    }
+    
+    @Test
+    public void enoughDates() throws Exception {
+        final int futureTerms = 6;
+        TermFactoryImpl factory = new TermFactoryImpl();
+        DateTime d = new DateTime().withMonthOfYear(7);
+        int i=0;
+        try {
+            Term term = factory.getTermFromDate(d);
+            for (i=1; i<futureTerms; i++) {
+                term = factory.getNextTerm(term);
+            }
+        } catch (TermNotFoundException e) {
+            fail("Expected at least " + futureTerms + " future terms in data, but only got "+i+". Update the terms file!");
+        }
     }
     
     @Test
