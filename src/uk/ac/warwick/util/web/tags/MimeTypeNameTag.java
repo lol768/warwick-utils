@@ -122,7 +122,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/vnd.ms-xpsdocument", "XPS document");
             
             // Lecture recordings
-            mimeNames.put("text/x-lecturerecording", "Recorded lecture");
+            mimeNames.put("application/x-compressedlecture", "Recorded lecture");
         }
     }
 
