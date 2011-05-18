@@ -120,6 +120,9 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/vnd.ms-excel.sheet.binary.macroEnabled.12", "Excel spreadsheet");
             mimeNames.put("application/vnd.ms-excel.sheet.macroEnabled.12", "Excel spreadsheet");
             mimeNames.put("application/vnd.ms-xpsdocument", "XPS document");
+            
+            // Lecture recordings
+            mimeNames.put("text/x-lecturerecording", "Recorded lecture");
         }
     }
 

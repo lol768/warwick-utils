@@ -2,9 +2,7 @@ package uk.ac.warwick.util.queue.activemq;
 
 import static org.springframework.util.StringUtils.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -19,11 +17,11 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 
-import com.google.common.collect.Maps;
-
 import uk.ac.warwick.util.queue.Queue;
 import uk.ac.warwick.util.queue.QueueListener;
 import uk.ac.warwick.util.queue.QueueProvider;
+
+import com.google.common.collect.Maps;
 
 public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, MassListenerController {
     
