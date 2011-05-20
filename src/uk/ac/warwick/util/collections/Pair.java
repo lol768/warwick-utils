@@ -50,7 +50,22 @@ public final class Pair<L,R> implements Serializable {
         return "<" + (left == null ? "null" : left.toString()) + "," + (right == null ? "null" : right.toString()) + ">";
     }
     
+    /**
+     * Creates a new pair of strings. It will create new String objects in order to
+     * make sure that the passed in String objects don't reference a large
+     * char[] array. (SSO-1145)
+     */
+    @SuppressWarnings("unchecked")
     public static <L,R> Pair<L,R> of(L left, R right){
+        // String is final, so it's safe to cast L/R to String and then back again.
+        if (left != null && left instanceof String) {
+            left = (L) new String((String) left);
+        }
+        
+        if (right != null && right instanceof String) {
+            right = (R) new String((String) right);
+        }
+        
 		return new Pair<L,R>(left, right);
 	}
     

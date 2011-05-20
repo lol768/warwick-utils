@@ -15,8 +15,15 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	private final long created = System.currentTimeMillis();
 	private transient volatile boolean updating;
 	
-	public CacheEntry(K k, V val) {
-		this.key = k;
+	@SuppressWarnings("unchecked")
+    public CacheEntry(K k, V val) {
+	    if (k instanceof String) {
+	        // String is final, so it's safe to cast K to String and then back again.
+            this.key = (K) new String((String)k);
+        } else {
+            this.key = k;
+        }
+	    
 		this.value = val;
 	}
 	
@@ -43,10 +50,11 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CacheEntry) {
-			CacheEntry e = (CacheEntry) obj;
+		try {
+			CacheEntry<K, V> e = (CacheEntry<K, V>) obj;
 			return key.equals(e.key) && e.value == value;
+		} catch (ClassCastException e) {
+		    return false;
 		}
-		return false;
 	}
 }
