@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
+import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
 import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.httpclient.HttpMethodExecutor;
@@ -41,9 +42,13 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
     public GoWarwickDepartmentWebsiteLookup() {
         this(DEFAULT_GO_API_URL);
     }
-    
+
+    /**
+     * EhCache is REQUIRED here, to make sure that the caches have been properly
+     * configured with a disk store. See ehcache-default.xml
+     */
     public GoWarwickDepartmentWebsiteLookup(Uri goApiUrl) {
-        this.cache = Caches.newCache(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), DEFAULT_CACHE_TIMEOUT);
+        this.cache = Caches.newCache(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), DEFAULT_CACHE_TIMEOUT, CacheStrategy.EhCacheRequired);
     }
 
     /**

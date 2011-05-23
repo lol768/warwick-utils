@@ -10,6 +10,12 @@ import uk.ac.warwick.util.cache.ehcache.EhCacheStore;
  * Cache factory methods.
  */
 public final class Caches {
+    
+    public enum CacheStrategy {
+        EhCacheIfAvailable,
+        EhCacheRequired,
+        InMemoryOnly
+    };
 	
 	private static final Logger LOGGER = Logger.getLogger(Caches.class);
 	
@@ -19,7 +25,11 @@ public final class Caches {
 	private Caches() {}
 	
 	public static <K extends Serializable,V extends Serializable> BasicCache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout) {
-		return new BasicCache<K, V>(name, factory, timeout);
+	    return newCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
+	}
+	
+	public static <K extends Serializable,V extends Serializable> BasicCache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy) {
+		return new BasicCache<K, V>(name, factory, timeout, cacheStrategy);
 	}
 	
 	/**
@@ -27,16 +37,28 @@ public final class Caches {
 	 * to avoid attempting to classload any EhCache classes until we know it's actually
 	 * available.
 	 */
-	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name) {
-		CacheStore<K,V> cache;
-		if (isEhCacheAvailable()) {
-			LOGGER.info("Ehcache detected - using EhCacheStore.");
-			cache = new EhCacheStore<K, V>(name);
-		} else {
-			LOGGER.info("Ehcache not found - using built in cache store.");
-			cache = new HashMapCacheStore<K, V>(name);
+	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, CacheStrategy cacheStrategy) {
+		switch (cacheStrategy) {
+		    case EhCacheRequired:
+		        if (isEhCacheAvailable()) {
+		            return new EhCacheStore<K, V>(name);
+		        }
+		        
+		        throw new IllegalStateException("EhCache unavailable");
+		    case EhCacheIfAvailable:
+		        if (isEhCacheAvailable()) {
+		            LOGGER.info("Ehcache detected - using EhCacheStore.");
+                    return new EhCacheStore<K, V>(name);
+                }
+
+                // Intentional fall-through here
+	            LOGGER.info("Ehcache not found - using built in cache store.");
+		    case InMemoryOnly:
+		        return new HashMapCacheStore<K, V>(name);
+		        
+		    default:
+		        throw new IllegalArgumentException("Unexpected cache strategy: " + cacheStrategy);
 		}
-		return cache;
 	}
 
 	/**

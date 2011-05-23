@@ -11,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import uk.ac.warwick.util.cache.Caches.CacheStrategy;
+
 
 /**
  * Cache which implements the following features
@@ -69,8 +71,8 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * @param timeoutSeconds The number of seconds for entries to expire. This is ignored
 	 * 		if you subsequently override the ExpiryStrategy.
 	 */
-	public BasicCache(String storeName, CacheEntryFactory<K,V> factory, long timeoutSeconds) {
-		this(Caches.<K,V>newCacheStore(storeName), factory, timeoutSeconds);
+	public BasicCache(String storeName, CacheEntryFactory<K,V> factory, long timeoutSeconds, CacheStrategy cacheStrategy) {
+		this(Caches.<K,V>newCacheStore(storeName, cacheStrategy), factory, timeoutSeconds);
 	}
 	
 	public void setMaxSize(final int cacheSize) {
