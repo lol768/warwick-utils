@@ -8,21 +8,21 @@ public class WrappingUrlTagTest extends TestCase {
 
     public void testUrlStartingWithSlash() throws Exception {
         String input = "/services/its/elab/about/people/mmannion";
-        String expected = "/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>services/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>its/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>elab/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>about/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>people/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>mmannion";
+        String expected = "/<wbr>services/<wbr>its/<wbr>elab/<wbr>about/<wbr>people/<wbr>mmannion";
 
         assertItWorks(input, expected);
     }
 
     public void testUrlStartingWithHttp() throws Exception {
         String input = "http://www.warwick.ac.uk/services/its/elab/about/people/mmannion";
-        String expected = "http://<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>www.warwick.ac.uk/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>services/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>its/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>elab/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>about/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>people/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>mmannion";
+        String expected = "http://<wbr>www.warwick.ac.uk/<wbr>services/<wbr>its/<wbr>elab/<wbr>about/<wbr>people/<wbr>mmannion";
 
         assertItWorks(input, expected);
     }
 
     public void testUrlWithoutLeadingSlash() throws Exception {
         String input = "services/its/elab/about/people/mmannion/";
-        String expected = "services/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>its/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>elab/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>about/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>people/<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>mmannion/";
+        String expected = "services/<wbr>its/<wbr>elab/<wbr>about/<wbr>people/<wbr>mmannion/";
 
         assertItWorks(input, expected);
     }

@@ -12,7 +12,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  */
 public final class WrappingUrlTag extends TagSupport {
     
-    public static final String GLUE = "<span style='width: 0px;overflow: hidden;font-size: 0px;'> </span>";
+    public static final String GLUE = "<wbr>";
 
     private static final long serialVersionUID = 8979598274671663491L;
 
