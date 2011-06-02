@@ -19,10 +19,6 @@ public final class MimeTypeNameTag extends TagSupport {
     private String mimeType;
 
     public MimeTypeNameTag() {
-        /*
-         * I feel that this could be somehow moved into some nice XML. But am
-         * not sure how that would be done with tags. - nickh
-         */
         if (mimeNames == null) {
             mimeNames = new HashMap<String, String>();
             mimeNames.put("application/pdf", "Adobe PDF document");
