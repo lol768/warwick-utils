@@ -52,9 +52,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     private final List<Header> headers = Lists.newArrayList();
     
-    private List<NameValuePair> postBody;
+    private List<? extends NameValuePair> postBody;
     
-    private List<Pair<String, ContentBody>> multipartBody;
+    private List<Pair<String, ? extends ContentBody>> multipartBody;
     
     private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
@@ -143,7 +143,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
                 if (multipartBody != null && !multipartBody.isEmpty()) {
                     MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
                     
-                    for (Pair<String, ContentBody> multipart : multipartBody) {
+                    for (Pair<String, ? extends ContentBody> multipart : multipartBody) {
                         entity.addPart(multipart.getLeft(), multipart.getRight());
                     }
                     
@@ -220,18 +220,26 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this.factory = factory;
     }
     
-    public final void setMultipartBody(List<Pair<String, ContentBody>> body) {
+    public final void setMultipartBody(List<Pair<String, ? extends ContentBody>> body) {
         assertNotExecuted();
         
         this.multipartBody = body;
     }
 
-    public final void setPostBody(List<NameValuePair> postBody) {
+    public final void setPostBody(List<? extends NameValuePair> postBody) {
         assertNotExecuted();
         
         this.postBody = postBody;
     }
     
+    public final List<? extends NameValuePair> getPostBody() {
+        return postBody;
+    }
+
+    public final List<Pair<String, ? extends ContentBody>> getMultipartBody() {
+        return multipartBody;
+    }
+
     public final void setUrl(Uri url) {
         assertNotExecuted();
         

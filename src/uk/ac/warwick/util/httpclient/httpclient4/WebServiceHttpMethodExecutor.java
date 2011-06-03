@@ -1,7 +1,5 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
-import java.net.MalformedURLException;
-
 import uk.ac.warwick.userlookup.User;
 
 /**
@@ -15,11 +13,11 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
 
     private static final long serialVersionUID = -4562920264538934912L;
 
-    public WebServiceHttpMethodExecutor(final Method method, final String cookieDomain, final User user) throws MalformedURLException {
+    public WebServiceHttpMethodExecutor(final Method method, final String cookieDomain, final User user) {
         this(method, (String)null, cookieDomain, user);
     }
     
-    public WebServiceHttpMethodExecutor(final Method method, final String requestUrl, final String cookieDomain, final User user) throws MalformedURLException {
+    public WebServiceHttpMethodExecutor(final Method method, final String requestUrl, final String cookieDomain, final User user) {
         super(method, requestUrl, cookieDomain, user);
     }
 

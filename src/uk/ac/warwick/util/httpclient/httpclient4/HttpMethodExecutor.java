@@ -190,12 +190,12 @@ public interface HttpMethodExecutor extends Serializable {
     /**
      * Sets the multipart part of the request. POST METHODS ONLY
      */
-    void setMultipartBody(List<Pair<String, ContentBody>> body);
+    void setMultipartBody(List<Pair<String, ? extends ContentBody>> body);
 
     /**
      * Sets the POST body
      */
-    void setPostBody(final List<NameValuePair> postBody);
+    void setPostBody(final List<? extends NameValuePair> postBody);
     
     /**
      * Adds a header to send
