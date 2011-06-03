@@ -19,6 +19,7 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.client.protocol.ResponseProcessCookies;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -95,6 +96,9 @@ public final class MultiThreadedHttpClientFactory implements HttpClientFactory {
                 }
             }
         });
+
+        // Don't care about response cookies
+        client.removeResponseInterceptorByClass(ResponseProcessCookies.class);
         
         ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
                 client.getConnectionManager().getSchemeRegistry(),
