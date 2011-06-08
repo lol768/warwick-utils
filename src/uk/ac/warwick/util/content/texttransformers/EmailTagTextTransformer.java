@@ -131,9 +131,9 @@ public final class EmailTagTextTransformer implements TextTransformer {
                         "</body></html>";
         } else if (!HEADEND.matcher(html).find()) {
             //if there is html but no head, add a head
-            html = HTMLSTART.matcher(html).replaceFirst("$1<head>"+script.replace("$", "\\$")+"</head>");
+            html = HTMLSTART.matcher(html).replaceFirst("$1<head>"+Matcher.quoteReplacement(script)+"</head>");
         } else {
-            html = HEADEND.matcher(html).replaceFirst(script.replace("$", "\\$")+"$1");
+            html = HEADEND.matcher(html).replaceFirst(Matcher.quoteReplacement(script)+"$1");
         }
         return html;
 	}
