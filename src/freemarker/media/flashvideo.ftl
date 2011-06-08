@@ -14,6 +14,7 @@
 Event.onDOMReady(function(){
   object${uniqueId} = new FlashObject("${url}",'object${uniqueId}',"<@dimension value=width?default(640) />","<@dimension value=height?default(360) />");
   object${uniqueId}.addParam("wmode","transparent");
+  object${uniqueId}.addParam("allowfullscreen","true");
   object${uniqueId}.align = "${align}";
   object${uniqueId}.write("video_${uniqueId}");
 });
@@ -28,6 +29,7 @@ Event.onDOMReady(function(){
 			var insertFlash = function(id) {
 			  object${uniqueId} = new FlashObject("${url}",'object${uniqueId}',"<@dimension value=width?default(640) />","<@dimension value=height?default(360) />");
 			  object${uniqueId}.addParam("wmode","transparent");
+			  object${uniqueId}.addParam("allowfullscreen","true");
 			  object${uniqueId}.align = "${align}";
 			  object${uniqueId}.write("video_${uniqueId}");
 			};

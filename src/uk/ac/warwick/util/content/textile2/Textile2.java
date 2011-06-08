@@ -31,6 +31,7 @@ import uk.ac.warwick.util.content.texttransformers.media.MediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.MediaUrlTransformer;
 import uk.ac.warwick.util.content.texttransformers.media.MetacafeMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.MySpaceMediaUrlHandler;
+import uk.ac.warwick.util.content.texttransformers.media.PreziMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.QuickTimeMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.RevverMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.SelfcastTVMediaUrlHandler;
@@ -148,6 +149,7 @@ public final class Textile2 implements TextTransformer {
 			mediaHandlers.put("eyespot", new EyespotMediaUrlHandler());
 			mediaHandlers.put("vimeo", new VimeoMediaUrlHandler());
 			mediaHandlers.put("myspace", new MySpaceMediaUrlHandler());
+			mediaHandlers.put("prezi", new PreziMediaUrlHandler());
 		
 			transformers.add(new MediaUrlTransformer(mediaHandlers, config.getCloseButtonImgUrl()));
 		}

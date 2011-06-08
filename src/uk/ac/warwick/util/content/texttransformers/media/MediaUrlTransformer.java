@@ -12,7 +12,7 @@ import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callba
 
 public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
     
-    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackVersion", "stretching", "title", "description"};
+    static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackversion", "stretching", "title", "description", "locktopath"};
     private static final Logger LOGGER = Logger.getLogger(MediaUrlTransformer.class);
     
     private final Map<String, MediaUrlHandler> handlers;

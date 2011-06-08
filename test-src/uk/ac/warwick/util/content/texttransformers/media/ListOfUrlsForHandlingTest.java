@@ -32,6 +32,7 @@ public class ListOfUrlsForHandlingTest extends TestCase {
         handlers.put("eyespot", new EyespotMediaUrlHandler());
         handlers.put("vimeo", new VimeoMediaUrlHandler());
         handlers.put("myspace", new MySpaceMediaUrlHandler());
+        handlers.put("prezi", new PreziMediaUrlHandler());
                 
         MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, "");
         
