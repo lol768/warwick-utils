@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -15,14 +17,14 @@ import com.google.common.collect.Iterables;
 public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
     
     @Override
-    public final JSON<JSONArray> renderToJSON(Map<String, Object> model, List<String> errors) throws Exception {
-        return JSON.wrap(render(model, errors));
+    public final JSON<JSONArray> renderToJSON(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
+        return JSON.wrap(render(model, request, errors));
     }
 
     /**
      * @return a {@link JSONArray} of the results
      */
-    public abstract JSONArray render(Map<String, Object> model, List<String> errors) throws Exception;
+    public abstract JSONArray render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception;
     
     public static JSONArrayView combine(final JSONArrayView... views) {
         return new CombinedJSONArrayView(views);
@@ -64,7 +66,7 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
         }
         
         @Override
-        public JSONArray render(Map<String, Object> model, List<String> errors) throws Exception {
+        public JSONArray render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
             for (String err : errs) {
                 errors.add(err);
             }
@@ -99,10 +101,10 @@ public abstract class JSONArrayView extends AbstractJSONView<JSONArray> {
         }
         
         @Override
-        public JSONArray render(Map<String, Object> model, List<String> errors) throws Exception {
+        public JSONArray render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
             JSONArray combined = new JSONArray();
             for (JSONArrayView view : views) {
-                JSONArray array = view.render(model, errors);
+                JSONArray array = view.render(model, request, errors);
                 for (int i = 0; i < array.length(); i++) {
                     combined.put(array.get(i));
                 }

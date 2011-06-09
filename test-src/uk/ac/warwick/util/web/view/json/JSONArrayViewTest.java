@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -20,7 +22,7 @@ public final class JSONArrayViewTest {
     public void contentType() throws Exception {
         JSONArrayView view = new JSONArrayView() {
             @Override
-            public JSONArray render(Map<String, Object> model, List<String> errors) throws Exception {
+            public JSONArray render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
                 return new JSONArray();
             }
         };
@@ -55,7 +57,7 @@ public final class JSONArrayViewTest {
      
         JSONArrayView view = new JSONArrayView() {
             @Override
-            public JSONArray render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONArray render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 assertTrue(errors.isEmpty());
                 assertEquals(model, innerModel);
                 
@@ -77,7 +79,7 @@ public final class JSONArrayViewTest {
     public void combine() throws Exception {
         JSONArrayView view1 = new JSONArrayView() {
             @Override
-            public JSONArray render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONArray render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 errors.add("error1");
                 
                 return new JSONArray() {{
@@ -90,7 +92,7 @@ public final class JSONArrayViewTest {
         
         JSONArrayView view2 = new JSONArrayView() {
             @Override
-            public JSONArray render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONArray render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 errors.add("error2");
                 errors.add("error3");
                 
@@ -105,7 +107,7 @@ public final class JSONArrayViewTest {
         JSONArrayView combined = JSONArrayView.combine(view1, view2);
         
         List<String> errors = Lists.newArrayList();
-        JSONArray array = combined.render(null, errors);
+        JSONArray array = combined.render(null, new MockHttpServletRequest(), errors);
         
         assertEquals(Lists.newArrayList("error1", "error2", "error3"), errors);
         assertEquals(new JSONArray() {{

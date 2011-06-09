@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -20,7 +22,7 @@ public final class JSONViewTest {
     public void contentType() throws Exception {
         JSONView view = new JSONView() {
             @Override
-            public JSONObject render(Map<String, Object> model, List<String> errors) throws Exception {
+            public JSONObject render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
                 return new JSONObject();
             }
         };
@@ -55,7 +57,7 @@ public final class JSONViewTest {
      
         JSONView view = new JSONView() {
             @Override
-            public JSONObject render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONObject render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 assertTrue(errors.isEmpty());
                 assertEquals(model, innerModel);
                 
@@ -76,7 +78,7 @@ public final class JSONViewTest {
     public void combine() throws Exception {
         JSONView view1 = new JSONView() {
             @Override
-            public JSONObject render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONObject render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 errors.add("error1");
                 
                 return new JSONObject() {{
@@ -89,7 +91,7 @@ public final class JSONViewTest {
         
         JSONView view2 = new JSONView() {
             @Override
-            public JSONObject render(Map<String, Object> innerModel, List<String> errors) throws Exception {
+            public JSONObject render(Map<String, Object> innerModel, HttpServletRequest request, List<String> errors) throws Exception {
                 errors.add("error2");
                 errors.add("error3");
                 
@@ -104,7 +106,7 @@ public final class JSONViewTest {
         JSONView combined = JSONView.combine(view1, view2);
         
         List<String> errors = Lists.newArrayList();
-        JSONObject object = combined.render(null, errors);
+        JSONObject object = combined.render(null, new MockHttpServletRequest(), errors);
         
         assertEquals(Lists.newArrayList("error1", "error2", "error3"), errors);
         assertEquals(new JSONObject() {{

@@ -41,7 +41,7 @@ abstract class AbstractJSONView<T> implements View {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        JSON<?> results = getValue(model);
+        JSON<?> results = getValue(model, request);
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream(OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
         OutputStreamWriter writer = new OutputStreamWriter(baos, getCharacterEncoding());
@@ -79,7 +79,7 @@ abstract class AbstractJSONView<T> implements View {
         }
     }
 
-    private JSON<?> getValue(Map<String, Object> model) throws JSONException, ServletException {
+    private JSON<?> getValue(Map<String, Object> model, HttpServletRequest request) throws JSONException, ServletException {
         if (wrapErrors) {
             JSONObject results = new JSONObject();
             JSONArray errors = new JSONArray();
@@ -88,7 +88,7 @@ abstract class AbstractJSONView<T> implements View {
             List<String> errorsList = Lists.newArrayList();
             
             try {
-                data = renderToJSON(model, errorsList);
+                data = renderToJSON(model, request, errorsList);
                 
                 for (String error : errorsList) {
                     errors.put(error);
@@ -103,7 +103,7 @@ abstract class AbstractJSONView<T> implements View {
             return JSON.wrap(results);
         } else {
             try {
-                return renderToJSON(model, Lists.<String>newArrayList());
+                return renderToJSON(model, request, Lists.<String>newArrayList());
             } catch (Exception e) {
                 LOGGER.error("Error processing JSON view", e);
                 throw new ServletException(e);
@@ -114,7 +114,7 @@ abstract class AbstractJSONView<T> implements View {
     /**
      * @return a {@link JSON<T>} of the results
      */
-    public abstract JSON<T> renderToJSON(Map<String, Object> model, List<String> errors) throws Exception;
+    public abstract JSON<T> renderToJSON(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception;
     
     private void writeToResponse(HttpServletResponse response, ByteArrayOutputStream baos, String contentType) throws IOException {
         // Write content type and also length (determined via byte array).

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -16,14 +18,14 @@ import com.google.common.collect.Iterables;
 public abstract class JSONView extends AbstractJSONView<JSONObject> {
 
     @Override
-    public final JSON<JSONObject> renderToJSON(Map<String, Object> model, List<String> errors) throws Exception {
-        return JSON.wrap(render(model, errors));
+    public final JSON<JSONObject> renderToJSON(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
+        return JSON.wrap(render(model, request, errors));
     }
 
     /**
      * @return a {@link JSONObject} of the results
      */
-    public abstract JSONObject render(Map<String, Object> model, List<String> errors) throws Exception;
+    public abstract JSONObject render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception;
     
     public static JSONView combine(final JSONView... views) {
         return new CombinedJSONView(views);
@@ -65,7 +67,7 @@ public abstract class JSONView extends AbstractJSONView<JSONObject> {
         }
         
         @Override
-        public JSONObject render(Map<String, Object> model, List<String> errors) throws Exception {
+        public JSONObject render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
             for (String err : errs) {
                 errors.add(err);
             }
@@ -101,10 +103,10 @@ public abstract class JSONView extends AbstractJSONView<JSONObject> {
         
         @SuppressWarnings("unchecked")
         @Override
-        public JSONObject render(Map<String, Object> model, List<String> errors) throws Exception {
+        public JSONObject render(Map<String, Object> model, HttpServletRequest request, List<String> errors) throws Exception {
             JSONObject combined = new JSONObject();
             for (JSONView view : views) {
-                JSONObject object = view.render(model, errors);
+                JSONObject object = view.render(model, request, errors);
                 for (Iterator<String> itr = object.keys(); itr.hasNext();) {
                     String key = itr.next();
                     combined.put(key, object.get(key));
