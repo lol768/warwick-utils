@@ -2,6 +2,8 @@ package uk.ac.warwick.util.web.view;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.sun.syndication.feed.atom.Feed;
 
 public abstract class AtomView extends AbstractXMLAggregationView<Feed> {
@@ -10,7 +12,7 @@ public abstract class AtomView extends AbstractXMLAggregationView<Feed> {
     
     private static final String ATOM_CONTENT_TYPE = "application/atom+xml";
 
-    public abstract Feed getFeed(Map<String, Object> model) throws Exception;
+    public abstract Feed getFeed(Map<String, Object> model, HttpServletRequest request) throws Exception;
 
     public String getContentType() {
         return ATOM_CONTENT_TYPE;

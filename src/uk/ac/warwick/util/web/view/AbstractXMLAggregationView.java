@@ -33,7 +33,7 @@ public abstract class AbstractXMLAggregationView<T extends WireFeed> implements 
         
         try {
             WireFeedOutput output = new WireFeedOutput();
-            WireFeed feed = getFeed(model);
+            WireFeed feed = getFeed(model, request);
             
             Document doc = output.outputJDom(feed);
             postProcess(doc);
@@ -73,7 +73,7 @@ public abstract class AbstractXMLAggregationView<T extends WireFeed> implements 
         return input;
     }
     
-    public abstract T getFeed(Map<String, Object> model) throws Exception;
+    public abstract T getFeed(Map<String, Object> model, HttpServletRequest request) throws Exception;
     
     public abstract String getCharacterEncoding();
     
@@ -84,7 +84,7 @@ public abstract class AbstractXMLAggregationView<T extends WireFeed> implements 
     public static final <T extends WireFeed> AbstractXMLAggregationView<T> of(final T feed, final String contentType, final String characterEncoding) {
         return new AbstractXMLAggregationView<T>() {
             @Override
-            public T getFeed(Map<String, Object> model) throws Exception {
+            public T getFeed(Map<String, Object> model, HttpServletRequest request) throws Exception {
                 return feed;
             }
 

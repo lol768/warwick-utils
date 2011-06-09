@@ -2,6 +2,8 @@ package uk.ac.warwick.util.web.view;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.sun.syndication.feed.rss.Channel;
 
 public abstract class RSSView extends AbstractXMLAggregationView<Channel> {
@@ -10,7 +12,7 @@ public abstract class RSSView extends AbstractXMLAggregationView<Channel> {
     
     private static final String RSS_CONTENT_TYPE = "application/rss+xml";
 
-    public abstract Channel getFeed(Map<String, Object> model) throws Exception;
+    public abstract Channel getFeed(Map<String, Object> model, HttpServletRequest request) throws Exception;
 
     public String getContentType() {
         return RSS_CONTENT_TYPE;
