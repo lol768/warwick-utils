@@ -19,6 +19,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import uk.ac.warwick.util.core.StringUtils;
+
 /**
  * Takes a set of files and computes some version hashes into a properties file,
  * based on the contents of each file.
@@ -26,9 +28,11 @@ import org.apache.tools.ant.types.FileSet;
  * Although a hashing algorithm is used, the end value is likely modified and truncated
  * so it's only really useful as a cache-busting version identifier. 
  * <p>
+ * Optionally a salt can be used to invalidate all hashes.
+ * <p>
  * Example:
  * <pre>
- *  &lt;batchhash propertyfile="/WEB-INF/" maxhashlength="12">
+ *  &lt;batchhash propertyfile="/WEB-INF/" maxhashlength="12" salt="abcdef">
  *    &lt;fileset dir="${static.dir}" includes="**" />
  *  &lt;/batchhash>
  * </pre>
@@ -38,6 +42,7 @@ public class BatchHashTask extends Task {
     
     private File propertyfile;
     private int maxHashLength = -1;
+    private String salt = "";
     
     public void addFileSet(FileSet s) {
         fileSets.add(s);
@@ -55,6 +60,10 @@ public class BatchHashTask extends Task {
         this.maxHashLength = max;
     }
     
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
     @Override
     public void execute() throws BuildException {
         if (fileSets.isEmpty()) {
@@ -63,8 +72,6 @@ public class BatchHashTask extends Task {
         if (propertyfile == null) {
             throw new BuildException("propertyfile must be specified");
         }
-        
-        StringBuilder b = new StringBuilder();
         
         Properties properties = new Properties();
         
@@ -94,9 +101,6 @@ public class BatchHashTask extends Task {
         } catch (IOException e) {
             throw new BuildException(e);
         }
-        
-        
-        
     }
 
     private String digest(File baseDir, String file, MessageDigest digester) throws UnsupportedEncodingException, IOException {
@@ -109,6 +113,10 @@ public class BatchHashTask extends Task {
             byte[] buffer = new byte[8096];
             while((read = input.read(buffer)) > 0) {
                 digester.update(buffer, 0, read);
+            }
+            
+            if (StringUtils.hasText(salt)) {
+                digester.update(salt.getBytes(StringUtils.DEFAULT_CHARSET));
             }
         } finally {
             if (input != null) input.close();
