@@ -60,5 +60,6 @@
 	<classpathentry kind="lib" path="external-libs/junit/jmock-cglib-1.0.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/junit-4.9b2.jar"/>
 	<classpathentry kind="lib" path="external-libs/spring/spring-test.jar"/>
+	<classpathentry kind="lib" path="external-libs/lesscss/lesscss-engine-1.0.43.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

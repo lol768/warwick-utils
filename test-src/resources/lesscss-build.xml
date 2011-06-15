@@ -1,0 +1,25 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant"  name="Batch Hash task test" default="run">
+
+	<taskdef name="lesscss" classname="uk.ac.warwick.util.ant.LessCSSTask" />
+	
+	<property name="static.dir" value="less-static" />
+	<property name="target.dir" value="css-static" />
+	
+	<target name="init">
+		<delete dir="${target.dir}" />
+  </target>
+	
+  <target name="run" depends="init">
+    <lesscss dir="${static.dir}" todir="${target.dir}" />
+  </target>
+	
+	<target name="missing-fileset" depends="init">
+		<lesscss todir="${target.dir}">
+		</lesscss>
+	</target>
+	
+	<target name="cleanup" depends="init">
+
+  </target>
+
+</project>
