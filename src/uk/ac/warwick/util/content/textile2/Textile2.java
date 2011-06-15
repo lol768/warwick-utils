@@ -18,6 +18,7 @@ import uk.ac.warwick.util.content.texttransformers.LatexTextTransformer;
 import uk.ac.warwick.util.content.texttransformers.NoFollowLinkTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextTransformer;
 import uk.ac.warwick.util.content.texttransformers.TidyLineBreaksTransformer;
+import uk.ac.warwick.util.content.texttransformers.TildeLinksConvertingTransformer;
 import uk.ac.warwick.util.content.texttransformers.media.AudioMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.AviMediaUrlHandler;
 import uk.ac.warwick.util.content.texttransformers.media.EyespotMediaUrlHandler;
@@ -127,6 +128,7 @@ public final class Textile2 implements TextTransformer {
 		}
 		
 		transformers.add(new EntityConvertingTransformer());
+		transformers.add(new TildeLinksConvertingTransformer());
 		
 		if (features.contains(TransformerFeature.media)) {
 			TextileConfiguration config = TextileConfiguration.getInstance();
