@@ -54,6 +54,7 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/x-gzip", "GZipped archive");
             
             // specific audio
+            mimeNames.put("audio/mpeg", "MP3 sound clip");
             mimeNames.put("audio/mpeg3", "MP3 sound clip");
             mimeNames.put("audio/wav", "WAV sound clip");
             mimeNames.put("audio/mpeg", "Sound clip");
