@@ -36,7 +36,7 @@ public class LessCSSTask extends Task {
         if (todir == null) {
             throw new BuildException("Must specify todir");
         }
-        if (!todir.mkdirs()) {
+        if (!todir.exists() && !todir.mkdirs()) {
             throw new BuildException("todir can't be created");
         }
         LessEngine engine = new LessEngine();
