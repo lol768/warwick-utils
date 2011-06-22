@@ -52,60 +52,70 @@ Event.onDOMReady(function(){
 	<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 	  
 		/* Attempt HTML5 Video */ 
-		var vidEl = new Element('video', {
-			width: '<@dimension value=width?default(425) />',
-			height: '<@dimension value=height?default(350) />',
-			<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
-			controls: 'controls',
-			autoplay: 'autoplay'
-		});
+		var vidEl = document.createElement('video');
+		vidEl.setAttribute('width', '<@dimension value=width?default(425) />');
+		vidEl.setAttribute('height', '<@dimension value=height?default(350) />');
+		<#if previewimage?default("") != ''>
+			vidEl.setAttribute('poster', "${previewimage?default("")}");
+		</#if>
+		vidEl.setAttribute('controls', 'controls');
+		vidEl.setAttribute('autoplay', 'autoplay');
+		
 		var supportsVideo = !!vidEl.canPlayType;
 		var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 		
 		if (supportsCodec) {
 		  <#if previewimage?default("") != ''>
-		  var posterImage = new Element('img', {
-		    src: '${previewimage?default("")}',
-		    title: 'Click to play',
-          	width: '<@dimension value=width?default(425) />',
-          	height: '<@dimension value=height?default(350) />'
-		  });
+		  	var posterImage = document.createElement('img');
+			posterImage.setAttribute('width', '<@dimension value=width?default(425) />');
+			posterImage.setAttribute('height', '<@dimension value=height?default(350) />');
+			posterImage.setAttribute('src', '${previewimage?default("")}');
+			posterImage.setAttribute('title', 'Click to play');
 		  <#else>
-		  var posterImage = new Element('div', {
-		    style: 'background-color: #000000; width: <@dimension value=width?default(425) />px; height: <@dimension value=height?default(350) />px;',
-		    title: 'Click to play'
-		  });
+		  	var posterImage = document.createElement('div');
+			posterImage.setAttribute('style', 'background-color: #000000; width: <@dimension value=width?default(425) />px; height: <@dimension value=height?default(350) />px;');
+			posterImage.setAttribute('title', 'Click to play');
 		  </#if>
-		  var container = $('video_${uniqueId}');
-  		  container.insert(posterImage);
-      	var startVideo = function(event){      	
-	        vidEl.insert(new Element('source', {
-	          src: '${url}',
-	          type: '${mime_type?default('video/mp4')}',
-	          width: '<@dimension value=width?default(425) />',
-	          height: '<@dimension value=height?default(350) />'
-	        }));
+		  
+		  var container = document.getElementById('video_${uniqueId}');
+  		  container.appendChild(posterImage);
+      	var startVideo = function(event){      
+      		var source = document.createElement('source');
+      		source.setAttribute('src', '${url}');
+      		source.setAttribute('type', '${mime_type?default('video/mp4')}');
+      		source.setAttribute('width', '<@dimension value=width?default(425) />');
+      		source.setAttribute('height', '<@dimension value=height?default(350) />');
+      		
+	        vidEl.appendChild(source);
 	        
 	        <#if alternateRenditions?exists>
-	        	<#list alternateRenditions?keys as mime>
-	        		vidEl.insert(<#if mime == 'video/mp4' || mime == 'video/x-m4v'>{top:</#if>new Element('source', {
-			          src: '${alternateRenditions[mime]}',
-			          type: '${mime}',
-			          width: '<@dimension value=width?default(425) />',
-			          height: '<@dimension value=height?default(350) />'
-			        })<#if mime == 'video/mp4' || mime == 'video/x-m4v'>}</#if>);		
-	        	</#list>
+	        	<#list alternateRenditions?keys as mime>{
+	        		var altSource = document.createElement('source');
+		      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
+		      		altSource.setAttribute('type', '${mime}');
+		      		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
+		      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
+	        	
+	        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
+	        	}</#list>
 	        </#if>
 	        
 	        // Place video in container's place, with container inside the video as fallback
-	        posterImage.remove();
-	        container.insert({after: vidEl});
-	        vidEl.insert(container);
+	        posterImage.parentNode.removeChild(posterImage);
+	        
+	        container.parentNode.insertBefore(vidEl, container.nextSibling);
+	        vidEl.appendChild(container);
+	        
 	        insertFlash();
       	};
       	
-      	container.insert(new Element('div', { className: 'media_tag_play' }).observe('click', startVideo));
-		  posterImage.observe('click', startVideo);		
+      	  var div = document.createElement('div');
+      	  div.setAttribute('class', 'media_tag_play');
+      	  
+      	  container.appendChild(div);
+      	  
+      	  addEvent(div, 'click', startVideo);
+		  addEvent(posterImage, 'click', startVideo);		
 		} else {
 		  insertFlash();
 		}
@@ -126,7 +136,7 @@ Event.onDOMReady(function(){
 <head>
 	<script type="text/javascript">
 	Event.onDOMReady(function() {
-		$('playVideo_${uniqueId}').observe('click', function(evt) {
+		addEvent(document.getElementById('playVideo_${uniqueId}'), 'click', function(evt) {
 			var insertFlash = function(id) {
 			  <#if fallback?exists>
 			    // check for H.264 version
@@ -162,55 +172,70 @@ Event.onDOMReady(function(){
 			    object${uniqueId}.write(id);
 			};
 			
-			var container = new Element('div', { id: 'video_${uniqueId}', style: 'position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;' });
-			var overlay = new Element('div', { id: 'overlay_${uniqueId}', style: 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;' });
+			var container = document.createElement('div');
+			container.setAttribute('id', 'video_${uniqueId}');
+			container.setAttribute('style', 'position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;');
+			
+			var overlay = document.createElement('div');
+			overlay.setAttribute('id', 'overlay_${uniqueId}');
+			overlay.setAttribute('style', 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;');
 			
 			var closeFn = function(evt) {			
-				container.remove();
+				container.parentNode.removeChild(container);
 	
 				overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.0;opacity:.0;filter:alpha(opacity=0);');
-				setTimeout(function() { overlay.remove(); }, 1000);
+				setTimeout(function() { overlay.parentNode.removeChild(overlay); }, 1000);
 	
-				evt.stop();
+				if (evt.preventDefault) {
+					evt.preventDefault();
+				} else {
+					evt.stop();
+				}
+				
+				return false;
 			};
-			overlay.observe('click', closeFn);
+			addEvent(overlay, 'click', closeFn);
 	
-			document.body.insert(overlay);
-			document.body.insert(container);
+			document.body.appendChild(overlay);
+			document.body.appendChild(container);
 			
 			<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 				/* Attempt HTML5 Video */ 
-				var vidEl = new Element('video', {
-					width: '<@dimension value=width?default(425) />',
-					height: '<@dimension value=height?default(350) />',
-					<#if previewimage?default("") != ''>poster: "${previewimage?default("")}",</#if>
-					controls: 'controls',
-					autoplay: 'autoplay'
-				});
+				var vidEl = document.createElement('video');
+				vidEl.setAttribute('width', '<@dimension value=width?default(425) />');
+				vidEl.setAttribute('height', '<@dimension value=height?default(350) />');
+				<#if previewimage?default("") != ''>
+					vidEl.setAttribute('poster', "${previewimage?default("")}");
+				</#if>
+				vidEl.setAttribute('controls', 'controls');
+				vidEl.setAttribute('autoplay', 'autoplay');
 				
-				vidEl.insert(new Element('source', {
-		          	src: '${url}',
-		          	type: '${mime_type?default('video/mp4')}',
-		          	width: '<@dimension value=width?default(425) />',
-		          	height: '<@dimension value=height?default(350) />'
-		        }));
+				var source = document.createElement('source');
+	      		source.setAttribute('src', '${url}');
+	      		source.setAttribute('type', '${mime_type?default('video/mp4')}');
+	      		source.setAttribute('width', '<@dimension value=width?default(425) />');
+	      		source.setAttribute('height', '<@dimension value=height?default(350) />');
+	      		
+		        vidEl.appendChild(source);
 	        
 		        <#if alternateRenditions?exists>
-		        	<#list alternateRenditions?keys as mime>
-		        		vidEl.insert(<#if mime == 'video/mp4' || mime == 'video/x-m4v'>{top:</#if>new Element('source', {
-				          src: '${alternateRenditions[mime]}',
-				          type: '${mime}',
-				          width: '<@dimension value=width?default(425) />',
-				          height: '<@dimension value=height?default(350) />'
-				        })<#if mime == 'video/mp4' || mime == 'video/x-m4v'>}</#if>);		
-		        	</#list>
+		        	<#list alternateRenditions?keys as mime>{
+		        		var altSource = document.createElement('source');
+			      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
+			      		altSource.setAttribute('type', '${mime}');
+			      		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
+			      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
+		        	
+		        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
+		        	}</#list>
 		        </#if>
 		        
 				var supportsVideo = !!vidEl.canPlayType;
 				var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 								
 				if (supportsCodec) {
-					container.update(vidEl.insert(new Element('div', { id: 'videoFallback_${uniqueId}' })));
+					container.innerHTML = "<div id='videoFallback_${uniqueId}'></div>";
+				
 					insertFlash('videoFallback_${uniqueId}');
 				} else {
 					insertFlash('video_${uniqueId}');
@@ -221,18 +246,29 @@ Event.onDOMReady(function(){
 			</#if>
 			
 			<#if description?default('') != ''>
-				container.insert(new Element('p').update('${description?js_string}'));
+				var p = document.createElement('p');
+				p.innerHTML = '${description?js_string}';
+			
+				container.appendChild(p);
 			</#if>
 			
 			<#if download?exists && download = 'true'>
-				container.insert(new Element('p').update(new Element('a', { href: '${url}?forceOpenSave=true' }).update('Download')));
+				var p = document.createElement('p');
+				p.innerHTML = "<a href='${url}?forceOpenSave=true'>Download</a>";
+			
+				container.appendChild(p);
 			</#if>
 			
 			<#if closeButtonImgUrl?default('') != ''>
-				container.insert({ top:
-					new Element('img', { src: '${closeButtonImgUrl}', width: 30, height: 30, style: 'cursor:pointer;position:absolute;top:-12px;right:-12px;z-index:5100;' })
-					.observe('click', closeFn)
-				});
+				var img = document.createElement('img');
+				img.setAttribute('src', '${closeButtonImgUrl}');
+				img.setAttribute('width', 30);
+				img.setAttribute('height', 30);
+				img.setAttribute('style', 'cursor:pointer;position:absolute;top:-12px;right:-12px;z-index:5100;');
+				
+				container.insertBefore(img, container.firstChild);
+				
+				addEvent(img, 'click', closeFn);
 			</#if>
 
 			container.style.marginLeft = '-' + Math.round(container.getWidth() / 2) + 'px';
@@ -241,16 +277,27 @@ Event.onDOMReady(function(){
 	
 			// Look for the ESC key press and hide the window
 			var escObserver = function(evt) {
-				if (evt.keyCode == Event.KEY_ESC) {
+				if (evt.keyCode == 27 /* KEY_ESC */) {
 					closeFn(evt);
-					document.stopObserving('keydown',escObserver);
+					
+					if (document.removeEventListener) {
+				        document.removeEventListener('keydown', escObserver, false);
+				    } else {
+				        document.detachEvent("onkeydown", escObserver);
+				    }
 				}
 			}.bind(this);
-			document.observe('keydown', escObserver);
+			addEvent(document, 'keydown', escObserver);
 	
 			overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.9;opacity:.9;filter:alpha(opacity=90);');
 	
-			evt.stop();
+			if (evt.preventDefault) {
+				evt.preventDefault();
+			} else {
+				evt.stop();
+			}
+			
+			return false;
 		});
 	});
 	</script>

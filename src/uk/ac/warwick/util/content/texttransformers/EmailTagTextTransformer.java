@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.collect.Maps;
+
 import uk.ac.warwick.util.content.MutableContent;
 
 /**
@@ -51,7 +53,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
         int startIndex = 0;
         int endIndex = 0;    
         
-        Map<String, String> emails = new HashMap<String, String>();
+        Map<String, String> emails = Maps.newHashMap();
         
         while (matcher.find()) {
             startIndex = matcher.start();
@@ -231,7 +233,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
 			}
 			javascriptSb.append(thisChar);
 		}
-		javascriptSb.append("';\nElement.update('"+uniqueId+"',"+uniqueId+");\n");
+		javascriptSb.append("';\ndocument.getElementById('"+uniqueId+"').innerHTML = "+uniqueId+";\n");
 		return javascriptSb.toString();
 	}
 

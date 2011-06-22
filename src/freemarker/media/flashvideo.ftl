@@ -25,7 +25,7 @@ Event.onDOMReady(function(){
 <head>
 	<script type="text/javascript">
 	Event.onDOMReady(function() {
-		$('playVideo_${uniqueId}').observe('click', function(evt) {
+		addEvent(document.getElementById('playVideo_${uniqueId}'), 'click', function(evt) {
 			var insertFlash = function(id) {
 			  object${uniqueId} = new FlashObject("${url}",'object${uniqueId}',"<@dimension value=width?default(640) />","<@dimension value=height?default(360) />");
 			  object${uniqueId}.addParam("wmode","transparent");
@@ -34,33 +34,52 @@ Event.onDOMReady(function(){
 			  object${uniqueId}.write("video_${uniqueId}");
 			};
 			
-			var container = new Element('div', { id: 'video_${uniqueId}', style: 'position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;' });
-			var overlay = new Element('div', { id: 'overlay_${uniqueId}', style: 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;' });
+			var container = document.createElement('div');
+			container.setAttribute('id', 'video_${uniqueId}');
+			container.setAttribute('style', 'position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;');
 			
-			var closeFn = function(evt) {			
-				container.remove();
+			var overlay = document.createElement('div');
+			overlay.setAttribute('id', 'overlay_${uniqueId}');
+			overlay.setAttribute('style', 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;');
+			
+			var closeFn = function(evt) {
+				container.parentNode.removeChild(container);
 	
 				overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.0;opacity:.0;filter:alpha(opacity=0);');
-				setTimeout(function() { overlay.remove(); }, 1000);
+				setTimeout(function() { overlay.parentNode.removeChild(overlay); }, 1000);
 	
-				evt.stop();
+				if (evt.preventDefault) {
+					evt.preventDefault();
+				} else {
+					evt.stop();
+				}
+				
+				return false;
 			};
-			overlay.observe('click', closeFn);
+			addEvent(overlay, 'click', closeFn);
 	
-			document.body.insert(overlay);
-			document.body.insert(container);
+			document.body.appendChild(overlay);
+			document.body.appendChild(container);
 			
 			insertFlash('video_${uniqueId}');
 			
 			<#if description?default('') != ''>
-				container.insert(new Element('p').update('${description?js_string}'));
+				var p = document.createElement('p');
+				p.innerHTML = '${description?js_string}';
+			
+				container.appendChild(p);
 			</#if>
 				
 			<#if closeButtonImgUrl?default('') != ''>
-				container.insert({ top:
-					new Element('img', { src: '${closeButtonImgUrl}', width: 30, height: 30, style: 'cursor:pointer;position:absolute;top:-12px;right:-12px;z-index:5100;' })
-					.observe('click', closeFn)
-				});
+				var img = document.createElement('img');
+				img.setAttribute('src', '${closeButtonImgUrl}');
+				img.setAttribute('width', 30);
+				img.setAttribute('height', 30);
+				img.setAttribute('style', 'cursor:pointer;position:absolute;top:-12px;right:-12px;z-index:5100;');
+				
+				container.insertBefore(img, container.firstChild);
+				
+				addEvent(img, 'click', closeFn);
 			</#if>
 
 			container.style.marginLeft = '-' + Math.round(container.getWidth() / 2) + 'px';
@@ -69,16 +88,27 @@ Event.onDOMReady(function(){
 	
 			// Look for the ESC key press and hide the window
 			var escObserver = function(evt) {
-				if (evt.keyCode == Event.KEY_ESC) {
+				if (evt.keyCode == 27 /* KEY_ESC */) {
 					closeFn(evt);
-					document.stopObserving('keydown',escObserver);
+					
+					if (document.removeEventListener) {
+				        document.removeEventListener('keydown', escObserver, false);
+				    } else {
+				        document.detachEvent("onkeydown", escObserver);
+				    }
 				}
 			}.bind(this);
-			document.observe('keydown', escObserver);
+			addEvent(document, 'keydown', escObserver);
 	
 			overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.9;opacity:.9;filter:alpha(opacity=90);');
 	
-			evt.stop();
+			if (evt.preventDefault) {
+				evt.preventDefault();
+			} else {
+				evt.stop();
+			}
+			
+			return false;
 		});
 	});
 	</script>

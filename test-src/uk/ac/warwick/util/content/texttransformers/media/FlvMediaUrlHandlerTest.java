@@ -179,8 +179,10 @@ public final class FlvMediaUrlHandlerTest {
         
         String html = handler.getHtml("file.webm", parameters);
         
+        System.out.println(html);
+        
         assertTrue(html.startsWith("<notextile>"));
-        assertTrue(html.contains("vidEl.insert({top:new Element('source', {"));
+        assertTrue(html.contains("vidEl.insertBefore(altSource, vidEl.firstChild);"));
         assertTrue(html.contains("\"640\",\"384\""));
         
         m.assertIsSatisfied();
