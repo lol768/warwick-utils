@@ -22,7 +22,7 @@ public final class EmailTagTextTransformerTest {
 		
 		EmailTagTextTransformer transformer = new EmailTagTextTransformer();
 		String output = transformer.apply(new MutableContent(null, input)).getContent();
-		
+			
 		assertTrue(output.contains("<span id"));
 	}
 	
