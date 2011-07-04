@@ -34,6 +34,14 @@
 		<function-signature>java.lang.String specialHtml(java.lang.String)</function-signature>
 		<example> ${warwick:specialHtml(myText)} </example>
 	</function>
+	
+	<function>
+		<description>Join a collection of Strings.</description>
+		<name>join</name>
+		<function-class>uk.ac.warwick.util.web.tags.Functions</function-class>
+		<function-signature>java.lang.String join(java.util.Collection, java.lang.String)</function-signature>
+		<example> ${warwick:join(myitems, " ")} </example>
+	</function>
 
 	<tag>
 		<name>collectionGrouper</name>
