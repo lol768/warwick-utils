@@ -19,13 +19,13 @@
 	<target name="bamboo" depends="clean,init,compile,test" />
 
 	<target name="clean">
-		<delete>
+		<delete failonerror="false">
 			<fileset dir="${dist.dir}">
 				<include name="**/*" />
 				<exclude name="**/CVS/**/*.*" />
 			</fileset>
 		</delete>
-		<delete dir="${build.dir}" />
+		<delete dir="${build.dir}" failonerror="false" />
 	</target>
 
 	<target name="init" depends="clean">
