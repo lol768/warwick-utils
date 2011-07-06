@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
@@ -40,11 +41,15 @@ public class LessCSSTask extends Task {
         }
         LessEngine engine = new LessEngine();
         
+        String currentFilename = null;
+        
         try {
             for (FileSet fileSet : fileSets) {
                 DirectoryScanner ds = fileSet.getDirectoryScanner(getProject());
                 File baseDir = ds.getBasedir();
                 for (String file : ds.getIncludedFiles()) {
+                    currentFilename = file;
+                    
                     String sourceFile = baseDir + "/" + file;
                     String newFilename = FileUtils.getFileNameWithoutExtension(file) + ".css";
                     File targetFile = new File(todir, newFilename);
@@ -61,11 +66,11 @@ public class LessCSSTask extends Task {
                 }
             }
         } catch (LessException e) {
-            throw new BuildException(e);
+            throw new BuildException(e, new Location(currentFilename));
         } catch (FileNotFoundException e) {
-            throw new BuildException(e);
+            throw new BuildException(e, new Location(currentFilename));
         } catch (IOException e) {
-            throw new BuildException(e);
+            throw new BuildException(e, new Location(currentFilename));
         }
     }
 
