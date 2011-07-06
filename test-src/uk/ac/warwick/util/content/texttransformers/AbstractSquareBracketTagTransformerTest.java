@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
+
 import junit.framework.TestCase;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
@@ -17,6 +19,36 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
     	this.transformer = new SquareBracketTransformer();
     	this.transformer2 = new MultiTagSquareBracketTransformer();
     	this.transformer3 = new BlockLevelSquareBracketTransformer();
+    }
+
+    /**
+     * Demonstrating how nested tags don't work. Test is disabled as
+     * we don't have the resource or an urgent need to fix it right now.
+     * 
+     * The regex engine means the first [display] tag will pair up with the first
+     * [/display] tag, rather than the outermost one.
+     */
+    public void disabled_testNesting() throws Exception {
+        String input = "[display show=yes]this is [display show=no]not [/display]good.[/display]";
+        String expected = "this is good.";
+        AbstractSquareTagTransformer t = new AbstractSquareTagTransformer("display") {
+            protected Callback getCallback() {
+                return new Callback() { public String transform(String input, MutableContent mc) {
+                        Matcher matcher = getTagPattern().matcher(input);
+                        assertTrue(matcher.matches());
+                        Map<String, Object> params = getParameters(matcher);
+                        String contents = getContents(matcher);
+                        if (params.get("show").equals("yes")) {
+                            return contents;
+                        } else {
+                            return "";
+                        }
+                }};
+            }
+            protected String[] getAllowedParameters() { return new String[] {"show"}; }
+        };
+        MutableContent content = t.apply(new MutableContent(null, input));
+        assertEquals(expected, content.getContent());
     }
 
     public void testStandard() {
