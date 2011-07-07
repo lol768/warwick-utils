@@ -46,6 +46,11 @@ public final class CustomEscapingTransformer implements TextTransformer {
 			return EXP_TEXTILE_BLOCK_ESC_NO_LINE_BREAKS_PAIR_MATCH;
 		}
 
+	    @Override
+	    protected boolean isGeneratesHead() {
+	        return false;
+	    }
+
         @Override
         protected Callback getCallback() {
            return new TextPatternTransformer.Callback() {
@@ -69,6 +74,11 @@ public final class CustomEscapingTransformer implements TextTransformer {
 			return EXP_TEXTILE_BLOCK_ESC_AND_CODE_PAIR_MATCH;
 		}
 
+	    @Override
+	    protected boolean isGeneratesHead() {
+	        return false;
+	    }
+
         @Override
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
@@ -90,6 +100,11 @@ public final class CustomEscapingTransformer implements TextTransformer {
 		protected Pattern getPattern() {
 			return EXP_TEXTILE_BLOCK_ESC_PAIR_MATCH;
 		}
+
+        @Override
+        protected boolean isGeneratesHead() {
+            return false;
+        }
 
         @Override
         protected Callback getCallback() {

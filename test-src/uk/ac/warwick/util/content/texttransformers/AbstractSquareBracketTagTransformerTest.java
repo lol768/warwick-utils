@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Ignore;
-
 import junit.framework.TestCase;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
@@ -46,6 +44,11 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
                 }};
             }
             protected String[] getAllowedParameters() { return new String[] {"show"}; }
+
+            @Override
+            protected boolean isTagGeneratesHead() {
+                return false;
+            }
         };
         MutableContent content = t.apply(new MutableContent(null, input));
         assertEquals(expected, content.getContent());
@@ -112,6 +115,11 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         @Override
         protected String[] getAllowedParameters() {
             return new String[] { "allowed1", "allowed2", "regex" };
+        }
+
+        @Override
+        protected boolean isTagGeneratesHead() {
+            return false;
         }
 
         @Override
@@ -235,6 +243,11 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         }
 
         @Override
+        protected boolean isTagGeneratesHead() {
+            return false;
+        }
+
+        @Override
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
 
@@ -306,6 +319,11 @@ public class AbstractSquareBracketTagTransformerTest extends TestCase {
         @Override
         protected String[] getAllowedParameters() {
             return new String[] { "allowed1", "allowed2", "regex" };
+        }
+
+        @Override
+        protected boolean isTagGeneratesHead() {
+            return false;
         }
 
         @Override

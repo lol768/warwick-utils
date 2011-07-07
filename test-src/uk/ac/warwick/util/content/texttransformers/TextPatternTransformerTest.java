@@ -19,6 +19,11 @@ public final class TextPatternTransformerTest {
             protected Pattern getPattern() {
                 return Pattern.compile("\\[add-head(\\s+.+?[^\\\\])?" + "\\]" + "(.+?)" + "\\[/add-head\\]", Pattern.CASE_INSENSITIVE);
             }
+
+            @Override
+            protected boolean isGeneratesHead() {
+                return true;
+            }
             
             @Override
             protected Callback getCallback() {
@@ -49,6 +54,11 @@ public final class TextPatternTransformerTest {
             protected Pattern getPattern() {
                 return Pattern.compile("\\[add-head(\\s+.+?[^\\\\])?" + "\\]" + "(.+?)" + "\\[/add-head\\]", Pattern.CASE_INSENSITIVE);
             }
+
+            @Override
+            protected boolean isGeneratesHead() {
+                return true;
+            }
             
             @Override
             protected Callback getCallback() {
@@ -78,6 +88,11 @@ public final class TextPatternTransformerTest {
             @Override
             protected Pattern getPattern() {
                 return Pattern.compile("\\[add-head(\\s+.+?[^\\\\])?" + "\\]" + "(.+?)" + "\\[/add-head\\]", Pattern.CASE_INSENSITIVE);
+            }
+
+            @Override
+            protected boolean isGeneratesHead() {
+                return true;
             }
             
             @Override

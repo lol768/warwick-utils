@@ -29,6 +29,11 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
     }
 
     @Override
+    protected boolean isTagGeneratesHead() {
+        return true;
+    }
+
+    @Override
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback(){
 

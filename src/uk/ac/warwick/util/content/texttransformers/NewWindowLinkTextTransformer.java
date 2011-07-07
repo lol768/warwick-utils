@@ -27,8 +27,8 @@ public final class NewWindowLinkTextTransformer implements TextTransformer {
        TagTransformer linkTransformer = new TagTransformer("a", new TextPatternTransformer.Callback() {
            public String transform(final String input, final MutableContent mc) {
                return rewriteLink(input);
-           }    
-       });
+           }
+       }, false);
        return linkTransformer.apply(mc);
     }
 

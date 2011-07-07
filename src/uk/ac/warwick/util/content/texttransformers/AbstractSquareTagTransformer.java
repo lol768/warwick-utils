@@ -88,6 +88,8 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
     
     protected abstract String[] getAllowedParameters();
     
+    protected abstract boolean isTagGeneratesHead();
+    
     public final MutableContent apply(final MutableContent mc) {
         //Quick escape
         if (doQuickCheck && !applies(mc)) {
@@ -111,13 +113,13 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
             startIndex = matcher.start();
             endIndex = matcher.end();
             
-            String transformed = TextPatternTransformer.transform(html.substring(lastMatch, startIndex), getTagPattern(), getCallback(), mc);
+            String transformed = TextPatternTransformer.transform(html.substring(lastMatch, startIndex), getTagPattern(), getCallback(), mc, !isTagGeneratesHead());
             sb.append(extractHeads(transformed, heads));
             sb.append(html.substring(startIndex, endIndex));
             lastMatch = endIndex;
         }
         
-        String transformed = TextPatternTransformer.transform(html.substring(endIndex), getTagPattern(), getCallback(), mc);
+        String transformed = TextPatternTransformer.transform(html.substring(endIndex), getTagPattern(), getCallback(), mc, !isTagGeneratesHead());
         sb.append(extractHeads(transformed, heads));
         
         if (heads.isEmpty()) {

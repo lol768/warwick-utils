@@ -30,6 +30,11 @@ public final class CssUrlRewriteTransformer extends TextPatternTransformer {
     }
 
     @Override
+    protected boolean isGeneratesHead() {
+        return false;
+    }
+
+    @Override
 	protected Pattern getPattern() {
 		/* matches url(xx), url('xx'), url("xx") */
 		if (pattern == null) {

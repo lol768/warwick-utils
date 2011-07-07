@@ -17,7 +17,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
             public String transform(final String i, final MutableContent mc) {
                 return i;
             }
-        });
+        }, false);
         
         String result = transformer.apply(new MutableContent(null, input)).getContent();
         
@@ -31,7 +31,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
             public String transform(final String i, final MutableContent mc) {
                 return "REPLACE";
             }        
-        });
+        }, false);
         String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);
@@ -44,7 +44,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
             public String transform(final String i, final MutableContent mc) {
                 return "START" + i + "END";
             }        
-        });
+        }, false);
         String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);
@@ -57,7 +57,7 @@ public final class NewWindowLinkTextTransformerTest extends TestCase {
             public String transform(final String i, final MutableContent mc) {
                 return i.toUpperCase();
             }        
-        });
+        }, false);
         String result = transformer.apply(new MutableContent(null, input)).getContent();
         
         assertEquals(expected, result);

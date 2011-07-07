@@ -22,6 +22,11 @@ public final class LatexTextTransformer extends AbstractSquareTagTransformer {
     }
 
     @Override
+    protected boolean isTagGeneratesHead() {
+        return false;
+    }
+
+    @Override
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback() {
             public String transform(final String input, final MutableContent mc) {

@@ -59,6 +59,8 @@ public abstract class AbstractSingleSquareTagTransformer implements TextTransfor
         return tagPattern;
     }
     
+    public abstract boolean isTagGeneratesHead();
+    
     /**
      * The class which goes through the input, matching patterns
      * and using the callback to return the transformed text.
@@ -71,6 +73,10 @@ public abstract class AbstractSingleSquareTagTransformer implements TextTransfor
         @Override
         protected Callback getCallback() {
             return getTagCallback();
+        }
+        @Override
+        protected boolean isGeneratesHead() {
+            return isTagGeneratesHead();
         }
     }
     

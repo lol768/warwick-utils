@@ -24,19 +24,24 @@ public abstract class TextPatternTransformer implements TextTransformer {
     
     protected abstract Callback getCallback();
     
+    /**
+     * If this is true, the pattern will NEVER generate <head> content, so it can safely be ignored.
+     */
+    protected abstract boolean isGeneratesHead();
+    
     public final MutableContent apply(MutableContent mc) {
         String text = mc.getContent();
-        text = transform(text, getPattern(), getCallback(), mc);
+        text = transform(text, getPattern(), getCallback(), mc, !isGeneratesHead());
         mc.setContent(text);
         return mc;
     }
     
-    public static final String transform(final String theContent, final Pattern pattern, final Callback callback, final MutableContent mc) {
+    public static final String transform(final String theContent, final Pattern pattern, final Callback callback, final MutableContent mc, boolean ignoreHead) {
         return alternateTransform(theContent, pattern, callback, new Callback() {
             public String transform(String input, MutableContent mc) {
                 return input;
             }
-        }, mc);
+        }, mc, ignoreHead);
     }
     
     public static final <T> List<T> collect(final String content, final Pattern pattern, final Function<String, T> fn) {
@@ -62,7 +67,7 @@ public abstract class TextPatternTransformer implements TextTransformer {
      * a second Callback which is used on all text NOT matching the
      * pattern.
      */
-    public static final String alternateTransform(final String theContent, final Pattern pattern, final Callback innerCallback, final Callback outerCallback, final MutableContent mc) {
+    public static final String alternateTransform(final String theContent, final Pattern pattern, final Callback innerCallback, final Callback outerCallback, final MutableContent mc, boolean ignoreHead) {
         Matcher matcher = pattern.matcher(theContent);
         StringBuilder sb = new StringBuilder();
         StringBuilder allHead = new StringBuilder();
@@ -74,16 +79,16 @@ public abstract class TextPatternTransformer implements TextTransformer {
         while (matcher.find()) {
             startIndex = matcher.start();
             endIndex = matcher.end();
-            sb.append(transform(outerCallback, theContent.substring(lastMatch, startIndex), mc, allHead));
-            sb.append(transform(innerCallback, theContent.substring(startIndex, endIndex), mc, allHead));
+            sb.append(transform(outerCallback, theContent.substring(lastMatch, startIndex), mc, allHead, ignoreHead));
+            sb.append(transform(innerCallback, theContent.substring(startIndex, endIndex), mc, allHead, ignoreHead));
             
             lastMatch = endIndex;
         }
         
-        sb.append(transform(outerCallback, theContent.substring(endIndex), mc, allHead));
+        sb.append(transform(outerCallback, theContent.substring(endIndex), mc, allHead, ignoreHead));
         
         String html = sb.toString();
-        if (allHead.length() > 0) {
+        if (!ignoreHead && allHead.length() > 0) {
             String head = allHead.toString();
             
             // we need to inject some head
@@ -103,8 +108,13 @@ public abstract class TextPatternTransformer implements TextTransformer {
         return html;
     }
     
-    private static String transform(Callback callback, String string, MutableContent mc, StringBuilder allHead) {
+    private static String transform(Callback callback, String string, MutableContent mc, StringBuilder allHead, boolean ignoreHead) {
         String transformed = callback.transform(string, mc); 
+        
+        if (ignoreHead) {
+            return transformed;
+        }
+        
         String body = getTagAndContents(transformed, "body");
         if (body == null) {
             return transformed;

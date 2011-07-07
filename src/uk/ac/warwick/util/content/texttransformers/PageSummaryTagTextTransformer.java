@@ -24,6 +24,11 @@ public final class PageSummaryTagTextTransformer extends AbstractSquareTagTransf
     }
 
     @Override
+    protected boolean isTagGeneratesHead() {
+        return false;
+    }
+
+    @Override
     protected Callback getCallback() {
         return new TextPatternTransformer.Callback() {
 

@@ -29,6 +29,11 @@ public final class EscapeHtmlCommentsTransformer implements TextTransformer {
         }
 
         @Override
+        protected boolean isGeneratesHead() {
+            return false;
+        }
+
+        @Override
         protected Callback getCallback() {
             return new TextPatternTransformer.Callback() {
                 public String transform(final String input, final MutableContent mc) {
