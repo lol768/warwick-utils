@@ -211,7 +211,14 @@ public abstract class AbstractSquareTagTransformer implements TextTransformer {
         
         sb.append(html.substring(endIndex).trim());
         
-        return sb.toString();
+        String transformed = sb.toString();
+        
+        String body = TextPatternTransformer.getTagAndContents(transformed, "body");
+        if (body == null) {
+            return transformed;
+        } else {
+            return body;
+        }
     }
     
     private String injectHead(String originalHtml, String head) {

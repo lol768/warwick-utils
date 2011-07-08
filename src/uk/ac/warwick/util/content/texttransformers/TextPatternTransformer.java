@@ -136,7 +136,7 @@ public abstract class TextPatternTransformer implements TextTransformer {
     private static final char OPENING_ANGLE_BRACKET = '<';
     private static final char TERMINATING_SLASH = '/';
     
-    private static String getTagAndContents(final String thehtml, final String tagToFind) {
+    public static String getTagAndContents(final String thehtml, final String tagToFind) {
         int nextAngleBracket = thehtml.indexOf(OPENING_ANGLE_BRACKET);
         if (nextAngleBracket != -1) {
             int startOfBody = -1;
