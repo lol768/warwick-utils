@@ -25,7 +25,7 @@ public abstract class TextPatternTransformer implements TextTransformer {
     protected abstract Callback getCallback();
     
     /**
-     * If this is true, the pattern will NEVER generate <head> content, so it can safely be ignored.
+     * If this is true, the pattern will generate <head> content, so it can safely be ignored.
      */
     protected abstract boolean isGeneratesHead();
     
