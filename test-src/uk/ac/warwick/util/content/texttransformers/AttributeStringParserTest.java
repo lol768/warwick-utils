@@ -4,9 +4,9 @@ import junit.framework.TestCase;
 
 public class AttributeStringParserTest extends TestCase {
     public void testSingleQuotes() {
-        String input = " param1='value 1'  param2='value 2' ";
+        String input = " param-1='value 1'  param2='value 2' ";
         AttributeStringParser parser = new AttributeStringParser(input);
-        assertEquals("value 1", parser.getValue("param1"));
+        assertEquals("value 1", parser.getValue("param-1"));
         assertEquals("value 2", parser.getValue("param2"));
     }
     

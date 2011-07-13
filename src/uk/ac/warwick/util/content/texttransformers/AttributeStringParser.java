@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public final class AttributeStringParser {
     
-    private static final Pattern NAME_EQUALS = Pattern.compile("^(\\s*(\\w+)=).+", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern NAME_EQUALS = Pattern.compile("^(\\s*([\\w-]+)=).+", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern OPENER = Pattern.compile("^\\s*([\"']|\\&#8217\\;|\\&#8221\\;|\\&quot\\;)");
     private static final Pattern UNQUOTED = Pattern.compile("^[^\\s]+");
     
