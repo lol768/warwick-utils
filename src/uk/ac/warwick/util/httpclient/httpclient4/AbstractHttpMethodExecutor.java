@@ -240,7 +240,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         return multipartBody;
     }
 
-    public final void setUrl(Uri url) {
+    public void setUrl(Uri url) {
         assertNotExecuted();
         
         this.requestUrl = url;
