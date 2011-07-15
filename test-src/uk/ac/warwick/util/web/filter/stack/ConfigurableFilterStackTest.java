@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import static uk.ac.warwick.util.MockUtils.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -14,6 +13,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -103,6 +104,29 @@ public class ConfigurableFilterStackTest {
         filter = new ConfigurableFilterStack(asList(set1, set2));
         filter.afterPropertiesSet();
         
+        filter.doFilter(request, response, new MockFilterChain());
+        ctx.assertIsSatisfied();
+    }
+    
+    /**
+     * This test is actually to demonstrate an exclusion mapping that _doesn't_ work.
+     * Currently * only works directly after a / - you can't put it just anwhere. This is
+     * a limitation of the Servlet Filter spec, but there's no reason we couldn't make
+     * our filter stack more advanced and accept this format.
+     */
+    @Test public void exclusion() throws Exception {
+        ctx.checking(new Expectations(){{
+            final Sequence filterOrder = ctx.sequence("filterOrder");
+            exactly(1).of(f1).doFilter(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)), with(any(FilterChain.class)));
+            will(continueFilterChain()); 
+            inSequence(filterOrder);
+        }});
+        
+        FilterStackSet set = new FilterStackSet(asList(f1), asList("/api/dataentry/*"), asList("/api/dataentry/entries.*"));
+        
+        filter = new ConfigurableFilterStack(asList(set));
+        filter.afterPropertiesSet();
+        request.setRequestURI("/api/dataentry/entries.json");
         filter.doFilter(request, response, new MockFilterChain());
         ctx.assertIsSatisfied();
     }
