@@ -364,6 +364,13 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         String expected = "<form action=\"jim\" method=\"post\">  <input type=\"blah\" value=\"boo\" />  <input type=\"blah\" value=\"boo\" /></form>";
         verifyNoLineBreaks(expected, input);
     }
+    
+    @Test
+    public void removeOnlyMceClass() {
+        String input="a <img src=\"x.jpg\" class=\"mceItem square-tag\"> b";
+        String expected="a <img src=\"x.jpg\" class=\" square-tag\" border=\"0\" /> b";
+        verify(expected, input);
+    }
 
     @Test
     public void noMceMarkup() {

@@ -170,6 +170,13 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         
         AttributesImpl attsImpl = new AttributesImpl(atts);
         
+        String cssClass = attsImpl.getValue("class");
+        if (cssClass != null && cssClass.contains("mce")) {
+            cssClass = cssClass.replaceAll("\\S*mce\\S+", "");
+            attsImpl.remove("class");
+            attsImpl.add("class", cssClass);
+        }
+        
         /** UTL-67 
          * Chrome sometimes creates a bold span with an unbolding span
          * inside it. This bit of processing will detect the unbolding span
@@ -177,7 +184,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
          * the tag.
          */
         if (localName.equals("span")) {
-	        String clazz = attsImpl.getValue("class");
+	        String clazz = cssClass;
 	        if (clazz != null && clazz.contains("Apple-style-span")) {
 	        	String style = attsImpl.getValue("style");
 	        	if (style != null && style.matches(".*font-weight:\\s*normal.*"))
