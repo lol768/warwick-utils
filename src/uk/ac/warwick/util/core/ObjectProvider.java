@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.core;
 
 /**
- * Factory interface.
+ * Factory interface. (which for some reason is not called Factory.)
  */
 public interface ObjectProvider<T> {
     
