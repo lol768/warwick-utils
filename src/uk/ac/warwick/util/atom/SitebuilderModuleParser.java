@@ -64,6 +64,18 @@ public final class SitebuilderModuleParser implements ModuleParser {
             module.setComment(editComment.getValue());
         }
         
+        Element description = element.getChild(SitebuilderModule.ELEMENT_DESCRIPTION, SB_NS);
+        if (description != null) {
+            elementsFound = true;
+            module.setDescription(description.getValue());
+        }
+        
+        Element keywords = element.getChild(SitebuilderModule.ELEMENT_KEYWORDS, SB_NS);
+        if (keywords != null) {
+            elementsFound = true;
+            module.setKeywords(keywords.getValue());
+        }
+        
         return (elementsFound) ? module : null;
     }
     

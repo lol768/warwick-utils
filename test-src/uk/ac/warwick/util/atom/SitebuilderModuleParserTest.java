@@ -31,5 +31,7 @@ public class SitebuilderModuleParserTest extends TestCase {
         assertTrue(module.getAllowSearchEngines());
         assertFalse(module.getShowInLocalNavigation());
         assertTrue(module.getSpanRhs());
+        assertEquals("Here is the description I'm using for this page", module.getDescription());
+        assertEquals("horses, play things, lovely times", module.getKeywords());
     }
 }

@@ -14,5 +14,7 @@
 	<sitebuilder:searchable>true</sitebuilder:searchable>
 	<sitebuilder:visible>false</sitebuilder:visible>
 	<sitebuilder:span-rhs>true</sitebuilder:span-rhs>
+	<sitebuilder:description>Here is the description I'm using for this page</sitebuilder:description>
+	<sitebuilder:keywords>horses, play things, lovely times</sitebuilder:keywords>
 </entry>
 </feed>

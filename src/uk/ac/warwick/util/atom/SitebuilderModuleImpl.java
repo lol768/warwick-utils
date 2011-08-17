@@ -12,6 +12,8 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     private Boolean spanRhs;
     private String head;
     private String comment;
+    private String description;
+    private String keywords;
     
     public SitebuilderModuleImpl() {
         super(SitebuilderModule.class, SitebuilderModule.MODULE_URI);
@@ -30,6 +32,8 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         spanRhs = module.getSpanRhs();
         head = module.getHead();
         comment = module.getComment();
+        keywords = module.getKeywords();
+        description = module.getDescription();
     }
     
     public Boolean getAllowSearchEngines() {
@@ -87,6 +91,22 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
     
 

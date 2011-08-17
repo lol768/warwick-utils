@@ -28,6 +28,8 @@ public interface SitebuilderModule extends Module {
     String ELEMENT_DELETED = "deleted";
     String ELEMENT_SPAN_RHS = "span-rhs";
     String ELEMENT_COMMENT = "edit-comment";
+    String ELEMENT_DESCRIPTION = "description";
+    String ELEMENT_KEYWORDS = "keywords";
 
     String getPageName();
     void setPageName(String name);
@@ -49,4 +51,10 @@ public interface SitebuilderModule extends Module {
     
     String getComment();
     void setComment(String comment);
+    
+    String getDescription();
+    void setDescription(String description);
+    
+    String getKeywords();
+    void setKeywords(String keywords);
 }

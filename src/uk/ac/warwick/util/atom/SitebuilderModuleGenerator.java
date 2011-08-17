@@ -69,6 +69,16 @@ public final class SitebuilderModuleGenerator implements ModuleGenerator {
                     sbm.getSpanRhs().toString()));
         }
         
+        if (sbm.getKeywords() != null) {
+            element.addContent(element(SitebuilderModule.ELEMENT_KEYWORDS, 
+                    sbm.getKeywords()));
+        }
+        
+        if (sbm.getDescription() != null) {
+            element.addContent(element(SitebuilderModule.ELEMENT_DESCRIPTION, 
+                    sbm.getDescription()));
+        }
+        
         // edit-comment not present because it's only parsed as input. 
         
     }
