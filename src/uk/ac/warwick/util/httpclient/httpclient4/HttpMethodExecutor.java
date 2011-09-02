@@ -60,10 +60,6 @@ public interface HttpMethodExecutor extends Serializable {
     // In case you just need the status code.
     ResponseHandler<Void> IGNORE_RESPONSE = new ResponseHandler<Void>() {
         public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                entity.consumeContent();
-            }
             return null;
         }
     };
