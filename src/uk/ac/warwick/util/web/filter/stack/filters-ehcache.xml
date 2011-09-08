@@ -2,7 +2,10 @@
 <!-- 
     
  -->
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
+<ehcache 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="ehcache.xsd"
+	updateCheck="false">
  
     <!-- 
         store 10,000 distinct request paths.
