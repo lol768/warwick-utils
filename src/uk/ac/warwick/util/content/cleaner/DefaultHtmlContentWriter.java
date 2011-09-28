@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.xml.sax.Attributes;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.core.HtmlUtils;
 
 /**
@@ -30,7 +31,7 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
         this.contentFilter = cFilter;
     }
 
-    public String renderStartTag(String tagName, Attributes atts) {
+    public String renderStartTag(String tagName, Attributes atts, MutableContent mc) {
         StringBuilder tagSb = new StringBuilder();
 
         tagSb.append("<" + tagName);

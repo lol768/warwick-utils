@@ -2,14 +2,16 @@ package uk.ac.warwick.util.content.texttransformers.media;
 
 import java.util.Map;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public abstract class AbstractMetadataAwareMediaUrlHandler extends MediaUrlHandler {
 	
 	private MetadataHandler metadataHandler;
 
 	@Override
-	public final String getHtml(String url, Map<String, Object> parameters) {
+	public final String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
 		if (metadataHandler != null) {
-			metadataHandler.handle(url, parameters);
+			metadataHandler.handle(url, parameters, mc);
 		}
 		
 		// sanitise width and height parameters to contain only numbers. if this

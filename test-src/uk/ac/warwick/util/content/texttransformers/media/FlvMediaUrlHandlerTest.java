@@ -42,8 +42,8 @@ public final class FlvMediaUrlHandlerTest {
 		parameters.put("random", new java.util.Random());
 		parameters.put("align", "left");
 		
-		assertTrue(handler.getHtml("file.mp4", parameters).startsWith("<notextile>"));
-		assertTrue(handler.getHtml("file.mp4", parameters).contains("\"425\",\"374\""));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).startsWith("<notextile>"));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("\"425\",\"374\""));
 	}
 	
 	@Test
@@ -55,7 +55,7 @@ public final class FlvMediaUrlHandlerTest {
 		parameters.put("align", "left");
 		
 		m.checking(new Expectations() {{
-			one(metadataHandler).handle("../big_buck_bunny.mp4", parameters); will(new Action() {
+			one(metadataHandler).handle("../big_buck_bunny.mp4", parameters, null); will(new Action() {
 				public void describeTo(Description description) {
 					description.appendText("populate metadata");
 				}
@@ -70,7 +70,7 @@ public final class FlvMediaUrlHandlerTest {
 			});
 		}});
 		
-		String html = handler.getHtml("../big_buck_bunny.mp4", parameters);
+		String html = handler.getHtml("../big_buck_bunny.mp4", parameters, null);
 		
 		assertTrue(html.startsWith("<notextile>"));
 		assertTrue(html.contains("\"640\",\"384\""));
@@ -86,7 +86,7 @@ public final class FlvMediaUrlHandlerTest {
         parameters.put("width", "100%");
         parameters.put("height", "auto");
         
-        String html = handler.getHtml("file.mp4", parameters);
+        String html = handler.getHtml("file.mp4", parameters, null);
         
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("\"100%\",\"\""));
@@ -99,7 +99,7 @@ public final class FlvMediaUrlHandlerTest {
         parameters.put("align", "left");
         parameters.put("title", "Click here for a good time");
         
-        String html = handler.getHtml("file.mp4", parameters);
+        String html = handler.getHtml("file.mp4", parameters, null);
         
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("<a href=\"file.mp4?forceOpenSave=true\""));
@@ -116,7 +116,7 @@ public final class FlvMediaUrlHandlerTest {
         parameters.put("align", "left");
         
         m.checking(new Expectations() {{
-            one(metadataHandler).handle("file.mp4", parameters); will(new Action() {
+            one(metadataHandler).handle("file.mp4", parameters, null); will(new Action() {
                 public void describeTo(Description description) {
                     description.appendText("populate metadata");
                 }
@@ -138,7 +138,7 @@ public final class FlvMediaUrlHandlerTest {
             });
         }});
         
-        String html = handler.getHtml("file.mp4", parameters);
+        String html = handler.getHtml("file.mp4", parameters, null);
         assertFalse(html.contains("vidEl.insert({top:new Element('source', {"));
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("\"640\",\"384\""));
@@ -155,7 +155,7 @@ public final class FlvMediaUrlHandlerTest {
         parameters.put("align", "left");
         
         m.checking(new Expectations() {{
-            one(metadataHandler).handle("file.webm", parameters); will(new Action() {
+            one(metadataHandler).handle("file.webm", parameters, null); will(new Action() {
                 public void describeTo(Description description) {
                     description.appendText("populate metadata");
                 }
@@ -177,7 +177,7 @@ public final class FlvMediaUrlHandlerTest {
             });
         }});
         
-        String html = handler.getHtml("file.webm", parameters);
+        String html = handler.getHtml("file.webm", parameters, null);
         
         System.out.println(html);
         

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 
 public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
@@ -24,7 +25,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     @Test
     public void basicSanity() throws Exception {
         String input = readResourceToString("/htmlClean/input1.html");
-        String output = cleaner.clean(input);
+        String output = cleaner.clean(input, new MutableContent(null, null));
 
         assertTrue("keep onclick", output.contains("onclick=\"alert('hello, I\\'m an alert')\""));
         assertTrue("keep align", output.contains("align="));
@@ -148,7 +149,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     public void commentsPreserved() {
         String comment = "<!-- SITEBUILDER_MERGE_DYNAMIC_STATIC -->";
         String input = "<p>Inconsequential text</p>\n " + comment + " \n" + "<p>More text.</p>";
-        String output = cleaner.clean(input);
+        String output = cleaner.clean(input, new MutableContent(null, null));
         assertTrue("comment preserved", output.contains(comment));
     }
 
@@ -436,7 +437,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         input += "<tr><td>Content 1</td><td align=\"middle\">Content 2</td><td cellpadding=\"1\" align=middle>Header 3</td></tr>";
         input += "</table>";
 
-        String output = cleaner.clean(input).trim();
+        String output = cleaner.clean(input, new MutableContent(null, null)).trim();
         
         assertTrue(output.contains("<td align=\"center\">"));
         assertTrue(output.contains("<th align=\"center\">"));
@@ -488,7 +489,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     	String input = readResourceToString("/htmlClean/sbtwo-3275.html");
     	
     	long start = System.currentTimeMillis();
-    	cleaner.clean(input);
+    	cleaner.clean(input, new MutableContent(null, null));
     	long stop = System.currentTimeMillis();
     	
     	// assert that this took less than 5 seconds. It should take MUCH less than that!
@@ -642,7 +643,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
 
     private void verify(String expected, String input) {
-        String output = cleaner.clean(input).trim();
+        String output = cleaner.clean(input, new MutableContent(null, null)).trim();
         assertEquals(expected.replace("\r", ""), output.replace("\r", ""));
         
         // Check that subsequent cleanups are idempotent
@@ -666,7 +667,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
 
     private void verifyNoLineBreaks(String expected, String input) {
-        String output = trimLineBreaks(cleaner.clean(input));
+        String output = trimLineBreaks(cleaner.clean(input, new MutableContent(null, null)));
         expected = trimLineBreaks(expected);
         assertEquals(expected, output);
         

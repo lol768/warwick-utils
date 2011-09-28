@@ -59,7 +59,7 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
                     String contentType = parameters.get("type").toString();
                     try {
                         MediaUrlHandler handler = handlers.get(contentType);
-                        result = handler.getHtml(address, parameters);
+                        result = handler.getHtml(address, parameters, mc);
                     } catch (Exception e) {
                         LOGGER.debug("Media URL with overridden type threw an exception: " + e.getMessage(),e);
                         /*
@@ -72,7 +72,7 @@ public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
                 } else {
                     for (MediaUrlHandler handler : handlers.values()) {
                         if (handler.recognises(address)) {
-                            result = handler.getHtml(address, parameters);
+                            result = handler.getHtml(address, parameters, mc);
                             break;
                         }
                     }

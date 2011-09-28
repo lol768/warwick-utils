@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     
     @Test
@@ -56,7 +58,7 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     @Test
     public void horribleMsWordPaste() throws Exception {
         String input = readResourceToString("/htmlClean/input2.html");
-        String output = cleaner.clean(input);
+        String output = cleaner.clean(input, new MutableContent(null, null));
 
         assertFalse("remove all those stupid spans!", output.contains("<span"));
         assertFalse("remove all those stupid spans!", output.contains("</span>"));
@@ -68,7 +70,7 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     @Test
     public void horribleMsWord2007Paste() throws Exception {
         String input = readResourceToString("/htmlClean/input3.html");
-        String output = cleaner.clean(input);
+        String output = cleaner.clean(input, new MutableContent(null, null));
 
         assertFalse("remove all those stupid spans!", output.contains("<span"));
         assertFalse("remove all those stupid spans!", output.contains("</span>"));
@@ -131,7 +133,7 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     }
     
     private void verify(String expected, String input) {
-        String output = cleaner.clean(input).trim();
+        String output = cleaner.clean(input, new MutableContent(null, null)).trim();
         assertEquals(expected.replace("\r", ""), output.replace("\r", ""));
     }
 

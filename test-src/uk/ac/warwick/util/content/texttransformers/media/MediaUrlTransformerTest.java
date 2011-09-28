@@ -40,7 +40,7 @@ public class MediaUrlTransformerTest {
             public boolean recognises(String url) {
                 return true;
             }
-            public String getHtml(String url, Map<String, Object> parameters) {
+            public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
                 return url.toUpperCase();
             }
         });
@@ -60,7 +60,7 @@ public class MediaUrlTransformerTest {
             public boolean recognises(String url) {
                 return true;
             }
-            public String getHtml(String url, Map<String, Object> parameters) {
+            public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
                 String result = url.toUpperCase() + "(";
                 result += "width:"+parameters.get("width")+",";
                 result += "height:"+parameters.get("height")+",";
@@ -89,7 +89,7 @@ public class MediaUrlTransformerTest {
             public boolean recognises(String url) {
                 return true;
             }
-            public String getHtml(String url, Map<String, Object> parameters) {
+            public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
                 return url.toUpperCase();
             }
         });
@@ -97,7 +97,7 @@ public class MediaUrlTransformerTest {
             public boolean recognises(String url) {
                 return false;
             }
-            public String getHtml(String url, Map<String, Object> parameters) {
+            public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
                 return url.toLowerCase();
             }
         });
@@ -123,7 +123,7 @@ public class MediaUrlTransformerTest {
             public boolean recognises(String url) {
                 return true;
             }
-            public String getHtml(String url, Map<String, Object> parameters) {
+            public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
                 return url.toUpperCase();
             }
         });

@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.html5.HTML5Schema;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
@@ -118,7 +119,7 @@ public final class HtmlCleaner implements Cleaner {
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<a [^>]+rel=\"lightbox\\[[^>]+></a>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "lightbox[", ""));
     }
     
-    public String clean(final String input) {
+    public String clean(final String input, final MutableContent mc) {
         String text = doPreParsingCleanup(input);
         
         Parser parser = new Parser();
@@ -126,7 +127,7 @@ public final class HtmlCleaner implements Cleaner {
         TagAndAttributeFilter filter = filterProvider.newInstance();
         filter.setAllowJavascriptHandlers(isAllowJavascriptHandlers());
         
-        CleanerWriter handler = new CleanerWriter(filter);
+        CleanerWriter handler = new CleanerWriter(filter, mc);
         
         if (contentWriter != null) {
         	contentWriter.setDelegate(handler.getContentWriter());

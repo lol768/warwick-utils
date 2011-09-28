@@ -14,6 +14,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.HtmlCleaner.ContentType;
 import uk.ac.warwick.util.core.StringUtils;
 
@@ -81,8 +82,12 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     private ContentType lastContentType = ContentType.none;
 
 	private boolean printingContent = true;
+	
+	private final MutableContent mc;
 
-    public CleanerWriter(final TagAndAttributeFilter theFilter) {
+    public CleanerWriter(final TagAndAttributeFilter theFilter, final MutableContent mc) {
+        this.mc = mc;
+        
         this.buffer = new TrackingStringBuilder();
         this.filter = theFilter;
         
@@ -94,8 +99,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         this.tagReplacements.put("i", "em");
     }
     
-    public CleanerWriter(final TagAndAttributeFilter theFilter, final BodyContentFilter theContentFilter) {
-        this(theFilter);
+    public CleanerWriter(final TagAndAttributeFilter theFilter, final BodyContentFilter theContentFilter, final MutableContent mc) {
+        this(theFilter, mc);
         this.contentFilter = theContentFilter;
     }
 
@@ -246,7 +251,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         
         String renderedTag;
         if (inverse == null) {
-        	renderedTag = contentWriter.renderStartTag(tagName,attsImpl);
+        	renderedTag = contentWriter.renderStartTag(tagName,attsImpl, mc);
         } else {
         	renderedTag = contentWriter.renderEndTag(inverse.getTagName());
         }
@@ -402,7 +407,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     	if (tag.inverse == null) {
     		html = contentWriter.renderEndTag(tag.getTagName());
     	} else {
-    		html = contentWriter.renderStartTag(tag.inverse.getTagName(), tag.inverse.getAttributes());
+    		html = contentWriter.renderStartTag(tag.inverse.getTagName(), tag.inverse.getAttributes(), mc);
     	}
         buffer.append(html);
     }

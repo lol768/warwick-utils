@@ -152,7 +152,7 @@ public class TextileString {
 	public final String correctHtml(final String origContent) {
 		cleaner.setAllowJavascriptHandlers(allowJavascriptHandlers);
 		
-		return cleaner.clean(origContent);
+		return cleaner.clean(origContent, new MutableContent(null, null));
 	}
 
 	public final String getTextileText() {

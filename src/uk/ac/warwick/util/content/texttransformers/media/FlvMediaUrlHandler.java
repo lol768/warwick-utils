@@ -3,6 +3,8 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandler {
 	
 	private final String playerLocation;
@@ -25,7 +27,7 @@ public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandl
         protected String[] getSupportedExtensions() {
             return new String[] { "flv", "f4v", "f4p", "mp4", "m4v" };
         }
-        public String getHtml(final String url, final Map<String, Object> parameters) {
+        public String getHtml(final String url, final Map<String, Object> parameters, MutableContent mc) {
             throw new UnsupportedOperationException();
         }
     };

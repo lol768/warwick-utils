@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import freemarker.template.utility.StringUtil;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.textile2.Textile2;
 import uk.ac.warwick.util.content.textile2.TransformationOptions;
 import uk.ac.warwick.util.core.StringUtils;
@@ -55,7 +56,7 @@ public final class AudioMediaUrlHandler extends AbstractExtensionMatchingMediaUr
         return new String[] { "mp3" };
     }
 
-    public String getHtml(final String url, final Map<String,Object> parameters) {
+    public String getHtml(final String url, final Map<String,Object> parameters, MutableContent mc) {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("url", url);
         

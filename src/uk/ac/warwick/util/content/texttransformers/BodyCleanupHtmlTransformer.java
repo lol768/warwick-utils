@@ -21,10 +21,10 @@ public final class BodyCleanupHtmlTransformer implements TextTransformer {
         
         if ((bodies).size() > 0) {
             String body = bodies.iterator().next();
-            body = cleaner.clean(body);
+            body = cleaner.clean(body, mc);
             result = HtmlUtils.replaceContent(text, "\n\n" + body + "\n", "<body", "</body>");
         } else {
-            result = cleaner.clean(text);
+            result = cleaner.clean(text, mc);
         }
         
         mc.setContent(result);

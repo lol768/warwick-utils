@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.web.Uri;
 
 public abstract class AbstractFlashPlayerMediaUrlHandler extends MediaUrlHandler {
@@ -19,7 +20,7 @@ public abstract class AbstractFlashPlayerMediaUrlHandler extends MediaUrlHandler
         return Uri.parse(url);
     }
     
-    public final String getHtml(final String url, final Map<String,Object> parameters) {
+    public final String getHtml(final String url, final Map<String,Object> parameters, MutableContent mc) {
         String flashUrl = getFlashUrl(url);
         if (flashUrl != null) {
             Map<String,Object> model = new HashMap<String,Object>();

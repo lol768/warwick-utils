@@ -3,6 +3,8 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public final class AviMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandler {
 	
 	private final String defaultPreviewImageLocation;
@@ -19,7 +21,7 @@ public final class AviMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandl
         protected String[] getSupportedExtensions() {
             return new String[] { "wmv", "avi", "wma" };
         }
-        public String getHtml(final String url, final Map<String, Object> parameters) {
+        public String getHtml(final String url, final Map<String, Object> parameters, MutableContent mc) {
             throw new UnsupportedOperationException();
         }
     };

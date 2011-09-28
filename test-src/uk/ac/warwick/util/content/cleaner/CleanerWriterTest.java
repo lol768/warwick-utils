@@ -6,6 +6,8 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 
 public class CleanerWriterTest {
 	private Mockery mockery = new Mockery();
@@ -16,7 +18,7 @@ public class CleanerWriterTest {
 		mockery.checking(new Expectations(){{
 			allowing(filter); will(returnValue(true));
 		}});
-		CleanerWriter cw = new CleanerWriter(filter);
+		CleanerWriter cw = new CleanerWriter(filter, new MutableContent(null, null));
 		cw.characters("Hello".toCharArray(), 0, 5);
 		cw.comment("".toCharArray(), 0, -2);
 		cw.characters("Hello".toCharArray(), 0, 4);

@@ -3,6 +3,8 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 public final class QuickTimeMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandler {
 	
 	private final String defaultPreviewImageLocation;
@@ -19,7 +21,7 @@ public final class QuickTimeMediaUrlHandler extends AbstractMetadataAwareMediaUr
         protected String[] getSupportedExtensions() {
             return new String[] { "mov", "mpg", "mpeg", "mpe" };
         }
-        public String getHtml(final String url, final Map<String, Object> parameters) {
+        public String getHtml(final String url, final Map<String, Object> parameters, MutableContent mc) {
             throw new UnsupportedOperationException();
         }
     };

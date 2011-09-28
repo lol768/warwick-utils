@@ -2,6 +2,8 @@ package uk.ac.warwick.util.content.cleaner;
 
 import org.xml.sax.Attributes;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 /**
  * Interface for writing HTML content into a string buffer. Ideal if you want to
  * rewrite stuff :)
@@ -10,7 +12,7 @@ import org.xml.sax.Attributes;
  */
 public interface HtmlContentWriter {
     
-    String renderStartTag(String tagName, Attributes atts);
+    String renderStartTag(String tagName, Attributes atts, MutableContent mc);
     
     String renderEndTag(String tagName);
     

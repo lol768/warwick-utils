@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
 
+import uk.ac.warwick.util.content.MutableContent;
+
 import com.google.common.collect.Maps;
 
 public final class PreziMediaUrlHandler extends MediaUrlHandler {
@@ -17,7 +19,7 @@ public final class PreziMediaUrlHandler extends MediaUrlHandler {
     }
 
     @Override
-    public String getHtml(String url, Map<String, Object> parameters) {
+    public String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
         Matcher m = PATTERN.matcher(url);
         Assert.isTrue(m.matches());
         String preziId = m.group(1);
