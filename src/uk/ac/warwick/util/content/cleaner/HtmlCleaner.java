@@ -104,7 +104,6 @@ public final class HtmlCleaner implements Cleaner {
         
         this.postParseStraightReplacements = Lists.newArrayList();
         this.postParseStraightReplacements.add(Pair.of("<strong></strong>", ""));
-        this.postParseStraightReplacements.add(Pair.of("  +", " "));
         
         this.postParseRegexReplacements = Lists.newArrayList();
         this.postParseRegexReplacements.add(Triple.of(Pattern.compile("<p>\\s*</p>\n*"), "</p>", ""));

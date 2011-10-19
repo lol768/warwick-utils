@@ -21,6 +21,13 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     	
     	verify(expected, input);
     }
+    
+    @Test
+    public void sbtwo4909() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-4909.html");
+       
+        verify(input, input);
+    }
 
     @Test
     public void basicSanity() throws Exception {
