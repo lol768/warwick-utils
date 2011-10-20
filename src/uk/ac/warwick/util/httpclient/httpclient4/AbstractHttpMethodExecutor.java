@@ -22,6 +22,7 @@ import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.impl.client.RequestWrapper;
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.message.BasicHeader;
@@ -311,7 +312,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         assertExecuted();
         
         HttpUriRequest finalRequest = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        if (finalRequest != null) {
+        if (finalRequest instanceof RequestWrapper) {
+            return Uri.fromJavaUri(request.getURI()).resolve(Uri.parse(((RequestWrapper)finalRequest).getOriginal().getRequestLine().getUri()));
+        } else if (finalRequest != null) {
             return Uri.fromJavaUri(request.getURI()).resolve(Uri.fromJavaUri(finalRequest.getURI()));
         } else {
             throw new IllegalStateException("Couldn't find target in context");
