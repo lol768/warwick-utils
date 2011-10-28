@@ -2,6 +2,7 @@ package uk.ac.warwick.util.termdates;
 
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.joda.time.DateMidnight;
@@ -9,6 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Interval;
 import org.joda.time.PeriodType;
+import org.joda.time.Weeks;
 import org.junit.Test;
 
 import uk.ac.warwick.util.collections.Pair;
@@ -200,6 +202,46 @@ public final class TermFactoryImplTest {
         assertEquals(2, term.getWeekNumber(monday.plusWeeks(1)));
         assertEquals(31, term.getAcademicWeekNumber(monday.plusWeeks(1)));
         assertEquals(22, term.getCumulativeWeekNumber(monday.plusWeeks(1)));
+    }
+    
+    @Test
+    public void sanity() throws Exception {
+        TermFactoryImpl factory = new TermFactoryImpl();
+        List<Term> terms = factory.getTermDates();
+        
+        Term lastTerm = null;
+        for (Iterator<Term> itr = terms.iterator(); itr.hasNext();) {
+            Term term = itr.next();
+            
+            if (lastTerm != null) {
+                assertTrue(term.getStartDate().isAfter(lastTerm.getEndDate()));
+                
+                switch (lastTerm.getTermType()) {
+                    case autumn:
+                        assertEquals(TermType.spring, term.getTermType());
+                        break;
+                    case spring:
+                        assertEquals(TermType.summer, term.getTermType());
+                        break;
+                    case summer:
+                        assertEquals(TermType.autumn, term.getTermType());
+                        break;
+                }
+            } else {
+                assertEquals(TermType.autumn, term.getTermType());
+            }
+            
+            assertTrue(term.getStartDate().isBefore(term.getEndDate()));
+            
+            DateTime actualEndDate = term.getEndDate();
+            while (actualEndDate.getDayOfWeek() != term.getStartDate().getDayOfWeek()) {
+                actualEndDate = actualEndDate.plusDays(1);
+            }
+            
+            assertEquals(10, Weeks.weeksBetween(term.getStartDate(), actualEndDate).getWeeks());
+            
+            lastTerm = term;
+        }
     }
 
 }
