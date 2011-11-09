@@ -29,6 +29,16 @@ Default ehCache config for uk.ac.warwick.util.cache
            diskSpoolBufferSizeMB="20"
            memoryStoreEvictionPolicy="LFU"
             />
+
+    <cache name="DepartmentNameCache"
+           maxElementsInMemory="2000"
+           maxElementsOnDisk="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"
+           diskSpoolBufferSizeMB="20"
+           memoryStoreEvictionPolicy="LFU"
+            />
             
     <!-- 
     Diskstore dir
