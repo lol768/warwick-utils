@@ -21,7 +21,7 @@ import com.google.common.collect.Maps;
  * explicitly.
  */
 public final class UriBuilder {
-    private static final Pattern QUERY_PATTERN = Pattern.compile("([^&=]+)=([^&=]*)");
+    private static final Pattern QUERY_PATTERN = Pattern.compile("([^&=]+)=?([^&=]*)");
 
     private String scheme;
 

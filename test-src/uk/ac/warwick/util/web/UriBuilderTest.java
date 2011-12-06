@@ -20,6 +20,7 @@ package uk.ac.warwick.util.web;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -474,6 +475,31 @@ public class UriBuilderTest {
 		m.assertIsSatisfied();
 		
 		assertEquals("http://example.com/my/path?one=two&three=four", builder.toString());
+	}
+	
+	@Test
+	public void queryManipulationDoesntAffectNoValueParams() {
+	    UriBuilder builder = new UriBuilder(Uri.parse("http://go.warwick.ac.uk/its?test"));
+	    assertEquals("test", builder.getQuery());
+	    assertEquals("", builder.getQueryParameter("test"));
+	    assertEquals(Collections.singletonMap("test", Lists.newArrayList("")), builder.getQueryParameters());
+	    assertEquals(Lists.newArrayList(""), builder.getQueryParameters("test"));
+	    
+	    builder.removeQueryParameter("somethingElse");
+	    assertEquals("test=", builder.getQuery()); // This is OK - they are equivalent
+        assertEquals("", builder.getQueryParameter("test"));
+        assertEquals(Collections.singletonMap("test", Lists.newArrayList("")), builder.getQueryParameters());
+        assertEquals(Lists.newArrayList(""), builder.getQueryParameters("test"));
+        
+        builder.addQueryParameter("something", "else");
+        assertEquals("test=&something=else", builder.getQuery());
+        assertEquals("", builder.getQueryParameter("test"));
+        assertEquals(Lists.newArrayList(""), builder.getQueryParameters("test"));
+        
+        builder.addQueryParameter("test", "pirates");
+        assertEquals("test=&test=pirates&something=else", builder.getQuery());
+        assertEquals("", builder.getQueryParameter("test"));
+        assertEquals(Lists.newArrayList("", "pirates"), builder.getQueryParameters("test"));
 	}
 	
 	public static void assertNotEquals(Object expected, Object actual) {

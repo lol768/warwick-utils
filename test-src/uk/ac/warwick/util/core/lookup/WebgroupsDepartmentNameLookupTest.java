@@ -55,12 +55,14 @@ public final class WebgroupsDepartmentNameLookupTest extends AbstractJUnit4Jetty
     
     @BeforeClass
     public static void setupEhCache() throws Exception {
+        Caches.resetEhCacheCheck();
         System.setProperty("warwick.ehcache.disk.store.dir", root.getAbsolutePath());
     }
     
     @AfterClass
     public static void unsetEhCache() throws Exception {
         System.clearProperty("warwick.ehcache.disk.store.dir");
+        Caches.resetEhCacheCheck();
     }
     
     @After

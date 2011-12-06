@@ -84,4 +84,8 @@ public final class Caches {
 		}
 		return ehAvailable;
 	}
+	
+	public static void resetEhCacheCheck() {
+	    ehChecked = false;
+	}
 }
