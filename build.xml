@@ -288,7 +288,13 @@
 			<classpath refid="test.run.class.path" />
 			<formatter type="xml" />
 			<batchtest todir="${unit-test.report.dir}">
-				<fileset dir="${build.dir}/unit-tests" includes="**/*Test.class" excludes="**/Abstract*.class" />
+				<fileset dir="${build.dir}/unit-tests">
+					<include name="**/*TestCase.class"/>
+                    <include name="**/*Test.class"/> 
+                    <include name="**/*Tests.class"/>
+                    <exclude name="**/Abstract*.class"/>
+					<exclude name="**/WebgroupsDepartmentNameLookupTest.class"/>
+				</fileset>
 			</batchtest>
 		</junit>
 		<fail if="tests.failed" message="Unit tests failed" />
