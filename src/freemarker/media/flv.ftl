@@ -59,63 +59,43 @@ Event.onDOMReady(function(){
 			vidEl.setAttribute('poster', "${previewimage?default("")}");
 		</#if>
 		vidEl.setAttribute('controls', 'controls');
-		vidEl.setAttribute('autoplay', 'autoplay');
+		vidEl.setAttribute('preload', 'metadata');
 		
 		var supportsVideo = !!vidEl.canPlayType;
 		var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 		
 		if (supportsCodec) {
-		  <#if previewimage?default("") != ''>
-		  	var posterImage = document.createElement('img');
-			posterImage.setAttribute('width', '<@dimension value=width?default(425) />');
-			posterImage.setAttribute('height', '<@dimension value=height?default(350) />');
-			posterImage.setAttribute('src', '${previewimage?default("")}');
-			posterImage.setAttribute('title', 'Click to play');
-		  <#else>
-		  	var posterImage = document.createElement('div');
-			posterImage.setAttribute('style', 'background-color: #000000; width: <@dimension value=width?default(425) />px; height: <@dimension value=height?default(350) />px;');
-			posterImage.setAttribute('title', 'Click to play');
-		  </#if>
 		  
 		  var container = document.getElementById('video_${uniqueId}');
-  		  container.appendChild(posterImage);
-      	var startVideo = function(event){      
-      		var source = document.createElement('source');
-      		source.setAttribute('src', '${url}');
-      		source.setAttribute('type', '${mime_type?default('video/mp4')}');
-      		source.setAttribute('width', '<@dimension value=width?default(425) />');
-      		source.setAttribute('height', '<@dimension value=height?default(350) />');
-      		
-	        vidEl.appendChild(source);
+		  var div = document.createElement('div');
+	  	  div.setAttribute('class', 'media_tag_play');
+	  	  
+	  	  container.appendChild(div);
+      
+	  	  var source = document.createElement('source');
+	  	  source.setAttribute('src', '${url}');
+	  	  source.setAttribute('type', '${mime_type?default('video/mp4')}');
+	  	  source.setAttribute('width', '<@dimension value=width?default(425) />');
+	  	  source.setAttribute('height', '<@dimension value=height?default(350) />');
+	  		
+	      vidEl.appendChild(source);
 	        
-	        <#if alternateRenditions?exists>
-	        	<#list alternateRenditions?keys as mime>{
-	        		var altSource = document.createElement('source');
-		      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
-		      		altSource.setAttribute('type', '${mime}');
-		      		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
-		      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
+	      <#if alternateRenditions?exists>
+	      	<#list alternateRenditions?keys as mime>{
+	      		var altSource = document.createElement('source');
+		   		altSource.setAttribute('src', '${alternateRenditions[mime]}');
+		  		altSource.setAttribute('type', '${mime}');
+		   		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
+		   		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
 	        	
-	        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
-	        	}</#list>
-	        </#if>
+	      		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
+	       	}</#list>
+	      </#if>
 	        
-	        // Place video in container's place, with container inside the video as fallback
-	        posterImage.parentNode.removeChild(posterImage);
-	        
-	        container.parentNode.insertBefore(vidEl, container.nextSibling);
-	        vidEl.appendChild(container);
-	        
-	        insertFlash();
-      	};
-      	
-      	  var div = document.createElement('div');
-      	  div.setAttribute('class', 'media_tag_play');
-      	  
-      	  container.appendChild(div);
-      	  
-      	  addEvent(div, 'click', startVideo);
-		  addEvent(posterImage, 'click', startVideo);		
+          container.parentNode.insertBefore(vidEl, container.nextSibling);
+          vidEl.appendChild(container);
+        
+          insertFlash();
 		} else {
 		  insertFlash();
 		}
