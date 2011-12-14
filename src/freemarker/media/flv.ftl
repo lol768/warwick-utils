@@ -62,9 +62,16 @@ Event.onDOMReady(function(){
 		vidEl.setAttribute('preload', 'metadata');
 		
 		var supportsVideo = !!vidEl.canPlayType;
-		var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 		
-		if (supportsCodec) {
+		var mimeType = '${mime_type?default('video/mp4')}';
+		/* For MP4, check correctly with the codecs UTL-112 */
+		if (mimeType == 'video/mp4'){
+			mimeType = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+		}
+		
+		var supportsCodec = supportsVideo && (vidEl.canPlayType(mimeType)<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
+		
+		if (supportsCodec && supportsCodec != 'maybe') {
 		  
 		  var container = document.getElementById('video_${uniqueId}');
 		  var div = document.createElement('div');
@@ -211,9 +218,16 @@ Event.onDOMReady(function(){
 		        </#if>
 		        
 				var supportsVideo = !!vidEl.canPlayType;
-				var supportsCodec = supportsVideo && (vidEl.canPlayType('${mime_type?default('video/mp4')}')<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
+				
+				var mimeType = '${mime_type?default('video/mp4')}';
+				/* For MP4, check correctly with the codecs UTL-112 */
+				if (mimeType == 'video/mp4'){
+					mimeType = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+				}
+				
+				var supportsCodec = supportsVideo && (vidEl.canPlayType(mimeType)<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 								
-				if (supportsCodec) {
+				if (supportsCodec && supportsCodec != 'maybe') {
 					container.innerHTML = "<div id='videoFallback_${uniqueId}'></div>";
 				
 					insertFlash('videoFallback_${uniqueId}');
