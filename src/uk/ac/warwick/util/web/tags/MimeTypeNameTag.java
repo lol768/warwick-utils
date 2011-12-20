@@ -25,12 +25,13 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("application/msword", "Word document");
             mimeNames.put("application/vnd.ms-excel", "Excel spreadsheet");
             mimeNames.put("application/vnd.ms-powerpoint", "Powerpoint presentation");
-            mimeNames.put("application/vnd.visio", "MS Visio File");
-            mimeNames.put("application/vnd.ms-project", "MS Project File");
-            mimeNames.put("application/x-project", "Project File");
-            mimeNames.put("application/postscript", "PostScript File");
-            mimeNames.put("application/x-dvi", "DVI File");
+            mimeNames.put("application/vnd.visio", "MS Visio file");
+            mimeNames.put("application/vnd.ms-project", "MS Project file");
+            mimeNames.put("application/x-project", "Project file");
+            mimeNames.put("application/postscript", "PostScript file");
+            mimeNames.put("application/x-dvi", "DVI file");
             mimeNames.put("application/x-msaccess", "Access database");
+            mimeNames.put("application/json", "JSON file");
             mimeNames.put("text/plain", "Text file");
             mimeNames.put("text/html", "HTML page");
             mimeNames.put("application/rtf", "Rich Text document");
@@ -42,7 +43,10 @@ public final class MimeTypeNameTag extends TagSupport {
             mimeNames.put("image/bmp", "BMP image");
             mimeNames.put("image/tiff", "TIFF image");
             mimeNames.put("image/svg+xml", "SVG image");
+            mimeNames.put("image/x-icon", "Icon image");
             mimeNames.put("application/x-javascript", "Javascript file");
+            mimeNames.put("application/vnd.ms-fontobject", "Embedded OpenType font");
+            mimeNames.put("application/x-font-truetype", "TrueType font");
 
             mimeNames.put("application/xml", "XML data");
             mimeNames.put("application/mac-binary", "Mac binary");
@@ -53,6 +57,7 @@ public final class MimeTypeNameTag extends TagSupport {
             
             mimeNames.put("application/zip", "Zipped archive");
             mimeNames.put("application/x-gzip", "GZipped archive");
+            mimeNames.put("application/x-compressed", "Compressed archive");
             
             // specific audio
             mimeNames.put("audio/mpeg", "MP3 sound clip");
