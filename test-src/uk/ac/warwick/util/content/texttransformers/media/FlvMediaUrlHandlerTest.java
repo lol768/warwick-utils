@@ -2,8 +2,12 @@ package uk.ac.warwick.util.content.texttransformers.media;
 
 import static org.junit.Assert.*;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.hamcrest.Description;
 import org.jmock.Expectations;
@@ -12,6 +16,9 @@ import org.jmock.api.Action;
 import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import com.google.common.collect.Maps;
 
@@ -182,7 +189,7 @@ public final class FlvMediaUrlHandlerTest {
         System.out.println(html);
         
         assertTrue(html.startsWith("<notextile>"));
-        assertTrue(html.contains("vidEl.insertBefore(altSource, vidEl.firstChild);"));
+        assertTrue(html.indexOf("source src=\"file.mp4\"") < html.indexOf("source src=\"file.ogg\""));
         assertTrue(html.contains("\"640\",\"384\""));
         
         m.assertIsSatisfied();
