@@ -12,11 +12,22 @@
 	<div align="${align}">
 		<div id="video_${uniqueId}" class="media_tag_video">
 			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) append=24 />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="metadata">
-				<source src="${url}" type="${mime_type?default('video/mp4')}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" />
-				<#if alternateRenditions?exists>
-					<#list alternateRenditions?keys as mime>
-						<source src="${alternateRenditions[mime]}" type="${mime}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />"
-					</#list>
+				<#if mime == 'video/mp4' || mime == 'video/x-m4v'>
+					<#-- the original source is mp4 show it first -->
+					<source src="${url}" type="${mime_type?default('video/mp4')}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" />
+					<#if alternateRenditions?exists>
+						<#list alternateRenditions?keys as mime>
+							<source src="${alternateRenditions[mime]}" type="${mime}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />"
+						</#list>
+					</#if>
+				<#else>
+					<#if alternateRenditions?exists>
+						<#list alternateRenditions?keys as mime>
+							<source src="${alternateRenditions[mime]}" type="${mime}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />"
+						</#list>
+					</#if>
+					<#-- the original source is not mp4 - show it last -->
+					<source src="${url}" type="${mime_type?default('video/mp4')}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" />
 				</#if>
 			</video>
 		</div>
