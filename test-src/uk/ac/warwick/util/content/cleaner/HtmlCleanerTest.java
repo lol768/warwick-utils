@@ -427,6 +427,21 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         expected = "<p>Some test, la la!</p>";
         verify(expected, input);
     }
+
+    /**
+     * TinyMCE 3.4 uses HTML5 data attrs for this
+     */
+    @Test
+    public void mceBogus2() {
+        String input = "<p>Some test, la la!<br data-mce-bogus=\"1\" /></p>";
+        String expected = "<p>Some test, la la!</p>";
+        verify(expected, input);
+
+        // test it with slightly different formatting
+        input = "<p>Some test, la la!<br data-mce-bogus=1></p>";
+        expected = "<p>Some test, la la!</p>";
+        verify(expected, input);
+    }
     
     // TinyMCE3 puts scripts in <p> tags because it is a KNOBSHITE
     @Test

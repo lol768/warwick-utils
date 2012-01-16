@@ -77,9 +77,11 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
                         continue attributeLoop;
                     } else if (name.equals(tag) && containsAttribute(atts, "_mce_"+tag)) {
                         continue attributeLoop;
+                    } else if (name.equals(tag) && containsAttribute(atts, "data-mce-"+tag)) {
+                        continue attributeLoop;
                     }
                     
-                    if (name.equals("mce_" + tag) || name.equals("_mce_" + tag)) {
+                    if (name.equals("mce_" + tag) || name.equals("_mce_" + tag) || name.equals("data-mce-" + tag)) {
                         name = tag;
                     }
                 }
@@ -110,7 +112,7 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     private boolean containsMceAttributes(final Attributes atts) {
         for (int i = 0; i < atts.getLength(); i++) {
-            if (atts.getLocalName(i).startsWith("mce_") || atts.getLocalName(i).startsWith("_mce_")) {
+            if (atts.getLocalName(i).startsWith("mce_") || atts.getLocalName(i).startsWith("_mce_") || atts.getLocalName(i).startsWith("data-mce-")) {
                 return true;
             }
         }

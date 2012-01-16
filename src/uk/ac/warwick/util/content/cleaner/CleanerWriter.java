@@ -217,6 +217,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         if (mceName == null || "".equals(mceName)) {
             mceName = attsImpl.getValue("_mce_name");
         }
+        if (mceName == null || "".equals(mceName)) {
+            mceName = attsImpl.getValue("data-mce-name");
+        }
         
         if (mceName != null) {
         	tagName = mceName;

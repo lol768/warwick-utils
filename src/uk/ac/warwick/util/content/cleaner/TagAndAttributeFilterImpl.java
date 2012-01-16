@@ -20,7 +20,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
     
     private static final Set<String> disallowedNoAttributesTags = toSet( "span", "blockquote" );
 
-    private static final Set<String> disallowedAttributesAllTags = toSet( "mce_keep", "_mce_keep", "onerror", "onsuccess", "onfailure", "sizset", "sizcache" );
+    private static final Set<String> disallowedAttributesAllTags = toSet( "mce_keep", "_mce_keep", "data-mce-keep", "onerror", "onsuccess", "onfailure", "sizset", "sizcache" );
 
     private static final Set<String> allowedEmptyAttributes = toSet( "alt" );
 
@@ -126,7 +126,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 
     private boolean isAllowedAttributeForAllTags(final String attributeName) {
     	for (String attribute : disallowedAttributesAllTags) {
-    		if (attribute.equalsIgnoreCase(attributeName) || ("mce_" + attribute).equalsIgnoreCase(attributeName) || ("_mce_" + attribute).equalsIgnoreCase(attributeName)) {
+    		if (attribute.equalsIgnoreCase(attributeName) || ("mce_" + attribute).equalsIgnoreCase(attributeName) || ("_mce_" + attribute).equalsIgnoreCase(attributeName) || ("data-mce-" + attribute).equalsIgnoreCase(attributeName)) {
     			return false;
     		}
     	}
@@ -149,7 +149,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
             if (tagName.equals(tag)) {
                 for (String attribute: disallowedAttributes.get(tag)) {
                 	// do a little bit of fudging to look for mce_ attributes too
-                    if (attributeName.equals(attribute) || attributeName.equals("mce_" + attribute) || attributeName.equals("_mce_" + attribute)) {
+                    if (attributeName.equals(attribute) || attributeName.equals("mce_" + attribute) || attributeName.equals("_mce_" + attribute) || attributeName.equals("data-mce-" + attribute)) {
                         return false;
                     }
                 }

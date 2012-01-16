@@ -53,10 +53,10 @@ public final class HtmlCleaner implements Cleaner {
     	this.contentWriter = theContentWriter;
     	
         this.straightReplacements = Lists.newArrayList();
-        this.straightReplacements.add(Pair.of("mce_thref=", "href="));
-        this.straightReplacements.add(Pair.of("mce_tsrc=", "src="));
         this.straightReplacements.add(Pair.of("_mce_thref=", "href="));
         this.straightReplacements.add(Pair.of("_mce_tsrc=", "src="));
+        this.straightReplacements.add(Pair.of("mce_thref=", "href="));
+        this.straightReplacements.add(Pair.of("mce_tsrc=", "src="));
         this.straightReplacements.add(Pair.of(NewWindowLinkTextTransformer.HTML_IMAGE, ""));
         this.straightReplacements.add(Pair.of("\u00b7", "&#183;"));
         this.straightReplacements.add(Pair.of("&#65279;", ""));
@@ -75,8 +75,10 @@ public final class HtmlCleaner implements Cleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("<!--\\[if gte vml 1\\]>.*?<!\\[endif\\]-->",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "[if gte vml 1]", ""));// MS Word VML
         
         this.regexReplacements.add(Triple.of(Pattern.compile("<br _?mce_bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "_bogus", ""));
+        this.regexReplacements.add(Triple.of(Pattern.compile("<br data-mce-bogus=\"?1\"?\\s*/?>",Pattern.CASE_INSENSITIVE), "data-mce-bogus", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce:style([^>]*)>\\<\\!\\-\\-(.*?)\\-\\-\\></mce:style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</mce:style>", "<style$1>$2</style>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* _?mce_bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
+        this.regexReplacements.add(Triple.of(Pattern.compile("<style[^>]* data-mce-bogus=\"?1\"?\\s*>.*?</style>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</style>", ""));
         this.regexReplacements.add(Triple.of(Pattern.compile("<mce\\:([a-z]*)([^>]*)>(.*?)<\\/mce\\:\\1>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<mce:", "<$1$2>$3</$1>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(<script.*?<\\/script>)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</script>", "$1"));
         this.regexReplacements.add(Triple.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "middle", "$1 align=\"center\""));

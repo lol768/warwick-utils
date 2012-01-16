@@ -21,6 +21,14 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
         
         verify(expected, input);
     }
+    
+    @Test
+    public void awfulBogusStyles2() throws Exception {
+        String input = readResourceToString("/htmlClean/sbtwo-3828-2.html");
+        String expected = readResourceToString("/htmlClean/sbtwo-3828-2-expected.html");
+        
+        verify(expected, input);
+    }
 
     @Test
     public void sbtwo3709() throws Exception {
