@@ -1,9 +1,13 @@
 package uk.ac.warwick.util.core.spring;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.core.StringUtils;
@@ -14,7 +18,32 @@ import uk.ac.warwick.util.core.StringUtils;
  * @author xusqac
  */
 public final class FileUtils {
+    
+    public static final String BYTE_LABEL = "B";
+    
+    public static final String KILO_BYTE_LABEL = "KB";
+
+    public static final String MEGA_BYTE_LABEL = "MB";
+
+    public static final String GIGA_BYTE_LABEL = "GB";
+    
     private static final Logger LOGGER = Logger.getLogger(FileUtils.class);
+    
+    private static final int TEMP_FILE_RETRIES = 5; 
+    
+    private static final float MAX_MB_TO_SHOW_DECIMALS = 10.0f;
+
+    private static final float MAX_GB_TO_SHOW_DECIMALS = 10.0f;
+    
+    private static final int KB_IN_MB = 1024;
+
+    private static final int BYTES_IN_KB = 1024;
+    
+    private static final int MB_IN_GB = 1024;
+    
+    {
+        Assert.isTrue(TEMP_FILE_RETRIES > 0);
+    }
 
     private FileUtils() {
         // private empty constructor
@@ -313,5 +342,98 @@ public final class FileUtils {
             output += file.length();
         }
         return output;
+    }
+
+    public static File createFile(final String theSuggestedName, final InputStream theContents, final File directory) throws IllegalStateException {
+        File file = createFile(theSuggestedName, directory);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            // handle null
+            FileCopyUtils.copy(theContents, fos);
+        } catch (final IOException e) {
+            throw new IllegalStateException("cannot copy contents [" + theContents + "] into " + file, e);
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    LOGGER.warn("Couldn't close OutputStream", e);
+                }
+            }
+        }
+        
+        return file;
+    }
+    
+    /**
+     * Create a semi-randomly named file under the given directory.
+     * @param theSuggestedName The filename will not be exactly this, but it should contain it.
+     * @param directory The parent directory the file will be created under
+     * @return The created file.
+     */
+    public static File createFile(final String theSuggestedName, final File directory) {
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new IllegalStateException("Unable to create directories for temporary file storage");
+        }
+        
+        // If the randomly generated filename exists, keep trying with new names
+        // a few times before giving up.
+        File file = null;
+        for (int i=0; i<TEMP_FILE_RETRIES; i++) {
+            file = generateRandomFile(theSuggestedName, directory);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (final IOException e) {
+                    throw new IllegalStateException("cannot create file for " + file);
+                }
+                return file;
+            }
+        }
+        
+        throw new IllegalStateException("cannot create file for " + file);
+    }
+
+    private static File generateRandomFile(final String filePrefix, final File directory) {
+        String fileName = filePrefix + System.nanoTime();
+        fileName = uk.ac.warwick.util.core.spring.FileUtils.convertToSafeFileName(fileName);
+        return new File(directory, fileName + "." + "tmp");
+    }
+    
+    public static String getReadableFileSize(final double sizeInBytes) {
+        String sizeString;
+        String units = BYTE_LABEL;
+
+        if (sizeInBytes < BYTES_IN_KB) {
+            sizeString = "" + Math.round(sizeInBytes);
+        } else {
+            units = KILO_BYTE_LABEL;
+            double sizeInKb = sizeInBytes / (double)BYTES_IN_KB;
+            
+            if (sizeInKb < KB_IN_MB) {
+                sizeString = "" + Math.round(sizeInKb);
+            } else {
+                units = MEGA_BYTE_LABEL;
+                double sizeInMb = sizeInKb / BYTES_IN_KB;
+                if (sizeInMb < MB_IN_GB){
+                   sizeString = "" + roundAndFormat(sizeInMb, MAX_MB_TO_SHOW_DECIMALS);
+                }  else {
+                    units = GIGA_BYTE_LABEL;
+                    double sizeInGb = sizeInMb / MB_IN_GB;
+                    sizeString = "" + roundAndFormat(sizeInGb, MAX_GB_TO_SHOW_DECIMALS);
+                }
+            }
+        }
+        
+        return sizeString + " " + units;
+    }
+
+    private static String roundAndFormat(double size, float maxShowDecimals) {
+        if (size < maxShowDecimals){
+            return new DecimalFormat("#.0").format(size);
+        }
+        return "" + Math.round(size);
     }
 }
