@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -22,25 +23,29 @@ import freemarker.template.Template;
 public final class DateTimeFreemarkerObjectWrapperTest {
     
     private TimeZone defaultTz;
+    private Locale defaultLocale;
     
     @Before
     public void setUp() throws Exception {
         this.defaultTz = TimeZone.getDefault();
+        this.defaultLocale = Locale.getDefault();
     }
     
     @After
     public void tearDown() throws Exception {
         TimeZone.setDefault(defaultTz);
+        Locale.setDefault(defaultLocale);
     }
     
     @Test 
     public void jodaTimeWrapping() throws Exception {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+        Locale.setDefault(Locale.UK);
         
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(getClass(), "");
         configuration.setObjectWrapper(new DateTimeFreemarkerObjectWrapper());
-        
+
         Template template = configuration.getTemplate("joda-test.ftl");
         
         Map<String, Object> rootMap = new HashMap<String, Object>();
@@ -67,7 +72,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
     
     @Test
     public void jodaToDateConversion() throws Exception {
-        DateTimeFormatter formatter = DateTimeFormat.forStyle("FF");
+        DateTimeFormatter formatter = DateTimeFormat.forStyle("FF").withLocale(Locale.UK);
         
         {
             DateTime dateTime = new DateTime(2009, DateTimeConstants.FEBRUARY, 13, 23, 31, 30, 0);

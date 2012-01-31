@@ -84,6 +84,11 @@ public final class HtmlCleaner implements Cleaner {
         this.regexReplacements.add(Triple.of(Pattern.compile("(<t[dh][^>]*)\\salign=[\"']?middle[\"']?",Pattern.CASE_INSENSITIVE), "middle", "$1 align=\"center\""));
         this.regexReplacements.add(Triple.of(Pattern.compile("(<t[dh][^>]*>)\\s*(</t[dh]>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</t", "$1&nbsp;$2"));
         
+        // SBTWO-5117 fix merge placeholder para wrapping (indeed any comment para wrapping)
+        this.regexReplacements.add(Triple.of(Pattern.compile("<p>\\s*(<!--.*?-->)\\s*</p>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<!--", "$1"));
+        // SBTWO-5135 fix mce-text/javascript
+        this.regexReplacements.add(Triple.of(Pattern.compile("(mce-)+text/javascript", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<script", "text/javascript"));
+        
         // MS Word idiocy
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<meta[^>]+>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "<meta", "<p>$1$2</p>"));
         this.regexReplacements.add(Triple.of(Pattern.compile("<p>(.*?)<title>[^<]*</title>(.*?)</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "</title>", "<p>$1$2</p>"));

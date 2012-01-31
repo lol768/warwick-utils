@@ -30,6 +30,25 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
 
     @Test
+    public void sbtwo5135() throws Exception {
+        String expected = "<script type=\"text/javascript\">(function() {return true;})();</script>";
+        
+        String input = "<script type=\"mce-text/javascript\">(function() {return true;})();</script>";
+        verify(expected, input);
+        
+        input = "<script type=\"mce-mce-mce-mce-text/javascript\">(function() {return true;})();</script>";
+        verify(expected, input);
+    }
+
+    @Test
+    public void sbtwo5117() throws Exception {
+        String expected = "<div><!-- a comment about some <p> tags -->\n</div>";
+        
+        String input = "<div><p><!-- a comment about some <p> tags -->\n</p>\n</div>";
+        verify(expected, input);
+    }
+
+    @Test
     public void basicSanity() throws Exception {
         String input = readResourceToString("/htmlClean/input1.html");
         String output = cleaner.clean(input, new MutableContent(null, null));

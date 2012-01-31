@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.junit.Test;
 import org.springframework.util.Assert;
@@ -154,7 +155,7 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     private String readResourceToString(final String filename) throws IOException {
         InputStream is = getClass().getResourceAsStream(filename);
         Assert.notNull(is, "Couldn't get an inputstream for " + filename);
-        String input = FileCopyUtils.copyToString(new InputStreamReader(is));
+        String input = FileCopyUtils.copyToString(new InputStreamReader(is, "UTF-8"));
         return input;
     }
 
