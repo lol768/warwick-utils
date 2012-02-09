@@ -104,6 +104,17 @@
 		<script type="text/javascript">
 			Event.onDOMReady(function() {
 				addEvent(document.getElementById('playVideo_${uniqueId}'), 'click', function(evt) {
+				
+					if(document.body.className.indexOf('is-smallscreen') != -1){
+						// we don't want the pop-up on a smallscreen, or to force a download, 
+						// so just go to the location and let the device work it out
+						evt.preventDefault();
+						var $link = jQuery(evt.target);
+						$link.attr('href', $link.attr('href').replace('?forceOpenSave=true',''));
+						window.location = $link.attr('href');
+						return false;
+					}
+				
 					var insertFlash = function(id) {
 			  			<#if fallback?exists>
 			    			// check for H.264 version
@@ -141,12 +152,19 @@
 			
 					var container = document.createElement('div');
 					container.setAttribute('id', 'video_${uniqueId}');
-					container.setAttribute('style', 'position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;');
 			
 					var overlay = document.createElement('div');
 					overlay.setAttribute('id', 'overlay_${uniqueId}');
-					overlay.setAttribute('style', 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;');
 			
+					// IE 6 and 7 don't like setAttribute('style'), so let a framework do the legwork
+					if(typeof jQuery != "undefined"){
+						jQuery(overlay).attr('style','position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;');
+						jQuery(container).attr('style','position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;');
+					} else {
+						overlay.writeAttribute('style','position:fixed;top:0;left:0;width:100%;height:100%;z-index:5000;background-color:#000;-moz-opacity: 0.0;opacity:0.0;filter:alpha(opacity=0);-webkit-transition: opacity 0.3s;-moz-transition: opacity 0.3s;transition: opacity 0.3s;');
+						container.writeAttribute('style','position:fixed;z-index:5050;top:50%;left:50%;padding:15px;background:white;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;-moz-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);-webkit-box-shadow: 0px 5px 25px rgba(0,0,0,0.5);box-shadow: 0px 5px 25px rgba(0,0,0,0.5);border:1px solid #CCC;visibility:hidden;');
+					}
+					
 					var closeFn = function(evt) {			
 						container.parentNode.removeChild(container);
 						overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.0;opacity:.0;filter:alpha(opacity=0);');
@@ -269,7 +287,7 @@
 						        document.detachEvent("onkeydown", escObserver);
 						    }
 						}
-					}.bind(this);
+					};
 					addEvent(document, 'keydown', escObserver);
 	
 					overlay.setAttribute('style',overlay.getAttribute('style') + '-moz-opacity: 0.9;opacity:.9;filter:alpha(opacity=90);');
