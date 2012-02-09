@@ -83,16 +83,7 @@
 			
 				var supportsCodec = supportsVideo && (vidEl.canPlayType(mimeType)<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 			
-				if (supportsCodec && supportsCodec != 'maybe') {
-			  
-			  		var fallbackContainer = document.getElementById('video_${uniqueId}');
-			  		var div = document.createElement('div');
-		  	  		div.setAttribute('class', 'media_tag_play');
-		  	  		fallbackContainer.appendChild(div);  	 
-	          		fallbackContainer.parentNode.insertBefore(vidEl, fallbackContainer.nextSibling);
-	          		vidEl.appendChild(fallbackContainer);
-	          		insertFlash();
-				} else {
+				if (!supportsCodec || supportsCodec == 'maybe') {
 			  		insertFlash();
 				}
 			<#else>
