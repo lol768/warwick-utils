@@ -356,8 +356,7 @@ public class TextileTest extends TestCase {
 	}
 
 	public final void testPoundSignsConverted() throws Exception {
-
-		String source = "£test ££test£\n£test";
+		String source = "\u00a3test \u00a3\u00a3test\u00a3\n\u00a3test";
 
 		String expected = "<p>&pound;test &pound;&pound;test&pound;<br />&pound;test</p>";
 
