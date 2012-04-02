@@ -268,7 +268,7 @@ public class UriTest {
         assertEquals(Uri.parse("http://www2.warwick.ac.uk/go/hefp/%3C!DOCTYPE").toString(), Uri.fromJavaUrl(new URL("http://www2.warwick.ac.uk/go/hefp/<!DOCTYPE")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/dtu/images/dtulogo%20(web).gif").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/dtu/images/dtulogo (web).gif")).toString());
         assertEquals(Uri.parse("http://www.go.warwick.ac.uk/shakespeare%22%3Ehttp:/go.warwick.ac.uk/shakespeare%3C/a%3E").toString(), Uri.fromJavaUrl(new URL("http://www.go.warwick.ac.uk/shakespeare\">http:/go.warwick.ac.uk/shakespeare</a>")).toString());
-        assertEquals(Uri.parse("http://go.warwick.ac.uk/pgapply.%C3%82%20%C3%82").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pgapply.\u00e2 \u00e2 ")).toString());
+        assertEquals(Uri.parse("http://go.warwick.ac.uk/pgapply.%C3%82%20%C3%82").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pgapply.\u00c2 \u00c2 ")).toString());
     }
     
     @Test
