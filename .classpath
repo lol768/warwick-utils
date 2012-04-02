@@ -49,8 +49,6 @@
 	<classpathentry kind="lib" path="external-libs/nekohtml/nekohtml-1.9.14.jar"/>
 	<classpathentry kind="lib" path="external-libs/activemq/activemq-all-5.4.2.jar"/>
 	<classpathentry kind="lib" path="external-libs/activemq/activemq-pool-5.4.2.jar"/>
-	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-core-asl-1.7.4.jar"/>
-	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-mapper-asl-1.7.4.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/hamcrest-core-1.3.0RC1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/hamcrest-library-1.3.0RC1.jar"/>
 	<classpathentry kind="lib" path="external-libs/junit/hamcrest-unit-test-1.3.0RC1.jar"/>
@@ -74,5 +72,9 @@
 	<classpathentry kind="lib" path="external-libs/jetty/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="external-libs/jetty/org.mortbay.jetty.jar"/>
 	<classpathentry kind="lib" path="external-libs/commons-io/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-core-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-mapper-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/json-jackson/jackson-xc-1.9.4.jar"/>
+	<classpathentry kind="lib" path="external-libs/jsoup/jsoup-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

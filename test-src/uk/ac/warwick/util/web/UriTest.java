@@ -247,7 +247,7 @@ public class UriTest {
     @Test
     public void fromJavaUriNasty() throws MalformedURLException {
         assertEquals(Uri.parse("http://go.warwick.ac.uk/pg/erefs%20.").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pg/erefs .")).toString());
-        assertEquals(Uri.parse("http://go.warwick.ac.uk/elj/jilt/00%C3%A2%E2%82%AC%E2%80%9C2/collard.html").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/elj/jilt/00â€“2/collard.html")).toString());
+        assertEquals(Uri.parse("http://go.warwick.ac.uk/elj/jilt/00%C3%A2%E2%82%AC%E2%80%9C2/collard.html").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/elj/jilt/00\u00e2\u20ac\u201c2/collard.html")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/pdfjam%22").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pdfjam\"")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/dtu/pubs/wp/wp44/wp44%20.pdf").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/dtu/pubs/wp/wp44/wp44 .pdf")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/classical%20civilisation").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/classical civilisation")).toString());
@@ -260,7 +260,7 @@ public class UriTest {
         assertEquals(Uri.parse("http://go.warwick.ac.uk/parishsymposium%3E").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/parishsymposium>")).toString());
 //        assertEquals(Uri.parse("http://go.warwick.ac.uk/elj/jilt/...").toString(), Uri.fromJavaUrl(new URL("%0D%0Ahttp://www2.warwick.ac.uk/fac/sci/physics/teach/module_home/px121")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/%20masgak").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/ masgak")).toString());
-        assertEquals(Uri.parse("http://www.go.warwick.ac.uk/elj/lgd/2008_1/d%C3%A2%E2%82%AC%E2%84%A2s%20ouza").toString(), Uri.fromJavaUrl(new URL("http://www.go.warwick.ac.uk/elj/lgd/2008_1/dâ€™s ouza")).toString());
+        assertEquals(Uri.parse("http://www.go.warwick.ac.uk/elj/lgd/2008_1/d%C3%A2%E2%82%AC%E2%84%A2s%20ouza").toString(), Uri.fromJavaUrl(new URL("http://www.go.warwick.ac.uk/elj/lgd/2008_1/d\u00e2\u20ac\u2122s ouza")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/elj/jilt/01-3/byrnes.%20html/").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/elj/jilt/01-3/byrnes. html/")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/calendar/%20and%20the%20guidelines").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/calendar/ and the guidelines")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/%20ugfunding/2010-2011/mbchb").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/ ugfunding/2010-2011/mbchb")).toString());
@@ -268,7 +268,7 @@ public class UriTest {
         assertEquals(Uri.parse("http://www2.warwick.ac.uk/go/hefp/%3C!DOCTYPE").toString(), Uri.fromJavaUrl(new URL("http://www2.warwick.ac.uk/go/hefp/<!DOCTYPE")).toString());
         assertEquals(Uri.parse("http://go.warwick.ac.uk/dtu/images/dtulogo%20(web).gif").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/dtu/images/dtulogo (web).gif")).toString());
         assertEquals(Uri.parse("http://www.go.warwick.ac.uk/shakespeare%22%3Ehttp:/go.warwick.ac.uk/shakespeare%3C/a%3E").toString(), Uri.fromJavaUrl(new URL("http://www.go.warwick.ac.uk/shakespeare\">http:/go.warwick.ac.uk/shakespeare</a>")).toString());
-        assertEquals(Uri.parse("http://go.warwick.ac.uk/pgapply.%C3%82%20%C3%82").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pgapply.Â Â ")).toString());
+        assertEquals(Uri.parse("http://go.warwick.ac.uk/pgapply.%C3%82%20%C3%82").toString(), Uri.fromJavaUrl(new URL("http://go.warwick.ac.uk/pgapply.\u00e2 \u00e2 ")).toString());
     }
     
     @Test

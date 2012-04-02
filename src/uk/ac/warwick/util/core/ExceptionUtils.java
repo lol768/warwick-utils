@@ -10,10 +10,11 @@ public final class ExceptionUtils {
     private ExceptionUtils() {
     }
 
-    public static Throwable retrieveException(final Throwable e, final Class<? extends Throwable> clazz) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Throwable> T retrieveException(final Throwable e, final Class<T> clazz) {
         for (Throwable t: retrieveExceptions(e)) {
             if (t.getClass().equals(clazz)) {
-                return t;
+                return (T) t;
             }
         }
 

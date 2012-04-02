@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import uk.ac.warwick.util.cache.CacheStatistics;
 import uk.ac.warwick.util.cache.CacheStore;
 import uk.ac.warwick.util.cache.CacheEntry;
+import uk.ac.warwick.util.cache.CustomCacheExpiry;
 
 /**
  * Cache implementation which uses EhCache, of course.
@@ -120,7 +121,13 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 	}
 	
 	public void put(CacheEntry<K,V> entry) {
-		cache.put(new Element(entry.getKey(), entry));
+	    Element element = new Element(entry.getKey(), entry);
+	    
+	    if (entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+            element.setTimeToLive((int) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value() / 1000);
+        }
+	    
+		cache.put(element);
 	}
 	
 	public boolean remove(K key) {

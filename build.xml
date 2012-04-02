@@ -92,43 +92,43 @@
 		<parallel failonany="true" threadcount="2">
 
 			<!-- all classes -->
-			<javac fork="true" destdir="${build.dir}/all" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" />
+			<javac fork="true" destdir="${build.dir}/all" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" />
 
 			<!-- core library -->
-			<javac fork="true" destdir="${build.dir}/core" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/collections/**,uk/ac/warwick/util/concurrency/**,uk/ac/warwick/util/core/**" />
+			<javac fork="true" destdir="${build.dir}/core" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/collections/**,uk/ac/warwick/util/concurrency/**,uk/ac/warwick/util/core/**" />
 
 
 			<!-- core, but no spring -->
 			<javac fork="true" destdir="${build.dir}/core-nospring" srcdir="${parsed.src.dir}" includes="uk/ac/warwick/util/collections/**,
 				          uk/ac/warwick/util/concurrency/**,
-				          uk/ac/warwick/util/core/**" excludes="uk/ac/warwick/util/core/spring/**" classpathref="external.libs.path" target="1.5" debug="on">
+				          uk/ac/warwick/util/core/**" excludes="uk/ac/warwick/util/core/spring/**" classpathref="external.libs.path" source="1.6" target="1.6" debug="on">
 			</javac>
 
 			<!-- web library -->
-			<javac fork="true" destdir="${build.dir}/web" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/web/**">
+			<javac fork="true" destdir="${build.dir}/web" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/web/**">
 			</javac>
 
 			<!-- httpclient library -->
-			<javac fork="true" destdir="${build.dir}/httpclient" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/httpclient/**">
+			<javac fork="true" destdir="${build.dir}/httpclient" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/httpclient/**">
 			</javac>
 
 			<!-- web library -->
-			<javac fork="true" destdir="${build.dir}/hibernate" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/hibernate/**" />
+			<javac fork="true" destdir="${build.dir}/hibernate" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/hibernate/**" />
 
 			<!-- ant library -->
-			<javac fork="true" destdir="${build.dir}/ant" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/ant/**" />
+			<javac fork="true" destdir="${build.dir}/ant" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/ant/**" />
 
 			<!-- mail library -->
-			<javac fork="true" destdir="${build.dir}/mail" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/mail/**" />
+			<javac fork="true" destdir="${build.dir}/mail" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/mail/**" />
 
 			<!-- content library -->
-			<javac fork="true" destdir="${build.dir}/content" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/content/**" />
+			<javac fork="true" destdir="${build.dir}/content" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/content/**" />
 
 			<!-- cache library -->
-			<javac fork="true" destdir="${build.dir}/cache" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/cache/**" />
+			<javac fork="true" destdir="${build.dir}/cache" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/cache/**" />
 
       <!-- queue library -->
-      <javac fork="true" destdir="${build.dir}/queue" srcdir="${parsed.src.dir}" classpathref="external.libs.path" target="1.5" debug="on" includes="uk/ac/warwick/util/queue/**" />
+      <javac fork="true" destdir="${build.dir}/queue" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/queue/**" />
 			
 			<path id="test.compile.class.path">
 				<path refid="external.libs.path" />
@@ -137,7 +137,7 @@
 			</path>
 
 			<!-- test library -->
-			<javac fork="true" destdir="${build.dir}/test" srcdir="${test-src.dir}" classpathref="test.compile.class.path" target="1.5" debug="on" />
+			<javac fork="true" destdir="${build.dir}/test" srcdir="${test-src.dir}" classpathref="test.compile.class.path" source="1.6" target="1.6" debug="on" />
 
 			<!-- Copy freemarker templates into /all and /content -->
 			<copy todir="${build.dir}/all/freemarker">
@@ -281,7 +281,7 @@
 			<path path="${build.dir}/unit-tests" />
 			<pathelement path="${build.dir}/unit-tests/resources" />
 		</path>
-		<junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="yes" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
+		<junit printsummary="on" fork="on" forkmode="perBatch" haltonfailure="no" failureproperty="tests.failed" filtertrace="on" showoutput="on" dir="${build.dir}">
 			<!-- When we instrument we still include the original classes, we just put the instrumented ones first -->
 			<classpath location="${build.dir}/instrumented" />
 

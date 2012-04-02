@@ -46,7 +46,14 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	
 	private CacheExpiryStrategy<K, V> expiryStrategy = new CacheExpiryStrategy<K, V>() {
 		public boolean isExpired(CacheEntry<K,V> entry) {
-			final long expires = entry.getTimestamp() + _timeOutMillis;
+		    // Check if the value class has an annotation for custom cache expiry
+		    final long expires;
+		    if (entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+		        expires = entry.getTimestamp() + entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value();
+		    } else {
+		        expires = entry.getTimestamp() + _timeOutMillis; 
+		    }
+		    
 			final long now = System.currentTimeMillis();
 			return expires <= now;
 		};
