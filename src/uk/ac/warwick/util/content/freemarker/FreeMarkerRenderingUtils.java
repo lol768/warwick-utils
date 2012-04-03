@@ -70,7 +70,7 @@ public final class FreeMarkerRenderingUtils {
         configuration.setOutputEncoding("ISO-8859-1");
 
         // Register default template loaders.
-        TemplateLoader templateLoader = new ClassTemplateLoader(FreeMarkerRenderingUtils.class, "/WEB-INF/freemarker");
+        TemplateLoader templateLoader = new ClassTemplateLoader(FreeMarkerRenderingUtils.class, "/freemarker");
         configuration.setTemplateLoader(templateLoader);
         
         return configuration;
