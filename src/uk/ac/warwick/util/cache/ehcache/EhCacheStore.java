@@ -123,7 +123,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 	public void put(CacheEntry<K,V> entry) {
 	    Element element = new Element(entry.getKey(), entry);
 	    
-	    if (entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+	    if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
             element.setTimeToLive((int) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value() / 1000);
         }
 	    

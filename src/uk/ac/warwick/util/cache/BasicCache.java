@@ -48,7 +48,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		public boolean isExpired(CacheEntry<K,V> entry) {
 		    // Check if the value class has an annotation for custom cache expiry
 		    final long expires;
-		    if (entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+		    if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
 		        expires = entry.getTimestamp() + entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value();
 		    } else {
 		        expires = entry.getTimestamp() + _timeOutMillis; 
