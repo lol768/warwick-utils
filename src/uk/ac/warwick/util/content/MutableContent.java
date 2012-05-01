@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 

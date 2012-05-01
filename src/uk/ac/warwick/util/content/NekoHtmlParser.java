@@ -5,7 +5,7 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.Stack;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;

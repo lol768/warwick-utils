@@ -2,7 +2,7 @@ package uk.ac.warwick.util.web.tags;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import uk.ac.warwick.util.core.StringUtils;
 
@@ -14,11 +14,11 @@ public class Functions {
 	private Functions() {}
 	
     public static String js(final String text) {
-        return StringEscapeUtils.escapeJavaScript(text);
+        return StringEscapeUtils.escapeEcmaScript(text);
     }
     
     public static String html(final String text) {
-        return StringEscapeUtils.escapeHtml(text);
+        return StringEscapeUtils.escapeHtml4(text);
     }
     
     public static String specialHtml(final String text) {

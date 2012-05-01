@@ -18,7 +18,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.xerces.xni.QName;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -114,7 +114,8 @@ public class HtmlSerialization {
     }
 
     public static void printEscapedText(String text, Writer output) throws IOException {
-        StringEscapeUtils.escapeXml(output, text);
+        output.append(StringEscapeUtils.escapeXml(text));
+        output.flush();
     }
 
     /**
