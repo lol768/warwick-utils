@@ -74,6 +74,21 @@
 				/* Attempt HTML5 Video */ 
 				var vidEl = document.getElementById('html5video_${uniqueId}');
 				var supportsVideo = !!vidEl.canPlayType;
+				
+				// SBTWO-5384 & UTL-116 - don't preload metadata for IE if there's a preview image
+				<#if previewimage?default("") != ''>
+					if(typeof jQuery != "undefined"){
+					 if ( jQuery.browser.msie ) {
+	    			    vidEl.setAttribute('preload', 'none');
+	 				  }
+	 				} 
+	 				// if no jQuery, use Protoype
+	 				else {
+	 				  if (Prototype.Browser.IE) {
+	    			    vidEl.setAttribute('preload', 'none');
+	 				  }
+	 				}
+ 				</#if>
 			
 				var mimeType = '${mime_type?default('video/mp4')}';
 				/* For MP4, check correctly with the codecs UTL-112 */
