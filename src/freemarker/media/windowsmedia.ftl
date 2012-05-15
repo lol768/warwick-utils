@@ -41,8 +41,13 @@ height='<@dimension value=height?default(300) append=46 />'
 <script type="text/javascript">
 window.loadVideo_${uniqueId?c} = function (element) {
   // i bet it doesn't love this.
-  url = '${url}';
-  absoluteUrl = url.toAbsoluteUrl();
+  <#if absoluteUrl?default('')?length gt 0>
+  	url = '${url}';
+  	absoluteUrl = '${absoluteUrl}';
+  <#else>
+  	url = '${url}';
+  	absoluteUrl = url.toAbsoluteUrl();
+  </#if>
 
   result = "${embedcode?js_string}";
   

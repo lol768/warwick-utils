@@ -43,12 +43,12 @@
 						<#assign fallbackVersion = '9,0,115' />
 					</#if>
 					if (FlashVersionDetector.isClientHasVersionString('${fallbackVersion}')) {
-						url = '${url}'.toAbsoluteUrl();
+						url = '${absoluteUrl?default(url)}'.toAbsoluteUrl();
 					} else {
 						url = '${fallback}'.toAbsoluteUrl();
 					}
 				<#else>
-					url = '${url}'.toAbsoluteUrl();
+					url = '${absoluteUrl?default(url)}'.toAbsoluteUrl();
 				</#if>
 				<#if newPlayer>
 					object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
@@ -138,12 +138,12 @@
 			    			</#if>
 			    
 			    			if (FlashVersionDetector.isClientHasVersionString('${fallbackVersion}')) {
-			      				url = '${url}'.toAbsoluteUrl();
+			      				url = '${absoluteUrl?default(url)}'.toAbsoluteUrl();
 			    			} else {
 			      				url = '${fallback}'.toAbsoluteUrl();
 			    			}
 			  			<#else>
-			    			url = '${url}'.toAbsoluteUrl();
+			    			url = '${absoluteUrl?default(url)}'.toAbsoluteUrl();
 			 			</#if>
 			  			<#if newPlayer>
 			   				object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
