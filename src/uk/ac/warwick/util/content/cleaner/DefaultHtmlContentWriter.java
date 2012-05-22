@@ -1,11 +1,13 @@
 package uk.ac.warwick.util.content.cleaner;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ccil.cowan.tagsoup.ElementType;
+import org.ccil.cowan.tagsoup.Schema;
 import org.xml.sax.Attributes;
 
+import uk.ac.warwick.html5.HTML5Schema;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.core.HtmlUtils;
 
@@ -24,7 +26,7 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     private final BodyContentFilter contentFilter;
 
-    private final Set<String> selfClosers = new HashSet<String>(Arrays.asList(new String[] { "img", "br", "hr", "input", "area", "param" }));
+    private final Schema schema = new HTML5Schema();
 
     public DefaultHtmlContentWriter(TagAndAttributeFilter tagAndAttributeFilter, BodyContentFilter cFilter) {
         this.filter = tagAndAttributeFilter;
@@ -49,7 +51,13 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
     }
 
     public boolean isSelfCloser(final String tagName) {
-        return selfClosers.contains(tagName);
+        ElementType type = schema.getElementType(tagName);
+        if (type == null) {
+            // Treat unknown tags as non-self closing
+            return false;
+        }
+        
+        return type.model() == Schema.M_EMPTY;
     }
 
     /**

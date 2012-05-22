@@ -33,48 +33,10 @@
 		<mkdir dir="${build.dir}" />
 
 		<mkdir dir="${build.dir}/cobertura" />
-		<mkdir dir="${build.dir}/parser" />
 		<delete file="cobertura.ser" />
 	</target>
 
-	<target name="prepare-parser" depends="init">
-		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Models.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-models.xslt" classpathref="external.libs.path" />
-		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema1.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-noentity.xslt" classpathref="external.libs.path" />
-		<xslt in="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/html.tssl" out="${build.dir}/parser/HTML5Schema2.i" style="${src.dir}/uk/ac/warwick/util/content/cleaner/html5/tssl/tssl-entity.xslt" classpathref="external.libs.path" />
-	</target>
-
-	<!-- patch the parser class files -->
-	<target name="parse-src" depends="prepare-parser" description="Parse source.">
-		<copy todir="${parsed.src.dir}">
-			<fileset dir="${src.dir}" />
-		</copy>
-
-		<antcall target="patch-file">
-			<param name="file-pref" value="HTML5Models" />
-			<param name="output-file" value="HTML5Models" />
-			<param name="token" value="MODEL_DEFINITIONS" />
-		</antcall>
-		<antcall target="patch-file">
-			<param name="file-pref" value="HTML5Schema1" />
-			<param name="output-file" value="HTML5Schema" />
-			<param name="token" value="SCHEMA_CALLS1" />
-		</antcall>
-		<antcall target="patch-file">
-			<param name="file-pref" value="HTML5Schema2" />
-			<param name="output-file" value="HTML5Schema" />
-			<param name="token" value="SCHEMA_CALLS2" />
-		</antcall>
-
-		<replace file="${parsed.src.dir}/uk/ac/warwick/util/content/cleaner/html5/HTML5Schema.java" token="IS_POPULATED = false" value="IS_POPULATED = true" />
-	</target>
-
-	<!-- patch one parser class file -->
-	<target name="patch-file">
-		<loadfile property="patch" srcFile="${build.dir}/parser/${file-pref}.i" />
-		<replace file="${parsed.src.dir}/uk/ac/warwick/util/content/cleaner/html5/${output-file}.java" token="/**@@${token}@@**/" value="${patch}" />
-	</target>
-
-	<target name="compile" depends="parse-src">
+	<target name="compile" depends="init">
 		<mkdir dir="${build.dir}/all" />
 		<mkdir dir="${build.dir}/core" />
 		<mkdir dir="${build.dir}/core-nospring" />
@@ -92,43 +54,43 @@
 		<parallel failonany="true" threadcount="2">
 
 			<!-- all classes -->
-			<javac fork="true" destdir="${build.dir}/all" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" />
+			<javac fork="true" destdir="${build.dir}/all" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" />
 
 			<!-- core library -->
-			<javac fork="true" destdir="${build.dir}/core" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/collections/**,uk/ac/warwick/util/concurrency/**,uk/ac/warwick/util/core/**" />
+			<javac fork="true" destdir="${build.dir}/core" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/collections/**,uk/ac/warwick/util/concurrency/**,uk/ac/warwick/util/core/**" />
 
 
 			<!-- core, but no spring -->
-			<javac fork="true" destdir="${build.dir}/core-nospring" srcdir="${parsed.src.dir}" includes="uk/ac/warwick/util/collections/**,
+			<javac fork="true" destdir="${build.dir}/core-nospring" srcdir="${src.dir}" includes="uk/ac/warwick/util/collections/**,
 				          uk/ac/warwick/util/concurrency/**,
 				          uk/ac/warwick/util/core/**" excludes="uk/ac/warwick/util/core/spring/**" classpathref="external.libs.path" source="1.6" target="1.6" debug="on">
 			</javac>
 
 			<!-- web library -->
-			<javac fork="true" destdir="${build.dir}/web" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/web/**">
+			<javac fork="true" destdir="${build.dir}/web" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/web/**">
 			</javac>
 
 			<!-- httpclient library -->
-			<javac fork="true" destdir="${build.dir}/httpclient" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/httpclient/**">
+			<javac fork="true" destdir="${build.dir}/httpclient" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/httpclient/**">
 			</javac>
 
 			<!-- web library -->
-			<javac fork="true" destdir="${build.dir}/hibernate" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/hibernate/**" />
+			<javac fork="true" destdir="${build.dir}/hibernate" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/hibernate/**" />
 
 			<!-- ant library -->
-			<javac fork="true" destdir="${build.dir}/ant" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/ant/**" />
+			<javac fork="true" destdir="${build.dir}/ant" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/ant/**" />
 
 			<!-- mail library -->
-			<javac fork="true" destdir="${build.dir}/mail" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/mail/**" />
+			<javac fork="true" destdir="${build.dir}/mail" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/mail/**" />
 
 			<!-- content library -->
-			<javac fork="true" destdir="${build.dir}/content" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/content/**" />
+			<javac fork="true" destdir="${build.dir}/content" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/content/**" />
 
 			<!-- cache library -->
-			<javac fork="true" destdir="${build.dir}/cache" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/cache/**" />
+			<javac fork="true" destdir="${build.dir}/cache" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/cache/**" />
 
       <!-- queue library -->
-      <javac fork="true" destdir="${build.dir}/queue" srcdir="${parsed.src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/queue/**" />
+      <javac fork="true" destdir="${build.dir}/queue" srcdir="${src.dir}" classpathref="external.libs.path" source="1.6" target="1.6" debug="on" includes="uk/ac/warwick/util/queue/**" />
 			
 			<path id="test.compile.class.path">
 				<path refid="external.libs.path" />
@@ -141,25 +103,25 @@
 
 			<!-- Copy freemarker templates into /all and /content -->
 			<copy todir="${build.dir}/all/freemarker">
-				<fileset dir="${parsed.src.dir}/freemarker" />
+				<fileset dir="${src.dir}/freemarker" />
 			</copy>
 
 			<copy todir="${build.dir}/content/freemarker">
-				<fileset dir="${parsed.src.dir}/freemarker" />
+				<fileset dir="${src.dir}/freemarker" />
 			</copy>
 
-			<copy todir="${build.dir}/all/uk/ac/warwick/util/core/" file="${parsed.src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
-			<copy todir="${build.dir}/core/uk/ac/warwick/util/core/" file="${parsed.src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
-			<copy todir="${build.dir}/core-nospring/uk/ac/warwick/util/core/" file="${parsed.src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+			<copy todir="${build.dir}/all/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+			<copy todir="${build.dir}/core/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
+			<copy todir="${build.dir}/core-nospring/uk/ac/warwick/util/core/" file="${src.dir}/uk/ac/warwick/util/core/HtmlCharacterEntityReferences.properties" />
 
 			<copy todir="${build.dir}/all/">
 				<fileset includes="**/*.rb" dir="${ruby-src.dir}" />
-				<fileset excludes="**/*.java" dir="${parsed.src.dir}" />
+				<fileset excludes="**/*.java" dir="${src.dir}" />
 				<fileset dir="src" includes="META-INF/*" />
 			</copy>
 
 			<copy todir="${build.dir}/cache">
-				<fileset includes="**/*cache*.xml" dir="${parsed.src.dir}" />
+				<fileset includes="**/*cache*.xml" dir="${src.dir}" />
 			</copy>
 
 			<copy todir="${build.dir}/content/">
@@ -193,7 +155,7 @@
 			<fileset dir="${test-src.dir}" includes="**/*.mp3" />
 			<fileset dir="${test-src.dir}" includes="**/*.tpl" />
 			<fileset dir="${test-src.dir}" includes="**/*.ftl" />
-			<fileset dir="${parsed.src.dir}" includes="META-INF/*" />
+			<fileset dir="${src.dir}" includes="META-INF/*" />
 		</copy>
 
 		<copy todir="${build.dir}/unit-tests/resources">
@@ -215,7 +177,7 @@
 
 	<target name="test-coverage" depends="_instrument,test">
 		<cobertura-report destdir="${build.dir}/cobertura" format="xml">
-			<fileset dir="${parsed.src.dir}">
+			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
 				<exclude name="**/CVS/**/*.*" />
 			</fileset>
@@ -224,7 +186,7 @@
 
 	<target name="test-coverage-html" depends="_instrument,test">
 		<cobertura-report destdir="${build.dir}/cobertura">
-			<fileset dir="${parsed.src.dir}">
+			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
 				<exclude name="**/CVS/**/*.*" />
 			</fileset>
@@ -248,7 +210,7 @@
 		<jar basedir="${build.dir}/queue" destfile="${dist.dir}/${jar.name}-queue.jar" manifest="${build.dir}/MANIFEST.MF" />
 		<jar basedir="${build.dir}/test" destfile="${dist.dir}/${jar.name}-test.jar" manifest="${build.dir}/MANIFEST.MF" />
 
-		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${parsed.src.dir}" />
+		<zip destfile="${dist.dir}/${jar.name}-${jar.version}-src.zip" basedir="${src.dir}" />
 		<zip destfile="${dist.dir}/${jar.name}-test-${jar.version}-src.zip" basedir="${test-src.dir}" />
 
 		<typedef name="yui" classname="uk.ac.warwick.util.ant.YUICompressorFilter">

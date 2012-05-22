@@ -2,9 +2,8 @@
      =================================================================================================================== -->
 <!-- first try HTML5 playback. if serving as XML, expand `controls` to `controls="controls"` and autoplay likewise -->
 <video width="640" height="360" poster="__POSTER__.JPG" controls="controls" preload="meta">
-	<!-- MP4 must be first for iPad! you must use `</source>` to avoid a closure bug in Firefox 3.0 / Camino 2.0! -->
-	<source src="__VIDEO__.MP4" type="video/mp4"></source><!-- Safari / iPhone video    -->
-	<source src="__VIDEO__.OGV" type="video/ogg"></source><!-- Firefox native OGG video -->
+	<source src="__VIDEO__.MP4" type="video/mp4" /><!-- Safari / iPhone video    -->
+	<source src="__VIDEO__.OGV" type="video/ogg" /><!-- Firefox native OGG video -->
 	<!-- IE only QuickTime embed: IE6 is ignored as it does not support `<object>` in `<object>` so we skip QuickTime
 	     and go straight to Flash further down. the line break after the `classid` is required due to a bug in IE -->
 	<!--[if gt IE 6]>

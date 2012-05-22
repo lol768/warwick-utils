@@ -672,6 +672,14 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
     
     @Test
+    public void kbd() throws Exception {
+        // UTL-118 Here we are verifying that we don't insert a line break after </kbd>
+        String input = "<p>Here is a <kbd>Command</kbd>s keyboard command</p>";
+        
+        verify(input, input);
+    }
+    
+    @Test
     public void html5() throws Exception {
         // Taken from Bruce Lawson's HTML5 test page www.brucelawson.co.uk/tests/html5-elements.html
         String input = readResourceToString("/htmlClean/input10.html");

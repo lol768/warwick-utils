@@ -8,12 +8,15 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.ccil.cowan.tagsoup.ElementType;
+import org.ccil.cowan.tagsoup.Schema;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
+import uk.ac.warwick.html5.HTML5Schema;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.HtmlCleaner.ContentType;
 import uk.ac.warwick.util.core.StringUtils;
@@ -39,21 +42,13 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 
 	static final Pattern STRIKETHROUGH_CSS = Pattern.compile("^\\s*text-decoration:\\s*line-through;?\\s*$", Pattern.CASE_INSENSITIVE);
     
-//    private static final Logger LOGGER = Logger.getLogger(CleanerWriter.class);
-
-    private final Set<String> inlineTags = toSet(new String[] { "a", "abbr", "acronym", "span", "b", "basefont", "u", "em",
-            "strong", "i", "strike", "img", "del", "ins", "sup", "sub", "code", "br", "tt", "cite", "label", "big", "small",
-            "q", "s", "samp" });
-
     // tags which want an extra line break after they close.
     private final Set<String> extraLineBreak = toSet(new String[] { "h1", "h2", "h3", "h4", "h5", "h6", "p", "ol", "ul",
             "script", "table", "hr", "div", "form" });
 
     // tags in which not to remove newlines and such
     private final Set<String> preformattedTags = toSet(new String[] { "code", "pre", "script", "style" });
-    
-    //private final Set<String> trimContentTags = toSet(new String[] { "pre" });
-    
+       
     private final Map<String, String> tagReplacements;
 
     private final TagAndAttributeFilter filter;
@@ -84,6 +79,8 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
 	private boolean printingContent = true;
 	
 	private final MutableContent mc;
+	
+	private final Schema schema = new HTML5Schema();
 
     public CleanerWriter(final TagAndAttributeFilter theFilter, final MutableContent mc) {
         this.mc = mc;
@@ -416,7 +413,17 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     private boolean isInlineTag(final String tagName) {
-        return inlineTags.contains(tagName);
+        // Don't treat head tags as inline for this basis, e.g. <style> tags, because we're just formatting
+        return memberOf(tagName, HTML5Schema.M_INLINE, false) && !memberOf(tagName, HTML5Schema.M_HEAD, false);
+    }
+    
+    private boolean memberOf(final String tagName, final int flag, final boolean defaultValue) {
+        ElementType type = schema.getElementType(tagName); 
+        if (type == null) {
+            return defaultValue;
+        }
+        
+        return (type.memberOf() & flag) == flag;
     }
     
     private boolean isInside(final String tagName) {

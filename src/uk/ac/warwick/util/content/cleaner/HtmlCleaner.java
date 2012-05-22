@@ -12,10 +12,10 @@ import org.ccil.cowan.tagsoup.Schema;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import uk.ac.warwick.html5.HTML5Schema;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
 import uk.ac.warwick.util.content.MutableContent;
-import uk.ac.warwick.util.content.cleaner.html5.HTML5Schema;
 import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
 
