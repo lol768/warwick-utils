@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.springframework.util.Assert;
 
+import uk.ac.warwick.util.core.StringUtils;
+
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.google.common.collect.Lists;
@@ -43,6 +45,18 @@ public final class GoodCsvDocument<T> extends AbstractCSVDocument<T> {
             }
             T o = getReader().constructNewObject();
             String[] values = delegate.getValues();
+            
+            // SBTWO-4753 Ignore blank rows
+            boolean allBlank = true;
+            for (int i=0, length=values.length; i<length; i++) {
+                if (StringUtils.hasText(values[i])) {
+                    allBlank = false;
+                }
+            }
+            if (allBlank) {
+                continue;
+            }
+            
             for (int i=0; i<values.length; i++) {
                 getReader().setColumn(o, i, values[i]);
             }
