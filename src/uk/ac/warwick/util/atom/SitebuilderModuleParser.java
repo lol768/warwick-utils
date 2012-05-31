@@ -1,7 +1,13 @@
 package uk.ac.warwick.util.atom;
 
+import java.beans.PropertyEditor;
+
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+
+import uk.ac.warwick.util.atom.SitebuilderModule.Property;
 
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.io.ModuleParser;
@@ -20,67 +26,22 @@ public final class SitebuilderModuleParser implements ModuleParser {
 
     public Module parse(Element element) {
         SitebuilderModule module = new SitebuilderModuleImpl();
+        BeanWrapper wrapper = new BeanWrapperImpl(module);
         boolean elementsFound = false;
         
-        Element searchable = element.getChild(SitebuilderModule.ELEMENT_SEARCHABLE, SB_NS);
-        if (searchable != null) {
-            elementsFound = true;
-            module.setAllowSearchEngines(isTrue(searchable));
-        }
-        
-        Element navvisible = element.getChild(SitebuilderModule.ELEMENT_VISIBLE, SB_NS);
-        if (navvisible != null) {
-            elementsFound = true;
-            module.setShowInLocalNavigation(isTrue(navvisible));
-        }
-        
-        Element pageName = element.getChild(SitebuilderModule.ELEMENT_NAME, SB_NS);
-        if (pageName != null) {
-            elementsFound = true;
-            module.setPageName(pageName.getValue());
-        }
-        
-        Element deleted = element.getChild(SitebuilderModule.ELEMENT_DELETED, SB_NS);
-        if (deleted != null) {
-            elementsFound = true;
-            module.setDeleted(isTrue(deleted));
-        }
-        
-        Element spanRhs = element.getChild(SitebuilderModule.ELEMENT_SPAN_RHS, SB_NS);
-        if (spanRhs != null) {
-            elementsFound = true;
-            module.setSpanRhs(isTrue(spanRhs));
-        }
-        
-        Element head = element.getChild(SitebuilderModule.ELEMENT_HEAD, SB_NS);
-        if (head != null) {
-            elementsFound = true;
-            module.setHead(head.getValue());
-        }
-        
-        Element editComment = element.getChild(SitebuilderModule.ELEMENT_COMMENT, SB_NS);
-        if (editComment != null) {
-            elementsFound = true;
-            module.setComment(editComment.getValue());
-        }
-        
-        Element description = element.getChild(SitebuilderModule.ELEMENT_DESCRIPTION, SB_NS);
-        if (description != null) {
-            elementsFound = true;
-            module.setDescription(description.getValue());
-        }
-        
-        Element keywords = element.getChild(SitebuilderModule.ELEMENT_KEYWORDS, SB_NS);
-        if (keywords != null) {
-            elementsFound = true;
-            module.setKeywords(keywords.getValue());
+        for (Property prop : SitebuilderModule.Property.values()) {
+            Element el = element.getChild(prop.getElement(), SB_NS);
+            if (el != null) {
+                elementsFound = true;
+                
+                PropertyEditor editor = prop.newPropertyEditor();
+                
+                editor.setAsText(el.getValue());                
+                wrapper.setPropertyValue(prop.name(), editor.getValue());
+            }
         }
         
         return (elementsFound) ? module : null;
-    }
-    
-    private Boolean isTrue(Element booleanElement) {
-        return "true".equals(booleanElement.getValue());
     }
 
 }

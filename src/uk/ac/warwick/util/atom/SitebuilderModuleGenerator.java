@@ -1,12 +1,17 @@
 package uk.ac.warwick.util.atom;
 
+import java.beans.PropertyEditor;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.StringUtils;
+
+import uk.ac.warwick.util.atom.SitebuilderModule.Property;
 
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.io.ModuleGenerator;
@@ -28,7 +33,7 @@ public final class SitebuilderModuleGenerator implements ModuleGenerator {
      * it was a feed or an entry.
      */
     public void generate(Module module, Element element) {
-        SitebuilderModule sbm = (SitebuilderModule) module;
+        BeanWrapper wrapper = new BeanWrapperImpl(module);
         
         // Add the namespace declaration to the feed. Notice that
         // we're doing it on the entry though, because on some operations
@@ -40,47 +45,22 @@ public final class SitebuilderModuleGenerator implements ModuleGenerator {
             root = (Element) element.getParent();
         }
         root.addNamespaceDeclaration(SitebuilderModule.NAMESPACE);
- 
-        if (StringUtils.hasText(sbm.getHead())) {
-            element.addContent(element(SitebuilderModule.ELEMENT_HEAD, sbm.getHead()));
-        }
         
-        if (StringUtils.hasText(sbm.getPageName())) {
-            element.addContent(element(SitebuilderModule.ELEMENT_NAME, sbm.getPageName()));
-        }
-        
-        if (sbm.getAllowSearchEngines() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_SEARCHABLE, 
-                    sbm.getAllowSearchEngines().toString()));
-        }
-        
-        if (sbm.getShowInLocalNavigation() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_VISIBLE, 
-                    sbm.getShowInLocalNavigation().toString()));
-        }
-        
-        if (sbm.getDeleted() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_DELETED,
-                    sbm.getDeleted().toString()));
-        }
-        
-        if (sbm.getSpanRhs() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_SPAN_RHS,
-                    sbm.getSpanRhs().toString()));
-        }
-        
-        if (sbm.getKeywords() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_KEYWORDS, 
-                    sbm.getKeywords()));
-        }
-        
-        if (sbm.getDescription() != null) {
-            element.addContent(element(SitebuilderModule.ELEMENT_DESCRIPTION, 
-                    sbm.getDescription()));
-        }
-        
-        // edit-comment not present because it's only parsed as input. 
-        
+        for (Property prop : SitebuilderModule.Property.values()) {
+            if (!prop.isEditSpecific()) {
+                PropertyEditor editor = prop.newPropertyEditor();
+                Object value = wrapper.getPropertyValue(prop.name()); 
+                
+                if (value != null) {
+                    editor.setValue(value);
+                    
+                    String asText = editor.getAsText();
+                    if (StringUtils.hasText(asText)) {
+                        element.addContent(element(prop.getElement(), asText));
+                    }
+                }
+            }
+        }        
     }
 
     private Element element(String name, String value) {

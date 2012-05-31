@@ -1,5 +1,8 @@
 package uk.ac.warwick.util.atom;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+
 import com.sun.syndication.feed.module.ModuleImpl;
 
 public final class SitebuilderModuleImpl extends ModuleImpl implements SitebuilderModule {
@@ -11,9 +14,17 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     private Boolean deleted;
     private Boolean spanRhs;
     private String head;
-    private String comment;
+    private String lastUpdateComment;
     private String description;
     private String keywords;
+    private Boolean includeLegacyJavascript;
+    private Integer pageOrder;
+    private String linkTitle;
+    private Boolean commentable;
+    private Boolean commentVisibleToCommentersOnly;
+    private String title;
+    private String shortTitle;
+    private String layout;
     
     public SitebuilderModuleImpl() {
         super(SitebuilderModule.class, SitebuilderModule.MODULE_URI);
@@ -24,16 +35,12 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     }
     
     public void copyFrom(Object obj) {
-        SitebuilderModule module = (SitebuilderModule) obj;
-        allowSearchEngines = module.getAllowSearchEngines();
-        showInLocalNavigation = module.getShowInLocalNavigation();
-        pageName = module.getPageName();
-        deleted = module.getDeleted();
-        spanRhs = module.getSpanRhs();
-        head = module.getHead();
-        comment = module.getComment();
-        keywords = module.getKeywords();
-        description = module.getDescription();
+        BeanWrapper other = new BeanWrapperImpl(obj);
+        BeanWrapper wrapper = new BeanWrapperImpl(this);
+        
+        for (Property prop : Property.values()) {
+            wrapper.setPropertyValue(prop.name(), other.getPropertyType(prop.name()));
+        }
     }
     
     public Boolean getAllowSearchEngines() {
@@ -85,12 +92,12 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         this.head = head;
     }
 
-    public String getComment() {
-        return comment;
+    public String getLastUpdateComment() {
+        return lastUpdateComment;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setLastUpdateComment(String comment) {
+        this.lastUpdateComment = comment;
     }
 
     public String getDescription() {
@@ -108,6 +115,69 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
     public void setKeywords(String keywords) {
         this.keywords = keywords;
     }
-    
+
+    public Boolean getIncludeLegacyJavascript() {
+        return includeLegacyJavascript;
+    }
+
+    public void setIncludeLegacyJavascript(Boolean includeLegacyJavascript) {
+        this.includeLegacyJavascript = includeLegacyJavascript;
+    }
+
+    public Integer getPageOrder() {
+        return pageOrder;
+    }
+
+    public void setPageOrder(Integer pageOrder) {
+        this.pageOrder = pageOrder;
+    }
+
+    public String getLinkTitle() {
+        return linkTitle;
+    }
+
+    public void setLinkTitle(String linkTitle) {
+        this.linkTitle = linkTitle;
+    }
+
+    public Boolean getCommentable() {
+        return commentable;
+    }
+
+    public void setCommentable(Boolean commentable) {
+        this.commentable = commentable;
+    }
+
+    public Boolean getCommentVisibleToCommentersOnly() {
+        return commentVisibleToCommentersOnly;
+    }
+
+    public void setCommentVisibleToCommentersOnly(Boolean commentVisibleToCommentersOnly) {
+        this.commentVisibleToCommentersOnly = commentVisibleToCommentersOnly;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getShortTitle() {
+        return shortTitle;
+    }
+
+    public void setShortTitle(String shortTitle) {
+        this.shortTitle = shortTitle;
+    }
+
+    public String getLayout() {
+        return layout;
+    }
+
+    public void setLayout(String layout) {
+        this.layout = layout;
+    }    
 
 }
