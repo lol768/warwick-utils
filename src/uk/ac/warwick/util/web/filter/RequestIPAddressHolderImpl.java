@@ -57,6 +57,10 @@ public final class RequestIPAddressHolderImpl implements RequestIPAddressHolder 
         final int hotspot20bitLower = 31;
         final int hotspot20bitUpper = 31;
 
+        // the address space in the 20-bit private address space that resnet-secure provides
+        final int resnet20bitLower = 29;
+        final int resnet20bitUpper = 29;
+
         boolean local = false;
         if (localAddresses.contains(address)) {
             local = true;
@@ -66,6 +70,7 @@ public final class RequestIPAddressHolderImpl implements RequestIPAddressHolder 
              * 172.[16-31].*.*
              * 
              * We allow 172.31.*.* as we serve that from Warwick's hotspots.
+             * Also allow 172.29.*.* which are served from resnet-secure.
              * 
              * I am assuming for now that no-one will ever be dumb enough to
              * forge an X-forwarded-for address that appears to come from 
@@ -83,7 +88,7 @@ public final class RequestIPAddressHolderImpl implements RequestIPAddressHolder 
                 String[] bits = address.split("\\.");
                 int secondOctet = Integer.parseInt(bits[1]);
                 if (secondOctet >= private20bitLower && secondOctet <= private20bitUpper) {
-                    if (secondOctet < hotspot20bitLower || secondOctet > hotspot20bitUpper) {
+                    if ((secondOctet < hotspot20bitLower || secondOctet > hotspot20bitUpper) && (secondOctet < resnet20bitLower || secondOctet > resnet20bitUpper)) {
                         local = true;
                     }
                 }
