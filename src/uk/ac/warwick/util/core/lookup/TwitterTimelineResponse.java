@@ -14,7 +14,7 @@ public final class TwitterTimelineResponse implements Serializable {
     private final int statusCode;
     private final ImmutableSet<Header> headers;
     
-    TwitterTimelineResponse(String b, int status, Header[] theHeaders) {
+    public TwitterTimelineResponse(String b, int status, Header[] theHeaders) {
         this.responseBody = b;
         this.statusCode = status;
         this.headers = ImmutableSet.copyOf(theHeaders);
