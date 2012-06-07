@@ -57,10 +57,15 @@ public abstract class AbstractJUnit4JettyTest extends AbstractJUnit4FileBasedTes
     
     @SuppressWarnings("serial")
     public static abstract class StatusCodeSettingServlet extends HttpServlet {
+        
+        public static int executionCount = 0;
+        
         abstract int getCode();
         
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
             resp.setStatus(getCode());
+            
+            executionCount++;
         }
     }
     
