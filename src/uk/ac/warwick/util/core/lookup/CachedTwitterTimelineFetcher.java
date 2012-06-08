@@ -43,7 +43,7 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
         
     public TwitterTimelineResponse get(String accountName, int num, boolean includeRetweets) throws CacheEntryUpdateException {
         UriBuilder uri = new UriBuilder(baseUri);
-        uri.setPath(uri.getPath() + accountName + ".json");
+        uri.setPath(uri.getPath() + accountName.toLowerCase() + ".json");
         uri.addQueryParameter("count", Integer.toString(num + TWEET_COUNT_PADDING));
         uri.addQueryParameter("include_entities", "true");
         uri.addQueryParameter("include_rts", Boolean.toString(includeRetweets));

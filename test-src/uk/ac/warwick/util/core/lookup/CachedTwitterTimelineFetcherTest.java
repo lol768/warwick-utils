@@ -45,6 +45,10 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
         // Test caching; shouldn't have hit the servlet again
         assertEquals("{ \"success\": true }", fetcher.get("matmannion", 20, true).getResponseBody());
         assertEquals(1, TwitterJSONServlet.executionCount - buffer);
+        
+        // Test caching with different capitalisation; shouldn't have hit the servlet again
+        assertEquals("{ \"success\": true }", fetcher.get("MatMannion", 20, true).getResponseBody());
+        assertEquals(1, TwitterJSONServlet.executionCount - buffer);
     }
     
     @Test
