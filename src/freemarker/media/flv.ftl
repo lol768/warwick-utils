@@ -11,7 +11,7 @@
 
 	<div align="${align}">
 		<div id="video_${uniqueId}" class="media_tag_video">
-			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="metadata">
+			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="${preload}">
 				<#if mime_type?default('video/mp4') == 'video/mp4' || mime_type?default('video/mp4') == 'video/x-m4v'>
 					<#-- the original source is mp4 show it first -->
 					<source src="${url}" type="${mime_type?default('video/mp4')}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" />
