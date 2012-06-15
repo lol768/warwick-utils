@@ -2,6 +2,7 @@ package uk.ac.warwick.util.files.dao;
 
 import java.util.List;
 
+import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 
 import uk.ac.warwick.util.files.HashInfo;
@@ -42,6 +43,8 @@ public interface HashInfoDAO {
      * Get hashes created before a certain date (exclusive), ordered by Created Date
      */
     List<HashInfo> getHashesCreatedBefore(DateTime createdBefore);
+    
+    ScrollableResults scrollHashesCreatedBefore(DateTime createdBefore);
     
     /**
      * Get hashes created on a certain date, ordered by hash, starting from a particular hash
