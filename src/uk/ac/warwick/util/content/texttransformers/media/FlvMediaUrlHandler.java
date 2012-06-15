@@ -49,6 +49,9 @@ public final class FlvMediaUrlHandler extends AbstractMetadataAwareMediaUrlHandl
         }
         
         model.put("preload", "metadata");
+        if (parameters.containsKey("preload")) {
+            model.put("preload", parameters.get("preload"));
+        }
         
         model.putAll(parameters);
         if (!parameters.containsKey("previewimage")) {
