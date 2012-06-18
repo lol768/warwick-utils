@@ -62,4 +62,6 @@ public interface HashInfoDAO {
     
     HashInfo getHashById(String hash);
     HashInfo getHashByIdWithoutFlush(String hash);
+    
+    void clear();
 }
