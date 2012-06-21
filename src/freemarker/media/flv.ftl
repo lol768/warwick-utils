@@ -69,11 +69,17 @@
 				object${uniqueId}.write('video_${uniqueId}');
 			};
 
+			// SBTWO-5562 and UTL-121 - force m4v to mp4 mime type in order to playback on iPad, HTML5 playback in Chrome			
+			<#if mime_type?default('') == "video/x-m4v">
+				<#assign mime_type="video/mp4">
+			</#if>
+				
 			<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 	
 				/* Attempt HTML5 Video */ 
 				var vidEl = document.getElementById('html5video_${uniqueId}');
 				var supportsVideo = !!vidEl.canPlayType;
+				
 				
 				// SBTWO-5384 & UTL-116 - don't preload metadata for IE if there's a preview image
 				<#if previewimage?default("") != ''>
