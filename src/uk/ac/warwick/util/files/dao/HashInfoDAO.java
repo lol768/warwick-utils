@@ -2,11 +2,11 @@ package uk.ac.warwick.util.files.dao;
 
 import java.util.List;
 
-import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 
 import uk.ac.warwick.util.files.HashInfo;
 import uk.ac.warwick.util.files.hash.HashString;
+import uk.ac.warwick.util.hibernate.BatchResults;
 
 /**
  * This DAO is for manipulating and querying the
@@ -44,7 +44,7 @@ public interface HashInfoDAO {
      */
     List<HashInfo> getHashesCreatedBefore(DateTime createdBefore);
     
-    ScrollableResults scrollHashesCreatedBefore(DateTime createdBefore);
+    BatchResults<HashInfo> scrollHashesCreatedBefore(DateTime createdBefore);
     
     /**
      * Get hashes created on a certain date, ordered by hash, starting from a particular hash
