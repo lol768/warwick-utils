@@ -13,16 +13,16 @@ import java.util.NoSuchElementException;
 public class PairIterator<L,R> implements Iterator<Pair<L,R>> {
 
 	private final Iterator<L> leftIterator;
-	private final Iterator<R> rightItereator;
+	private final Iterator<R> rightIterator;
 	
 	public PairIterator(Iterator<L> left, Iterator<R> right){
 		this.leftIterator = left;
-		this.rightItereator = right;
+		this.rightIterator = right;
 	}
 	
 	public PairIterator(Iterable<L> left, Iterable<R> right){
 		this.leftIterator = left.iterator();
-		this.rightItereator = right.iterator();
+		this.rightIterator = right.iterator();
 		
 	}
 	
@@ -37,7 +37,7 @@ public class PairIterator<L,R> implements Iterator<Pair<L,R>> {
 	}
 	
 	public boolean hasNext() {
-		return leftIterator.hasNext() || rightItereator.hasNext();
+		return leftIterator.hasNext() || rightIterator.hasNext();
 	}
 
 	public Pair<L,R> next() {
@@ -45,12 +45,13 @@ public class PairIterator<L,R> implements Iterator<Pair<L,R>> {
 			throw new NoSuchElementException();			
 		}
 		L left = leftIterator.hasNext()?leftIterator.next():null;
-		R right = rightItereator.hasNext()?rightItereator.next():null;
+		R right = rightIterator.hasNext()?rightIterator.next():null;
 		return Pair.of(left, right);
 	}
 
 	public void remove() {
-		throw new RuntimeException("Can't call remove on a PairIterator");
+	    leftIterator.remove();
+	    rightIterator.remove();
 	}
 
 }
