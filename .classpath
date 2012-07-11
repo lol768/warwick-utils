@@ -77,5 +77,8 @@
 	<classpathentry kind="lib" path="external-libs/jsoup/jsoup-1.6.1.jar"/>
 	<classpathentry kind="lib" path="external-libs/lesscss/lesscss-engine-1.3.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="external-libs/tagsoup-html5/tagsoup-html5.jar" sourcepath="external-libs/src/tagsoup-html5-20120522-src.zip"/>
+	<classpathentry kind="lib" path="external-libs/commons-validator/commons-validator-1.3.1.jar"/>
+	<classpathentry kind="lib" path="external-libs/commons-validator/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="external-libs/dnsjava/dnsjava-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
