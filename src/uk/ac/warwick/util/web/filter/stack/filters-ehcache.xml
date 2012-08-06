@@ -5,7 +5,7 @@
 <ehcache 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:noNamespaceSchemaLocation="ehcache.xsd"
-	updateCheck="false">
+	updateCheck="false" name="filtersCache">
  
     <!-- 
         store 10,000 distinct request paths.
