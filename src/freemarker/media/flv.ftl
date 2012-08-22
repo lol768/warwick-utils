@@ -11,7 +11,7 @@
 
 	<div align="${align}">
 		<div id="video_${uniqueId}" class="media_tag_video">
-			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="${preload}">
+			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="none"> <!-- SBTWO-5551 -->
 				<#if mime_type?default('video/mp4') == 'video/mp4' || mime_type?default('video/mp4') == 'video/x-m4v'>
 					<#-- the original source is mp4 show it first -->
 					<source src="${url}" type="${mime_type?default('video/mp4')}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" />
@@ -81,20 +81,19 @@
 				var supportsVideo = !!vidEl.canPlayType;
 				
 				
-				// SBTWO-5384 & UTL-116 - don't preload metadata for IE if there's a preview image
-				<#if previewimage?default("") != ''>
-					if(typeof jQuery != "undefined"){
-					 if ( jQuery.browser.msie ) {
-	    			    vidEl.setAttribute('preload', 'none');
-	 				  }
-	 				} 
-	 				// if no jQuery, use Protoype
-	 				else {
-	 				  if (Prototype.Browser.IE) {
-	    			    vidEl.setAttribute('preload', 'none');
-	 				  }
-	 				}
- 				</#if>
+				// SBTWO-5551
+				if(typeof jQuery != "undefined"){
+					if ( !jQuery.browser.msie ) {
+						vidEl.setAttribute('preload', '${preload}');
+					}
+				} 
+				// if no jQuery, use Protoype
+				else {
+					if (!Prototype.Browser.IE) {
+						vidEl.setAttribute('preload', '${preload}');
+					}
+				}
+
 			
 				var mimeType = '${mime_type?default('video/mp4')}';
 				/* For MP4, check correctly with the codecs UTL-112 */
