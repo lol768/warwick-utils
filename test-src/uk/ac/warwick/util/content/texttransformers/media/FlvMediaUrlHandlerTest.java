@@ -98,10 +98,10 @@ public final class FlvMediaUrlHandlerTest {
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.contains("\"100%\",\"\""));
         
-        assertTrue(html.contains("preload=\"metadata\""));
-        parameters.put("preload", "none");
-        html = handler.getHtml("file.mp4", parameters, null);
         assertTrue(html.contains("preload=\"none\""));
+        parameters.put("preload", "metadata");
+        html = handler.getHtml("file.mp4", parameters, null);
+        assertTrue(html.contains("vidEl.setAttribute('preload', 'metadata');"));
 	}
 	
 	@Test
