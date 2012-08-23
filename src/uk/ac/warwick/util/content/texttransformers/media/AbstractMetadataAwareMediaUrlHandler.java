@@ -9,14 +9,12 @@ public abstract class AbstractMetadataAwareMediaUrlHandler extends MediaUrlHandl
 	private MetadataHandler metadataHandler;
 
 	@Override
-	public final String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {
-		if (metadataHandler != null) {
-			metadataHandler.handle(url, parameters, mc);
-		}
-		
+	public final String getHtml(String url, Map<String, Object> parameters, MutableContent mc) {		
 		// sanitise width and height parameters to contain only numbers. if this
 		// ends up as empty string then the defaults will be used in the
 		// freemarker
+	    
+	    // sanitize any values added by the user
 		if (parameters.containsKey("width")) {
 			parameters.put("width", sanitise(parameters.get("width").toString()));
 		}
@@ -24,6 +22,19 @@ public abstract class AbstractMetadataAwareMediaUrlHandler extends MediaUrlHandl
 		if (parameters.containsKey("height")) {
 			parameters.put("height", sanitise(parameters.get("height").toString()));
 		}
+		
+		if (metadataHandler != null) {
+            metadataHandler.handle(url, parameters, mc);
+        }
+		
+		// sanitize any bogus metadata
+        if (parameters.containsKey("width")) {
+            parameters.put("width", sanitise(parameters.get("width").toString()));
+        }
+        
+        if (parameters.containsKey("height")) {
+            parameters.put("height", sanitise(parameters.get("height").toString()));
+        }
 		
 		return getHtmlInner(url, parameters);
 	}
