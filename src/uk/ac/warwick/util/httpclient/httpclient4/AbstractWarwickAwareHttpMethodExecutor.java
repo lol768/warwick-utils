@@ -53,7 +53,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     @Override
-    void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception {
+    public void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception {
         if ((isWarwickServer(getUrl())) && user.isLoggedIn() && isSetCookie()) {
             request.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 
@@ -82,7 +82,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     @Override
-    Uri parseRequestUrl(Uri requestUrl) {
+    public Uri parseRequestUrl(Uri requestUrl) {
         return substituteWarwickTags(requestUrl);
     }
 

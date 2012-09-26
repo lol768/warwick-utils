@@ -18,12 +18,12 @@ public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor {
     }
 
     @Override
-    void beforeExecution(HttpUriRequest request, HttpContext context) {
+    public void beforeExecution(HttpUriRequest request, HttpContext context) {
         // Nothing to do
     }
 
     @Override
-    Uri parseRequestUrl(Uri requestUrl) {
+    public Uri parseRequestUrl(Uri requestUrl) {
         return requestUrl;
     }
 

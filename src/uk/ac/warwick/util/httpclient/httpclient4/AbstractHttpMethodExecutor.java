@@ -187,8 +187,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         }
     }
     
-    abstract Uri parseRequestUrl(Uri requestUrl);
-    abstract void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception;
+    public abstract Uri parseRequestUrl(Uri requestUrl);
+    public abstract void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception;
 
     /* Methods that only make sense before execution */
     public final void addHeader(String name, String value) {

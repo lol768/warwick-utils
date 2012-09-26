@@ -2,3 +2,5 @@
 build
 cobertura.sercobertura.ser
 /bin
+/dist/*
+cobertura.ser
