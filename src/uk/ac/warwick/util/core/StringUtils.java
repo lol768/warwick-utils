@@ -238,6 +238,22 @@ public final class StringUtils {
     }
 
     /**
+     * Analogue of String.contains(), ignoring whitespace differences.
+     * Operates on Strings only, rather than other CharSequence types
+     */
+    public static boolean containsSpaceInsensitive(String srcString, String searchString) {
+        return compactWhitespace(srcString.trim()).contains(compactWhitespace(searchString.trim()));
+    }
+
+    /**
+     * Analogue of String.equals(), ignoring whitespace differences.
+     * Operates on Strings only, rather than other CharSequence types
+     */
+    public static boolean equalsSpaceInsensitive(String aString, String bString) {
+        return compactWhitespace(aString.trim()).equals(compactWhitespace(bString.trim()));
+    }
+
+    /**
      * Escapes all non-ASCII characters into HTML entities, so you
      * can output the result into any HTML page. Existing HTML entities and
      * special HTML characters like angle brackets are not changed.

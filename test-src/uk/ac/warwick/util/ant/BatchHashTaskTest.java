@@ -50,8 +50,9 @@ public class BatchHashTaskTest extends BuildFileTestBase {
         
         Properties props = new Properties();
         props.load(new FileReader(new File(System.getProperty("java.io.tmpdir"), "statichashes.properties")));
-        assertThat( props.getProperty("scripts/prototype-1.6.0.3.js"), is("991507798479") );
-        assertThat( props.getProperty("somecsv.csv"), is("165104721170") );
+        // choice of hashes to allow for cross-platform hashing
+        assertThat( props.getProperty("scripts/prototype-1.6.0.3.js"), anyOf(is("991507798479"), is("315463420163")) );
+        assertThat( props.getProperty("somecsv.csv"), anyOf(is("165104721170"), is("175649914114")) );
     }
     
 }

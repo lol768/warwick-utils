@@ -50,8 +50,9 @@ public class BatchHashTaskWithSaltTest extends BuildFileTestBase {
         
         Properties props = new Properties();
         props.load(new FileReader(new File(System.getProperty("java.io.tmpdir"), "statichashes.properties")));
-        assertThat( props.getProperty("scripts/prototype-1.6.0.3.js"), is("168556932232") );
-        assertThat( props.getProperty("somecsv.csv"), is("131825934230") );
+        // choice of hashes to allow for cross-platform hashing
+        assertThat( props.getProperty("scripts/prototype-1.6.0.3.js"), anyOf(is("168556932232"), is("359133207138")) );
+        assertThat( props.getProperty("somecsv.csv"), anyOf(is("131825934230"), is("119441393854")) );
     }
     
 }
