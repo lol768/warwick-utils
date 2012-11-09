@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
+  default-autowire="byName">
+  
+  <!-- Will automatically have the BeanFactory wired into it, so it will get Spring
+    to check for @Autowired and @Resource annotations on newly deserialized objects -->
+  <bean id="converter" class="uk.ac.warwick.util.queue.conversion.JsonMessageConverter">
+    <property name="annotatedClasses">
+      <list>
+        <value>uk.ac.warwick.util.queue.conversion.TestItem</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Do-nothing bean, just to wire in to our TestMessage object to confirm wiring works -->
+  <bean id="testServiceBean" class="uk.ac.warwick.util.queue.conversion.TestServiceBean" >
+    <constructor-arg value="MagicBean" />
+  </bean>
+  
+</beans>

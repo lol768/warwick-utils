@@ -1,0 +1,13 @@
+div.good {
+  background: red url(../fab.gif);
+}
+
+div.bad {
+  background: black url("ab/doozy.png");
+}
+
+table.chunks {
+  background-image: url(http://www.example.com/fensler.jpg); 
+}
+
+p { line-height: 120%; }

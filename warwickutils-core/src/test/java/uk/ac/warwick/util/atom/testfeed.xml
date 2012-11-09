@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:sitebuilder="http://go.warwick.ac.uk/elab-schemas/atom">
+<entry>
+	<title>Nick Howes</title>
+	<link rel="collection" href="https://sitebuilder.warwick.ac.uk/sitebuilder2/edit/atom/atom.htm?page=/services/its/intranet/projects/webdev/sandbox/nickhowes&amp;type=list" />
+	<link rel="edit" href="https://sitebuilder.warwick.ac.uk/sitebuilder2/edit/atom/atom.htm?page=/services/its/intranet/projects/webdev/sandbox/nickhowes&amp;type=single" />
+	<link rel="alternate" href="http://www2.warwick.ac.uk/services/its/intranet/projects/webdev/sandbox/nickhowes" /><category term="bob tag" />
+	<author><name>Nick Howes</name></author>
+	<id>urn:uuid:094d402511314a7f01114c3523fa75c6</id>
+	<updated>2009-04-03T14:51:48Z</updated>
+	<published>2009-04-03T14:51:48Z</published>
+	<content type="html">&lt;html&gt;&lt;body&gt;Hello!&lt;/body&gt;&lt;/html&gt;</content>
+	<sitebuilder:page-name>nickles</sitebuilder:page-name>
+	<sitebuilder:searchable>true</sitebuilder:searchable>
+	<sitebuilder:visible>false</sitebuilder:visible>
+	<sitebuilder:span-rhs>true</sitebuilder:span-rhs>
+	<sitebuilder:description>Here is the description I'm using for this page</sitebuilder:description>
+	<sitebuilder:keywords>horses, play things, lovely times</sitebuilder:keywords>
+</entry>
+</feed>

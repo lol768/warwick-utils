@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://go.warwick.ac.uk/elab-schemas/filterstack"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+  targetNamespace="http://go.warwick.ac.uk/elab-schemas/filterstack"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xsd:import namespace="http://www.springframework.org/schema/beans" />
+
+  <xsd:element name="filter-stack">
+    <xsd:annotation>
+      <xsd:documentation>
+        Defines a ConfigurableFilterStack. Contains one or more mapping
+        elements, which each contain: one or more filter elements; one
+        or more url-pattern elements; and zero or more excluded-url-pattern
+        elements.
+	       </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="beans:identifiedType">
+          <xsd:sequence>
+            <xsd:element name="mapping" minOccurs="1"
+              maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element ref="filter" minOccurs="1" maxOccurs="unbounded" />
+                  <xsd:element name="url-pattern" maxOccurs="unbounded"
+                    type="xsd:string" />
+                  <xsd:element name="excluded-url-pattern"
+                    minOccurs="0" maxOccurs="unbounded" type="xsd:string" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="filter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="beans:ref" />
+      </xsd:choice>
+      <xsd:attribute name="ref" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+</xsd:schema>
