@@ -1,9 +1,9 @@
-/${null}
+${null}
 build
 cobertura.sercobertura.ser
 /bin
 /dist/*
 cobertura.ser
 /target
-*/bin
-*/target
+/modules/*/bin
+/modules/*/target
