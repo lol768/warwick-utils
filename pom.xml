@@ -601,21 +601,21 @@
 	</dependencyManagement>
 
 	<modules>
-		<module>warwickutils-all</module>
+		<module>modules/warwickutils-all</module>
 
-		<module>warwickutils-ant</module>
-		<module>warwickutils-cache</module>
-		<module>warwickutils-content</module>
-		<module>warwickutils-core</module>
-		<module>warwickutils-csv</module>
-		<module>warwickutils-files</module>
-		<module>warwickutils-graphite</module>
-		<module>warwickutils-hibernate</module>
-		<module>warwickutils-httpclient3</module>
-		<module>warwickutils-httpclient4</module>
-		<module>warwickutils-lookup</module>
-		<module>warwickutils-mail</module>
-		<module>warwickutils-queue</module>
-		<module>warwickutils-web</module>
+		<module>modules/warwickutils-ant</module>
+		<module>modules/warwickutils-cache</module>
+		<module>modules/warwickutils-content</module>
+		<module>modules/warwickutils-core</module>
+		<module>modules/warwickutils-csv</module>
+		<module>modules/warwickutils-files</module>
+		<module>modules/warwickutils-graphite</module>
+		<module>modules/warwickutils-hibernate</module>
+		<module>modules/warwickutils-httpclient3</module>
+		<module>modules/warwickutils-httpclient4</module>
+		<module>modules/warwickutils-lookup</module>
+		<module>modules/warwickutils-mail</module>
+		<module>modules/warwickutils-queue</module>
+		<module>modules/warwickutils-web</module>
 	</modules>
 </project>
