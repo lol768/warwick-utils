@@ -7,3 +7,4 @@ cobertura.ser
 /target
 /modules/*/bin
 /modules/*/target
+pom.xml.versionsBackup

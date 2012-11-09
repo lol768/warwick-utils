@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>1-SNAPSHOT</version>
+		<version>20121109</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,4 +14,8 @@
 
 	<name>Warwick Utils :: Graphite</name>
 	<description>Helper for sending events to Graphite</description>
+	
+	<properties>
+		<project.root>${project.basedir}/../..</project.root>
+	</properties>
 </project>

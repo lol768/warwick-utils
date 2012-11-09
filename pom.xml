@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>uk.ac.warwick</groupId>
 		<artifactId>warwick</artifactId>
-		<version>3</version>
+		<version>4</version>
 	</parent>
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>1-SNAPSHOT</version>
+	<version>20121109</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -27,22 +27,24 @@
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 
 		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+
+		<project.root>${project.basedir}</project.root>
 	</properties>
 
-  <!-- Need to add the local repository in order to get the parent pom -->
-  <repositories>
-    <repository>
-      <id>nexus</id>
-      <name>Internal Nexus Repository</name>
-      <url>http://mvn.elab.warwick.ac.uk/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+	<!-- Need to add the local repository in order to get the parent pom -->
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Internal Nexus Repository</name>
+			<url>http://mvn.elab.warwick.ac.uk/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<!-- ====================================================================== -->
 	<!-- S C M -->
@@ -87,6 +89,22 @@
 						</executions>
 						<configuration>
 							<attach>false</attach>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>dist</id>
+			<build>
+				<defaultGoal>package</defaultGoal>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<outputDirectory>${project.root}/dist</outputDirectory>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -167,6 +185,10 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
