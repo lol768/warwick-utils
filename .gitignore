@@ -1,6 +1,10 @@
-/${null}
+${null}
 build
 cobertura.sercobertura.ser
 /bin
 /dist/*
 cobertura.ser
+/target
+/modules/*/bin
+/modules/*/target
+pom.xml.versionsBackup
