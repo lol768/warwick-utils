@@ -105,6 +105,7 @@
 						<artifactId>maven-jar-plugin</artifactId>
 						<configuration>
 							<outputDirectory>${project.root}/dist</outputDirectory>
+							<finalName>${project.artifactId}</finalName>
 						</configuration>
 					</plugin>
 				</plugins>
