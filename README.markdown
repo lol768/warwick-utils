@@ -21,10 +21,7 @@ First, set the version number:
     
 This should set <version>the-current-date</version> in all the pom.xml files.
 
-You _can_ then just run the deploy goal from the command line, but it's better to use the deploy *profile* as
-this may trigger other changes:
-
-    $ mvn -Pdeploy
+Commit and push to develop; you can then run the manual goal from the Bamboo build once it's built.
     
 Multiple versions on the same day
 -------------
