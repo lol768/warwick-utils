@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>20121109-1812</version>
+	<version>20121112</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -461,7 +461,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>uk.ac.warwick</groupId>
+				<groupId>uk.ac.warwick.sso</groupId>
 				<artifactId>sso-client</artifactId>
 				<version>1.90</version>
 			</dependency>
