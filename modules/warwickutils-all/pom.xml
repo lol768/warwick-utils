@@ -50,7 +50,7 @@
 						</goals>
 						<configuration>
 							<shadedClassifierName>all</shadedClassifierName>
-							<finalName>warwickutils-all</finalName>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
 							<artifactSet>
 								<includes>
 									<include>uk.ac.warwick.util:*:jar:*</include>
@@ -67,6 +67,7 @@
 						<configuration>
 							<shadedClassifierName>test</shadedClassifierName>
 							<finalName>warwickutils-test</finalName>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
 							<artifactSet>
 								<includes>
 									<include>uk.ac.warwick.util:*:test-jar:*</include>
@@ -77,7 +78,6 @@
 				</executions>
 				<configuration>
 					<createSourcesJar>true</createSourcesJar>
-					<shadedArtifactAttached>true</shadedArtifactAttached>
 				</configuration>
 			</plugin>
 
