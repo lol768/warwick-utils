@@ -8,3 +8,4 @@ cobertura.ser
 /modules/*/bin
 /modules/*/target
 pom.xml.versionsBackup
+dependency-reduced-pom.xml

@@ -14,10 +14,27 @@
 
 	<name>Warwick Utils :: All JARs</name>
 	<description>Puts together a WarwickUtils jar bundle</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
+	
+	<profiles>
+		<profile>
+			<id>dist</id>
+			<build>
+				<defaultGoal>package</defaultGoal>
+				<plugins>
+					<plugin>
+						<artifactId>maven-shade-plugin</artifactId>
+						<configuration>
+							<outputDirectory>${project.root}/dist</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -26,33 +43,56 @@
 				<version>2.0</version>
 				<executions>
 					<execution>
+						<id>warwickutils-all</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<shadedClassifierName>all</shadedClassifierName>
+							<finalName>warwickutils-all</finalName>
 							<artifactSet>
 								<includes>
-									<include>uk.ac.warwick.util:*</include>
+									<include>uk.ac.warwick.util:*:jar:*</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+					<execution>
+						<id>warwickutils-test</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedClassifierName>test</shadedClassifierName>
+							<finalName>warwickutils-test</finalName>
+							<artifactSet>
+								<includes>
+									<include>uk.ac.warwick.util:*:test-jar:*</include>
 								</includes>
 							</artifactSet>
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<createSourcesJar>true</createSourcesJar>
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+				</configuration>
 			</plugin>
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 				<configuration>
 					<attach>false</attach>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -115,6 +155,90 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-ant</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-cache</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-content</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-core</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-csv</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-files</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-graphite</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-hibernate</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-httpclient3</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-httpclient4</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-lookup</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-mail</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-queue</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-web</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
 		</dependency>
 	</dependencies>
 </project>
