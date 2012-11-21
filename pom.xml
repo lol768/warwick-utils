@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>20121112</version>
+	<version>20121121</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -642,5 +642,7 @@
 		<module>modules/warwickutils-mail</module>
 		<module>modules/warwickutils-queue</module>
 		<module>modules/warwickutils-web</module>
+
+		<module>modules/warwickutils-test</module>
 	</modules>
 </project>
