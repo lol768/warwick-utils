@@ -108,6 +108,29 @@
 							<finalName>${project.artifactId}</finalName>
 						</configuration>
 					</plugin>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>2.2</version>
+						<executions>
+							<execution>
+								<id>auto-clean</id>
+								<phase>package</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+								<configuration>
+									<filesets>
+										<fileset>
+											<directory>${project.root}/dist</directory>
+											<includes>
+												<include>**/original-*.jar</include>
+											</includes>
+										</fileset>
+									</filesets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -188,6 +211,12 @@
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
+						<configuration>
+							<includes>
+								<include>uk/ac/warwick/**</include>
+								<include>org/**</include>
+							</includes>
+						</configuration>
 					</execution>
 				</executions>
 				<configuration>
