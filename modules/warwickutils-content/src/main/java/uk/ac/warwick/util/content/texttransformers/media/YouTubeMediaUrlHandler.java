@@ -18,7 +18,7 @@ public final class YouTubeMediaUrlHandler extends AbstractFlashPlayerMediaUrlHan
     public String getFlashUrl(final String url) {
         String params = toUri(url).getQuery();
         String videoId = extractVideoId(params, "v");
-        return "http://www.youtube.com/v/" + videoId + "?version=3";
+        return "http://www.youtube.com/embed/" + videoId + "?wmode=transparent";
     }
     
     @Override
