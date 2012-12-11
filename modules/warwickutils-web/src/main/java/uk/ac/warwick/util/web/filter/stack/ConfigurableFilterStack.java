@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -26,6 +27,12 @@ import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+
+import uk.ac.warwick.util.collections.google.BasePredicate;
+import uk.ac.warwick.util.core.StringUtils;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 
 /**
@@ -51,7 +58,7 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
 
     private static final Logger LOGGER = Logger.getLogger(ConfigurableFilterStack.class);
     
-    private final List<FilterStackSet> filterSets;
+    private final ImmutableList<FilterStackSet> filterSets;
     private final CacheManager cacheManager;
     private final SelfPopulatingCache cache;
     
@@ -59,7 +66,7 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
     private boolean executeLifecycleEvents = true;
     
     public ConfigurableFilterStack(final List<FilterStackSet> filters) throws IOException {
-        this.filterSets = filters;
+        this.filterSets = merge(filters);
         
         InputStream is = getClass().getResourceAsStream("filters-ehcache.xml");
         try {
@@ -76,6 +83,40 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
         } finally {
             is.close();
         }
+    }
+    
+    /**
+     * Combine any filters that have a name with any other definitions later on
+     */
+    public static ImmutableList<FilterStackSet> merge(List<FilterStackSet> filters) {
+    	ImmutableList.Builder<FilterStackSet> builder = ImmutableList.builder();
+    	
+    	// Collect already handled names - this allows us to skip elements with the same name
+    	Set<String> handledNames = Sets.newHashSet();
+    	
+    	// Create a copy of the list to do searches on
+    	ImmutableList<FilterStackSet> copy = ImmutableList.copyOf(filters);
+    	
+    	for (FilterStackSet set : filters) {
+    		String name = set.getName();
+    		
+    		if (!StringUtils.hasText(name)) {
+    			builder.add(set);
+    		} else if (handledNames.add(name)) {
+    			builder.add(FilterStackSet.merge(set, withName(name, set).filteredCopy(copy)));
+    		}
+    	}
+    	
+    	return builder.build();
+    }
+    
+    private static BasePredicate<FilterStackSet> withName(final String name, final FilterStackSet dupe) {
+    	return new BasePredicate<FilterStackSet>() {
+			@Override
+			public boolean apply(FilterStackSet set) {
+				return set != dupe && name.equals(set.getName());
+			}
+		};
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:filters="http://go.warwick.ac.uk/elab-schemas/filterstack"
+	   xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://go.warwick.ac.uk/elab-schemas/filterstack http://go.warwick.ac.uk/elab-schemas/filters.xsd
+">
+
+	<!-- These are required as it will resolve the references below -->
+	<bean id="loadPageFilterRender" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+	<bean id="loadPageFilterEdit" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+	<bean id="loadSiteData" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+	<bean id="doSomethingFilter" class="uk.ac.warwick.util.web.filter.stack.MockFilter" />
+
+	<filters:filter-stack id="abstractFilterStack" abstract="true" xmlns="http://go.warwick.ac.uk/elab-schemas/filterstack">
+		<mapping>
+			<filter ref="loadPageFilterRender" />
+			<filter ref="loadSiteData" />
+			<url-pattern>/render/*</url-pattern>
+		</mapping>
+		<mapping name="extendMe">
+			<filter ref="loadPageFilterEdit" />
+			<filter ref="loadSiteData" />
+			<url-pattern>/edit/*</url-pattern>
+			<excluded-url-pattern>/edit/api/*</excluded-url-pattern>
+		</mapping>
+	</filters:filter-stack>
+	
+	<!-- This is a really stupid example that wouldn't happen in the real world, but let's do it anyway -->
+	<filters:filter-stack id="uberFilter" parent="abstractFilterStack" merge="true" xmlns="http://go.warwick.ac.uk/elab-schemas/filterstack">
+		<mapping name="extendMe">
+			<url-pattern>/1/*</url-pattern>
+		</mapping>
+		<mapping name="extendMe">
+			<url-pattern>/2/*</url-pattern>
+		</mapping>
+		<mapping name="extendMe">
+			<url-pattern>/3/*</url-pattern>
+		</mapping>
+		<mapping name="extendMe">
+			<url-pattern>/4/*</url-pattern>
+		</mapping>
+		<mapping name="extendMe">
+			<url-pattern>/5/*</url-pattern>
+		</mapping>
+		<mapping>
+			<filter ref="doSomethingFilter" />
+			<url-pattern>/*</url-pattern>
+		</mapping>
+	</filters:filter-stack>
+
+</beans>

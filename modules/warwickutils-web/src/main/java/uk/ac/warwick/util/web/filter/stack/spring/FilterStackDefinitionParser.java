@@ -26,13 +26,22 @@ public final class FilterStackDefinitionParser extends AbstractBeanDefinitionPar
     @SuppressWarnings("unchecked")
     @Override
     protected AbstractBeanDefinition parseInternal(Element rootElement, ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ConfigurableFilterStack.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.genericBeanDefinition(ConfigurableFilterStack.class);
+        
+        if (rootElement.hasAttribute("abstract") && "true".equals(rootElement.getAttribute("abstract"))) {
+        	factory.setAbstract(true);
+        }
+        
+        if (rootElement.hasAttribute("parent")) {
+        	factory.setParentName(rootElement.getAttribute("parent"));
+        }
 
         // A ManagedList supports containing BeanReferences and BeanDefinitions
         // as elements, which will get resolved properly.
         ManagedList sets = new ManagedList();
+        sets.setMergeEnabled(parserContext.getDelegate().parseMergeAttribute(rootElement));
         for (Element element : getChildElementsByTagName(rootElement, MAPPING_ELEMENT)) {
-            AbstractBeanDefinition stackSet = handleMappingElement(element);
+            AbstractBeanDefinition stackSet = handleMappingElement(element, parserContext);
             sets.add(stackSet);
         }
 
@@ -41,8 +50,8 @@ public final class FilterStackDefinitionParser extends AbstractBeanDefinitionPar
     }
     
     @SuppressWarnings("unchecked")
-    private AbstractBeanDefinition handleMappingElement(Element mappingElement) {
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(FilterStackSet.class);
+    private AbstractBeanDefinition handleMappingElement(Element mappingElement, ParserContext parserContext) {
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(FilterStackSet.class);
  
         ManagedList filters = new ManagedList();
         for (Element element : getChildElementsByTagName(mappingElement, FILTER_ELEMENT)) {
@@ -59,9 +68,12 @@ public final class FilterStackDefinitionParser extends AbstractBeanDefinitionPar
             excludedPatterns.add(element.getTextContent());
         }
         
+        String name = mappingElement.getAttribute("name");
+        
         builder.addConstructorArgValue(filters);
         builder.addConstructorArgValue(includedPatterns);
         builder.addConstructorArgValue(excludedPatterns);
+        builder.addConstructorArgValue(name);
         return builder.getBeanDefinition();
     }
 
