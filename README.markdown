@@ -21,7 +21,7 @@ First, set the version number:
     
 This should set <version>the-current-date</version> in all the pom.xml files.
 
-Commit and push to develop; you can then run the manual goal from the Bamboo build once it's built.
+Commit and push to master; you can then run the manual goal from the Bamboo build once it's built.
     
 Multiple versions on the same day
 -------------
