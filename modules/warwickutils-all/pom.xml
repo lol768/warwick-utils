@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20121211</version>
+		<version>20121211-1451</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -67,7 +67,7 @@
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 				<configuration>
-					<attach>false</attach>
+					<attach>true</attach>
 				</configuration>
 			</plugin>
 			
