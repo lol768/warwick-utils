@@ -174,6 +174,9 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, Mas
             });
             container.afterPropertiesSet();
             listeners.put(listener, container);
+            
+            // UTL-125 Listeners listen by default
+            container.start();
         }
 
         public void send(Object message) {

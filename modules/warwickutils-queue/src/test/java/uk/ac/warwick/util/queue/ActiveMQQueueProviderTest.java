@@ -44,7 +44,6 @@ public class ActiveMQQueueProviderTest {
         
         // default message converter will convert to and from strings.
         queue.addListener((String)null, listener);
-        ((ActiveMQQueueProvider)queueProvider).startAllListeners();
         
         queue.send("Hello from JUnit");
         queue.send("Hello from JUnit again");
@@ -72,7 +71,6 @@ public class ActiveMQQueueProviderTest {
             one(listener).onReceive(with(any(GrabMetadataJob.class)));
         }});
         queue.setSingleListener(listener);
-        ((ActiveMQQueueProvider)queueProvider).startAllListeners();
         
         EncodeVideoJob encode = new EncodeVideoJob();
         encode.setFilename("myfile.mp4");

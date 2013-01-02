@@ -84,7 +84,6 @@ public class ActiveMQQueueProviderSpringTest {
             exactly(1).of(listener).onReceive(with(hasProperty("pageUrl", equal("/services/wibble.ogg"))));
         }});
         sitebuilderQueue.setSingleListener(listener);
-        queueProvider.startAllListeners();
       
         sitebuilderQueue.send(job);
         Thread.sleep(300);
@@ -108,7 +107,6 @@ public class ActiveMQQueueProviderSpringTest {
             )));
         }});
         unimportantStuffQueue.setSingleListener(listener);
-        queueProvider.startAllListeners();
         
         SendForHelp help = new SendForHelp();
         help.setFrom("alan@introuble.example.com");
