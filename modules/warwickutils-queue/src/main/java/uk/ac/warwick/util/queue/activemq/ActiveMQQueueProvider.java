@@ -149,6 +149,11 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, Mas
             listeners.get(listener).start();
         }
         
+        private void setPubSubValues(DefaultMessageListenerContainer container) {
+        	container.setPubSubDomain(jms.isPubSubDomain());
+        	container.setPubSubNoLocal(jms.isPubSubNoLocal());
+        }
+        
         public void addListener(String itemType, final QueueListener listener) {
             if (!listener.isListeningToQueue()) {
                 return;
@@ -157,6 +162,10 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, Mas
             container.setSessionTransacted(true);
             container.setConnectionFactory(cachingConnectionFactory);
             container.setDestinationName(name);
+            
+            // Copy values from the underlying queue
+            setPubSubValues(container);
+            
             // Selector is an SQL92 type condition to pick which types of messages to receive
             if (itemType != null) {
                 container.setMessageSelector("itemType = '" + itemType.replace("'", "''") + "'");
@@ -185,6 +194,20 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, Mas
 
         public void setPersistent(boolean persistent) {
             jms.setDeliveryPersistent(persistent);
+        }
+        
+        public void setPubSub(boolean pubSub) {
+        	jms.setPubSubDomain(pubSub);
+        	for (DefaultMessageListenerContainer container : listeners.values()) {
+        		container.setPubSubDomain(pubSub);
+        	}
+        }
+        
+        public void setPubSubNoLocal(boolean pubSubNoLocal) {
+        	jms.setPubSubNoLocal(pubSubNoLocal);
+        	for (DefaultMessageListenerContainer container : listeners.values()) {
+        		container.setPubSubNoLocal(pubSubNoLocal);
+        	}
         }
 
         public void destroy() {

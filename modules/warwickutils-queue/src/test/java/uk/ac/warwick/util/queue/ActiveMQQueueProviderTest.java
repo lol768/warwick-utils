@@ -102,6 +102,27 @@ public class ActiveMQQueueProviderTest {
         m.assertIsSatisfied();
     }
     
+    @Test public void thatsNoMoonItsASpaceStation() throws Exception {
+    	Mockery m = new JUnit4Mockery();
+    	
+    	final MyListener listener1 = new MyListener();
+    	final MyListener listener2 = new MyListener();
+    	
+    	queue.setPubSub(true);
+    	
+    	queue.addListener((String)null, listener1);
+    	queue.addListener((String)null, listener2);
+    	
+    	queue.send("Pow!");
+    	
+    	Thread.sleep(300);
+    	
+    	assertEquals(1, listener1.getMessagesReceived());
+    	assertEquals(1, listener2.getMessagesReceived());
+    	
+        m.assertIsSatisfied();
+    }
+    
     @After public void destroy() throws Exception {    
         queueProvider.destroy();
     }
