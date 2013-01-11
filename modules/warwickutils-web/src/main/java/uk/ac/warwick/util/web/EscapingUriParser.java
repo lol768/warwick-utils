@@ -90,16 +90,29 @@ public class EscapingUriParser extends DefaultUriParser {
     }
 
     @Override
-    public Uri parse(String text) {
-        return super.parse(escape(text));
+	public Uri parse(String text) {
+    	return super.parse(escape(text, false));
+	}
+    
+    /**
+     * Produces a new Uri from a text representation.
+     * 
+     * @param text
+     *            The text uri.
+     * @param escapeAll
+     * 			  Escape all characters, even if already part of an escape sequence           
+     * @return A new Uri, parsed into components.
+     */
+    public Uri parse(String text, boolean escapeAll) {
+        return super.parse(escape(text, escapeAll));
     }
 
     @Override
     public boolean isOpaque(String text) {
-        return super.isOpaque(escape(text));
+        return super.isOpaque(escape(text, false));
     }
     
-    private static String escape(String text) {
+    private static String escape(String text, boolean escapeAll) {
         try {
             if (StringUtils.hasText(text)) {
                 text = text.trim();
@@ -121,6 +134,11 @@ public class EscapingUriParser extends DefaultUriParser {
                 }
                 
                 text = new String(URLCodec.encodeUrl(ALLOWED_PATH_CHARACTERS, path.getBytes("UTF-8")), "UTF-8");
+                if (escapeAll){
+                	// escape all % signs, even if already escaped
+                    text = text.replace("%", "%25");
+                }
+                //text = scanEscapes(text);
                 
                 if (StringUtils.hasText(query)) {
                     query = new String(URLCodec.encodeUrl(ALLOWED_QUERYSTRING_CHARACTERS, query.getBytes("UTF-8")), "UTF-8");

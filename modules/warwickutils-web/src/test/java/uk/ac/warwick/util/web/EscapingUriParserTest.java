@@ -10,11 +10,13 @@ public final class EscapingUriParserTest {
     public void invalidEscapeSequence() throws Exception {
         assertEquals("http://www.google.com/?cheese=a%25", new EscapingUriParser().parse("http://www.google.com/?cheese=a%").toString());
         assertEquals("http://www.google.com/?cheese=a%25%7E%25&steve=so%7Emething", new EscapingUriParser().parse("http://www.google.com/?cheese=a%%7E%&steve=so%7Emething").toString());
+        assertEquals("http://www.google.com/some%25th%25in%2525g", new EscapingUriParser().parse("http://www.google.com/some%th%in%25g", true).toString());
     }
     
     @Test
     public void validEscapeSequence() throws Exception {
         assertEquals("http://www.google.com/?cheese=a%7E", new EscapingUriParser().parse("http://www.google.com/?cheese=a%7E").toString());
+        assertEquals("http://www.google.com/some%7E%25thing", new EscapingUriParser().parse("http://www.google.com/some%7E%25thing").toString());
     }
     
     @Test
