@@ -5,6 +5,7 @@ import java.util.BitSet;
 
 import org.apache.commons.codec.net.URLCodec;
 
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
 
 public class EscapingUriParser extends DefaultUriParser {
@@ -91,28 +92,27 @@ public class EscapingUriParser extends DefaultUriParser {
 
     @Override
 	public Uri parse(String text) {
-    	return super.parse(escape(text, false));
+    	return super.parse(escape(text));
 	}
     
-    /**
-     * Produces a new Uri from a text representation.
-     * 
-     * @param text
-     *            The text uri.
-     * @param escapeAll
-     * 			  Escape all characters, even if already part of an escape sequence           
-     * @return A new Uri, parsed into components.
-     */
-    public Uri parse(String text, boolean escapeAll) {
-        return super.parse(escape(text, escapeAll));
-    }
-
-    @Override
-    public boolean isOpaque(String text) {
-        return super.isOpaque(escape(text, false));
+    private static Pair<String, String> splitPath(String path) {
+    	int indexOfPath = -1;
+    	for (int i = 0; i < 3; i++) {
+    		indexOfPath = path.indexOf('/', indexOfPath + 1);
+    		
+    		if (indexOfPath == -1) {
+    			break;
+    		}
+    	}
+    	
+    	if (indexOfPath == -1) {
+    		return null;
+    	} else {
+    		return Pair.of(path.substring(0, indexOfPath), path.substring(indexOfPath));
+    	}
     }
     
-    private static String escape(String text, boolean escapeAll) {
+    private static String escape(String text) {
         try {
             if (StringUtils.hasText(text)) {
                 text = text.trim();
@@ -133,12 +133,13 @@ public class EscapingUriParser extends DefaultUriParser {
                     fragment = text.substring(text.indexOf("#"));
                 }
                 
-                text = new String(URLCodec.encodeUrl(ALLOWED_PATH_CHARACTERS, path.getBytes("UTF-8")), "UTF-8");
-                if (escapeAll){
-                	// escape all % signs, even if already escaped
-                    text = text.replace("%", "%25");
+                // TAB-334 Special case path parsing here
+                Pair<String, String> splitPath = splitPath(path);
+                if (splitPath != null) {
+                	path = splitPath.getLeft() + scanEscapes(splitPath.getRight());
                 }
-                //text = scanEscapes(text);
+                
+                text = new String(URLCodec.encodeUrl(ALLOWED_PATH_CHARACTERS, path.getBytes("UTF-8")), "UTF-8");
                 
                 if (StringUtils.hasText(query)) {
                     query = new String(URLCodec.encodeUrl(ALLOWED_QUERYSTRING_CHARACTERS, query.getBytes("UTF-8")), "UTF-8");

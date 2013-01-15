@@ -10,7 +10,6 @@ public final class EscapingUriParserTest {
     public void invalidEscapeSequence() throws Exception {
         assertEquals("http://www.google.com/?cheese=a%25", new EscapingUriParser().parse("http://www.google.com/?cheese=a%").toString());
         assertEquals("http://www.google.com/?cheese=a%25%7E%25&steve=so%7Emething", new EscapingUriParser().parse("http://www.google.com/?cheese=a%%7E%&steve=so%7Emething").toString());
-        assertEquals("http://www.google.com/some%25th%25in%2525g", new EscapingUriParser().parse("http://www.google.com/some%th%in%25g", true).toString());
     }
     
     @Test
@@ -40,6 +39,11 @@ public final class EscapingUriParserTest {
     @Test
     public void sbtwo4231() throws Exception {
         assertEquals("http://www.google.com/url?sa=t&source=web&cd=17&ved=0CDQQFjAGOAo&url=http%3A%2F%2Fwww2.warwick.ac.uk%2Falumni%2Fknowledge%2Fblogs%2F&rct=j&q=us%20army%20contructing%20office%20email%20addres%20in%20pon%20%23%20in%20helmand%20afghanistan&ei=3VFSTbWZEsP38AbE8MHTCQ&usg=AFQjCNEXLLP1vWYq-2pT67G8T6U7RHynBw", new EscapingUriParser().parse("http://www.google.com/url?sa=t&source=web&cd=17&ved=0CDQQFjAGOAo&url=http%3A%2F%2Fwww2.warwick.ac.uk%2Falumni%2Fknowledge%2Fblogs%2F&rct=j&q=us%20army%20contructing%20office%20email%20addres%20in%20pon%20%23%20in%20helmand%20afghanistan&ei=3VFSTbWZEsP38AbE8MHTCQ&usg=AFQjCNEXLLP1vWYq-2pT67G8T6U7RHynBw").toString());
+    }
+    
+    @Test
+    public void tab334() throws Exception {
+    	assertEquals("https://augustus.warwick.ac.uk/coursework/module/bs250/c877dd24-2fda-4a86-8736-54b6ccbac3ec/attachment/%C3%90%C2%94%C3%90%C2%BE%C3%90%C2%BA%C3%91%C2%83%C3%90%C2%BC%C3%90%C2%B5%C3%90%C2%BD%C3%91%C2%82%20Microsoft%20Office%2020%25%20Word.docx", new EscapingUriParser().parse("https://augustus.warwick.ac.uk/coursework/module/bs250/c877dd24-2fda-4a86-8736-54b6ccbac3ec/attachment/%C3%90%C2%94%C3%90%C2%BE%C3%90%C2%BA%C3%91%C2%83%C3%90%C2%BC%C3%90%C2%B5%C3%90%C2%BD%C3%91%C2%82%20Microsoft%20Office%2020%%20Word.docx").toString());
     }
 
 }

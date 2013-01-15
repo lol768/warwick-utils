@@ -112,9 +112,16 @@ public class UriTest {
         Uri.parse("----://apache.org/foo?a=b#blah");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parseInvalidPath() {
-        Uri.parse("http://apache.org/foo\\---(&%?a=b#blah");
+    	// As of TAB-334 this is now fine.
+    	Uri uri = Uri.parse("http://apache.org/foo\\---(&%?a=b#blah");
+    	
+    	assertEquals("http", uri.getScheme());
+        assertEquals("apache.org", uri.getAuthority());
+        assertEquals("/foo%5C---(&%25", uri.getPath());
+        assertEquals("a=b", uri.getQuery());
+        assertEquals("blah", uri.getFragment());
     }
 
     @Test
