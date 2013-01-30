@@ -26,4 +26,10 @@ public interface TagAndAttributeFilter {
      * Set whether to allow on* attributes
      */
     void setAllowJavascriptHandlers(boolean allow);
+    
+    /**
+     * Set whether to allow a blockquote without any attributes, mostly for Blogs' textile
+     * @param allowBlockquoteWithNoAttributes
+     */
+    void setAllowBlockquoteWithNoAttributes(boolean allowBlockquoteWithNoAttributes);
 }

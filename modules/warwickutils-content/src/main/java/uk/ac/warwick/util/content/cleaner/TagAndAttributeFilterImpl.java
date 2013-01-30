@@ -231,4 +231,12 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 	public void setAllowJavascriptHandlers(boolean allowJavascriptHandlers) {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
 	}
+
+	public void setAllowBlockquoteWithNoAttributes(boolean allowBlockquoteWithNoAttributes) {
+		if (!allowBlockquoteWithNoAttributes && !disallowedNoAttributesTags.contains("blockquote")) {
+			disallowedNoAttributesTags.add("blockquote");
+		} else {
+			disallowedNoAttributesTags.remove("blockquote");
+		}
+	}
 }

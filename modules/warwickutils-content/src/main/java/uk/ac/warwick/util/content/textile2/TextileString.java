@@ -40,6 +40,8 @@ public class TextileString {
 	
 	private boolean allowJavascriptHandlers = true;
 	
+	private boolean allowBlockquoteWithNoAttributes;
+	
 	private EnumSet<TransformerFeature> features = null;
 	
 	private EnumSet<TransformationOptions> options = null;
@@ -151,6 +153,7 @@ public class TextileString {
 
 	public final String correctHtml(final String origContent) {
 		cleaner.setAllowJavascriptHandlers(allowJavascriptHandlers);
+		cleaner.setAllowBlockquoteWithNoAttributes(allowBlockquoteWithNoAttributes);
 		
 		return cleaner.clean(origContent, new MutableContent(null, null));
 	}
@@ -223,6 +226,14 @@ public class TextileString {
 
 	public void setAllowJavascriptHandlers(boolean allowJavascriptHandlers) {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
+	}
+	
+	public boolean isAllowBlockquoteWithNoAttributes() {
+		return allowBlockquoteWithNoAttributes;
+	}
+
+	public void setAllowBlockquoteWithNoAttributes(boolean allowBlockquoteWithNoAttributes) {
+		this.allowBlockquoteWithNoAttributes = allowBlockquoteWithNoAttributes;
 	}
 
 	public EnumSet<TransformerFeature> getFeatures() {

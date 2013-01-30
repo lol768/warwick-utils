@@ -43,6 +43,8 @@ public final class HtmlCleaner implements Cleaner {
     
     private boolean allowJavascriptHandlers = true;
     
+    private boolean allowBlockquoteWithNoAttributes;
+    
     private Schema schema = new HTML5Schema();
     
     public HtmlCleaner() {
@@ -132,6 +134,7 @@ public final class HtmlCleaner implements Cleaner {
         
         TagAndAttributeFilter filter = filterProvider.newInstance();
         filter.setAllowJavascriptHandlers(isAllowJavascriptHandlers());
+        filter.setAllowBlockquoteWithNoAttributes(isAllowBlockquoteWithNoAttributes());
         
         CleanerWriter handler = new CleanerWriter(filter, mc);
         
@@ -335,6 +338,14 @@ public final class HtmlCleaner implements Cleaner {
 
 	public void setAllowJavascriptHandlers(boolean allowJavascriptHandlers) {
 		this.allowJavascriptHandlers = allowJavascriptHandlers;
+	}
+	
+	public boolean isAllowBlockquoteWithNoAttributes() {
+		return allowJavascriptHandlers;
+	}
+
+	public void setAllowBlockquoteWithNoAttributes(boolean allowBlockquoteWithNoAttributes) {
+		this.allowBlockquoteWithNoAttributes = allowBlockquoteWithNoAttributes;
 	}
 
     public void setFilterProvider(ObjectProvider<TagAndAttributeFilter> filterProvider) {
