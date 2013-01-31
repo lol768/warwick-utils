@@ -22,11 +22,11 @@ public final class BatchResultsImpl<T> implements BatchResults<T> {
     
     private final int batchSize;
     
-    private final Function<T, String> identifier;
+    private final Function<? super T, String> identifier;
     
     private final Session session;
     
-    public BatchResultsImpl(ScrollableResults theDelegate, int theBatchSize, Function<T, String> idFunction, Session theSession) {
+    public BatchResultsImpl(ScrollableResults theDelegate, int theBatchSize, Function<? super T, String> idFunction, Session theSession) {
         this.delegate = theDelegate;
         this.identifier = idFunction;
         this.batchSize = theBatchSize;
