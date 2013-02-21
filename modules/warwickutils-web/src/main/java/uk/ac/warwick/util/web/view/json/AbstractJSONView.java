@@ -162,5 +162,15 @@ abstract class AbstractJSONView<T> implements View {
     public final void setWrapErrors(boolean wrapErrors) {
         this.wrapErrors = wrapErrors;
     }
+    
+    public final void setJsonpRequestValidatorAsString(String validator) {
+    	if ("ALLOW_ALL".equals(validator)) {
+    		this.jsonpRequestValidator = JSONPRequestValidator.ALLOW_ALL;
+    	} else if ("REJECT_ALL".equals(validator)) {
+    		this.jsonpRequestValidator = JSONPRequestValidator.REJECT_ALL;
+    	} else {
+    		throw new IllegalArgumentException();
+    	}
+    }
 
 }
