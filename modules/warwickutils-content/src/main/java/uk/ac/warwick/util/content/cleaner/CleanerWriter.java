@@ -170,7 +170,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
             attributes.put(name, value);
         }
         
-        AttributesImpl attsImpl = new AttributesImpl(attributes);
+        AttributesImpl attsImpl = new AttributesImpl(atts, attributes);
         
         String cssClass = attsImpl.getValue("class");
         if (cssClass != null && cssClass.contains("mce")) {

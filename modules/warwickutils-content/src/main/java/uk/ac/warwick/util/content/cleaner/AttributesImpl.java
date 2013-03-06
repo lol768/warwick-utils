@@ -26,11 +26,12 @@ public class AttributesImpl implements Attributes {
 		}
 	}
 
-	// generate an AttributesImpl object from a map
-	public AttributesImpl(Map<String, String> attrs){
-		for (Map.Entry<String, String> attr : attrs.entrySet()) {
-			String name = attr.getKey();
-			String value = attr.getValue();
+	// generate an AttributesImpl object from a map - the Attributes map is provided to guarantee consistent ordering
+	public AttributesImpl(final Attributes attrs, Map<String, String> map){
+		int l = attrs.getLength();
+		for (int i=0; i<l; i++) {
+			String name = attrs.getLocalName(i);
+			String value = map.get(name);
 			add(name,value);
 		}
 	}
