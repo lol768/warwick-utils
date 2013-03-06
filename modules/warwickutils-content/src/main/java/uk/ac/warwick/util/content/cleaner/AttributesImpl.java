@@ -3,6 +3,7 @@ package uk.ac.warwick.util.content.cleaner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 
@@ -21,6 +22,15 @@ public class AttributesImpl implements Attributes {
 		for (int i=0; i<l; i++) {
 			String name = attrs.getLocalName(i);
 			String value = attrs.getValue(i);
+			add(name,value);
+		}
+	}
+
+	// generate an AttributesImpl object from a map
+	public AttributesImpl(Map<String, String> attrs){
+		for (Map.Entry<String, String> attr : attrs.entrySet()) {
+			String name = attr.getKey();
+			String value = attr.getValue();
 			add(name,value);
 		}
 	}

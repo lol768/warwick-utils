@@ -166,11 +166,11 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         Map<String, String> attributes = new HashMap<String, String>();
         for (int i = 0; i < atts.getLength(); i++) {
             String name = atts.getLocalName(i);
-            String value = atts.getValue(i);
+            String value = contentFilter.handleAttributeValue(atts.getValue(i), tagName, name);
             attributes.put(name, value);
         }
         
-        AttributesImpl attsImpl = new AttributesImpl(atts);
+        AttributesImpl attsImpl = new AttributesImpl(attributes);
         
         String cssClass = attsImpl.getValue("class");
         if (cssClass != null && cssClass.contains("mce")) {
@@ -574,7 +574,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     	 * @param atts The Attributes for this tag
     	 * @param print Whether to print this tag - you should always add all tags even if you don't want to print them.
     	 * @param printContent Whether to print the contents of this tag. If false, we stop printing anything until after this tag is closed.
-    	 * @param inverse Can be null (usually will be.)
+    	 * @param tinverse Can be null (usually will be.)
     	 */
 		public StackElement(String originalTagName, String tagName, Attributes atts,
 				boolean print, boolean printContent, StackElement tinverse) {
