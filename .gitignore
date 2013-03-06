@@ -9,3 +9,5 @@ cobertura.ser
 /modules/*/target
 pom.xml.versionsBackup
 dependency-reduced-pom.xml
+/.idea
+*.iml
