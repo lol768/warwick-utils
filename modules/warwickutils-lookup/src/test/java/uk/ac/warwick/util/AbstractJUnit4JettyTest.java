@@ -17,7 +17,8 @@ import org.mortbay.util.InetAddrPort;
 
 public abstract class AbstractJUnit4JettyTest extends AbstractJUnit4FileBasedTest {
     private static final String SITEBUILDER_CONTENT_ENCODING = "ISO-8859-1";
-    protected static final int PORT = 24680;
+    // SBTWO-6192 Pick a random port between 20000 and 30000
+    protected static final int PORT = (int)(Math.random() * 10000) + 20000;
     protected String serverAddress = "http://localhost:" + PORT + "/";
     private static Server server;
 
