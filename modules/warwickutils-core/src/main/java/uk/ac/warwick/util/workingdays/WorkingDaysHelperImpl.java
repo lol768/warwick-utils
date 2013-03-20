@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class WorkingDaysHelperImpl implements WorkingDaysHelper {
