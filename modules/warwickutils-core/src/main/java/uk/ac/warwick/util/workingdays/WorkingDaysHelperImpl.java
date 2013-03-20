@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+@Configurable
 public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("ddMMyy");
