@@ -9,7 +9,7 @@ public final class AttributeStringParser {
     
     private static final Pattern NAME_EQUALS = Pattern.compile("^(\\s*([\\w-]+)=).+", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern OPENER = Pattern.compile("^\\s*([\"']|\\&#8217\\;|\\&#8221\\;|\\&quot\\;)");
-    private static final Pattern UNQUOTED = Pattern.compile("^[^\\s]+");
+    private static final Pattern UNQUOTED = Pattern.compile("^\\s*[^\\s]+");
     
     private static final char ESCAPE = '\\'; 
     
@@ -60,7 +60,11 @@ public final class AttributeStringParser {
         			value = unquotedMatcher.group()
         				.replaceAll("(&nbsp;)+", ""); // SBTWO-3811
         		}
-        		text = text.substring(unquotedMatcher.group().length()).trim();
+        		try {
+        			text = text.substring(unquotedMatcher.group().length()).trim();
+        		} catch(IllegalStateException matcherException) {
+        			// SBTWO-6127
+        		}
         	}
         	attributes.add(new Attribute(name, value));
         	matcher = NAME_EQUALS.matcher(text);

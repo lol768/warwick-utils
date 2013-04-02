@@ -77,4 +77,15 @@ public class AttributeStringParserTest extends TestCase {
         assertEquals("Bill's", parser.getValue("param1"));
         assertEquals("value2", parser.getValue("param2"));
     }
+    
+    /**
+     * Test that whitespace around the equals doesn't result in an exception (SBTWO-6127).
+     */
+    public void testWhitespaceEqualsNoException() {
+        String input = " param1=value1 param2= value2 param3=value3";
+        AttributeStringParser parser = new AttributeStringParser(input);
+        assertEquals("value1", parser.getValue("param1"));
+        assertEquals(" value2", parser.getValue("param2"));
+        assertEquals("value3", parser.getValue("param3"));
+    }
 }
