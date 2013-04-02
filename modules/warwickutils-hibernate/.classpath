@@ -32,5 +32,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/warwick-utils/modules/warwickutils-hibernate/src/main/resources"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
