@@ -127,11 +127,15 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
      * happens.
      * 
      * Note that this is only when there is no surrounding body tag - see {@link #testStyleTagsNotStrippedFromBody()}.
+     * 
+     * MJ: The input below is wrapped in a HEAD tag when it is parsed and 
+     * we remove ALL the content in the HEAD, so the expected result is different
      */
     @Test
     public void styleTagsAreStripped() {
         String input = "<style type='text/css'>body { color: magenta; }</style>";
-        String expected = "body { color: magenta; }";
+        //String expected = "body { color: magenta; }";
+        String expected = "";
         verify(expected, input);
     }
     
