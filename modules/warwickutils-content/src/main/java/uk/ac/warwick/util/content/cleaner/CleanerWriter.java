@@ -116,7 +116,7 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
     }
 
     public void characters(final char[] ch, final int start, final int length) throws SAXException {
-    	if (!isPrintingContent()) {
+    	if (inHead || !isPrintingContent()) {
     		return;
     	}
         String characters = String.copyValueOf(ch, start, length);
