@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.queue.conversion;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,7 +9,6 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeansException;
@@ -23,6 +21,8 @@ import org.springframework.jms.support.converter.MessageConverter;
 
 import uk.ac.warwick.util.queue.QueueException;
 
+import com.google.common.collect.Maps;
+
 /**
  * Converts objects to and from Json. You can either set a map of ObjectConverters
  * which will specialise in converting each type of object; or you can use 
@@ -33,11 +33,8 @@ import uk.ac.warwick.util.queue.QueueException;
  * bean whose class has @AutowiredOnRehydration on it.
  */
 public class JsonMessageConverter implements MessageConverter, BeanFactoryAware, InitializingBean {
-
-    private static final Logger LOGGER = Logger.getLogger(JsonMessageConverter.class);
-    
-    private Map<String, JsonObjectConverter> converters = new HashMap<String, JsonObjectConverter>();
-    //private List<Class<?>> annotatedClasses;
+   
+    private Map<String, JsonObjectConverter> converters = Maps.newHashMap();
 
     private AutowireCapableBeanFactory beanFactory;
 
@@ -63,12 +60,12 @@ public class JsonMessageConverter implements MessageConverter, BeanFactoryAware,
     }
     
     public void setAnnotatedClasses(List<Class<?>> annotatedClasses) {
-        annotationConverter = new AnnotationJsonObjectConverter();
+    	annotationConverter = new AnnotationJsonObjectConverter();
         for (Class<?> c : annotatedClasses) {
             ItemType itemType = c.getAnnotation(ItemType.class);
             if (itemType == null) {
                 throw new IllegalArgumentException("Class " + c + " needs @ItemType annotation to specify a type string");
-            }
+            }            
             annotationConverter.registerType(itemType.value(), c);
             converters.put(itemType.value(), annotationConverter);
         }
@@ -81,7 +78,17 @@ public class JsonMessageConverter implements MessageConverter, BeanFactoryAware,
             if (converter.supports(object)) {
                 JSONObject json = converter.toJson(object);
                 TextMessage textMessage = session.createTextMessage(json.toString());
-                textMessage.setStringProperty("itemType", entry.getKey());
+                
+                ItemType itemType = object.getClass().getAnnotation(ItemType.class);
+                String type;
+                if (itemType != null) {
+                    type = itemType.value();
+                } else {
+                	// This must be a manually added converter, use the entry key
+                	type = entry.getKey();
+                }
+                
+                textMessage.setStringProperty("itemType", type);
                 return textMessage;
             }
         }

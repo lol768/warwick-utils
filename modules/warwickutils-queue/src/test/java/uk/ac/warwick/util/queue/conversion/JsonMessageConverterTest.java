@@ -56,7 +56,6 @@ public class JsonMessageConverterTest {
         assertThat( recreatedObject.getChildren().get(0), hasProperty("testServiceBean", is(not(nullValue()))));
     }
     
-    
     private TextMessageAction returnTextMessage() {
         return new TextMessageAction();
     }
