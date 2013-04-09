@@ -110,7 +110,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-clean-plugin</artifactId>
-						<version>2.2</version>
+						<version>2.3</version>
 						<executions>
 							<execution>
 								<id>auto-clean</id>
@@ -119,6 +119,7 @@
 									<goal>clean</goal>
 								</goals>
 								<configuration>
+									<excludeDefaultDirectories>true</excludeDefaultDirectories>
 									<filesets>
 										<fileset>
 											<directory>${project.root}/dist</directory>
