@@ -32,6 +32,19 @@ public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 	}
 
 	@Override
+	public LocalDate datePlusWorkingDays(LocalDate start, int numWorkingDays){
+		int daysAdded = 0;
+		LocalDate result = start;
+		while(daysAdded < numWorkingDays){
+			result = result.plusDays(1);
+			if(result.getDayOfWeek() <= DateTimeConstants.FRIDAY && !holidayDates.contains(result)){
+				daysAdded++;
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public int getNumWorkingDays(LocalDate start, LocalDate end) {
 
 		if(end.isBefore(start))

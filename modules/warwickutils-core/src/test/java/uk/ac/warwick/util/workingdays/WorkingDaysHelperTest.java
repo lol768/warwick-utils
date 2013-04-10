@@ -41,6 +41,13 @@ public final class WorkingDaysHelperTest {
 	}
 
 	@Test
+	public void addWorkingDays() throws Exception {
+		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
+		DateTime start = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 10);
+		assertEquals(new DateTime().withDate(2013, DateTimeConstants.JANUARY, 16).toLocalDate(), bean.datePlusWorkingDays(start.toLocalDate(), 20));
+	}
+
+	@Test
 	public void testHasFutureHolidays() throws Exception {
 		// tests if any holiday date from the text file is from at least six months in the future.
 		// if this fails then add new dates to the text file!
