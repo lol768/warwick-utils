@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -47,7 +47,7 @@ public final class OracleEmptyStringUserType implements UserType {
     }
 
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
-        String dbValue = (String) Hibernate.STRING.nullSafeGet(rs, names[0]);
+        String dbValue = (String) StandardBasicTypes.STRING.nullSafeGet(rs, names[0]);
         if (dbValue != null) {
             return unescape(dbValue);
         } else {
@@ -56,12 +56,11 @@ public final class OracleEmptyStringUserType implements UserType {
     }
 
     public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
-
         if (value != null) {
             String v = escape(value.toString());
-            Hibernate.STRING.nullSafeSet(st, v, index);
+            StandardBasicTypes.STRING.nullSafeSet(st, v, index);
         } else {
-            Hibernate.STRING.nullSafeSet(st, value, index);
+            StandardBasicTypes.STRING.nullSafeSet(st, (String)null, index);
         }
     }
 
