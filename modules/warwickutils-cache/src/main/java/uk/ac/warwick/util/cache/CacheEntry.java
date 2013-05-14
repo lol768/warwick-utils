@@ -50,6 +50,8 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null || !obj.getClass().isAssignableFrom(CacheEntry.class)) { return false; }
+		
 		try {
 			CacheEntry<K, V> e = (CacheEntry<K, V>) obj;
 			return key.equals(e.key) && e.value == value;
