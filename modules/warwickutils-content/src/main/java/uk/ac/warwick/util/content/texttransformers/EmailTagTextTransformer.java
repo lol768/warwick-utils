@@ -233,7 +233,7 @@ public final class EmailTagTextTransformer implements TextTransformer {
 			}
 			javascriptSb.append(thisChar);
 		}
-		javascriptSb.append("';\ndocument.getElementById('"+uniqueId+"').innerHTML = "+uniqueId+";\n");
+		javascriptSb.append("';\nif(document.getElementById('"+uniqueId+"')) document.getElementById('"+uniqueId+"').innerHTML = "+uniqueId+";\n");
 		return javascriptSb.toString();
 	}
 

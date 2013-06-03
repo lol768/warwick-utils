@@ -11,3 +11,4 @@ pom.xml.versionsBackup
 dependency-reduced-pom.xml
 /.idea
 *.iml
+/modules
