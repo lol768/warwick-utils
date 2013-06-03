@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.cache;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class BasicCacheTest extends TestCase {
+public class BasicCacheTest {
     
     private static final String CACHE_NAME = "customCache";
 
@@ -18,7 +22,8 @@ public class BasicCacheTest extends TestCase {
 	BasicCache<String, String> slowCache;
 	private BrokenCacheEntryFactory slowFactory;
 	
-	public void testGetMissingValue() throws Exception {
+	@Test
+	public void getMissingValue() throws Exception {
 		assertEquals("Value for dog", cache.get("dog"));
 		assertEquals("Value for cat", cache.get("cat"));
 		
@@ -27,7 +32,8 @@ public class BasicCacheTest extends TestCase {
 		assertSame(cache.get("frog"), cache.get("frog"));
 	}
 	
-	public void testSlowConcurrentLookups() throws Exception {
+	@Test
+	public void slowConcurrentLookups() throws Exception {
 		assertFactoryCount(0);
 		
 		Runnable getDog = new Runnable() {
@@ -66,7 +72,8 @@ public class BasicCacheTest extends TestCase {
 		assertEquals("dog", requests.get(1));
 	}
 	
-	public void testAsynchronousUpdates() throws Exception {
+	@Test
+	public void asynchronousUpdates() throws Exception {
 		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 1);
 		slowCache.setAsynchronousUpdateEnabled(true);
 		slowFactory.addFastRequest("one");
@@ -94,7 +101,8 @@ public class BasicCacheTest extends TestCase {
 		assertEquals(number, slowFactory.getObjectsCreated().size());
 	}
 	
-	public void testSizeRestriction() throws Exception {	
+	@Test
+	public void sizeRestriction() throws Exception {	
 		int cacheSize = 4;
 		cache.setMaxSize(cacheSize);
 		
@@ -113,7 +121,8 @@ public class BasicCacheTest extends TestCase {
 		assertFalse("Oldest entry should be evicted", cache.contains("one"));
 	}
 	
-	public void testExpiry() throws Exception {
+	@Test
+	public void expiry() throws Exception {
 		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 1);
 		slowFactory.addFastRequest("one");
 		
@@ -129,7 +138,71 @@ public class BasicCacheTest extends TestCase {
 		slowCache.shutdown();
 	}
 	
-	protected void setUp() throws Exception {
+	@Test
+	public void concurrentInitialRequests() throws Exception {
+		// UTL-132: This is a bit of a strange test because we're replicating very
+		// specific conditions - we're simulating a condition where another
+		// thread has updated an item in the store in-between two calls. We
+		// aren't actually using real concurrency to replicate that condition,
+		// because it's quite hard to do, so we're just replicating the specific
+		// error condition.
+		
+		// This CacheStore _always_ returns null the first time, then returns the value the second time
+		final CacheStore<String, String> store = new CacheStore<String, String>() {
+			private final Set<String> called = new HashSet<String>(); 
+			
+			public CacheEntry<String, String> get(String key) {
+				if (called.contains(key)) {
+					return new CacheEntry<String, String>(key, "Value for " + key);
+				} else {
+					called.add(key);
+					return null;
+				}
+			}
+
+			public void put(CacheEntry<String, String> entry) {
+				called.add(entry.getKey());
+			}
+
+			public boolean remove(String key) {
+				throw new UnsupportedOperationException();
+			}
+
+			public CacheStatistics getStatistics() {
+				throw new UnsupportedOperationException();
+			}
+
+			public void setMaxSize(int max) {
+				throw new UnsupportedOperationException();
+			}
+
+			public boolean clear() {
+				throw new UnsupportedOperationException();
+			}
+
+			public boolean contains(String key) {
+				throw new UnsupportedOperationException();
+			}
+
+			public void shutdown() {
+				throw new UnsupportedOperationException();
+			}
+		};	
+		
+		BasicCache<String, String> cache = new BasicCache<String, String>(store, new SingularCacheEntryFactory<String, String>() {
+			public String create(String key) {
+				return new String("Value for " + key);
+			}
+			public boolean shouldBeCached(String val) {
+				return true;
+			}
+		}, 100);
+		
+		assertEquals("Value for steve", cache.get("steve"));
+	}
+	
+	@Before
+	public void setUp() throws Exception {
 		EhCacheUtils.setUp();
 		cache = Caches.newCache(CACHE_NAME, new SingularCacheEntryFactory<String, String>() {
 			public String create(String key) {
@@ -144,8 +217,8 @@ public class BasicCacheTest extends TestCase {
 		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 100);
 	}
 	
-	@Override
-	protected void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 		System.out.println("Tearing down");
 		cache.shutdown();
 		EhCacheUtils.tearDown();
