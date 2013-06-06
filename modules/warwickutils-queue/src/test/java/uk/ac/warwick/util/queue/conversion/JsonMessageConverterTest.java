@@ -6,6 +6,10 @@ import static org.junit.Assert.*;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import org.codehaus.jackson.map.MapperConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.PropertyNamingStrategy;
+import org.codehaus.jackson.map.introspect.AnnotatedField;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
@@ -32,8 +36,11 @@ public class JsonMessageConverterTest {
             .addChild( new TestItem("Sasha", 300 ) )
             .addChild( new TestItem("Vaska", 350 )
                         .addChild( new TestItem("Danuta", 200 )));
-        
-        
+
+        // Configure a custom ObjectMapper that underscores prop names, to test it works.
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
+        converter.setObjectMapper(mapper);
         
         final Session session = m.mock(Session.class);
         m.checking(new Expectations(){{
@@ -46,10 +53,10 @@ public class JsonMessageConverterTest {
         
         System.err.println(text);
         
-        assertThat( text, allOf(containsString("age"), not(containsString("testServiceBean"))));
+        assertThat( text, allOf(containsString("current_age"), not(containsString("testServiceBean"))));
         
         TestItem recreatedObject = (TestItem) converter.fromMessage(message);
-        assertThat( recreatedObject, hasProperty("age", is(900)));
+        assertThat( recreatedObject, hasProperty("currentAge", is(900)));
         assertThat( recreatedObject, hasProperty("testServiceBean", is(not(nullValue()))));
         
         // deep wiring

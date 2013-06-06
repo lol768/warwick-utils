@@ -11,10 +11,10 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @JsonAutoDetect @ItemType("my-message-type")
-@JsonPropertyOrder({"name","age"})
+@JsonPropertyOrder({"name","currentAge"})
 public class TestItem {
     private String name;
-    private int age;
+    private int currentAge;
     
     private transient TestServiceBean testServiceBean;
     
@@ -23,9 +23,9 @@ public class TestItem {
     public TestItem() {
     }
     
-    public TestItem(String name, int age) {
+    public TestItem(String name, int currentAge) {
         this.name = name;
-        this.age = age;
+        this.currentAge = currentAge;
     }
     
     public String getName() {
@@ -34,11 +34,11 @@ public class TestItem {
     public void setName(String name) {
         this.name = name;
     }
-    public int getAge() {
-        return age;
+    public int getCurrentAge() {
+        return currentAge;
     }
-    public void setAge(int age) {
-        this.age = age;
+    public void setCurrentAge(int currentAge) {
+        this.currentAge = currentAge;
     }
     
     @JsonIgnore

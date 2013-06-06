@@ -9,6 +9,7 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeansException;
@@ -39,6 +40,8 @@ public class JsonMessageConverter implements MessageConverter, BeanFactoryAware,
     private AutowireCapableBeanFactory beanFactory;
 
     private AnnotationJsonObjectConverter annotationConverter;
+
+    private ObjectMapper objectMapper;
     
     public Object fromMessage(Message message) throws QueueException {
         try {
@@ -58,9 +61,19 @@ public class JsonMessageConverter implements MessageConverter, BeanFactoryAware,
     public void setObjectConverters(Map<String, JsonObjectConverter> map) {
         converters.putAll(map);
     }
-    
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        if (objectMapper != null && annotationConverter != null) {
+            annotationConverter.setObjectMapper(objectMapper);
+        }
+    }
+
     public void setAnnotatedClasses(List<Class<?>> annotatedClasses) {
-    	annotationConverter = new AnnotationJsonObjectConverter();
+        annotationConverter = new AnnotationJsonObjectConverter();
+        if (objectMapper != null) {
+            annotationConverter.setObjectMapper(objectMapper);
+        }
         for (Class<?> c : annotatedClasses) {
             ItemType itemType = c.getAnnotation(ItemType.class);
             if (itemType == null) {

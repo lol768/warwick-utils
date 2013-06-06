@@ -27,7 +27,7 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
     private Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
     private ObjectMapper objectMapper;
     private AutowireCapableBeanFactory beanFactory;
-    
+
     public AnnotationJsonObjectConverter() {
         objectMapper = new ObjectMapper();
     }
@@ -130,6 +130,10 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
 
     public void registerType(String value, Class<?> c) {
         mappings.put(value, c);
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
