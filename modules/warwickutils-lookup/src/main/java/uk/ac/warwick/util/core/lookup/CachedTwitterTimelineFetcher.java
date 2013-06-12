@@ -14,6 +14,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -30,7 +31,7 @@ import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
-public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetcher {
+public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetcher, InitializingBean {
     
     public static final String CACHE_NAME = "TwitterTimelineCache";
     
@@ -48,25 +49,39 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
     
     private final WriteOncePromise<Cache<Uri, TwitterTimelineResponse>> cache = new WriteOncePromise<Cache<Uri,TwitterTimelineResponse>>();
     
-    private final String consumerKey;
+    private String consumerKey;
     
-    private final String consumerSecret;
+    private String consumerSecret;
     
-    public CachedTwitterTimelineFetcher(String theConsumerKey, String theConsumerSecret) {
-        this(theConsumerKey, theConsumerSecret, DEFAULT_BASE_URL, DEFAULT_OAUTH_ENDPOINT_URL);
+    public CachedTwitterTimelineFetcher() {
+        this(DEFAULT_BASE_URL, DEFAULT_OAUTH_ENDPOINT_URL);
     }
     
-    public CachedTwitterTimelineFetcher(String theConsumerKey, String theConsumerSecret, Uri theBaseUri, Uri theOAuthEndpointUri) {
-    	Assert.isTrue(StringUtils.hasText(theConsumerKey), "Consumer key must be specified");
-    	Assert.isTrue(StringUtils.hasText(theConsumerSecret), "Consumer secret must be specified");
-    	
+    CachedTwitterTimelineFetcher(Uri theBaseUri, Uri theOAuthEndpointUri) {
         this.baseUri = theBaseUri;
         this.oauthEndpointUri = theOAuthEndpointUri;
-        this.consumerKey = theConsumerKey;
-        this.consumerSecret = theConsumerSecret;
     }
     
-    public synchronized void initialiseCache() {
+	public TwitterTimelineResponse get(String accountName, int num, boolean includeRetweets, boolean excludeReplies) throws CacheEntryUpdateException {
+		initialiseCache();
+		
+	    UriBuilder uri = new UriBuilder(baseUri);
+	    uri.addQueryParameter("screen_name", accountName.toLowerCase());
+	    uri.addQueryParameter("count", Integer.toString(num + TWEET_COUNT_PADDING));
+	    uri.addQueryParameter("include_rts", Boolean.toString(includeRetweets));
+	    uri.addQueryParameter("exclude_replies", Boolean.toString(excludeReplies));
+	    
+	    // entities are on by default in API version 1.1 so don't need to include_entities
+	    
+	    try {
+	    	return cache.fulfilPromise().get(uri.toUri());
+	    } catch (UnfulfilledPromiseException e) {
+	    	// Should never happen - we've fulfilled it at the start of the method
+	    	throw new IllegalStateException(e);
+	    }
+	}
+
+	public synchronized void initialiseCache() {
     	if (this.cache.isWritten()) return;
     	
     	// Generate a bearer token. Ref https://dev.twitter.com/docs/auth/application-only-auth
@@ -117,25 +132,20 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
     		throw new IllegalStateException("Couldn't fetch bearer token from Twitter OAuth!", e);
     	}
     }
-        
-    public TwitterTimelineResponse get(String accountName, int num, boolean includeRetweets, boolean excludeReplies) throws CacheEntryUpdateException {
-    	initialiseCache();
-    	
-        UriBuilder uri = new UriBuilder(baseUri);
-        uri.addQueryParameter("screen_name", accountName.toLowerCase());
-        uri.addQueryParameter("count", Integer.toString(num + TWEET_COUNT_PADDING));
-        uri.addQueryParameter("include_rts", Boolean.toString(includeRetweets));
-        uri.addQueryParameter("exclude_replies", Boolean.toString(excludeReplies));
-        
-        // entities are on by default in API version 1.1 so don't need to include_entities
-        
-        try {
-        	return cache.fulfilPromise().get(uri.toUri());
-        } catch (UnfulfilledPromiseException e) {
-        	// Should never happen - we've fulfilled it at the start of the method
-        	throw new IllegalStateException(e);
-        }
-    }
+    
+    public void setConsumerKey(String consumerKey) {
+		this.consumerKey = consumerKey;
+	}
+
+	public void setConsumerSecret(String consumerSecret) {
+		this.consumerSecret = consumerSecret;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.isTrue(StringUtils.hasText(consumerKey), "Consumer key must be specified");
+    	Assert.isTrue(StringUtils.hasText(consumerSecret), "Consumer secret must be specified");
+	}
     
     private static final class TwitterTimelineEntryFactory extends SingularCacheEntryFactory<Uri, TwitterTimelineResponse> {
     	

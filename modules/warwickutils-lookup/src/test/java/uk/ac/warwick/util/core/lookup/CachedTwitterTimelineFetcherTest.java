@@ -41,7 +41,10 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     
     @Test
     public void found() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET, Uri.parse(super.serverAddress + "user_timeline.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "user_timeline.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
+        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        fetcher.afterPropertiesSet();
         
         int buffer = TwitterJSONServlet.executionCount;
         int oauthBuffer = OAuthTokenServlet.executionCount;
@@ -63,7 +66,10 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     
     @Test
     public void notFound() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET, Uri.parse(super.serverAddress + "notfound.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "notfound.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
+        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        fetcher.afterPropertiesSet();
         
         int buffer = NotFoundServlet.executionCount;
         int oauthBuffer = OAuthTokenServlet.executionCount;
@@ -81,7 +87,10 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     
     @Test
     public void twitterDown() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET, Uri.parse(super.serverAddress + "twitter-down.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "twitter-down.json"), Uri.parse(super.serverAddress + "oauth2token"));
+        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
+        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        fetcher.afterPropertiesSet();
         
         int buffer = ServiceUnavailableServlet.executionCount;
         int oauthBuffer = OAuthTokenServlet.executionCount;
