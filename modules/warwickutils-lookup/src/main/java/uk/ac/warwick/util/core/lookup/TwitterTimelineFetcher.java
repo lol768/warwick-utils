@@ -4,6 +4,6 @@ import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 
 public interface TwitterTimelineFetcher {
     
-    TwitterTimelineResponse get(String accountName, int num, boolean includeRetweets) throws CacheEntryUpdateException;
+    TwitterTimelineResponse get(String accountName, int num, boolean includeRetweets, boolean excludeReplies) throws CacheEntryUpdateException;
 
 }
