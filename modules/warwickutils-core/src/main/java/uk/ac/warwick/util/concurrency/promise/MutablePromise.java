@@ -4,14 +4,14 @@ package uk.ac.warwick.util.concurrency.promise;
  * An implementation of a {@link Promise} that acts as a holder for a future
  * value. If the value is null, throws an {@link UnfulfilledPromiseException}.
  */
-public final class MutablePromise<T> implements Promise<T> {
+public class MutablePromise<T> implements Promise<T> {
 
     private T value;
     
     public MutablePromise() {}
 
     public MutablePromise(T theValue) {
-        this.value = theValue;
+        setValue(theValue);
     }
 
     public T fulfilPromise() throws UnfulfilledPromiseException {
