@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.collections.Pair;
 

@@ -15,9 +15,11 @@ import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
+import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.CachingImageResizer;
+import uk.ac.warwick.util.files.imageresize.CachingImageResizer.ImageCache;
 import uk.ac.warwick.util.files.imageresize.ImageResizer;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
 import uk.ac.warwick.util.files.impl.HashBackedFileReference;
@@ -26,7 +28,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
 
     private File cacheRoot;
     private File contentRoot;
-    private CachingImageResizer.FileSystemScaledImageCache cache;
+    private ImageCache cache;
 
     @Before
     public void createCache() {

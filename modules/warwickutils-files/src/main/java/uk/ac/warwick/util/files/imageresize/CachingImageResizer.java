@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
+import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.impl.FileSystemBackedHashResolver;
 
@@ -28,7 +29,7 @@ import uk.ac.warwick.util.files.hash.impl.FileSystemBackedHashResolver;
  * @author cusaab
  *
  */
-public final class CachingImageResizer implements ImageResizer {
+public final class CachingImageResizer implements FileExposingImageResizer {
     private static final Logger LOGGER = Logger.getLogger(CachingImageResizer.class);
 
     private final ImageResizer delegate;
@@ -51,7 +52,13 @@ public final class CachingImageResizer implements ImageResizer {
         } else {
             cache.cacheAndServe(sourceFile, entityLastModified, out, maxWidth,maxHeight, fileType, delegate);
         }
-        
+    }
+    
+    public File getResized(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
+    	if (!cache.contains(sourceFile, entityLastModified, maxWidth, maxHeight)){
+    		cache.createInCache(sourceFile, entityLastModified, maxWidth, maxHeight, fileType, delegate);
+        }
+    	return cache.getCacheFile(sourceFile, maxWidth, maxHeight);
     }
     
     public long getResizedImageLength(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) {
@@ -63,6 +70,8 @@ public final class CachingImageResizer implements ImageResizer {
         void serveFromCache(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight) throws IOException;
         long getFileSize(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType, final ImageResizer resizer);
         boolean contains(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight);
+        File getCacheFile(final FileReference sourceFile, final int maxWidth, final int maxHeight);
+		void createInCache(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType, final ImageResizer resizer)	throws IOException;
     }
 
     /**
@@ -122,7 +131,8 @@ public final class CachingImageResizer implements ImageResizer {
             
         }
         
-        public void createInCache(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType, final ImageResizer resizer) throws IOException {
+        @Override
+		public void createInCache(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType, final ImageResizer resizer) throws IOException {
             File newCacheEntry = getCacheFile(sourceFile, maxWidth, maxHeight);
 
             File parentDir = newCacheEntry.getParentFile();
@@ -144,8 +154,13 @@ public final class CachingImageResizer implements ImageResizer {
             }
             return false;
         }
-        private File getCacheFile(final FileReference sourceFile, final int maxWidth, final int maxHeight) {
-            String referencePath = FileSystemBackedHashResolver.partition(sourceFile.toHashReference().getHash().toString());
+        public File getCacheFile(final FileReference sourceFile, final int maxWidth, final int maxHeight) {
+            String referencePath;
+            if (sourceFile.isLocal()) {
+            	referencePath = sourceFile.getPath();
+            } else {
+            	referencePath = FileSystemBackedHashResolver.partition(sourceFile.toHashReference().getHash().toString());
+            }
             
             return new File(cacheRoot,generateCacheKey(referencePath, maxWidth, maxHeight));
         }

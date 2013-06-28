@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 
 import org.joda.time.DateTime;
 
+import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.concurrency.TaskExecutionService;
 
