@@ -110,6 +110,12 @@
 			<artifactId>jruby-core</artifactId>
 			<version>1.7.3</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>eu.michael-simons</groupId>
+    		<artifactId>java-oembed</artifactId>
+    		<version>0.2.10</version>
+		</dependency>
 	</dependencies>
 
 </project>
