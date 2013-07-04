@@ -223,4 +223,7 @@ public abstract class AbstractResultSetMetaData implements ResultSetMetaData {
      */
     @Override public String getColumnClassName(int column) throws SQLException { throw new UnsupportedOperationException(); }
 
+    @Override public boolean isWrapperFor(Class<?> iface) throws SQLException { throw new UnsupportedOperationException(); }
+    @Override public <T> T unwrap(Class<T> iface) throws SQLException { throw new UnsupportedOperationException(); }
+
 }

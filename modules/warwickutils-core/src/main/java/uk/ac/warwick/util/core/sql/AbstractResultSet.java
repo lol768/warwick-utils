@@ -3872,5 +3872,12 @@ public abstract class AbstractResultSet implements ResultSet {
      * @since 1.6
      */
     @Override public void updateNClob(String columnLabel,  Reader reader) throws SQLException { throw new UnsupportedOperationException(); }
+    
+    // JDK 1.7 methods, no override here to maintain 1.6 support
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException { throw new UnsupportedOperationException(); }
+    public <T> T getObject(String columnLabel,  Class<T> type) throws SQLException { throw new UnsupportedOperationException(); }
+
+    @Override public boolean isWrapperFor(Class<?> iface) throws SQLException { throw new UnsupportedOperationException(); }
+    @Override public <T> T unwrap(Class<T> iface) throws SQLException { throw new UnsupportedOperationException(); }
 
 }
