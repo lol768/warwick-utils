@@ -39,11 +39,19 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
         }});
     }
     
+    private TwitterAuthenticationHttpRequestDecorator authRequestDecorator(String consumerKey, String consumerSecret) {
+        TwitterAuthenticationHttpRequestDecorator decorator = new TwitterAuthenticationHttpRequestDecorator(Uri.parse(super.serverAddress + "oauth2token"));
+        decorator.setConsumerKey(TEST_CONSUMER_KEY);
+        decorator.setConsumerSecret(TEST_CONSUMER_SECRET);
+        decorator.afterPropertiesSet();
+        
+        return decorator;
+    }
+    
     @Test
     public void found() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "user_timeline.json"), Uri.parse(super.serverAddress + "oauth2token"));
-        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
-        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "user_timeline.json"));
+        fetcher.setHttpRequestDecorator(authRequestDecorator(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET));
         fetcher.afterPropertiesSet();
         
         int buffer = TwitterJSONServlet.executionCount;
@@ -66,9 +74,8 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     
     @Test
     public void notFound() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "notfound.json"), Uri.parse(super.serverAddress + "oauth2token"));
-        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
-        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "notfound.json"));
+        fetcher.setHttpRequestDecorator(authRequestDecorator(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET));
         fetcher.afterPropertiesSet();
         
         int buffer = NotFoundServlet.executionCount;
@@ -87,9 +94,8 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     
     @Test
     public void twitterDown() throws Exception {
-        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "twitter-down.json"), Uri.parse(super.serverAddress + "oauth2token"));
-        fetcher.setConsumerKey(TEST_CONSUMER_KEY);
-        fetcher.setConsumerSecret(TEST_CONSUMER_SECRET);
+        CachedTwitterTimelineFetcher fetcher = new CachedTwitterTimelineFetcher(Uri.parse(super.serverAddress + "twitter-down.json"));
+        fetcher.setHttpRequestDecorator(authRequestDecorator(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET));
         fetcher.afterPropertiesSet();
         
         int buffer = ServiceUnavailableServlet.executionCount;

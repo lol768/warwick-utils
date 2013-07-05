@@ -6,18 +6,16 @@ import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.AbstractSquareTagTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer;
 import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callback;
-import ac.simons.oembed.Oembed;
-import ac.simons.oembed.OembedException;
-import ac.simons.oembed.OembedResponse;
+import uk.ac.warwick.util.web.Uri;
 
 public final class OEmbedTagTextTransformer extends
 		AbstractSquareTagTransformer {
 	
 	static final String[] ALLOWED_PARAMETERS = new String[] {/* maxwidth, maxheight? */};
 	
-	private final Oembed oembed;
+	private final OEmbed oembed;
 	
-	public OEmbedTagTextTransformer(Oembed theOembed) {
+	public OEmbedTagTextTransformer(OEmbed theOembed) {
 		super("oembed", "embed");
 		this.oembed = theOembed;
 	}
@@ -46,15 +44,15 @@ public final class OEmbedTagTextTransformer extends
                 String result = input;
                 
                 try {
-                	OembedResponse response = oembed.transformUrl(address);
+                	OEmbedResponse response = oembed.transformUrl(Uri.parse(address));
                 	if (response != null) {
                 		String renderedResponse = response.render();
                 		if (renderedResponse != null) {
                 			result = renderedResponse;
                 		}
                 	}
-                } catch (OembedException e) {
-                	// do nothing (for now)s
+                } catch (OEmbedException e) {
+                	// do nothing (for now)
                 }
                 
                 return result;

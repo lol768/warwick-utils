@@ -206,5 +206,13 @@ public interface HttpMethodExecutor extends Serializable {
     
     void setHttp10Only(boolean http1);
     void setUseExpectContinueHeader(boolean expect);
+    
+    /**
+     * Set a decorator to be called with the HttpUriRequest and HttpContext before the
+     * request is executed, for example to add authentication information.
+     * 
+     * @param decorator
+     */
+    void setHttpRequestDecorator(HttpRequestDecorator decorator);
 
 }

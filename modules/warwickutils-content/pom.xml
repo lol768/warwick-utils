@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20130704-1109</version>
+		<version>20130705</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -36,6 +36,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-httpclient4</artifactId>
+		</dependency>
+		<!-- lookup for Twitter auth http request decorator -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-lookup</artifactId>
 		</dependency>
 
 		<dependency>
@@ -109,12 +114,6 @@
 			<groupId>org.jruby</groupId>
 			<artifactId>jruby-core</artifactId>
 			<version>1.7.3</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>eu.michael-simons</groupId>
-    		<artifactId>java-oembed</artifactId>
-    		<version>0.2.10</version>
 		</dependency>
 	</dependencies>
 

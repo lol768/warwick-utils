@@ -67,6 +67,8 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     private HttpResponse response;
     
+    private HttpRequestDecorator httpRequestDecorator = new DefaultHttpRequestDecorator();
+    
     private boolean followRedirects;
     private boolean followRedirectsSet;
 
@@ -99,6 +101,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         
         try {
             beforeExecution(request, context);
+            httpRequestDecorator.decorate(request, context);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -188,7 +191,21 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
     
     public abstract Uri parseRequestUrl(Uri requestUrl);
+    
+    /**
+     * @deprecated since 2013-07-05. Use {@link #setHttpRequestDecorator(HttpRequestDecorator)} instead
+     * 
+     * @see {@link HttpRequestDecorator}
+     */
     public abstract void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception;
+
+    public final HttpRequestDecorator getHttpRequestDecorator() {
+        return httpRequestDecorator;
+    }
+
+    public final void setHttpRequestDecorator(HttpRequestDecorator httpRequestDecorator) {
+        this.httpRequestDecorator = httpRequestDecorator;
+    }
 
     /* Methods that only make sense before execution */
     public final void addHeader(String name, String value) {

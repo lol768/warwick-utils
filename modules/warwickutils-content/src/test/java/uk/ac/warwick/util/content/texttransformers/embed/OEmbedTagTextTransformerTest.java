@@ -2,17 +2,15 @@ package uk.ac.warwick.util.content.texttransformers.embed;
 
 import static org.junit.Assert.*;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.warwick.util.content.MutableContent;
-import ac.simons.oembed.Oembed;
 
 public final class OEmbedTagTextTransformerTest {
 
 	// FIXME at the moment this test requires an internet connection
-	private final Oembed oembed = new Oembed(new DefaultHttpClient());
+	private final OEmbed oembed = new OEmbed();
 	
 	private final OEmbedTagTextTransformer transformer = new OEmbedTagTextTransformer(oembed);
 	
