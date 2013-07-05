@@ -58,7 +58,7 @@ public class OEmbed extends SingularCacheEntryFactory<OEmbedRequest, OEmbedRespo
 		this.parser.put(Format.json, new OEmbedJsonParser());
 		this.parser.put(Format.xml, new OEmbedXmlParser());
 
-        this.cache = Caches.newCache(CACHE_NAME, this, DEFAULT_CACHE_TIME_IN_SECONDS, CacheStrategy.EhCacheIfAvailable);
+        this.cache = Caches.newCache(CACHE_NAME, this, DEFAULT_CACHE_TIME_IN_SECONDS, CacheStrategy.EhCacheRequired);
         this.cache.setExpiryStrategy(new CacheExpiryStrategy<OEmbedRequest, OEmbedResponse>() {
             public boolean isExpired(CacheEntry<OEmbedRequest, OEmbedResponse> entry) {
                 final long expires;

@@ -1,16 +1,25 @@
 package uk.ac.warwick.util.content.texttransformers.embed;
 
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
+import uk.ac.warwick.util.cache.Caches;
+import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.content.texttransformers.embed.OEmbedProvider.Format;
+import uk.ac.warwick.util.core.lookup.CachedTwitterTimelineFetcher;
 import uk.ac.warwick.util.core.lookup.TwitterAuthenticationHttpRequestDecorator;
 import uk.ac.warwick.util.web.Uri;
 
 /**
  * FIXME Not a real test but a simple demonstration how to use OEmbed
  */
-public class OEmbedTest {
+public class OEmbedTest extends AbstractJUnit4FileBasedTest {
 	@Test
 	public void youtubeJson() throws OEmbedException {		
 		final OEmbed oembed = new OEmbedBuilder()
@@ -127,4 +136,21 @@ public class OEmbedTest {
 		OEmbedJsonParser p = new OEmbedJsonParser();
 		System.out.println(p.marshal(oembedResponse));
 	}
+    
+    @BeforeClass
+    public static void setupEhCache() throws Exception {
+        Caches.resetEhCacheCheck();
+        System.setProperty("warwick.ehcache.disk.store.dir", root.getAbsolutePath());
+    }
+    
+    @AfterClass
+    public static void unsetEhCache() throws Exception {
+        System.clearProperty("warwick.ehcache.disk.store.dir");
+        Caches.resetEhCacheCheck();
+    }
+    
+    @After
+    public void emptyCache() {
+        assertTrue(Caches.newCache(CachedTwitterTimelineFetcher.CACHE_NAME, null, 0, CacheStrategy.EhCacheRequired).clear());
+    }
 }
