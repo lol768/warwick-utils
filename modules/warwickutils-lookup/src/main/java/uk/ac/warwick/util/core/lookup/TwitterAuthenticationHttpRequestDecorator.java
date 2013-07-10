@@ -42,7 +42,7 @@ public class TwitterAuthenticationHttpRequestDecorator implements HttpRequestDec
         this(DEFAULT_OAUTH_ENDPOINT_URL);
     }
     
-    TwitterAuthenticationHttpRequestDecorator(Uri theEndpointUri) {
+    public TwitterAuthenticationHttpRequestDecorator(Uri theEndpointUri) {
         this.oauthEndpointUri = theEndpointUri;
     }
     

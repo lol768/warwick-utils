@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.content.texttransformers.embed;
 
 public class OEmbedBuilder {
-    private final OEmbed oembed = new OEmbed();
+    private final OEmbedImpl oembed = new OEmbedImpl();
 
     public OEmbedBuilder withAutodiscovery(boolean autodiscovery) {
         oembed.setAutodiscovery(autodiscovery);
