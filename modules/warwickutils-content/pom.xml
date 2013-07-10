@@ -121,6 +121,14 @@
 			<artifactId>jruby-core</artifactId>
 			<version>1.7.3</version>
 		</dependency>
+		
+		<!-- Test dependencies are not transitive -->
+		<dependency>
+			<groupId>jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>5.1.10</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>
