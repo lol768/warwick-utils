@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.mail;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -8,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.apache.log4j.Logger;
 import org.springframework.mail.MailException;
@@ -17,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import uk.ac.warwick.util.concurrency.TaskExecutionService;
 import uk.ac.warwick.util.core.StringUtils;
+import static org.springframework.util.StringUtils.arrayToCommaDelimitedString;
 
 /**
  * A service to send mail asynchronously.
@@ -26,11 +29,15 @@ import uk.ac.warwick.util.core.StringUtils;
  */
 public final class AsynchronousWarwickMailSender implements WarwickMailSender {
     
+    private static final String DEFAULT_SENDER = "no-reply@warwick.ac.uk";
+    
     private static final Logger LOGGER = Logger.getLogger(AsynchronousWarwickMailSender.class);
 
     private final TaskExecutionService executionService;
 
     private final JavaMailSender mailSender;
+    
+    private String sender = DEFAULT_SENDER;
 
     public AsynchronousWarwickMailSender(TaskExecutionService service, JavaMailSender sender) {
         this.executionService = service;
@@ -63,7 +70,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
             validateRecipients(message.getAllRecipients());
             validateRecipients(message.getFrom());
             
-            message.setSender(new InternetAddress("no-reply@warwick.ac.uk"));
+            message.setSender(new InternetAddress(sender));
         } catch (MessagingException e) {
             throw new MailParseException(e);
         }
@@ -114,6 +121,14 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         }
     }
 
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
     private class MimeMailSenderTask implements Callable<Boolean> {
 
         private final JavaMailSender sender;
@@ -126,7 +141,12 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         }
 
         public Boolean call() {
-            LOGGER.info("Trying to send mail " + message);
+            try {
+                LOGGER.info("Trying to send mail " + mimeMessageToString(message));
+            } catch (Exception e) {
+                LOGGER.warn("Exception toString() for message: " + message);
+            }
+            
             try {
                 sender.send(message);
                 LOGGER.info("Message sent successfully");
@@ -135,6 +155,19 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
                 LOGGER.error("Error sending mail",e);
                 return false;
             }
+        }
+        
+        private String mimeMessageToString(MimeMessage message) throws MessagingException, IOException {
+            StringBuilder sb = new StringBuilder("MimeMessage: ");
+            sb.append("from=").append(arrayToCommaDelimitedString(message.getFrom())).append("; ");
+            sb.append("replyTo=").append(arrayToCommaDelimitedString(message.getReplyTo())).append("; ");
+            sb.append("to=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.TO))).append("; ");
+            sb.append("cc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.CC))).append("; ");
+            sb.append("bcc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.BCC))).append("; ");
+            sb.append("sentDate=").append(message.getSentDate()).append("; ");
+            sb.append("subject=").append(message.getSubject()).append("; ");
+            sb.append("text=").append(message.getContent());
+            return sb.toString();
         }
 
     }
@@ -151,7 +184,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         }
 
         public Boolean call() {
-            LOGGER.info("Trying to send mail " + message);
+            LOGGER.info("Trying to send mail " + message); // SimpleMailMessage has a nice toString
             try {
                 sender.send(message);
                 LOGGER.info("Message sent successfully");
