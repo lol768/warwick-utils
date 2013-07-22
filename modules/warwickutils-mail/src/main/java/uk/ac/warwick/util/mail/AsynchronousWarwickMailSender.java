@@ -70,7 +70,9 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
             validateRecipients(message.getAllRecipients());
             validateRecipients(message.getFrom());
             
-            message.setSender(new InternetAddress(sender));
+            if (StringUtils.hasText(sender)) {
+                message.setSender(new InternetAddress(sender));
+            }
         } catch (MessagingException e) {
             throw new MailParseException(e);
         }
