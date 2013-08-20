@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20130722-1137</version>
+		<version>20130820</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>warwickutils-hibernate</artifactId>
 
 	<name>Warwick Utils :: Hibernate</name>
-	<description>Helpers for using Hibernate</description>
+	<description>Helpers for using Hibernate 3</description>
 	
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>

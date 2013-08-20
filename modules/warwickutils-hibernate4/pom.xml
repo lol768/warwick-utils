@@ -10,38 +10,39 @@
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-httpclient3</artifactId>
+	<artifactId>warwickutils-hibernate4</artifactId>
 
-	<name>Warwick Utils :: HttpClient 3</name>
-	<description>HTTP fetching architecture for HttpClient 3.x</description>
+	<name>Warwick Utils :: Hibernate 4</name>
+	<description>Helpers for using Hibernate 4</description>
 	
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
 
 	<dependencies>
-		<!-- project dependencies -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-web</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time-hibernate</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.2.4.Final</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>uk.ac.warwick.sso</groupId>
-			<artifactId>sso-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
 		</dependency>
 	</dependencies>
 

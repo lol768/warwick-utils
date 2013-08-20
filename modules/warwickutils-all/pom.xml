@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20130722-1137</version>
+		<version>20130820</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -115,6 +115,10 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-hibernate</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>warwickutils-hibernate4</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-httpclient3</artifactId>

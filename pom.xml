@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>20130722-1137</version>
+	<version>20130820</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -267,15 +267,21 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock-junit4</artifactId>
-			<version>2.5.1</version>
+			<version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-legacy</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>jmock</groupId>
 			<artifactId>jmock-cglib</artifactId>
@@ -330,6 +336,11 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>warwickutils-hibernate</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>warwickutils-hibernate4</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -665,6 +676,7 @@
 		<module>modules/warwickutils-files</module>
 		<module>modules/warwickutils-graphite</module>
 		<module>modules/warwickutils-hibernate</module>
+        <module>modules/warwickutils-hibernate4</module>
 		<module>modules/warwickutils-httpclient3</module>
 		<module>modules/warwickutils-httpclient4</module>
 		<module>modules/warwickutils-lookup</module>
