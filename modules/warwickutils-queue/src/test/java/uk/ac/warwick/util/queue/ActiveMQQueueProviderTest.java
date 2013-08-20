@@ -43,7 +43,7 @@ public class ActiveMQQueueProviderTest {
         MyListener listener = new MyListener();
         
         // default message converter will convert to and from strings.
-        queue.addListener((String)null, listener);
+        queue.addListener(null, listener);
         
         queue.send("Hello from JUnit");
         queue.send("Hello from JUnit again");
@@ -61,7 +61,7 @@ public class ActiveMQQueueProviderTest {
         queue.setMessageConverter(jsonConverter);
         
         unrelatedQueue.send("Hello!");
-        
+
         Mockery m = new JUnit4Mockery();
 
         final QueueListener listener = m.mock(QueueListener.class);
@@ -83,7 +83,7 @@ public class ActiveMQQueueProviderTest {
         queue.send(metadata);
         
         Thread.sleep(300);
-      
+
         m.assertIsSatisfied();
     }
     
@@ -103,24 +103,20 @@ public class ActiveMQQueueProviderTest {
     }
     
     @Test public void thatsNoMoonItsASpaceStation() throws Exception {
-    	Mockery m = new JUnit4Mockery();
-    	
-    	final MyListener listener1 = new MyListener();
-    	final MyListener listener2 = new MyListener();
-    	
-    	queue.setPubSub(true);
-    	
-    	queue.addListener((String)null, listener1);
-    	queue.addListener((String)null, listener2);
-    	
-    	queue.send("Pow!");
-    	
-    	Thread.sleep(300);
-    	
-    	assertEquals(1, listener1.getMessagesReceived());
-    	assertEquals(1, listener2.getMessagesReceived());
-    	
-        m.assertIsSatisfied();
+        final MyListener listener1 = new MyListener();
+        final MyListener listener2 = new MyListener();
+
+        queue.setPubSub(true);
+
+        queue.addListener(null, listener1);
+        queue.addListener(null, listener2);
+
+        queue.send("Pow!");
+
+        Thread.sleep(300);
+
+        assertEquals("listener1 should receive message", 1, listener1.getMessagesReceived());
+        assertEquals("listener2 should receive message", 1, listener2.getMessagesReceived());
     }
     
     @After public void destroy() throws Exception {    

@@ -7,7 +7,6 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Before;
 
 /**
@@ -27,7 +26,6 @@ public abstract class UserTypeTestBase {
 
     @Before
     public void setup() {
-        m.setImposteriser(ClassImposteriser.INSTANCE);
         m.checking(new Expectations(){{
             allowing(sessionImplementor).getFactory(); will(returnValue(factory));
             allowing(factory).getDialect(); will(returnValue(new HSQLDialect()));
