@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>20130820-1651</version>
+	<version>20131003</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
