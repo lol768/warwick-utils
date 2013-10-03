@@ -45,22 +45,33 @@ public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 	}
 
 	@Override
-	public int getNumWorkingDays(LocalDate start, LocalDate end) {
-
-		if(end.isBefore(start))
-			throw new IllegalStateException("End date is before start date.");
+	public int getNumWorkingDays(LocalDate first, LocalDate last) {
+	    final boolean isNegative;
+	    final LocalDate start, end;
+	    
+	    if (last.isBefore(first)) {
+	        // Reverse the order but remember to negate it later
+	        start = last;
+	        end = first;
+	        isNegative = true;
+	    } else {
+	        start = first;
+	        end = last;
+	        isNegative = false;
+	    }
 
 		int numDays = 0;
 		LocalDate temp = start;
 
 		while(temp.isBefore(end) || temp.isEqual(end)){
 			// if is weekend or holiday ignore
-			if(temp.getDayOfWeek() <= DateTimeConstants.FRIDAY && !holidayDates.contains(temp)){
+			if (temp.getDayOfWeek() <= DateTimeConstants.FRIDAY && !holidayDates.contains(temp)){
 				numDays++;
 			}
 			temp = temp.plusDays(1);
 		}
-		return numDays;
+		
+		return (isNegative) ? -numDays : numDays;
 	}
 
 	public Set<LocalDate> getHolidayDates(){

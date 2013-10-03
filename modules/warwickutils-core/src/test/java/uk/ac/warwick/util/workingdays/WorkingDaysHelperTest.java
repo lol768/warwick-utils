@@ -39,6 +39,19 @@ public final class WorkingDaysHelperTest {
 		end = new DateTime().withDate(2013, DateTimeConstants.MAY, 31);
 		assertEquals(21, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
 	}
+	
+	@Test
+	public void testNegativeRange() throws Exception {
+	    WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
+
+        DateTime end = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 01);
+        DateTime start = new DateTime().withDate(2013, DateTimeConstants.JANUARY, 31);
+        assertEquals(-37, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+
+        end = new DateTime().withDate(2013, DateTimeConstants.MAY, 01);
+        start = new DateTime().withDate(2013, DateTimeConstants.MAY, 31);
+        assertEquals(-21, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+	}
 
 	@Test
 	public void addWorkingDays() throws Exception {
@@ -58,17 +71,17 @@ public final class WorkingDaysHelperTest {
 		LocalDate nextYearLocal = nextYear.toLocalDate();
 		LocalDate newestFound = null;
 
-		Iterator i = holidayDates.iterator();
+		Iterator<LocalDate> i = holidayDates.iterator();
 		boolean result = false;
 		while (!result && i.hasNext()){
 			LocalDate next = (LocalDate) i.next();
-			if(newestFound == null || newestFound.isBefore(next)){
+			if (newestFound == null || newestFound.isBefore(next)){
 				newestFound = next;
 			}
 			result = next.isAfter(nextYearLocal);
 		}
 
-		if(!result)
+		if (!result)
 			fail("No holiday dates found after 6 months. The newest date supplied is "+newestFound);
 	}
 }
