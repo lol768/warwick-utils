@@ -3,7 +3,6 @@ package uk.ac.warwick.util.files.imageresize;
 import java.awt.RenderingHints;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.util.FileCopyUtils;
 
-import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.collections.Pair;
 
@@ -183,12 +181,10 @@ public final class JAIImageResizer implements ImageResizer {
     }
     
     public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
-        // create a byte array output stream and then get the length of the byte array. clever, aye?
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        renderResized(sourceFile, lastModified, baos, maxWidth, maxHeight, fileType);
-        baos.flush();
-        baos.close();
-        return baos.toByteArray().length;
+        // This outputStream will ignore the written output other than recording the number of bytes written.
+        CountingOutputStream os = new CountingOutputStream();
+        renderResized(sourceFile, lastModified, os, maxWidth, maxHeight, fileType);
+        return os.getBytesWritten();
     }
 
     private boolean shouldResizeWidth(final float width, final float maxWidth) {
