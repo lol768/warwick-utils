@@ -2,14 +2,9 @@ package uk.ac.warwick.util.cache;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.jmock.lib.concurrent.DeterministicScheduler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +16,13 @@ public class BasicCacheTest {
 	BasicCache<String, String> cache;
 	BasicCache<String, String> slowCache;
 	private BrokenCacheEntryFactory slowFactory;
+
+	// BasicCache minimum expiry is 1 second, this makes it 100ms to minimise sleep times.
+	private final CacheExpiryStrategy<String, String> shortExpiry = new CacheExpiryStrategy<String, String>() {
+		public boolean isExpired(CacheEntry<String, String> entry) {
+			return entry.getTimestamp() + 100 < System.currentTimeMillis();
+		}
+	};
 	
 	@Test
 	public void getMissingValue() throws Exception {
@@ -30,6 +32,23 @@ public class BasicCacheTest {
 		// getting the same key twice will return the actual same object,
 		// not just equal objects
 		assertSame(cache.get("frog"), cache.get("frog"));
+	}
+
+	@Test
+	public void multiLookupsSynchronous() throws Exception {
+		slowFactory.stopBlocking();
+		Map<String, String> expected = new HashMap<String, String>();
+		expected.put("dog", "Value for dog");
+		expected.put("cat", "Value for cat");
+		assertEquals(expected, slowCache.get(Arrays.asList("dog", "cat")));
+	}
+
+	// Asynchronous-only batch cache requests are not (yet) implemented.
+	@Test(expected=UnsupportedOperationException.class)
+	public void multiLookupsAsynchronousOnly() throws Exception {
+		slowFactory.stopBlocking();
+		slowCache.setAsynchronousOnly(true);
+		slowCache.get(Arrays.asList("dog", "cat"));
 	}
 	
 	@Test
@@ -74,14 +93,15 @@ public class BasicCacheTest {
 	
 	@Test
 	public void asynchronousUpdates() throws Exception {
-		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 1);
+		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 0);
+		slowCache.setExpiryStrategy(shortExpiry);
 		slowCache.setAsynchronousUpdateEnabled(true);
 		slowFactory.addFastRequest("one");
 		
 		assertFactoryCount(0);
 		String result1 = slowCache.get("one");
 		String result2 = slowCache.get("one");
-		Thread.sleep(1100);
+		Thread.sleep(150);
 		assertFactoryCount(1);
 		String result3 = slowCache.get("one");
 		assertFactoryCount(1);
@@ -123,13 +143,14 @@ public class BasicCacheTest {
 	
 	@Test
 	public void expiry() throws Exception {
-		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 1);
+		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 0);
+		slowCache.setExpiryStrategy(shortExpiry);
 		slowFactory.addFastRequest("one");
 		
 		String result1 = slowCache.get("one");
 		System.err.println("Got first item");
 		String result2 = slowCache.get("one");
-		Thread.sleep(1100);
+		Thread.sleep(150);
 		String result3 = slowCache.get("one");
 		
 		assertSame(result1, result2);
@@ -199,6 +220,38 @@ public class BasicCacheTest {
 		}, 100);
 		
 		assertEquals("Value for steve", cache.get("steve"));
+	}
+
+	@Test
+	public void asynchronousOnlyGetReturnsNull() throws Exception {
+		DeterministicScheduler scheduler = new DeterministicScheduler();
+		cache.setLocalThreadPool(scheduler);
+		cache.setAsynchronousUpdateEnabled(true);
+		cache.setAsynchronousOnly(true);
+
+		assertEquals("Should be null", null, cache.get("alan"));
+		scheduler.runUntilIdle();
+		assertEquals("Should be set", "Value for alan", cache.get("alan"));
+	}
+
+	@Test
+	public void asynchronousOnlyGetResultReturnsNull() throws Exception {
+		DeterministicScheduler scheduler = new DeterministicScheduler();
+
+		cache.setLocalThreadPool(scheduler);
+		cache.setAsynchronousUpdateEnabled(true);
+		cache.setAsynchronousOnly(true);
+		Cache.Result<String> result = cache.getResult("alan");
+		assertEquals(-1, result.getLastUpdated());
+		assertTrue("Should be updating", result.isUpdating());
+		assertEquals("Should be null", null, result.getValue());
+
+		scheduler.runUntilIdle();
+
+		result = cache.getResult("alan");
+		assertTrue("Should have recent timestamp", result.getLastUpdated() + 1000 > System.currentTimeMillis());
+		assertFalse("Should not be updating", result.isUpdating());
+		assertEquals("Value for alan", result.getValue());
 	}
 	
 	@Before

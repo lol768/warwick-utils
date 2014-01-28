@@ -19,7 +19,7 @@ import uk.ac.warwick.util.cache.Caches.CacheStrategy;
  * 
  * <ul>
  *  <li>Self-population (updates are done during get() via the EntryFactory)</li>
- * 	<li>Asynchronous background updates for expired entries</li>
+ *  <li>Asynchronous background updates for expired entries</li>
  * </ul>
  * <p>
  * The backing CacheStore determines how elements are evicted when we grow
@@ -36,13 +36,24 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	
 	// Uses an unbounded queue, so when all threads are busy it will queue up
 	// waiting jobs and do them next
-	private static ExecutorService threadPool = new ThreadPoolExecutor(1, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-	
+	private static ExecutorService staticThreadPool = new ThreadPoolExecutor(1, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+	private ExecutorService threadPool = staticThreadPool;
+
 	private final CacheStore<K,V> store;
 	
 	private long _timeOutMillis;
 	
 	private boolean asynchronousUpdateEnabled = false;
+
+	/**
+	 * If asynchronousUpdateEnabled is also enabled, the cache will _only_
+	 * do asynchronous updates, returning no value if there is none in the
+	 * cache.
+	 *
+	 * If asynchronousUpdateEnabled is false, this has no effect.
+	 */
+	private boolean asynchronousOnly = false;
 	
 	private CacheExpiryStrategy<K, V> expiryStrategy = new CacheExpiryStrategy<K, V>() {
 		public boolean isExpired(CacheEntry<K,V> entry) {
@@ -56,7 +67,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		    
 			final long now = System.currentTimeMillis();
 			return expires <= now;
-		};
+		}
 	};
 
 	public BasicCache(CacheStore<K,V> cacheStore, CacheEntryFactory<K,V> factory, long timeoutSeconds) {
@@ -104,20 +115,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * 
 	 */
 	public V get(final K key) throws CacheEntryUpdateException {
-		CacheEntry<K,V> entry = store.get(key);
-		boolean expired = ( entry != null && isExpired(entry) );
-		if (entry != null && !expired) {
-			broadcastHit(key, entry);
-		} else {
-			if (entry == null || !asynchronousUpdateEnabled) {
-				entry = updateEntry(new KeyEntry<K,V>(key, entry));
-			} else {
-				// Entry is just expired. Return the stale version
-				// now and update in the background
-				threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V>(key, entry)));
-			}
-		}
-		return entry.getValue();
+		return getResult(key).getValue();
 	}
 	
 	/**
@@ -135,6 +133,10 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	public Map<K,V> get(List<K> keys) throws CacheEntryUpdateException {
 		if (!_entryFactory.isSupportsMultiLookups()) {
 			throw new UnsupportedOperationException("The given EntryFactory does not support batch lookups");
+		}
+
+		if (asynchronousOnly) {
+			throw new UnsupportedOperationException("Multiple lookups not yet implemented for asynchronous-only caches.");
 		}
 		
 		Map<K,V> results = new HashMap<K, V>();
@@ -165,6 +167,35 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		return results;
 	}
 
+	@Override
+	public Result<V> getResult(K key) throws CacheEntryUpdateException {
+		CacheEntry<K,V> entry = store.get(key);
+		boolean expired = ( entry != null && isExpired(entry) );
+		boolean updating = false;
+		if (entry != null && !expired) {
+			broadcastHit(key, entry);
+		} else {
+			if (!asynchronousOnly && (entry == null || !asynchronousUpdateEnabled)) {
+				entry = updateEntry(new KeyEntry<K,V>(key, entry));
+			} else {
+				// Entry is just expired. Return the stale version
+				// now and update in the background
+				threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V>(key, entry)));
+				updating = true;
+			}
+		}
+
+		V value = null;
+		long lastUpdated = -1;
+		if (entry != null) {
+			value = entry.getValue();
+			lastUpdated = entry.getTimestamp();
+			// either we started an update task just now, or an existing task is already updating.
+			updating = updating || entry.isUpdating();
+		}
+		return new ResultImpl<V>(value, updating, lastUpdated);
+	}
+
 	private void broadcastMiss(final K key, final CacheEntry<K,V> newEntry) {
 		for (CacheListener<K,V> listener : listeners) {
 			listener.cacheMiss(key, newEntry);
@@ -180,9 +211,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	/**
 	 * Updates the given key with a value from the factory and places it in the cache.
 	 * 
-	 * @param key Key to lookup from
-	 * @param existingEntry Entry currently in the map. May be null if it doesn't exist
-	 * @return
+	 * @param kEntry The key and entry
 	 */
 	CacheEntry<K,V> updateEntry(final KeyEntry<K,V> kEntry) throws CacheEntryUpdateException {
 		final K key = kEntry.key;
@@ -283,10 +312,18 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		this.asynchronousUpdateEnabled = asynchronousUpdateEnabled;
 	}
 
+	public boolean isAsynchronousOnly() {
+		return asynchronousOnly;
+	}
+
+	public void setAsynchronousOnly(boolean asynchronousOnly) {
+		this.asynchronousOnly = asynchronousOnly;
+	}
+
 	public boolean clear() {
 		return this.store.clear();
 	}
-	
+
 	public boolean contains(K key) {
 		return this.store.contains(key);
 	}
@@ -317,9 +354,16 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * for the number of threads or whatnot. Signals to the current threadpool to shutdown.
 	 */
 	public static final void setThreadPool(ExecutorService threadPool) {
-		if (BasicCache.threadPool != null) {
-			BasicCache.threadPool.shutdown();
+		if (BasicCache.staticThreadPool != null) {
+			BasicCache.staticThreadPool.shutdown();
 		}
-		BasicCache.threadPool = threadPool;
+		BasicCache.staticThreadPool = threadPool;
+	}
+
+	/** Alternative to the static method which is shared across all BasicCaches,
+	 * this just sets it for this cache.
+	 */
+	public final void setLocalThreadPool(ExecutorService newThreadPool) {
+		this.threadPool = newThreadPool;
 	}
 }
