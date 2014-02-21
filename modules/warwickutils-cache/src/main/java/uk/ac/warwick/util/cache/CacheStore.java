@@ -19,6 +19,8 @@ public interface CacheStore<K extends Serializable,V extends Serializable> {
 	void setMaxSize(int max);
 	boolean clear();
 	boolean contains(K key);
+
+    String getName();
 	
 	void shutdown();
 }

@@ -178,4 +178,8 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 		return cacheManager;
 	}
 
+    public String getName() {
+        return cacheName;
+    }
+
 }

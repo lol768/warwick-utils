@@ -208,6 +208,10 @@ public class BasicCacheTest {
 			public void shutdown() {
 				throw new UnsupportedOperationException();
 			}
+
+            public String getName() {
+                throw new UnsupportedOperationException();
+            }
 		};	
 		
 		BasicCache<String, String> cache = new BasicCache<String, String>(store, new SingularCacheEntryFactory<String, String>() {

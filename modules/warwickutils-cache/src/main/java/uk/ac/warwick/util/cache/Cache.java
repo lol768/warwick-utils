@@ -81,6 +81,8 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	void setExpiryStrategy(CacheExpiryStrategy<K,V> strategy);
 
 	void setAsynchronousUpdateEnabled(boolean b);
+
+    String getName();
 	
 	boolean remove(K key);
 	boolean clear();

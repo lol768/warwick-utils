@@ -332,6 +332,10 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		this.expiryStrategy = expiryStrategy;
 	}
 
+    public String getName() {
+        return this.store.getName();
+    }
+
 	/**
 	 * Holds a key and an entry. Even though Entry has getKey(), entry can
 	 * be null so we still need this internally.

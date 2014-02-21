@@ -100,4 +100,8 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 		maps.remove(name);
 	}
 
+    public String getName() {
+        return name;
+    }
+
 }
