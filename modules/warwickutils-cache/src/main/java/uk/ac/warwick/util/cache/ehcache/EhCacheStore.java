@@ -8,6 +8,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
+import net.sf.ehcache.ObjectExistsException;
 import org.apache.log4j.Logger;
 
 import uk.ac.warwick.util.cache.CacheStatistics;
@@ -107,7 +108,17 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 	private void init() {
 		cache = cacheManager.getEhcache(cacheName);
 		if (cache == null) {
-			throw new IllegalStateException("Could not find an Ehcache named " + cacheName);
+			LOGGER.warn("Could not find an Ehcache named " + cacheName + ", falling back to default cache");
+            try {
+                cacheManager.addCache(cacheName);
+            } catch (ObjectExistsException e) {
+                // do nothing
+            }
+
+            cache = cacheManager.getEhcache(cacheName);
+            if (cache == null) {
+                throw new IllegalStateException("Could not find an Ehcache named " + cacheName + ", and couldn't create one from the default");
+            }
 		}
 	}
 
