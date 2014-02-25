@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20140221-1653</version>
+		<version>20140225</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -24,6 +24,13 @@
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
 		</dependency>
+
+        <!-- For the uk.ac.warwick.util.cache.spring package -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <optional>true</optional>
+        </dependency>
 	</dependencies>
 
 </project>
