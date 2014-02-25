@@ -62,12 +62,12 @@ public final class WorkingDaysHelperTest {
 
 	@Test
 	public void testHasFutureHolidays() throws Exception {
-		// tests if any holiday date from the text file is from at least six months in the future.
+		// tests if any holiday date from the text file is from at least four months in the future.
 		// if this fails then add new dates to the text file!
 		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
 		Set<LocalDate> holidayDates = bean.getHolidayDates();
 
-		DateTime nextYear = new DateTime().plusMonths(6);
+		DateTime nextYear = new DateTime().plusMonths(4);
 		LocalDate nextYearLocal = nextYear.toLocalDate();
 		LocalDate newestFound = null;
 
@@ -82,6 +82,6 @@ public final class WorkingDaysHelperTest {
 		}
 
 		if (!result)
-			fail("No holiday dates found after 6 months. The newest date supplied is "+newestFound);
+			fail("No holiday dates found after 4 months. The newest date supplied is "+newestFound);
 	}
 }
