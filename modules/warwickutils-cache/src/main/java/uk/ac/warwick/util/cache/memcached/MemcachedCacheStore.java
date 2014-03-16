@@ -1,24 +1,26 @@
 package uk.ac.warwick.util.cache.memcached;
 
 import net.spy.memcached.*;
-import net.spy.memcached.auth.AuthDescriptor;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import org.apache.log4j.Logger;
 import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheStatistics;
 import uk.ac.warwick.util.cache.CacheStore;
+import uk.ac.warwick.util.cache.CustomCacheExpiry;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
+import java.net.SocketAddress;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Cache implementation that uses the spymemcached library to connect to memcached.
  */
-public final class MemcachedCacheStore<K extends Serializable,V extends Serializable> implements CacheStore<K, V> {
+public final class MemcachedCacheStore<K extends Serializable, V extends Serializable> implements CacheStore<K, V> {
 
     /**
      * The classpath location that this class will check in for a custom memcached
@@ -32,10 +34,13 @@ public final class MemcachedCacheStore<K extends Serializable,V extends Serializ
 
     private final String cacheName;
 
+    private final int timeoutInSeconds;
+
     private final MemcachedClient memcachedClient;
 
-    MemcachedCacheStore(final String name, final MemcachedClient client) {
+    MemcachedCacheStore(final String name, final int timeout, final MemcachedClient client) {
         this.cacheName = name;
+        this.timeoutInSeconds = timeout;
         this.memcachedClient = client;
         init();
     }
@@ -46,8 +51,9 @@ public final class MemcachedCacheStore<K extends Serializable,V extends Serializ
      * warwick.memcached.config. Subsequent MemcachedCacheStores created with this
      * constructor will use the same MemcachedClient.
      */
-    public MemcachedCacheStore(final String name) {
+    public MemcachedCacheStore(final String name, final int timeout) {
         this.cacheName = name;
+        this.timeoutInSeconds = timeout;
         if (defaultMemcachedClient == null) {
             // Load the default properties first, then override
             Properties properties = new Properties();
@@ -120,48 +126,88 @@ public final class MemcachedCacheStore<K extends Serializable,V extends Serializ
         // Nothing to do
     }
 
-    @Override
+    private String prefix(K key) {
+        return getName() + ":" + key.toString();
+    }
+
     public CacheEntry<K, V> get(K key) {
-        return null;
+        return (CacheEntry<K, V>) memcachedClient.get(prefix(key));
     }
 
-    @Override
     public void put(CacheEntry<K, V> entry) {
+        int ttlSeconds;
 
+        if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+            ttlSeconds = (int) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value() / 1000;
+        } else {
+            ttlSeconds = timeoutInSeconds;
+        }
+
+        memcachedClient.set(prefix(entry.getKey()), ttlSeconds, entry);
     }
 
-    @Override
     public boolean remove(K key) {
-        return false;
+        try {
+            return memcachedClient.delete(prefix(key)).get();
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            return false;
+        }
     }
 
-    @Override
     public CacheStatistics getStatistics() {
-        return null;
+        Map<SocketAddress, Map<String, String>> allStats = memcachedClient.getStats();
+
+        long totalSize = 0;
+        for (Map<String, String> stats: allStats.values()) {
+            // There is a bug in jmemcached that returns this stat as "cur_items"
+            if (stats.containsKey("curr_items")) {
+                totalSize += Long.parseLong(stats.get("curr_items"));
+            } else {
+                totalSize += Long.parseLong(stats.get("cur_items"));
+            }
+        }
+
+        return new CacheStatistics(totalSize);
     }
 
-    @Override
     public void setMaxSize(int max) {
-
+        LOGGER.warn("setMaxSize() called on MemcachedCacheStore which does not support it");
     }
 
-    @Override
     public boolean clear() {
-        return false;
+        try {
+            return memcachedClient.flush().get();
+        } catch (InterruptedException e) {
+            return false;
+        } catch (ExecutionException e) {
+            return false;
+        }
     }
 
-    @Override
     public boolean contains(K key) {
-        return false;
+        return get(key) != null;
     }
 
-    @Override
     public String getName() {
-        return null;
+        return cacheName;
     }
 
-    @Override
     public void shutdown() {
+        LOGGER.info("Shutting down MemcachedClient");
+        if (memcachedClient != defaultMemcachedClient) {
+            memcachedClient.shutdown();
+        }
+    }
 
+    /**
+     * Normally you can allow the shutdown hooks to
+     */
+    public static final void shutdownDefaultMemcachedClient() {
+        if (defaultMemcachedClient != null) {
+            defaultMemcachedClient.shutdown();
+            defaultMemcachedClient = null;
+        }
     }
 }

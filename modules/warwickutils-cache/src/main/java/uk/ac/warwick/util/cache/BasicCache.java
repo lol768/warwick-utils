@@ -62,9 +62,9 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		    if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
 		        expires = entry.getTimestamp() + entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value();
 		    } else {
-		        expires = entry.getTimestamp() + _timeOutMillis; 
+		        expires = entry.getTimestamp() + _timeOutMillis;
 		    }
-		    
+
 			final long now = System.currentTimeMillis();
 			return expires <= now;
 		}
@@ -90,7 +90,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * 		if you subsequently override the ExpiryStrategy.
 	 */
 	public BasicCache(String storeName, CacheEntryFactory<K,V> factory, long timeoutSeconds, CacheStrategy cacheStrategy) {
-		this(Caches.<K,V>newCacheStore(storeName, cacheStrategy), factory, timeoutSeconds);
+		this(Caches.<K,V>newCacheStore(storeName, timeoutSeconds, cacheStrategy), factory, timeoutSeconds);
 	}
 	
 	public void setMaxSize(final int cacheSize) {

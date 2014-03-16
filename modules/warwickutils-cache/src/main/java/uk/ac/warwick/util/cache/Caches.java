@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 
 import uk.ac.warwick.util.cache.ehcache.EhCacheStore;
+import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
 
 /**
  * Cache factory methods.
@@ -14,6 +15,8 @@ public final class Caches {
     public enum CacheStrategy {
         EhCacheIfAvailable,
         EhCacheRequired,
+        MemcachedIfAvailable,
+        MemcachedRequired,
         InMemoryOnly
     };
 	
@@ -21,6 +24,9 @@ public final class Caches {
 	
 	private static boolean ehChecked;
 	private static boolean ehAvailable;
+
+    private static boolean memcachedChecked;
+    private static boolean memcachedAvailable;
 	
 	private Caches() {}
 	
@@ -37,7 +43,7 @@ public final class Caches {
 	 * to avoid attempting to classload any EhCache classes until we know it's actually
 	 * available.
 	 */
-	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, CacheStrategy cacheStrategy) {
+	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy) {
 		switch (cacheStrategy) {
 		    case EhCacheRequired:
 		        if (isEhCacheAvailable()) {
@@ -51,8 +57,22 @@ public final class Caches {
                     return new EhCacheStore<K, V>(name);
                 }
 
-                // Intentional fall-through here
 	            LOGGER.info("Ehcache not found - using built in cache store.");
+                return new HashMapCacheStore<K, V>(name);
+            case MemcachedRequired:
+                if (isMemcachedAvailable()) {
+                    return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                }
+
+                throw new IllegalStateException("memcached unavailable");
+            case MemcachedIfAvailable:
+                if (isMemcachedAvailable()) {
+                    LOGGER.info("memcached detected - using MemcachedCacheStore.");
+                    return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                }
+
+                LOGGER.info("memcached not found - using built in cache store.");
+                return new HashMapCacheStore<K, V>(name);
 		    case InMemoryOnly:
 		        return new HashMapCacheStore<K, V>(name);
 		        
@@ -88,4 +108,25 @@ public final class Caches {
 	public static void resetEhCacheCheck() {
 	    ehChecked = false;
 	}
+
+    /**
+     * Attempt to dynamically classload one of the main spymemcached classes, to
+     * see if it's available to the default classloader.
+     */
+    public static boolean isMemcachedAvailable() {
+        if (!memcachedChecked) {
+            try {
+                Class.forName("net.spy.memcached.MemcachedClient");
+                memcachedAvailable = true;
+            } catch (ClassNotFoundException e) {
+                memcachedAvailable = false;
+            }
+            memcachedChecked = true;
+        }
+        return memcachedAvailable;
+    }
+
+    public static void resetMemcachedCheck() {
+        memcachedChecked = false;
+    }
 }
