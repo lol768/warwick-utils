@@ -50,28 +50,28 @@ public final class Caches {
 		            return new EhCacheStore<K, V>(name);
 		        }
 		        
-		        throw new IllegalStateException("EhCache unavailable");
+		        throw new IllegalStateException("EhCache unavailable for " + name);
 		    case EhCacheIfAvailable:
 		        if (isEhCacheAvailable()) {
-		            LOGGER.info("Ehcache detected - using EhCacheStore.");
+		            LOGGER.info("Ehcache detected - using EhCacheStore for " + name + ".");
                     return new EhCacheStore<K, V>(name);
                 }
 
-	            LOGGER.info("Ehcache not found - using built in cache store.");
+	            LOGGER.info("Ehcache not found - using built in cache store for " + name + ".");
                 return new HashMapCacheStore<K, V>(name);
             case MemcachedRequired:
                 if (isMemcachedAvailable()) {
                     return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
                 }
 
-                throw new IllegalStateException("memcached unavailable");
+                throw new IllegalStateException("memcached unavailable for " + name);
             case MemcachedIfAvailable:
                 if (isMemcachedAvailable()) {
-                    LOGGER.info("memcached detected - using MemcachedCacheStore.");
+                    LOGGER.info("memcached detected - using MemcachedCacheStore for " + name + ".");
                     return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
                 }
 
-                LOGGER.info("memcached not found - using built in cache store.");
+                LOGGER.info("memcached not found - using built in cache store for " + name + ".");
                 return new HashMapCacheStore<K, V>(name);
 		    case InMemoryOnly:
 		        return new HashMapCacheStore<K, V>(name);
