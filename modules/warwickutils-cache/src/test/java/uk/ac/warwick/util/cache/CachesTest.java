@@ -28,14 +28,14 @@ public class CachesTest {
 	 */
 	@Test
 	public void getAvailableCache() throws Exception {
-		CacheStore<String,String> store = Caches.<String,String>newCacheStore(CACHE_NAME, CacheStrategy.EhCacheIfAvailable);
+		CacheStore<String,String> store = Caches.<String,String>newCacheStore(CACHE_NAME, 100, CacheStrategy.EhCacheIfAvailable);
 		assertFalse(store instanceof EhCacheStore<?,?>);
 	}
 	
 	@Test
 	public void getEhCache() throws Exception {
 	    try {
-	        Caches.<String,String>newCacheStore(CACHE_NAME, CacheStrategy.EhCacheRequired);
+	        Caches.<String,String>newCacheStore(CACHE_NAME, 100, CacheStrategy.EhCacheRequired);
 	        fail("Expected exception");
 	    } catch (IllegalStateException e) {
 	        // expected
@@ -44,7 +44,7 @@ public class CachesTest {
 	
 	@Test
 	public void getInMemoryCache() throws Exception {
-        CacheStore<String,String> store = Caches.<String,String>newCacheStore(CACHE_NAME, CacheStrategy.InMemoryOnly);
+        CacheStore<String,String> store = Caches.<String,String>newCacheStore(CACHE_NAME, 100, CacheStrategy.InMemoryOnly);
         assertTrue(store instanceof HashMapCacheStore<?,?>);
     }
 }
