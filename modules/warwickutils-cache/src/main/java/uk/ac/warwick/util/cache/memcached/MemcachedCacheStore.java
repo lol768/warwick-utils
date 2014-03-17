@@ -131,7 +131,11 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     }
 
     public CacheEntry<K, V> get(K key) {
-        return (CacheEntry<K, V>) memcachedClient.get(prefix(key));
+        Object value = memcachedClient.get(prefix(key));
+        if (value == null || value instanceof String) { // Bug in jmemcached - when using binary protocol, returns empty strings
+            return null;
+        }
+        return (CacheEntry<K, V>) value;
     }
 
     public void put(CacheEntry<K, V> entry) {
