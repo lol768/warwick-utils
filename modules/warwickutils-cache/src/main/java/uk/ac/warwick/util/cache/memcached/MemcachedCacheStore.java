@@ -11,7 +11,9 @@ import uk.ac.warwick.util.cache.CustomCacheExpiry;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -127,7 +129,12 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     }
 
     private String prefix(K key) {
-        return getName() + ":" + key.toString();
+        try {
+            String keyAsString = new String(memcachedClient.getTranscoder().encode(key).getData(), "UTF-8");
+            return getName() + ":" + keyAsString;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public CacheEntry<K, V> get(K key) {
