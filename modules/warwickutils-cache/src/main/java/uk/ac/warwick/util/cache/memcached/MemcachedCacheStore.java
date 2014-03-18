@@ -3,6 +3,7 @@ package uk.ac.warwick.util.cache.memcached;
 import net.spy.memcached.*;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import org.apache.log4j.Logger;
+import org.springframework.util.DigestUtils;
 import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheStatistics;
 import uk.ac.warwick.util.cache.CacheStore;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
@@ -129,12 +131,11 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     }
 
     private String prefix(K key) {
-        try {
-            String keyAsString = new String(memcachedClient.getTranscoder().encode(key).getData(), "UTF-8");
-            return getName() + ":" + keyAsString;
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        byte[] encodedKey = memcachedClient.getTranscoder().encode(key).getData();
+
+        // FIXME this requires spring.util but that seems excessive, particularly if we weren't using Spring
+        String keyAsString = DigestUtils.md5DigestAsHex(encodedKey);
+        return getName() + ":" + keyAsString;
     }
 
     public CacheEntry<K, V> get(K key) {
