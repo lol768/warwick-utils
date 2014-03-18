@@ -12,23 +12,23 @@ public class MemcachedCacheStoreComplexKeyTest extends AbstractMemcachedCacheSto
 
     @Test
     public void complexKey() throws Exception {
-        CacheEntry<ComplexKey, ComplexValue> string = cache.get(new ComplexKey("token:abcdefghij"));
+        CacheEntry<ComplexKey, ComplexValue> string = cacheStore.get(new ComplexKey("token:abcdefghij"));
         assertNull(string);
 
         CacheEntry<ComplexKey, ComplexValue> entry = new CacheEntry<ComplexKey, ComplexValue>(new ComplexKey("token:12345"), new ComplexValue("Johnny"));
-        cache.put(entry);
+        cacheStore.put(entry);
 
-        assertEquals(entry.getValue(), cache.get(new ComplexKey("token:12345")).getValue());
-        assertEquals(entry.getValue(), cache.get(new ComplexKey("token:12345")).getValue());
+        assertEquals(entry.getValue(), cacheStore.get(new ComplexKey("token:12345")).getValue());
+        assertEquals(entry.getValue(), cacheStore.get(new ComplexKey("token:12345")).getValue());
 
-        // Check the cache stats are right
+        // Check the cacheStore stats are right
         assertSize(1);
 
         Map<String, String> stats = client.getStats().values().iterator().next();
         assertEquals("2", stats.get("get_hits"));
         assertEquals("1", stats.get("get_misses"));
 
-        cache.clear();
+        cacheStore.clear();
         assertSize(0);
     }
 

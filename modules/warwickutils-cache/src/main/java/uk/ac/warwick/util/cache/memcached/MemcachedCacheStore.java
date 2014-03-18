@@ -8,17 +8,16 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheStatistics;
 import uk.ac.warwick.util.cache.CacheStore;
 import uk.ac.warwick.util.cache.CustomCacheExpiry;
+import uk.ac.warwick.util.cache.CacheStoreUnavailableException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
-import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -138,12 +137,18 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return getName() + ":" + keyAsString;
     }
 
-    public CacheEntry<K, V> get(K key) {
-        Object value = memcachedClient.get(prefix(key));
-        if (value == null || value instanceof String) { // Bug in jmemcached - when using binary protocol, returns empty strings
-            return null;
+    public CacheEntry<K, V> get(K key) throws CacheStoreUnavailableException {
+        try {
+            Object value = memcachedClient.get(prefix(key));
+            if (value == null || value instanceof String) { // Bug in jmemcached - when using binary protocol, returns empty strings
+                return null;
+            }
+            return (CacheEntry<K, V>) value;
+        } catch (CancellationException e) {
+            throw new CacheStoreUnavailableException(e);
+        } catch (OperationTimeoutException e) {
+            throw new CacheStoreUnavailableException(e);
         }
-        return (CacheEntry<K, V>) value;
     }
 
     public void put(CacheEntry<K, V> entry) {
@@ -198,7 +203,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
     }
 
-    public boolean contains(K key) {
+    public boolean contains(K key) throws CacheStoreUnavailableException {
         return get(key) != null;
     }
 

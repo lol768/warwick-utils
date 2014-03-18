@@ -73,7 +73,7 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	void put(final CacheEntry<K,V> entry);
 	
 	void addCacheListener(CacheListener<K,V> listener);
-	CacheStatistics getStatistics();
+	CacheStatistics getStatistics() throws CacheStoreUnavailableException;
 	
 	void setMaxSize(int size);
 	void setTimeout(int seconds);

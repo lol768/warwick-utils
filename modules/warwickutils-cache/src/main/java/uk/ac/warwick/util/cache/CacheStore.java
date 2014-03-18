@@ -10,15 +10,15 @@ import java.io.Serializable;
  * result in corrupt data or infinite loops. 
  */
 public interface CacheStore<K extends Serializable,V extends Serializable> {
-	CacheEntry<K,V> get(K key);
-	void put(CacheEntry<K,V> entry);
-	boolean remove(K key);
+	CacheEntry<K,V> get(K key) throws CacheStoreUnavailableException;
+	void put(CacheEntry<K,V> entry) throws CacheStoreUnavailableException;
+	boolean remove(K key) throws CacheStoreUnavailableException;
 	
-	CacheStatistics getStatistics();
+	CacheStatistics getStatistics() throws CacheStoreUnavailableException;
 	
 	void setMaxSize(int max);
-	boolean clear();
-	boolean contains(K key);
+	boolean clear() throws CacheStoreUnavailableException;
+	boolean contains(K key) throws CacheStoreUnavailableException;
 
     String getName();
 	

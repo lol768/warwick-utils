@@ -143,15 +143,19 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		List<KeyEntry<K,V>> missing = new ArrayList<KeyEntry<K,V>>();
 		List<KeyEntry<K,V>> expired = new ArrayList<KeyEntry<K,V>>();
 		for (K key : keys) {
-			CacheEntry<K,V> entry = store.get(key);
-			if (entry == null || (!asynchronousUpdateEnabled && isExpired(entry))) {
-				missing.add(new KeyEntry<K,V>(key, entry));
-			} else {
-				results.put(key, entry.getValue());
-				if (isExpired(entry)) {
-					expired.add(new KeyEntry<K,V>(key, entry));
-				}
-			}
+            try {
+                CacheEntry<K,V> entry = store.get(key);
+                if (entry == null || (!asynchronousUpdateEnabled && isExpired(entry))) {
+                    missing.add(new KeyEntry<K,V>(key, entry));
+                } else {
+                    results.put(key, entry.getValue());
+                    if (isExpired(entry)) {
+                        expired.add(new KeyEntry<K,V>(key, entry));
+                    }
+                }
+            } catch (CacheStoreUnavailableException e) {
+                missing.add(new KeyEntry<K, V>(key, null));
+            }
 		}
 		
 		if (!missing.isEmpty()) {
@@ -167,9 +171,18 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		return results;
 	}
 
+    public CacheEntry<K, V> getOrNull(K key) {
+        try {
+            return store.get(key);
+        } catch (CacheStoreUnavailableException e) {
+            return null;
+        }
+    }
+
 	@Override
 	public Result<V> getResult(K key) throws CacheEntryUpdateException {
-		CacheEntry<K,V> entry = store.get(key);
+		CacheEntry<K,V> entry = getOrNull(key);
+
 		boolean expired = ( entry != null && isExpired(entry) );
 		boolean updating = false;
 		if (entry != null && !expired) {
@@ -216,8 +229,8 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	CacheEntry<K,V> updateEntry(final KeyEntry<K,V> kEntry) throws CacheEntryUpdateException {
 		final K key = kEntry.key;
 		final CacheEntry<K,V> foundEntry = kEntry.entry;
-		
-		CacheEntry<K,V> entry = store.get(key);
+
+        CacheEntry<K,V> entry = getOrNull(key);
 		
 		// if entry is null, we definitely need to go update it.
 		// if entry is not currently updating, update it UNLESS the version we
@@ -230,7 +243,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 				V newValue = _entryFactory.create(key);
 				entry = newEntry(key, newValue);
 				if (_entryFactory.shouldBeCached(newValue)) {
-					store.put(entry);
+                    put(entry);
 				}
 				broadcastMiss(key, entry);
 			} finally {
@@ -272,7 +285,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 			final V value = created.getValue();
 			final CacheEntry<K, V> entry = new CacheEntry<K, V>(key, value);
 			if (_entryFactory.shouldBeCached(value)) {
-				store.put(entry);
+                put(entry);
 			}
 			result.put(key, entry);
 			broadcastMiss(key, entry);
@@ -281,11 +294,19 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	}
 
 	public void put(CacheEntry<K, V> entry) {
-		store.put(entry);
+        try {
+            store.put(entry);
+        } catch (CacheStoreUnavailableException e) {
+            // do nothing
+        }
 	}
 
 	public boolean remove(final K key) {
-		return store.remove(key);
+        try {
+            return store.remove(key);
+        } catch (CacheStoreUnavailableException e) {
+            return false;
+        }
 	}
 	
 	private CacheEntry<K,V> newEntry(K key, V newValue) {
@@ -300,8 +321,8 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		listeners.add(listener);
 	}
 
-	public CacheStatistics getStatistics() {
-		return store.getStatistics();
+	public CacheStatistics getStatistics() throws CacheStoreUnavailableException {
+        return store.getStatistics();
 	}
 
 	public boolean isAsynchronousUpdateEnabled() {
@@ -321,11 +342,19 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	}
 
 	public boolean clear() {
-		return this.store.clear();
+        try {
+            return store.clear();
+        } catch (CacheStoreUnavailableException e) {
+            return false;
+        }
 	}
 
 	public boolean contains(K key) {
-		return this.store.contains(key);
+        try {
+            return store.contains(key);
+        } catch (CacheStoreUnavailableException e) {
+            return false;
+        }
 	}
 
 	public void setExpiryStrategy(CacheExpiryStrategy<K, V> expiryStrategy) {

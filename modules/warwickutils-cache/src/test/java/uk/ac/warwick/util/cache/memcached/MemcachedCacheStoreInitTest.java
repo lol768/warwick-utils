@@ -48,7 +48,7 @@ public class MemcachedCacheStoreInitTest {
     }
 
     @Test
-    public void init() {
+    public void init() throws Exception {
         MemcachedCacheStore<String, String> cache = new MemcachedCacheStore<String, String>("testCache", 10);
 
         CacheEntry<String, String> string = cache.get("token:abcdefghij");
@@ -60,7 +60,7 @@ public class MemcachedCacheStoreInitTest {
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());
 
-        // Check the cache stats are right
+        // Check the cacheStore stats are right
         assertEquals(1, cache.getStatistics().getCacheSize());
 
         cache.clear();

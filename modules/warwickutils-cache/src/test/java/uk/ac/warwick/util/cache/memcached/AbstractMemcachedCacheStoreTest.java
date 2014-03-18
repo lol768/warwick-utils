@@ -23,11 +23,11 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
 
     private static final String CACHE_NAME = "customCache";
 
-    private static final MemCacheDaemon<LocalCacheElement> daemon = new MemCacheDaemon<LocalCacheElement>();
+    protected static final MemCacheDaemon<LocalCacheElement> daemon = new MemCacheDaemon<LocalCacheElement>();
 
     private static InetSocketAddress memcachedAddress;
 
-    protected MemcachedCacheStore<K, V> cache;
+    protected MemcachedCacheStore<K, V> cacheStore;
 
     protected MemcachedClient client;
 
@@ -60,18 +60,22 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
     public void setUp() throws Exception {
         MemcachedUtils.setUp();
         client = new MemcachedClient(memcachedAddress);
-        cache = new MemcachedCacheStore<K, V>(CACHE_NAME, 10, client);
+        cacheStore = new MemcachedCacheStore<K, V>(CACHE_NAME, 10, client);
     }
 
     @After
     public void tearDown() {
-        cache.clear();
-        cache.shutdown();
+        cacheStore.clear();
+        cacheStore.shutdown();
         MemcachedUtils.tearDown();
+
+        // To reset the stats
+        daemon.stop();
+        daemon.start();
     }
 
     protected void assertSize(int size) {
-        assertEquals(size, cache.getStatistics().getCacheSize());
+        assertEquals(size, cacheStore.getStatistics().getCacheSize());
     }
 
 }
