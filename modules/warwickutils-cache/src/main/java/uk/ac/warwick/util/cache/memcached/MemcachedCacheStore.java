@@ -173,17 +173,26 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
     }
 
-    public CacheStatistics getStatistics() {
+    public CacheStatistics getStatistics() throws CacheStoreUnavailableException {
         Map<SocketAddress, Map<String, String>> allStats = memcachedClient.getStats();
 
         long totalSize = 0;
+        int unavailableStores = 0;
         for (Map<String, String> stats: allStats.values()) {
             // There is a bug in jmemcached that returns this stat as "cur_items"
-            if (stats.containsKey("curr_items")) {
-                totalSize += Long.parseLong(stats.get("curr_items"));
-            } else {
-                totalSize += Long.parseLong(stats.get("cur_items"));
+            try {
+                if (stats.containsKey("curr_items")) {
+                    totalSize += Long.parseLong(stats.get("curr_items"));
+                } else {
+                    totalSize += Long.parseLong(stats.get("cur_items"));
+                }
+            } catch (NumberFormatException e) {
+                unavailableStores++;
             }
+        }
+
+        if (unavailableStores == allStats.size()) {
+            throw new CacheStoreUnavailableException("No memcached backends available");
         }
 
         return new CacheStatistics(totalSize);
