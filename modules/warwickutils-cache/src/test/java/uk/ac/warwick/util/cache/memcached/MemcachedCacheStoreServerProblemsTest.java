@@ -47,10 +47,14 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
 
         // Wait for a reconnect
         for (int i = 0; i < DefaultConnectionFactory.DEFAULT_MAX_RECONNECT_DELAY * 10; i++) {
-            if (client.getStats() != null) {
-                break;
+            try {
+                if (client.getStats() != null && cacheStore.getStatistics().getCacheSize() == 0) {
+                    break;
+                }
+                Thread.sleep(100);
+            } catch (Exception e) {
+                // do nothing
             }
-            Thread.sleep(100);
         }
 
         assertSize(0);
