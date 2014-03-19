@@ -49,6 +49,8 @@ public final class Caches {
     }
 
     public static <K extends Serializable,V extends Serializable> CacheEntryFactoryWithDataInitialisation<K, V, Object> wrapFactoryWithoutDataInitialisation(final CacheEntryFactory<K,V> factory) {
+        if (factory == null) { return null; }
+
         return new CacheEntryFactoryWithDataInitialisation<K, V, Object>() {
             @Override
             public V create(K key, Object data) throws CacheEntryUpdateException {

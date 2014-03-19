@@ -19,6 +19,8 @@ public class BasicCacheTest {
 	BasicCache<String, String, Object> slowCache;
 	private BrokenCacheEntryFactory slowFactory;
 
+    private BasicCache<String, String, Object> noFactoryCache;
+
 	// BasicCache minimum expiry is 1 second, this makes it 100ms to minimise sleep times.
 	private final CacheExpiryStrategy<String, String> shortExpiry = new TTLCacheExpiryStrategy<String, String>() {
         public Pair<Number, TimeUnit> getTTL(CacheEntry<String, String> entry) {
@@ -35,6 +37,13 @@ public class BasicCacheTest {
 		// not just equal objects
 		assertSame(cache.get("frog"), cache.get("frog"));
 	}
+
+    @Test
+    public void noFactory() throws Exception {
+        noFactoryCache.put(new CacheEntry<String, String>("cat", "meow"));
+        assertNull(noFactoryCache.get("dog"));
+        assertEquals("meow", noFactoryCache.get("cat"));
+    }
 
 	@Test
 	public void multiLookupsSynchronous() throws Exception {
@@ -274,6 +283,7 @@ public class BasicCacheTest {
 		
 		slowFactory = new BrokenCacheEntryFactory();
 		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 100);
+        noFactoryCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, (CacheEntryFactory<String, String>) null, 100);
 	}
 	
 	@After

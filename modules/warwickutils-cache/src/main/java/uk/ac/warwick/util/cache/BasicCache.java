@@ -131,6 +131,10 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 	 * do it all now and get fresh data for every key.
 	 */
 	public Map<K,V> get(List<K> keys) throws CacheEntryUpdateException {
+        if (_entryFactory == null) {
+            throw new UnsupportedOperationException("Batch lookups only supported when a suitable EntryFactory is used");
+        }
+
 		if (!_entryFactory.isSupportsMultiLookups()) {
 			throw new UnsupportedOperationException("The given EntryFactory does not support batch lookups");
 		}
@@ -201,7 +205,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
                 threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V,T>(key, entry, data)));
                 updating = true;
             }
-		} else {
+		} else if (_entryFactory != null) {
 			if (!asynchronousOnly && (entry == null || !asynchronousUpdateEnabled)) {
 				entry = updateEntry(new KeyEntry<K,V,T>(key, entry, data));
 			} else {
