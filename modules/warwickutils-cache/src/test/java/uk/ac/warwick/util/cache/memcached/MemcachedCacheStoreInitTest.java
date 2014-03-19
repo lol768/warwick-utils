@@ -11,6 +11,7 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.MemcachedUtils;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -55,7 +56,7 @@ public class MemcachedCacheStoreInitTest {
         assertNull(string);
 
         CacheEntry<String, String> entry = new CacheEntry<String, String>("token:12345", "Johnny");
-        cache.put(entry);
+        cache.put(entry, 10, TimeUnit.SECONDS);
 
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());

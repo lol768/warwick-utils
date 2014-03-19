@@ -5,6 +5,7 @@ import uk.ac.warwick.util.cache.CacheEntry;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -16,7 +17,7 @@ public class MemcachedCacheStoreComplexKeyTest extends AbstractMemcachedCacheSto
         assertNull(string);
 
         CacheEntry<ComplexKey, ComplexValue> entry = new CacheEntry<ComplexKey, ComplexValue>(new ComplexKey("token:12345"), new ComplexValue("Johnny"));
-        cacheStore.put(entry);
+        cacheStore.put(entry, 10, TimeUnit.SECONDS);
 
         assertEquals(entry.getValue(), cacheStore.get(new ComplexKey("token:12345")).getValue());
         assertEquals(entry.getValue(), cacheStore.get(new ComplexKey("token:12345")).getValue());

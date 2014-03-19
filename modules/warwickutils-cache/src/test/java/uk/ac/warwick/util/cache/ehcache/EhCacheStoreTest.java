@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.EhCacheUtils;
 
+import java.util.concurrent.TimeUnit;
+
 public class EhCacheStoreTest extends TestCase {
     
     private static final String CACHE_NAME = "customCache";
@@ -26,7 +28,7 @@ public class EhCacheStoreTest extends TestCase {
 		assertNull(string);
 		
 		CacheEntry<String, String> entry = new CacheEntry<String, String>("token:12345", "Johnny");
-		cache.put(entry);
+		cache.put(entry, 10, TimeUnit.SECONDS);
 		
 		assertSame(entry, cache.get("token:12345"));
 		assertSame(entry, cache.get("token:12345"));
@@ -40,15 +42,15 @@ public class EhCacheStoreTest extends TestCase {
 		//cache.setMaxSize(2); // this doesn't work - use ehcache config 
 		
 		assertSize(0);
-		cache.put(new CacheEntry<String,String>("token:1", "one"));
+		cache.put(new CacheEntry<String,String>("token:1", "one"), 10, TimeUnit.SECONDS);
 		assertSize(1);
-		cache.put(new CacheEntry<String,String>("token:2", "two"));
+		cache.put(new CacheEntry<String,String>("token:2", "two"), 10, TimeUnit.SECONDS);
 		assertSize(2);
 		
-		cache.put(new CacheEntry<String,String>("token:3", "three"));
-		cache.put(new CacheEntry<String,String>("token:4", "three"));
-		cache.put(new CacheEntry<String,String>("token:5", "three"));
-		cache.put(new CacheEntry<String,String>("token:6", "three"));
+		cache.put(new CacheEntry<String,String>("token:3", "three"), 10, TimeUnit.SECONDS);
+		cache.put(new CacheEntry<String,String>("token:4", "three"), 10, TimeUnit.SECONDS);
+		cache.put(new CacheEntry<String,String>("token:5", "three"), 10, TimeUnit.SECONDS);
+		cache.put(new CacheEntry<String,String>("token:6", "three"), 10, TimeUnit.SECONDS);
 		cache.flush();
 		assertSize(4);
 	}

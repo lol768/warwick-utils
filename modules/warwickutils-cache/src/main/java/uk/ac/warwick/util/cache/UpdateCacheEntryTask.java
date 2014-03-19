@@ -8,30 +8,30 @@ import org.apache.log4j.Logger;
 
 import uk.ac.warwick.util.cache.BasicCache.KeyEntry;
 
-final class UpdateCacheEntryTask<K extends Serializable,V extends Serializable> implements Runnable {
+final class UpdateCacheEntryTask<K extends Serializable,V extends Serializable,T> implements Runnable {
 
 	private final static Logger LOGGER = Logger.getLogger(UpdateCacheEntryTask.class);
 	
-	private final Collection<KeyEntry<K,V>> entries;
+	private final Collection<KeyEntry<K,V,T>> entries;
 	
-	private final BasicCache<K,V> owner;
+	private final BasicCache<K,V,T> owner;
 
-	public UpdateCacheEntryTask(BasicCache<K,V> cache, KeyEntry<K,V> entry) {
+	public UpdateCacheEntryTask(BasicCache<K,V,T> cache, KeyEntry<K,V,T> entry) {
 		this(cache, Collections.singletonList(entry));
 	}
 	
-	public UpdateCacheEntryTask(BasicCache<K,V> cache, Collection<KeyEntry<K,V>> entries) {
+	public UpdateCacheEntryTask(BasicCache<K,V,T> cache, Collection<KeyEntry<K,V,T>> entries) {
 		super();
 		this.owner = cache;
 		this.entries = entries;
 	}
 	
-	public static <K extends Serializable,V extends Serializable> UpdateCacheEntryTask<K,V> task(BasicCache<K,V> cache, KeyEntry<K,V> entry) {
-		return new UpdateCacheEntryTask<K,V>(cache,entry);
+	public static <K extends Serializable,V extends Serializable,T> UpdateCacheEntryTask<K,V,T> task(BasicCache<K,V,T> cache, KeyEntry<K,V,T> entry) {
+		return new UpdateCacheEntryTask<K,V,T>(cache,entry);
 	}
 	
-	public static <K extends Serializable,V extends Serializable> UpdateCacheEntryTask<K,V> task(BasicCache<K,V> cache, Collection<KeyEntry<K,V>> entry) {
-		return new UpdateCacheEntryTask<K,V>(cache,entry);
+	public static <K extends Serializable,V extends Serializable,T> UpdateCacheEntryTask<K,V,T> task(BasicCache<K,V,T> cache, Collection<KeyEntry<K,V,T>> entry) {
+		return new UpdateCacheEntryTask<K,V,T>(cache,entry);
 	}
 	
 	public void run() {

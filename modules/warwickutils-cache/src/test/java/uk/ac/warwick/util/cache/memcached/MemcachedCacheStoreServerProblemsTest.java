@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.cache.BasicCache;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
+import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -14,11 +15,11 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
     private int cacheCallCount = 0;
 
     // Use an actual cache, rather than going to the store directly
-    private BasicCache<String, String> cache;
+    private BasicCache<String, String, Object> cache;
 
     @Before
     public void setUpCache() throws Exception {
-        cache  = new BasicCache<String, String>(cacheStore, new SingularCacheEntryFactory<String, String>() {
+        cache  = new BasicCache<String, String, Object>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
             public String create(String key) throws CacheEntryUpdateException {
                 cacheCallCount++;
                 return key.substring(6);
@@ -27,7 +28,7 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
             public boolean shouldBeCached(String val) {
                 return true;
             }
-        }, 10);
+        }), 10);
     }
 
     @Test

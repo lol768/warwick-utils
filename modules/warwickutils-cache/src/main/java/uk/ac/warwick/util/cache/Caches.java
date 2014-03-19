@@ -1,6 +1,8 @@
 package uk.ac.warwick.util.cache;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -30,13 +32,45 @@ public final class Caches {
 	
 	private Caches() {}
 	
-	public static <K extends Serializable,V extends Serializable> BasicCache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout) {
-	    return newCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
+	public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout) {
+	    return newCache(name, wrapFactoryWithoutDataInitialisation(factory), timeout, CacheStrategy.EhCacheIfAvailable);
 	}
 	
-	public static <K extends Serializable,V extends Serializable> BasicCache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy) {
-		return new BasicCache<K, V>(name, factory, timeout, cacheStrategy);
+	public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy) {
+		return new BasicCache<K, V, Object>(name, wrapFactoryWithoutDataInitialisation(factory), timeout, cacheStrategy);
 	}
+
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout) {
+        return newDataInitialisatingCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
+    }
+
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy) {
+        return new BasicCache<K, V, T>(name, factory, timeout, cacheStrategy);
+    }
+
+    public static <K extends Serializable,V extends Serializable> CacheEntryFactoryWithDataInitialisation<K, V, Object> wrapFactoryWithoutDataInitialisation(final CacheEntryFactory<K,V> factory) {
+        return new CacheEntryFactoryWithDataInitialisation<K, V, Object>() {
+            @Override
+            public V create(K key, Object data) throws CacheEntryUpdateException {
+                return factory.create(key);
+            }
+
+            @Override
+            public Map<K, V> create(List<K> keys) throws CacheEntryUpdateException {
+                return factory.create(keys);
+            }
+
+            @Override
+            public boolean isSupportsMultiLookups() {
+                return factory.isSupportsMultiLookups();
+            }
+
+            @Override
+            public boolean shouldBeCached(V val) {
+                return factory.shouldBeCached(val);
+            }
+        };
+    }
 	
 	/**
 	 * Creates a new cache. If Ehcache is available, it is used - reflection is used

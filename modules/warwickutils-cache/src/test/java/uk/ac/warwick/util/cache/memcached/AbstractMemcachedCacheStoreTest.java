@@ -74,7 +74,7 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
         daemon.start();
     }
 
-    protected void assertSize(int size) {
+    protected void assertSize(int size) throws Exception {
         assertEquals(size, cacheStore.getStatistics().getCacheSize());
     }
 

@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
+import uk.ac.warwick.util.collections.Pair;
 
 
 /**
@@ -25,12 +26,12 @@ import uk.ac.warwick.util.cache.Caches.CacheStrategy;
  * The backing CacheStore determines how elements are evicted when we grow
  * past the maximum cache size.
  */
-public final class BasicCache<K extends Serializable, V extends Serializable> implements Cache<K,V> {
+public final class BasicCache<K extends Serializable, V extends Serializable, T> implements CacheWithDataInitialisation<K,V,T> {
 	private static final String CACHE_SIZE_PROPERTY = "warwick.cache.size";
 	
 	private static final long MILLISECS_IN_SECS = 1000;
 	
-	private final CacheEntryFactory<K,V> _entryFactory;
+	private final CacheEntryFactoryWithDataInitialisation<K,V,T> _entryFactory;
 	
 	private final List<CacheListener<K,V>> listeners = new ArrayList<CacheListener<K,V>>();
 	
@@ -55,22 +56,17 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 */
 	private boolean asynchronousOnly = false;
 	
-	private CacheExpiryStrategy<K, V> expiryStrategy = new CacheExpiryStrategy<K, V>() {
-		public boolean isExpired(CacheEntry<K,V> entry) {
-		    // Check if the value class has an annotation for custom cache expiry
-		    final long expires;
-		    if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
-		        expires = entry.getTimestamp() + entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value();
-		    } else {
-		        expires = entry.getTimestamp() + _timeOutMillis;
-		    }
+	private CacheExpiryStrategy<K, V> expiryStrategy = new TTLCacheExpiryStrategy<K, V>() {
+        public Pair<Number, TimeUnit> getTTL(CacheEntry<K, V> entry) {
+            if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
+                return Pair.of((Number) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value(), TimeUnit.MILLISECONDS);
+            } else {
+                return Pair.of((Number) _timeOutMillis, TimeUnit.MILLISECONDS);
+            }
+        }
+    };
 
-			final long now = System.currentTimeMillis();
-			return expires <= now;
-		}
-	};
-
-	public BasicCache(CacheStore<K,V> cacheStore, CacheEntryFactory<K,V> factory, long timeoutSeconds) {
+	public BasicCache(CacheStore<K,V> cacheStore, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeoutSeconds) {
 		this._entryFactory = factory;
 		this._timeOutMillis = timeoutSeconds * MILLISECS_IN_SECS;
 		
@@ -89,7 +85,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * @param timeoutSeconds The number of seconds for entries to expire. This is ignored
 	 * 		if you subsequently override the ExpiryStrategy.
 	 */
-	public BasicCache(String storeName, CacheEntryFactory<K,V> factory, long timeoutSeconds, CacheStrategy cacheStrategy) {
+	public BasicCache(String storeName, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeoutSeconds, CacheStrategy cacheStrategy) {
 		this(Caches.<K,V>newCacheStore(storeName, timeoutSeconds, cacheStrategy), factory, timeoutSeconds);
 	}
 	
@@ -115,8 +111,12 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * 
 	 */
 	public V get(final K key) throws CacheEntryUpdateException {
-		return getResult(key).getValue();
+        return get(key, null);
 	}
+
+    public V get(final K key, final T data) throws CacheEntryUpdateException {
+        return getResult(key, data).getValue();
+    }
 	
 	/**
 	 * If the EntryFactory supports it, looks up a collection of keys in one go.
@@ -140,21 +140,21 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 		}
 		
 		Map<K,V> results = new HashMap<K, V>();
-		List<KeyEntry<K,V>> missing = new ArrayList<KeyEntry<K,V>>();
-		List<KeyEntry<K,V>> expired = new ArrayList<KeyEntry<K,V>>();
+		List<KeyEntry<K,V,T>> missing = new ArrayList<KeyEntry<K,V,T>>();
+		List<KeyEntry<K,V,T>> expired = new ArrayList<KeyEntry<K,V,T>>();
 		for (K key : keys) {
             try {
                 CacheEntry<K,V> entry = store.get(key);
                 if (entry == null || (!asynchronousUpdateEnabled && isExpired(entry))) {
-                    missing.add(new KeyEntry<K,V>(key, entry));
+                    missing.add(new KeyEntry<K,V,T>(key, entry, null));
                 } else {
                     results.put(key, entry.getValue());
-                    if (isExpired(entry)) {
-                        expired.add(new KeyEntry<K,V>(key, entry));
+                    if (isStale(entry)) {
+                        expired.add(new KeyEntry<K,V,T>(key, entry, null));
                     }
                 }
             } catch (CacheStoreUnavailableException e) {
-                missing.add(new KeyEntry<K, V>(key, null));
+                missing.add(new KeyEntry<K, V, T>(key, null, null));
             }
 		}
 		
@@ -179,21 +179,35 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
         }
     }
 
+    @Override
+    public Result<V> getResult(K key) throws CacheEntryUpdateException {
+        return getResult(key, null);
+    }
+
 	@Override
-	public Result<V> getResult(K key) throws CacheEntryUpdateException {
+	public Result<V> getResult(K key, T data) throws CacheEntryUpdateException {
 		CacheEntry<K,V> entry = getOrNull(key);
 
 		boolean expired = ( entry != null && isExpired(entry) );
+        boolean stale = ( entry != null && isStale(entry) );
+
 		boolean updating = false;
 		if (entry != null && !expired) {
 			broadcastHit(key, entry);
+
+            if (stale && !asynchronousOnly) {
+                // Entry is just expired. Return the stale version
+                // now and update in the background
+                threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V,T>(key, entry, data)));
+                updating = true;
+            }
 		} else {
 			if (!asynchronousOnly && (entry == null || !asynchronousUpdateEnabled)) {
-				entry = updateEntry(new KeyEntry<K,V>(key, entry));
+				entry = updateEntry(new KeyEntry<K,V,T>(key, entry, data));
 			} else {
 				// Entry is just expired. Return the stale version
 				// now and update in the background
-				threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V>(key, entry)));
+				threadPool.execute(UpdateCacheEntryTask.task(this, new KeyEntry<K,V,T>(key, entry, data)));
 				updating = true;
 			}
 		}
@@ -226,8 +240,9 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * 
 	 * @param kEntry The key and entry
 	 */
-	CacheEntry<K,V> updateEntry(final KeyEntry<K,V> kEntry) throws CacheEntryUpdateException {
+	CacheEntry<K,V> updateEntry(final KeyEntry<K,V,T> kEntry) throws CacheEntryUpdateException {
 		final K key = kEntry.key;
+        final T data = kEntry.data;
 		final CacheEntry<K,V> foundEntry = kEntry.entry;
 
         CacheEntry<K,V> entry = getOrNull(key);
@@ -240,7 +255,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 				entry.setUpdating(true);
 			}
 			try {
-				V newValue = _entryFactory.create(key);
+				V newValue = _entryFactory.create(key, data);
 				entry = newEntry(key, newValue);
 				if (_entryFactory.shouldBeCached(newValue)) {
                     put(entry);
@@ -268,10 +283,10 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * affect thread-safety but it can result in multiple threads updating the
 	 * same cache keys.
 	 */
-	Map<K, CacheEntry<K,V>> updateEntries(final Collection<KeyEntry<K,V>> kentries) throws CacheEntryUpdateException {
+	Map<K, CacheEntry<K,V>> updateEntries(final Collection<KeyEntry<K,V,T>> kentries) throws CacheEntryUpdateException {
 		Map<K, CacheEntry<K,V>> result = new HashMap<K, CacheEntry<K,V>>();
 		List<K> keys = new ArrayList<K>();
-		for (KeyEntry<K,V> kentry : kentries) {
+		for (KeyEntry<K,V,T> kentry : kentries) {
 			final CacheEntry<K, V> foundEntry = kentry.entry;
 			if (foundEntry != null) {
 				foundEntry.setUpdating(true);
@@ -295,7 +310,9 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 
 	public void put(CacheEntry<K, V> entry) {
         try {
-            store.put(entry);
+            Pair<Number, TimeUnit> ttl = expiryStrategy.getTTL(entry);
+
+            store.put(entry, ttl.getLeft().longValue(), ttl.getRight());
         } catch (CacheStoreUnavailableException e) {
             // do nothing
         }
@@ -316,6 +333,10 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	private boolean isExpired(final CacheEntry<K,V> entry) {
 		return expiryStrategy.isExpired(entry);
 	}
+
+    private boolean isStale(final CacheEntry<K,V> entry) {
+        return expiryStrategy.isStale(entry);
+    }
 
 	public void addCacheListener(CacheListener<K,V> listener) {
 		listeners.add(listener);
@@ -369,12 +390,14 @@ public final class BasicCache<K extends Serializable, V extends Serializable> im
 	 * Holds a key and an entry. Even though Entry has getKey(), entry can
 	 * be null so we still need this internally.
 	 */
-	static class KeyEntry<K extends Serializable,V extends Serializable> {
+	static class KeyEntry<K extends Serializable,V extends Serializable,T> {
 		public final K key;
+        public final T data;
 		public final CacheEntry<K,V> entry;
-		public KeyEntry(K k, CacheEntry<K,V> e) {
+		public KeyEntry(K k, CacheEntry<K,V> e, T d) {
 			key = k;
 			entry = e;
+            data = d;
 		}
 	}
 

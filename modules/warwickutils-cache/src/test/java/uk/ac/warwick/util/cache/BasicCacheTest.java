@@ -3,25 +3,27 @@ package uk.ac.warwick.util.cache;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.jmock.lib.concurrent.DeterministicScheduler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.warwick.util.collections.Pair;
 
 public class BasicCacheTest {
     
     private static final String CACHE_NAME = "customCache";
 
-	BasicCache<String, String> cache;
-	BasicCache<String, String> slowCache;
+	BasicCache<String, String, Object> cache;
+	BasicCache<String, String, Object> slowCache;
 	private BrokenCacheEntryFactory slowFactory;
 
 	// BasicCache minimum expiry is 1 second, this makes it 100ms to minimise sleep times.
-	private final CacheExpiryStrategy<String, String> shortExpiry = new CacheExpiryStrategy<String, String>() {
-		public boolean isExpired(CacheEntry<String, String> entry) {
-			return entry.getTimestamp() + 100 < System.currentTimeMillis();
-		}
+	private final CacheExpiryStrategy<String, String> shortExpiry = new TTLCacheExpiryStrategy<String, String>() {
+        public Pair<Number, TimeUnit> getTTL(CacheEntry<String, String> entry) {
+            return Pair.of((Number) 100, TimeUnit.MILLISECONDS);
+        }
 	};
 	
 	@Test
@@ -93,7 +95,7 @@ public class BasicCacheTest {
 	
 	@Test
 	public void asynchronousUpdates() throws Exception {
-		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 0);
+		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 0);
 		slowCache.setExpiryStrategy(shortExpiry);
 		slowCache.setAsynchronousUpdateEnabled(true);
 		slowFactory.addFastRequest("one");
@@ -143,7 +145,7 @@ public class BasicCacheTest {
 	
 	@Test
 	public void expiry() throws Exception {
-		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 0);
+		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 0);
 		slowCache.setExpiryStrategy(shortExpiry);
 		slowFactory.addFastRequest("one");
 		
@@ -181,7 +183,7 @@ public class BasicCacheTest {
 				}
 			}
 
-			public void put(CacheEntry<String, String> entry) {
+			public void put(CacheEntry<String, String> entry, long ignoredTTL, TimeUnit ignoredUnit) {
 				called.add(entry.getKey());
 			}
 
@@ -214,14 +216,14 @@ public class BasicCacheTest {
             }
 		};	
 		
-		BasicCache<String, String> cache = new BasicCache<String, String>(store, new SingularCacheEntryFactory<String, String>() {
+		BasicCache<String, String, Object> cache = new BasicCache<String, String, Object>(store, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
 			public String create(String key) {
 				return new String("Value for " + key);
 			}
 			public boolean shouldBeCached(String val) {
 				return true;
 			}
-		}, 100);
+		}), 100);
 		
 		assertEquals("Value for steve", cache.get("steve"));
 	}
@@ -261,17 +263,17 @@ public class BasicCacheTest {
 	@Before
 	public void setUp() throws Exception {
 		EhCacheUtils.setUp();
-		cache = Caches.newCache(CACHE_NAME, new SingularCacheEntryFactory<String, String>() {
+		cache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
 			public String create(String key) {
 				return new String("Value for " + key);
 			}
 			public boolean shouldBeCached(String val) {
 				return true;
 			}
-		}, 100);
+		}), 100);
 		
 		slowFactory = new BrokenCacheEntryFactory();
-		slowCache = Caches.newCache(CACHE_NAME, slowFactory, 100);
+		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 100);
 	}
 	
 	@After

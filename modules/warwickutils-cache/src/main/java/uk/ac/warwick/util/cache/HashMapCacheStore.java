@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cache store that uses a LinkedHashMap to evict the oldest items.
@@ -67,7 +68,7 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 		return (CacheEntry<K, V>) map.get(key);
 	}
 
-	public void put(CacheEntry entry) {
+	public void put(CacheEntry entry, long ignoredTtl, TimeUnit ignoredTimeUnit) {
 		map.put(entry.getKey(), entry);
 	}
 

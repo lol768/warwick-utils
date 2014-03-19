@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link CacheStore} implements a simple store of cache elements - 
@@ -11,7 +12,12 @@ import java.io.Serializable;
  */
 public interface CacheStore<K extends Serializable,V extends Serializable> {
 	CacheEntry<K,V> get(K key) throws CacheStoreUnavailableException;
-	void put(CacheEntry<K,V> entry) throws CacheStoreUnavailableException;
+
+    /**
+     * Put element in cache with specified TTL. If TTL is not greater than zero,
+     * the default TTL will be used.
+     */
+    void put(CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) throws CacheStoreUnavailableException;
 	boolean remove(K key) throws CacheStoreUnavailableException;
 	
 	CacheStatistics getStatistics() throws CacheStoreUnavailableException;

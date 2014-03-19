@@ -2,6 +2,7 @@ package uk.ac.warwick.util.content.texttransformers.embed;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,13 +14,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import uk.ac.warwick.util.cache.Cache;
-import uk.ac.warwick.util.cache.CacheEntry;
-import uk.ac.warwick.util.cache.CacheEntryUpdateException;
-import uk.ac.warwick.util.cache.CacheExpiryStrategy;
-import uk.ac.warwick.util.cache.Caches;
+import uk.ac.warwick.util.cache.*;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
-import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.content.texttransformers.embed.OEmbedProvider.Format;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
@@ -57,19 +54,21 @@ public class OEmbedImpl extends SingularCacheEntryFactory<OEmbedRequest, OEmbedR
 		this.parser.put(Format.xml, new OEmbedXmlParser());
 
         this.cache = Caches.newCache(CACHE_NAME, this, DEFAULT_CACHE_TIME_IN_SECONDS, CacheStrategy.EhCacheRequired);
-        this.cache.setExpiryStrategy(new CacheExpiryStrategy<OEmbedRequest, OEmbedResponse>() {
-            public boolean isExpired(CacheEntry<OEmbedRequest, OEmbedResponse> entry) {
-                final long expires;
+        this.cache.setExpiryStrategy(new TTLCacheExpiryStrategy<OEmbedRequest, OEmbedResponse>() {
+            public Pair<Number, TimeUnit> getTTL(CacheEntry<OEmbedRequest, OEmbedResponse> entry) {
+                final Number ttlSeconds;
+
                 if (entry.getValue() != null && entry.getValue().getCacheAge() != null) {
-                    expires = entry.getTimestamp() + (entry.getValue().getCacheAge() * MS_IN_A_SECOND);
+                    ttlSeconds = entry.getValue().getCacheAge();
                 } else if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-                    expires = entry.getTimestamp() + (DEFAULT_CACHE_TIME_IN_SECONDS * MS_IN_A_SECOND);
+                    ttlSeconds = DEFAULT_CACHE_TIME_IN_SECONDS;
                 } else {
-                    expires = entry.getTimestamp() + (DEFAULT_CACHE_TIME_FAILURES_IN_SECONDS * MS_IN_A_SECOND);
+                    ttlSeconds = DEFAULT_CACHE_TIME_FAILURES_IN_SECONDS;
                 }
-                
-                final long now = System.currentTimeMillis();
-                return expires <= now;
+
+                System.out.println(ttlSeconds);
+
+                return Pair.of(ttlSeconds, TimeUnit.SECONDS);
             }
         });
 	}

@@ -4,11 +4,7 @@ import net.spy.memcached.*;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import org.apache.log4j.Logger;
 import org.springframework.util.DigestUtils;
-import uk.ac.warwick.util.cache.CacheEntry;
-import uk.ac.warwick.util.cache.CacheStatistics;
-import uk.ac.warwick.util.cache.CacheStore;
-import uk.ac.warwick.util.cache.CustomCacheExpiry;
-import uk.ac.warwick.util.cache.CacheStoreUnavailableException;
+import uk.ac.warwick.util.cache.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cache implementation that uses the spymemcached library to connect to memcached.
@@ -151,11 +148,20 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
     }
 
-    public void put(CacheEntry<K, V> entry) {
-        int ttlSeconds;
+    public void put(CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) {
+        final int ttlSeconds;
 
-        if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
-            ttlSeconds = (int) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value() / 1000;
+        if (ttl > 0) {
+            // If explicit TTL set, use that
+            long ttlInSeconds = (int) timeUnit.toSeconds(ttl);
+
+            if (ttlInSeconds > Integer.MAX_VALUE) {
+                ttlSeconds = Integer.MAX_VALUE;
+            } else {
+                ttlSeconds = (int) ttlInSeconds;
+            }
+        } else if (ttl == CacheEntryFactory.TIME_TO_LIVE_ETERNITY) {
+            ttlSeconds = Integer.MAX_VALUE;
         } else {
             ttlSeconds = timeoutInSeconds;
         }

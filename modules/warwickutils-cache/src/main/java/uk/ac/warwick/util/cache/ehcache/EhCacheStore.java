@@ -3,6 +3,7 @@ package uk.ac.warwick.util.cache.ehcache;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -11,10 +12,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.ObjectExistsException;
 import org.apache.log4j.Logger;
 
-import uk.ac.warwick.util.cache.CacheStatistics;
-import uk.ac.warwick.util.cache.CacheStore;
-import uk.ac.warwick.util.cache.CacheEntry;
-import uk.ac.warwick.util.cache.CustomCacheExpiry;
+import uk.ac.warwick.util.cache.*;
 
 /**
  * Cache implementation which uses EhCache, of course.
@@ -131,13 +129,20 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 		return (CacheEntry<K,V>)element.getValue();
 	}
 	
-	public void put(CacheEntry<K,V> entry) {
+	public void put(CacheEntry<K,V> entry, long ttl, TimeUnit timeUnit) {
 	    Element element = new Element(entry.getKey(), entry);
-	    
-	    if (entry.getValue() != null && entry.getValue().getClass().isAnnotationPresent(CustomCacheExpiry.class)) {
-            element.setTimeToLive((int) entry.getValue().getClass().getAnnotation(CustomCacheExpiry.class).value() / 1000);
+
+        if (ttl > 0) {
+            long ttlSeconds = timeUnit.toSeconds(ttl);
+            if (ttlSeconds > Integer.MAX_VALUE) {
+                element.setTimeToLive(Integer.MAX_VALUE);
+            } else {
+                element.setTimeToLive((int) ttlSeconds);
+            }
+        } else if (ttl == CacheEntryFactory.TIME_TO_LIVE_ETERNITY) {
+            element.setEternal(true);
         }
-	    
+
 		cache.put(element);
 	}
 	
