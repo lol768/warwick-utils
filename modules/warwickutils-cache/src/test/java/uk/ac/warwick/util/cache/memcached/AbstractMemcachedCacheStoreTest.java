@@ -65,8 +65,11 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
 
     @After
     public void tearDown() {
-        cacheStore.clear();
-        cacheStore.shutdown();
+        if (!client.getAvailableServers().isEmpty()) {
+            cacheStore.clear();
+            cacheStore.shutdown();
+        }
+        
         MemcachedUtils.tearDown();
 
         // To reset the stats
