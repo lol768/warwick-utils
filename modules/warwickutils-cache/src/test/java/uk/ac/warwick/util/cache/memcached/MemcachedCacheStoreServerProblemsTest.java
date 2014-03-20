@@ -46,6 +46,8 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
         // Phew
         daemon.start();
 
+        Thread.sleep(1000);
+
         // Wait for a reconnect
         for (int i = 0; i < DefaultConnectionFactory.DEFAULT_MAX_RECONNECT_DELAY * 10; i++) {
             try {
