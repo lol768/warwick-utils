@@ -233,6 +233,10 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
     }
 
+    public static final MemcachedClient getDefaultMemcachedClient() {
+        return defaultMemcachedClient;
+    }
+
     /**
      * Normally you can allow the shutdown hooks to
      */
