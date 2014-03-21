@@ -39,9 +39,13 @@ public final class CachingImageResizer implements FileExposingImageResizer {
         this.delegate = delegateResizer;
         this.cache = theCache;
     }
-  
+
     public CachingImageResizer(final ImageResizer delegateResizer, final File cacheDirectory) {
-        this(delegateResizer, new FileSystemScaledImageCache(cacheDirectory));
+        this(delegateResizer, cacheDirectory, System.getProperty("warwick.imageResizer.separator", "@"));
+    }
+  
+    public CachingImageResizer(final ImageResizer delegateResizer, final File cacheDirectory, final String cacheSeparator) {
+        this(delegateResizer, new FileSystemScaledImageCache(cacheDirectory, cacheSeparator));
     }
     
     public void renderResized(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
@@ -81,10 +85,13 @@ public final class CachingImageResizer implements FileExposingImageResizer {
      *
      */
     static class FileSystemScaledImageCache implements ImageCache {
-        private File cacheRoot;
+        private final File cacheRoot;
 
-        public FileSystemScaledImageCache(final File cacheDir) {
+        private final String separator;
+
+        public FileSystemScaledImageCache(final File cacheDir, final String cacheSeparator) {
             this.cacheRoot = cacheDir;
+            this.separator = cacheSeparator;
         }
 
         /**
@@ -165,7 +172,7 @@ public final class CachingImageResizer implements FileExposingImageResizer {
             return new File(cacheRoot,generateCacheKey(referencePath, maxWidth, maxHeight));
         }
         private String generateCacheKey(final String sourceFile, final int maxWidth, final int maxHeight) {
-            return sourceFile + "@" + maxWidth + "x" + maxHeight;
+            return sourceFile + separator + maxWidth + "x" + maxHeight;
         }
         
         

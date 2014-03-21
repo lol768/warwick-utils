@@ -36,7 +36,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
         contentRoot = new File(getRoot(),"content");
         cacheRoot.mkdir();
         contentRoot.mkdirs();
-        cache = new CachingImageResizer.FileSystemScaledImageCache(cacheRoot);
+        cache = new CachingImageResizer.FileSystemScaledImageCache(cacheRoot, "@");
     }
     
     @Test

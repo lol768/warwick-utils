@@ -69,7 +69,7 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
             cacheStore.clear();
             cacheStore.shutdown();
         }
-        
+
         MemcachedUtils.tearDown();
 
         // To reset the stats
