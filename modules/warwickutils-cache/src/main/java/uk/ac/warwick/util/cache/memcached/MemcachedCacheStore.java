@@ -134,7 +134,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return getName() + ":" + keyAsString;
     }
 
-    public CacheEntry<K, V> get(K key) throws CacheStoreUnavailableException {
+    public CacheEntry<K, V> get(K key) {
         try {
             Object value = memcachedClient.get(prefix(key));
             if (value == null || value instanceof String) { // Bug in jmemcached - when using binary protocol, returns empty strings
@@ -142,10 +142,15 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             }
             return (CacheEntry<K, V>) value;
         } catch (CancellationException e) {
-            throw new CacheStoreUnavailableException(e);
+            // Do nothing, treat as cache miss
         } catch (OperationTimeoutException e) {
-            throw new CacheStoreUnavailableException(e);
+            // Do nothing, treat as cache miss
+        } catch (RuntimeException e) {
+            // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
+            // Do nothing, treat as cache miss
         }
+
+        return null;
     }
 
     public void put(CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) {
