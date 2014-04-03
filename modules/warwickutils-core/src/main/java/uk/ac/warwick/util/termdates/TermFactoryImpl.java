@@ -38,8 +38,9 @@ public final class TermFactoryImpl implements TermFactory {
             String endDateString = data[1];
             String termTypeString = data[2];
             
-            DateTime startDate = DATE_FORMATTER.parseDateTime(startDateString);
-            DateTime endDate = DATE_FORMATTER.parseDateTime(endDateString);
+            MutableDateTime startDate = DATE_FORMATTER.parseDateTime(startDateString).withDayOfWeek(DateTimeConstants.MONDAY).toMutableDateTime();
+            MutableDateTime endDate = DATE_FORMATTER.parseDateTime(endDateString).withDayOfWeek(DateTimeConstants.SUNDAY).toMutableDateTime();
+
             TermType type;
             
             if (termTypeString.equals("a")) {
@@ -52,7 +53,7 @@ public final class TermFactoryImpl implements TermFactory {
                 throw new IllegalArgumentException("Invalid term string");
             }
             
-            termDates.add(new TermImpl(this, startDate,endDate,type));
+            termDates.add(new TermImpl(this, startDate.toDateTime(),endDate.toDateTime(),type));
         }
     }
 
