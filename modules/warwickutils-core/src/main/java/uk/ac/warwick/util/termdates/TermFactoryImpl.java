@@ -38,8 +38,9 @@ public final class TermFactoryImpl implements TermFactory {
             String endDateString = data[1];
             String termTypeString = data[2];
             
-            DateTime startDate = DATE_FORMATTER.parseDateTime(startDateString);
-            DateTime endDate = DATE_FORMATTER.parseDateTime(endDateString);
+            DateTime startDate = DATE_FORMATTER.parseDateTime(startDateString).withDayOfWeek(DateTimeConstants.MONDAY);
+            DateTime endDate = DATE_FORMATTER.parseDateTime(endDateString).withDayOfWeek(DateTimeConstants.SUNDAY);
+
             TermType type;
             
             if (termTypeString.equals("a")) {

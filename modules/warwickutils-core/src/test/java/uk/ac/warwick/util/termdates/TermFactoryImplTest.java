@@ -186,9 +186,11 @@ public final class TermFactoryImplTest {
         
         // This should be week 1 of the Summer term
         Term term = factory.getTermFromDate(monday);
-        
-        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 27), term.getStartDate());
-        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 2), term.getEndDate());
+
+//        This term started on Wednesday 27th April, and finished on Saturday 2nd July
+//        We now assume Monday - Sunday, so the term is Monday 25th April - Sunday 3rd July.
+        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 25), term.getStartDate());
+        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 3), term.getEndDate());
         assertEquals(TermType.summer, term.getTermType());
         
         assertEquals(1, term.getWeekNumber(monday));
