@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.cache;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 
 /**
@@ -12,8 +14,8 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	private static final long serialVersionUID = -4384852442875029950L;
 	private final K key;
 	private final V value;
-	private final long created = System.currentTimeMillis();
-	private transient volatile boolean updating;
+	private final long created = DateTime.now().getMillis();
+    private transient volatile boolean updating;
 	
 	@SuppressWarnings("unchecked")
     public CacheEntry(K k, V val) {

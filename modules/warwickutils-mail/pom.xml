@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20140403</version>
+		<version>20140408</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 

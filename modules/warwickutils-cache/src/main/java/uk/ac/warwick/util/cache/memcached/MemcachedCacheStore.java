@@ -181,6 +181,9 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             return false;
         } catch (ExecutionException e) {
             return false;
+        } catch (RuntimeException e) {
+            // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
+            return false;
         }
     }
 
@@ -219,6 +222,9 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         } catch (InterruptedException e) {
             return false;
         } catch (ExecutionException e) {
+            return false;
+        } catch (RuntimeException e) {
+            // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
             return false;
         }
     }
