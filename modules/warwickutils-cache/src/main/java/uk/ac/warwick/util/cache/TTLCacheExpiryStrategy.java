@@ -17,7 +17,7 @@ public abstract class TTLCacheExpiryStrategy<K extends Serializable,V extends Se
         }
 
         final long expires = entry.getTimestamp() + ttl.getRight().toMillis(ttl.getLeft().longValue());
-        final long now = DateTime.now().getMillis();
+        final long now = new DateTime().getMillis();
         return expires <= now;
     }
 

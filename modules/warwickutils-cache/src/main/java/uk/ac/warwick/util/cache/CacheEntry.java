@@ -14,7 +14,7 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	private static final long serialVersionUID = -4384852442875029950L;
 	private final K key;
 	private final V value;
-	private final long created = DateTime.now().getMillis();
+	private final long created = new DateTime().getMillis();
     private transient volatile boolean updating;
 	
 	@SuppressWarnings("unchecked")

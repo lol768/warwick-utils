@@ -97,7 +97,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 				// This shouldn't be run in production. The Caches factory method will avoid
 				// creating an EhCacheStore if neither property is available.
 				LOGGER.error("Either ehcache.disk.store.dir or warwick.ehcache.disk.store.dir should be set - using java.io.tmpdir for disk cache instead");
-				System.setProperty("warwick.ehcache.disk.store.dir", System.getProperty("java.io.tmpdir") + File.separatorChar + DateTime.now().getMillis());
+				System.setProperty("warwick.ehcache.disk.store.dir", System.getProperty("java.io.tmpdir") + File.separatorChar + new DateTime().getMillis());
 			}
 		}
 		
