@@ -11,6 +11,12 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
         String address = "http://www.YouTube.com/watch?v=" + videoId;
         checkAddressWorks(videoId, address);
     }
+
+    public void testHttps() throws MalformedURLException {
+        String videoId = "abcdef";
+        String address = "https://www.YouTube.com/watch?v=" + videoId;
+        checkAddressWorks(videoId, address);
+    }
     
     public void testUrlWithExtraParams() throws MalformedURLException {
         String videoId = "TFl-iBlW14Y";
