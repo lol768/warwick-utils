@@ -8,7 +8,7 @@ import uk.ac.warwick.util.content.MutableContent;
 
 public final class YouTubeMediaUrlHandler extends AbstractFlashPlayerMediaUrlHandler {
     
-    private static final Pattern PATTERN = Pattern.compile("http://(?:.*\\.)?youtube\\.com/watch\\?.*v=[^&]+.*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile("https?://(?:.*\\.)?youtube\\.com/watch\\?.*v=[^&]+.*", Pattern.CASE_INSENSITIVE);
     
     public boolean recognises(final String url) {
         return PATTERN.matcher(url.toString()).matches();
