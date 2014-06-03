@@ -50,7 +50,8 @@ public final class FlvMediaUrlHandlerTest {
 		parameters.put("align", "left");
 		
 		assertTrue(handler.getHtml("file.mp4", parameters, null).startsWith("<notextile>"));
-		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("\"425\",\"374\""));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("requestedWidth = 425"));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("requestedHeight = 350"));
 	}
 	
 	@Test
@@ -80,7 +81,7 @@ public final class FlvMediaUrlHandlerTest {
 		String html = handler.getHtml("../big_buck_bunny.mp4", parameters, null);
 		
 		assertTrue(html.startsWith("<notextile>"));
-		assertTrue(html.contains("\"640\",\"384\""));
+		assertTrue(html.contains("requestedWidth = 640"));
 		
 		m.assertIsSatisfied();
 	}
@@ -96,7 +97,7 @@ public final class FlvMediaUrlHandlerTest {
         String html = handler.getHtml("file.mp4", parameters, null);
         
         assertTrue(html.startsWith("<notextile>"));
-        assertTrue(html.contains("\"100%\",\"\""));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("requestedWidth = 100%"));
         
         assertTrue(html.contains("preload=\"none\""));
         parameters.put("preload", "metadata");
@@ -153,7 +154,8 @@ public final class FlvMediaUrlHandlerTest {
         String html = handler.getHtml("file.mp4", parameters, null);
         assertFalse(html.contains("vidEl.insert({top:new Element('source', {"));
         assertTrue(html.startsWith("<notextile>"));
-        assertTrue(html.contains("\"640\",\"384\""));
+		assertTrue(html.contains("requestedWidth = 640"));
+		assertTrue(html.contains("requestedHeight = 360"));
         
         m.assertIsSatisfied();
 	}
@@ -195,7 +197,8 @@ public final class FlvMediaUrlHandlerTest {
         
         assertTrue(html.startsWith("<notextile>"));
         assertTrue(html.indexOf("source src=\"file.mp4\"") < html.indexOf("source src=\"file.ogg\""));
-        assertTrue(html.contains("\"640\",\"384\""));
+		assertTrue(html.contains("requestedWidth = 640"));
+		assertTrue(html.contains("requestedHeight = 360"));
         
         m.assertIsSatisfied();
     }

@@ -37,7 +37,7 @@
 		Event.onDOMReady(function(){
 
 			function calcVideoWidth() {
-				var requestedWidth = <@dimension value=width?default(640) />;
+				var requestedWidth = <@dimension value=width?default(425) />;
 				var containerWidth = jQuery(".media_tag_video#video_${uniqueId}").parent().width();
 				if(requestedWidth > containerWidth) {
 					return containerWidth;
@@ -49,7 +49,7 @@
 			function calcVideoHeight() {
 				var aspectRatio = 1.77;
 				var transportBarHeight = 24;
-				var requestedHeight = <@dimension value=height?default(376) />;
+				var requestedHeight = <@dimension value=height?default(350) />;
 				var calculatedHeight = calcVideoWidth() / aspectRatio;
 				if(requestedHeight > calculatedHeight) {
 					return calculatedHeight + transportBarHeight;
