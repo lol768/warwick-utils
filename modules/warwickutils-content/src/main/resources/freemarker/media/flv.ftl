@@ -36,6 +36,28 @@
 	<script type="text/javascript">
 		Event.onDOMReady(function(){
 
+			function calcVideoWidth() {
+				var requestedWidth = <@dimension value=width?default(640) />;
+				var containerWidth = jQuery(".media_tag_video#video_${uniqueId}").parent().width();
+				if(requestedWidth > containerWidth) {
+					return containerWidth;
+				} else {
+					return requestedWidth;
+				}
+			}
+
+			function calcVideoHeight() {
+				var aspectRatio = 1.77;
+				var transportBarHeight = 24;
+				var requestedHeight = <@dimension value=height?default(376) />;
+				var calculatedHeight = calcVideoWidth() / aspectRatio;
+				if(requestedHeight > calculatedHeight) {
+					return calculatedHeight + transportBarHeight;
+				} else {
+					return requestedHeight + transportBarHeight;
+				}
+			}
+			
 			var insertFlash = function() {
 				<#if fallback?exists>
 					// check for H.264 version
@@ -51,18 +73,18 @@
 					url = '${absoluteUrl?default(url)}'.toAbsoluteUrl();
 				</#if>
 				<#if newPlayer>
-					object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
+					object${uniqueId} = new FlashObject("${playerLocation}","obj${uniqueId}", calcVideoWidth(), calcVideoHeight());
 					object${uniqueId}.addVariable("file", url);
 					<#if previewimage?default("") != ''>
 						object${uniqueId}.addVariable("image", "${previewimage?default("")}");
 					</#if>
 					object${uniqueId}.addVariable("stretching", "${stretching?default("fill")}");
 				<#else>
-					object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}","<@dimension value=width?default(425) />","<@dimension value=height?default(350) append=24 />");
+					object${uniqueId} = new FlashObject("${playerLocation}?autoStart=false&file="+ url +"<#if previewimage?default("") != ''>&image=${previewimage?default("")}</#if>&overstretch=true","obj${uniqueId}",calcVideoWidth(), calcVideoHeight());
 				</#if>
 				object${uniqueId}.addParam("wmode","transparent");
-				object${uniqueId}.addVariable("width","<@dimension value=width?default(425) />");
-				object${uniqueId}.addVariable("height","<@dimension value=height?default(350) append=24 />");
+				object${uniqueId}.addVariable("width", calcVideoWidth());
+				object${uniqueId}.addVariable("height", calcVideoHeight());
 				object${uniqueId}.addParam("allowfullscreen","true");
 				object${uniqueId}.addVariable("showdownload","false");
 				object${uniqueId}.align = "${align}";
