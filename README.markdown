@@ -16,7 +16,7 @@ Examples are for command line in UNIX.
 
 First, set the version number:
 
-    $ mvn versions:set -DnewVersion=`date +%Y%m%d`
+    $ mvn versions:set -DnewVersion=$(date +%Y%m%d)
     $ mvn versions:commit
     
 This should set <version>the-current-date</version> in all the pom.xml files.
