@@ -14,7 +14,7 @@ import java.util.Map;
  * declared, you can put RuntimeException here.
  */
 public interface CacheEntryFactory<K extends Serializable,V extends Serializable> {
-    int TIME_TO_LIVE_ETERNITY = 1;
+    int TIME_TO_LIVE_ETERNITY = -1;
 
 	V create(K key) throws CacheEntryUpdateException;
 	
