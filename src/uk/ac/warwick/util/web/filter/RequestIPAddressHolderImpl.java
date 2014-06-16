@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.web.filter;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
@@ -48,51 +50,51 @@ public final class RequestIPAddressHolderImpl implements RequestIPAddressHolder 
     }
 
     private boolean isNonLocalAddress(Collection<String> localAddresses, String address) {
-        // checkstyle pacifiers: these are the lower and upper bounds for the second octet
-        // of the 20-bit private address space.
-        final int private20bitLower = 16;
-        final int private20bitUpper = 31;
-        
-        // the address space in the 20-bit private address space that wireless hotspots provide
-        final int hotspot20bitLower = 31;
-        final int hotspot20bitUpper = 31;
 
-        // the address space in the 20-bit private address space that resnet-secure provides
-        final int resnet20bitLower = 29;
-        final int resnet20bitUpper = 29;
 
         boolean local = false;
         if (localAddresses.contains(address)) {
             local = true;
         } else {
-            /*
-             * look for private network addresses: 127.0.0.1 10.*.*.* 192.168.*.*
-             * 172.[16-31].*.*
-             * 
-             * We allow 172.31.*.* as we serve that from Warwick's hotspots.
-             * Also allow 172.29.*.* which are served from resnet-secure.
-             * 
-             * I am assuming for now that no-one will ever be dumb enough to
-             * forge an X-forwarded-for address that appears to come from 
-             * a multicast-reserved address (224.0.0.0 to 239.255.255.255).
-             * If lots of people did this, then they might all start to throttle each
-             * other, which, frankly, would serve them right
-             * 
-             * I have included the 169.254.*.* windows autoconf address range in, even though a computer that's connected 
-             * to the 'net ought never to have an autoconf IP address, because otherwise it's bound to happen.
-             * 
-             */
-            if ("127.0.0.1".equals(address) || address.startsWith("10.") || address.startsWith("192.168") || address.startsWith("169.254")) {
-                local = true;
-            } else if (address.startsWith("172")) {
-                String[] bits = address.split("\\.");
-                int secondOctet = Integer.parseInt(bits[1]);
-                if (secondOctet >= private20bitLower && secondOctet <= private20bitUpper) {
-                    if ((secondOctet < hotspot20bitLower || secondOctet > hotspot20bitUpper) && (secondOctet < resnet20bitLower || secondOctet > resnet20bitUpper)) {
-                        local = true;
-                    }
+
+            try {
+                final InetAddress inetAddress = InetAddress.getByName(address);
+
+                final InetAddressRange private172 = InetAddressRange.of("172.16.0.0", "172.31.255.255");
+                final InetAddressRange hotspots = InetAddressRange.of("172.31.0.0", "172.31.255.255");
+                final InetAddressRange resnet = InetAddressRange.of("172.26.0.0", "172.29.255.255");
+
+                /*
+                 * look for private network addresses: 127.0.0.1 192.168.*.*
+                 * 172.[16-31].*.*
+                 *
+                 * We allow certain ranges within these private ranges that are used by things
+                 * like resnet and wireless hotspots.
+                 *
+                 * 10.*.*.* is a private network but it seems that addresses get allocated across
+                 * this range for things like guest wifi, conferences, and digital displays (SBTWO-6812)
+                 * so may as well treat them as external IPs.
+                 *
+                 * I am assuming for now that no-one will ever be dumb enough to
+                 * forge an X-forwarded-for address that appears to come from
+                 * a multicast-reserved address (224.0.0.0 to 239.255.255.255).
+                 * If lots of people did this, then they might all start to throttle each
+                 * other, which, frankly, would serve them right
+                 *
+                 * I have included the 169.254.*.* windows autoconf address range in, even though a computer that's connected
+                 * to the 'net ought never to have an autoconf IP address, because otherwise it's bound to happen.
+                 *
+                 */
+                if ("127.0.0.1".equals(address) || address.startsWith("192.168") || address.startsWith("169.254")) {
+                    local = true;
+                } else if (private172.contains(inetAddress) && !hotspots.contains(inetAddress) && !resnet.contains(inetAddress)) {
+                    local = true;
                 }
-            }            
+
+            } catch (UnknownHostException e) {
+                // We should never get this exception as we only pass IP addresses, never hostnames.
+                LOGGER.error("Failed to parse IP addresses! (this is a bug)", e);
+            }
         }
         
         return !local;
