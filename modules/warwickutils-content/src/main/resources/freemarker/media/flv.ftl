@@ -1,7 +1,11 @@
 <#assign uniqueId = random.nextInt(1000000)?c />
-<#macro dimension value append=0><#compress>
+<#macro dimension value append=0 quoteText=false><#compress>
 	<#if value?string?ends_with("%")>
-		${value}
+		<#if quoteText == true>
+			"${value}"
+		<#else>
+			${value}
+		</#if>
 	<#elseif value?string != 'auto'>
 		${(value?number + append)?c}
 	</#if>
@@ -11,6 +15,8 @@
 
 	<div align="${align}">
 		<div id="video_${uniqueId}" class="media_tag_video">
+			
+			<!--preset width:  ${width}. preset height: ${height} -->
 			<video id="html5video_${uniqueId}" width="<@dimension value=width?default(425) />" height="<@dimension value=height?default(350) />" <#if previewimage?default("") != ''>poster="${previewimage?default("")}"</#if> controls="controls" preload="none"> <!-- SBTWO-5551 -->
 				<#if mime_type?default('video/mp4') == 'video/mp4' || mime_type?default('video/mp4') == 'video/x-m4v'>
 					<#-- the original source is mp4 show it first -->
@@ -36,10 +42,19 @@
 	<script type="text/javascript">
 		Event.onDOMReady(function(){
 
+			function endsWith(inputString, searchString) {
+				return typeof(inputString) == "string" && inputString.lastIndexOf('%') == inputString.length - searchString.length
+			}
+			
 			function calcVideoWidth() {
-				var requestedWidth = <@dimension value=width?default(425) />;
+				var requestedWidth = <@dimension value=width?default(425) quoteText=true/>;
 				var containerWidth = jQuery(".media_tag_video#video_${uniqueId}").parent().width();
-				if(requestedWidth > containerWidth) {
+				
+				if(endsWith(requestedWidth, '%')) {
+					requestedWidth = (parseInt(requestedWidth) / 100) * containerWidth; 
+				}
+				
+				if(isFinite(String(requestedWidth)) && requestedWidth > containerWidth) {
 					return containerWidth;
 				} else {
 					return requestedWidth;
@@ -49,7 +64,7 @@
 			function calcVideoHeight() {
 				var aspectRatio = 1.77;
 				var transportBarHeight = 24;
-				var requestedHeight = <@dimension value=height?default(350) />;
+				var requestedHeight = <@dimension value=height?default(350)/>;
 				var calculatedHeight = calcVideoWidth() / aspectRatio;
 				if(requestedHeight > calculatedHeight) {
 					return calculatedHeight + transportBarHeight;
