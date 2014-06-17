@@ -97,7 +97,7 @@ public final class FlvMediaUrlHandlerTest {
         String html = handler.getHtml("file.mp4", parameters, null);
         
         assertTrue(html.startsWith("<notextile>"));
-		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("requestedWidth = 100%"));
+		assertTrue(handler.getHtml("file.mp4", parameters, null).contains("requestedWidth = \"100%\""));
         
         assertTrue(html.contains("preload=\"none\""));
         parameters.put("preload", "metadata");
