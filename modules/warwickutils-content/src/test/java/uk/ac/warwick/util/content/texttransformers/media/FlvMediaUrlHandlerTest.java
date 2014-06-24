@@ -104,6 +104,28 @@ public final class FlvMediaUrlHandlerTest {
         html = handler.getHtml("file.mp4", parameters, null);
         assertTrue(html.contains("vidEl.setAttribute('preload', 'metadata');"));
 	}
+
+	@Test
+	public void withNoHeight() {
+		handler.setMetadataHandler(metadataHandler);
+
+		final Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("random", new java.util.Random());
+		parameters.put("align", "left");
+		parameters.put("width", "500");
+		parameters.put("closeButtonImgUrl", "//sawtooth.warwick.ac.uk/static_war/render/images/mediaplayers/closebox.png");
+		parameters.put("absoluteUrl", "[absolute-url]urss_1-5.mp4[/absolute-url]");
+		
+		String url = "urss_1-5.mp4";
+
+		String html = handler.getHtmlInner(url, parameters);
+		
+		assertTrue(html.startsWith("<notextile>"));
+		assertTrue(html.contains("requestedWidth = 500"));
+
+		m.assertIsSatisfied();
+	}
+	
 	
 	@Test
 	public void withTitle() throws Exception {
