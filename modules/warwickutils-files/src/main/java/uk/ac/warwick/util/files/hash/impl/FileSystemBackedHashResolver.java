@@ -117,12 +117,19 @@ public final class FileSystemBackedHashResolver implements FileHashResolver {
     
     public HashString resolve (final File file, final String theStoreName ){
         String relativePath = storeLocation.toURI().relativize(file.toURI()).getPath();
-        String convertedPath = relativePath.substring(0, relativePath.indexOf(".data"));
+        String convertedPath = convertPath(relativePath);
         String hash = convertedPath.replaceAll("/", "");
         HashString hashString = new HashString(theStoreName, hash);
         return hashString;
     }
-
+    
+    private String convertPath(String relativePath) {
+        try {
+            return relativePath.substring(0, relativePath.indexOf(".data"));
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Hash backed filename does not end with .data extension : " + relativePath , e);
+        }
+    }
 
     private boolean belongsToUs(HashString hashString) {
         hashString.getStoreName();
