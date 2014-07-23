@@ -11,8 +11,10 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
+import org.junit.rules.ExpectedException;
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
 import uk.ac.warwick.util.files.HashFileReference;
@@ -132,6 +134,16 @@ public final class FileSystemBackedHashResolverTest extends AbstractJUnit4FileBa
         
         assertEquals(expected, FileSystemBackedHashResolver.partition(hash));
     }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void resolveFilenameMissingDotDataExtension() {
+        String filePath =
+                FilenameUtils.separatorsToSystem(
+                        "ab/cd/ef/_-/12/345__6--7890__abcdef1234567890__abcdef1234567890"
+                );
 
+        File file = new File(root, filePath);
+        resolver.resolve(file, "test");
+    }
 
 }
