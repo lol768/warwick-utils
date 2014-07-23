@@ -135,10 +135,7 @@ public final class FileSystemBackedHashResolverTest extends AbstractJUnit4FileBa
         assertEquals(expected, FileSystemBackedHashResolver.partition(hash));
     }
     
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-    
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void resolveFilenameMissingDotDataExtension() {
         String filePath =
                 FilenameUtils.separatorsToSystem(
@@ -146,8 +143,6 @@ public final class FileSystemBackedHashResolverTest extends AbstractJUnit4FileBa
                 );
 
         File file = new File(root, filePath);
-
-        exception.expect(IllegalArgumentException.class);
         resolver.resolve(file, "test");
     }
 
