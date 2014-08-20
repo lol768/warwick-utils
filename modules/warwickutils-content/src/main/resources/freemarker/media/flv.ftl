@@ -130,7 +130,6 @@
 					}
 				}
 
-			
 				var mimeType = '${mime_type?default('video/mp4')}';
 				/* For MP4, check correctly with the codecs UTL-112 */
 				if (mimeType == 'video/mp4'){
@@ -139,7 +138,8 @@
 			
 				var supportsCodec = supportsVideo && (vidEl.canPlayType(mimeType)<#if alternateRenditions?exists><#list alternateRenditions?keys as mime> || vidEl.canPlayType('${mime}')</#list></#if>);
 			
-				if (!supportsCodec || supportsCodec == 'maybe') {
+				// SBTWO-6881 Flash only if canPlayType is ""
+				if (!supportsCodec) {
 			  		insertFlash();
 				}
 			<#else>
