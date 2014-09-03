@@ -59,7 +59,7 @@ public final class TermFactoryImpl implements TermFactory {
 
     public Term getTermFromDate(final BaseDateTime date) throws TermNotFoundException {
         for (Term term : termDates) {
-            if (date.isBefore(term.getEndDate())) {
+            if (date.equals(term.getEndDate()) || date.isBefore(term.getEndDate())) {
                 return term;
             }
         }
@@ -112,7 +112,7 @@ public final class TermFactoryImpl implements TermFactory {
             
             weeks.add(Pair.of(weekNumber, new Interval(start, end)));
             weekNumber = autumnTerm.getAcademicWeekNumber(dt);
-        };
+        }
         
         return weeks;
     }

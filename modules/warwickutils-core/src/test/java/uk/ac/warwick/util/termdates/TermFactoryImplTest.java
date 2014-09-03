@@ -1,10 +1,5 @@
 package uk.ac.warwick.util.termdates;
 
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-import java.util.List;
-
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -12,10 +7,13 @@ import org.joda.time.Interval;
 import org.joda.time.PeriodType;
 import org.joda.time.Weeks;
 import org.junit.Test;
-
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 import uk.ac.warwick.util.termdates.Term.TermType;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public final class TermFactoryImplTest {
 
@@ -189,8 +187,8 @@ public final class TermFactoryImplTest {
 
 //        This term started on Wednesday 27th April, and finished on Saturday 2nd July
 //        We now assume Monday - Sunday, so the term is Monday 25th April - Sunday 3rd July.
-        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 25), term.getStartDate());
-        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 3), term.getEndDate());
+        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime(), term.getStartDate());
+        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 3).toDateTime(), term.getEndDate());
         assertEquals(TermType.summer, term.getTermType());
         
         assertEquals(1, term.getWeekNumber(monday));
@@ -212,38 +210,47 @@ public final class TermFactoryImplTest {
         List<Term> terms = factory.getTermDates();
         
         Term lastTerm = null;
-        for (Iterator<Term> itr = terms.iterator(); itr.hasNext();) {
-            Term term = itr.next();
-            
-            if (lastTerm != null) {
-                assertTrue(term.getStartDate().isAfter(lastTerm.getEndDate()));
-                
-                switch (lastTerm.getTermType()) {
-                    case autumn:
-                        assertEquals(TermType.spring, term.getTermType());
-                        break;
-                    case spring:
-                        assertEquals(TermType.summer, term.getTermType());
-                        break;
-                    case summer:
-                        assertEquals(TermType.autumn, term.getTermType());
-                        break;
-                }
-            } else {
-                assertEquals(TermType.autumn, term.getTermType());
-            }
-            
-            assertTrue(term.getStartDate().isBefore(term.getEndDate()));
-            
-            DateTime actualEndDate = term.getEndDate();
-            while (actualEndDate.getDayOfWeek() != term.getStartDate().getDayOfWeek()) {
-                actualEndDate = actualEndDate.plusDays(1);
-            }
-            
-            assertEquals(10, Weeks.weeksBetween(term.getStartDate(), actualEndDate).getWeeks());
-            
-            lastTerm = term;
-        }
+		for (Term term : terms) {
+			if (lastTerm != null) {
+				assertTrue(term.getStartDate().isAfter(lastTerm.getEndDate()));
+
+				switch (lastTerm.getTermType()) {
+					case autumn:
+						assertEquals(TermType.spring, term.getTermType());
+						break;
+					case spring:
+						assertEquals(TermType.summer, term.getTermType());
+						break;
+					case summer:
+						assertEquals(TermType.autumn, term.getTermType());
+						break;
+				}
+			} else {
+				assertEquals(TermType.autumn, term.getTermType());
+			}
+
+			assertTrue(term.getStartDate().isBefore(term.getEndDate()));
+
+			DateTime actualEndDate = term.getEndDate();
+			while (actualEndDate.getDayOfWeek() != term.getStartDate().getDayOfWeek()) {
+				actualEndDate = actualEndDate.plusDays(1);
+			}
+
+			assertEquals(10, Weeks.weeksBetween(term.getStartDate(), actualEndDate).getWeeks());
+
+			lastTerm = term;
+		}
     }
+
+	@Test
+	public void tab2625() throws Exception {
+		TermFactoryImpl factory = new TermFactoryImpl();
+
+		DateTime monday = new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime();
+		Term term = factory.getTermFromDate(monday);
+
+		// The end date should be inclusive
+		assertEquals(term, factory.getTermFromDate(term.getEndDate()));
+	}
 
 }
