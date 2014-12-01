@@ -2,7 +2,9 @@ package uk.ac.warwick.util.cache.memcached;
 
 import net.spy.memcached.*;
 import net.spy.memcached.transcoders.SerializingTranscoder;
+import net.spy.memcached.transcoders.Transcoder;
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 import org.springframework.util.DigestUtils;
 import uk.ac.warwick.util.cache.*;
 
@@ -29,6 +31,10 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     public static final String CUSTOM_CONFIG_URL = "memcached.properties";
 
     private static final Logger LOGGER = Logger.getLogger(MemcachedCacheStore.class);
+
+    private static final int SIZE_INFO_THRESHOLD = 100 * 1024; // 100kb
+
+    private static final int SIZE_WARN_THRESHOLD = 2 * 1024 * 1024; // 2mb
 
     private static MemcachedClient defaultMemcachedClient;
 
@@ -153,7 +159,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return null;
     }
 
-    public void put(CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) {
+    public void put(final CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) {
         final int ttlSeconds;
 
         if (ttl > 0) {
@@ -171,7 +177,51 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             ttlSeconds = timeoutInSeconds;
         }
 
-        memcachedClient.set(prefix(entry.getKey()), ttlSeconds, entry);
+        // FIXME Wasteful double-encode
+        Transcoder<CacheEntry<K, V>> oneTimeTranscoder = new Transcoder<CacheEntry<K, V>>() {
+            private CachedData data;
+
+            @Override
+            public CachedData encode(CacheEntry<K, V> o) {
+                Assert.isTrue(o == entry);
+
+                if (data != null) {
+                    return data;
+                } else {
+                    data = memcachedClient.getTranscoder().encode(o);
+
+                    return data;
+                }
+            }
+
+            @Override
+            public int getMaxSize() {
+                return memcachedClient.getTranscoder().getMaxSize();
+            }
+
+            @Override
+            public CacheEntry<K, V> decode(CachedData d) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean asyncDecode(CachedData d) {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+        // Size check
+        int size = oneTimeTranscoder.encode(entry).getData().length;
+        if (size > SIZE_WARN_THRESHOLD) {
+            // Get it to print a stack trace, which is cheating a bit
+            LOGGER.warn("Very large cache item stored in memcached (" + size + " bytes)", new Throwable());
+        } else if (size > SIZE_INFO_THRESHOLD) {
+            LOGGER.info("Large cache item stored in memcached (" + size + " bytes)", new Throwable());
+        } else if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Cache item stored in memcached (" + size + " bytes)", new Throwable());
+        }
+
+        memcachedClient.set(prefix(entry.getKey()), ttlSeconds, entry, oneTimeTranscoder);
     }
 
     public boolean remove(K key) {
