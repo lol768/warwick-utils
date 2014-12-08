@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 
 	<name>Warwick Utils :: Ant</name>
 	<description>Common Ant tasks</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
@@ -31,7 +31,7 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
@@ -40,7 +40,7 @@
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant-launcher</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.yahoo.platform.yui</groupId>
 			<artifactId>yuicompressor</artifactId>

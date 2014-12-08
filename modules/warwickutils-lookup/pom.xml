@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 
 	<name>Warwick Utils :: Lookup</name>
 	<description>Lookups for Warwick things, usually cached</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
@@ -43,12 +43,12 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
@@ -57,12 +57,12 @@
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
-		
+
 		<!-- Test dependencies are not transitive -->
 		<dependency>
 			<groupId>jetty</groupId>

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 
 	<name>Warwick Utils :: Mail</name>
 	<description>Handling the delivery of email</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
@@ -25,23 +25,23 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-core</artifactId>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>dnsjava</groupId>
 			<artifactId>dnsjava</artifactId>

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,11 +14,11 @@
 
 	<name>Warwick Utils :: Core</name>
 	<description>Core libraries for WarwickUtils</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -41,7 +41,7 @@
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>rome</artifactId>
@@ -50,17 +50,17 @@
 			<groupId>rome</groupId>
 			<artifactId>modules</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>jetty</groupId>
 			<artifactId>jetty</artifactId>

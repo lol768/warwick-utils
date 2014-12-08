@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 
 	<name>Warwick Utils :: Content</name>
 	<description>Content parsing and transformation</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
@@ -94,12 +94,12 @@
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.ccil.cowan.tagsoup</groupId>
 			<artifactId>tagsoup</artifactId>
@@ -110,18 +110,18 @@
 			<artifactId>tagsoup-html5</artifactId>
 			<version>20120522</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sourceforge.nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jruby</groupId>
 			<artifactId>jruby-core</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		
+
 		<!-- Test dependencies are not transitive -->
 		<dependency>
 			<groupId>jetty</groupId>

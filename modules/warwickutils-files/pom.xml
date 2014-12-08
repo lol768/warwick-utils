@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 
 	<name>Warwick Utils :: Files</name>
 	<description>Hashing and non-hashing file management</description>
-	
+
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
@@ -44,32 +44,32 @@
 			<groupId>org.apache.directory.studio</groupId>
 			<artifactId>org.apache.commons.codec</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-			
-		<!-- Patched version of JAI from our local repo. -->	
+
+		<!-- Patched version of JAI from our local repo. -->
 		<dependency>
 	        <groupId>javax.media.jai</groupId>
 	        <artifactId>jai_core</artifactId>
 	        <version>1.1.3.patched</version>
 	    </dependency>
-	    
+
 	    <dependency>
 	        <groupId>javax.media.jai</groupId>
 	        <artifactId>jai_codec</artifactId>
 	        <version>1.1.3.patched</version>
 	    </dependency>
-	    
+
 	    <dependency>
 	        <groupId>javax.media.jai</groupId>
 	        <artifactId>mlibwrapper_jai</artifactId>
 	        <version>1.1.3.patched</version>
 	    </dependency>
 
-		
+
 	</dependencies>
 
 </project>

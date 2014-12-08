@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20141201</version>
+		<version>20141208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -18,7 +18,7 @@
 	<properties>
 		<project.root>${project.basedir}/../..</project.root>
 	</properties>
-	
+
 	<profiles>
 		<profile>
 			<id>dist</id>
@@ -70,7 +70,7 @@
 					<attach>true</attach>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
