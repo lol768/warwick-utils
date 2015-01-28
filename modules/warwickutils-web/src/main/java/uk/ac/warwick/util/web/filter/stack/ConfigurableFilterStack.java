@@ -76,7 +76,7 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
             // self-populating cache allows us to define where to get missing values from,
             // so we can then just call cache.get() and not have to worry about synchronisation - 
             // it can just start using the returned value.
-            Ehcache basicMemoryCache = cacheManager.getEhcache("filterCache");
+            Ehcache basicMemoryCache = cacheManager.getEhcache("warwickUtilsFilterCache");
             cache = new SelfPopulatingCache(basicMemoryCache, new FilterChainFactory());
             LOGGER.info(String.format("Created. Cache info... maxElementsInMemory=%d",
                     cache.getCacheConfiguration().getMaxElementsInMemory()));
