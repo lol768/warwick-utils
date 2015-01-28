@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-test</artifactId>
+	<artifactId>warwickutils_spring4-test</artifactId>
 
 	<name>Warwick Utils :: Test</name>
 	<description>Puts together a WarwickUtils test jar bundle</description>
@@ -85,98 +85,84 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-ant</artifactId>
+			<artifactId>warwickutils_spring4-ant</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-cache</artifactId>
+			<artifactId>warwickutils_spring4-cache</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-content</artifactId>
+			<artifactId>warwickutils_spring4-content</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-csv</artifactId>
+			<artifactId>warwickutils_spring4-csv</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-files</artifactId>
+			<artifactId>warwickutils_spring4-files</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-graphite</artifactId>
+			<artifactId>warwickutils_spring4-graphite</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-hibernate</artifactId>
+			<artifactId>warwickutils_spring4-httpclient4</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-httpclient3</artifactId>
+			<artifactId>warwickutils_spring4-lookup</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-httpclient4</artifactId>
+			<artifactId>warwickutils_spring4-mail</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-lookup</artifactId>
+			<artifactId>warwickutils_spring4-queue</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-mail</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-queue</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-web</artifactId>
+			<artifactId>warwickutils_spring4-web</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>compile</scope>

@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-lookup</artifactId>
+	<artifactId>warwickutils_spring4-lookup</artifactId>
 
 	<name>Warwick Utils :: Lookup</name>
 	<description>Lookups for Warwick things, usually cached</description>
@@ -23,23 +23,23 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-cache</artifactId>
+			<artifactId>warwickutils_spring4-cache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-httpclient4</artifactId>
+			<artifactId>warwickutils_spring4-httpclient4</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-web</artifactId>
+			<artifactId>warwickutils_spring4-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -47,6 +47,10 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
 
 		<dependency>

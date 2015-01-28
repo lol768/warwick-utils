@@ -227,7 +227,7 @@ public class OEmbedTest extends AbstractJUnit4JettyTest {
 		oembedResponse.setSource("Should be ignored");
 		oembedResponse.setAuthorName("Michael Simons");		
 		OEmbedJsonParser p = new OEmbedJsonParser();
-		assertEquals("{\"html\":\"<div>foobar</div>\",\"author_name\":\"Michael Simons\"}", p.marshal(oembedResponse));
+		assertEquals("{\"author_name\":\"Michael Simons\",\"html\":\"<div>foobar</div>\"}", p.marshal(oembedResponse));
 	}
     
     @BeforeClass

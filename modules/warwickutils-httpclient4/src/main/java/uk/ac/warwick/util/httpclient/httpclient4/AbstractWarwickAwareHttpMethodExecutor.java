@@ -21,15 +21,14 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
 	private boolean setCookie;
 
     private boolean substituteTags;
-    
-    private final String cookieDomain;
-    
+
     private final User user;
     
     public AbstractWarwickAwareHttpMethodExecutor(Method method, Uri requestUrl, String theCookieDomain, User user) {
         super(method, requestUrl);
-        this.cookieDomain = theCookieDomain;
         this.user = user;
+
+        super.setHttpRequestDecorator(new WarwickAwareHttpRequestDecorator(theCookieDomain, user));
     }
     
     public AbstractWarwickAwareHttpMethodExecutor(Method method, String requestUrl, String theCookieDomain, User user) {
@@ -53,49 +52,66 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     }
 
     @Override
-    public void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception {
-        if ((isWarwickServer(getUrl())) && user.isLoggedIn() && isSetCookie()) {
-            request.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-
-            Uri targetUri = Uri.fromJavaUri(request.getURI());
-            CookieStore store = new BasicCookieStore();
-            
-            // This is a httpclient3 cookie at the moment, so we'll have to translate it
-            org.apache.commons.httpclient.Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetUri.toJavaUrl(), user);
-            if (cookie != null) {
-                BasicClientCookie proxyCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
-                proxyCookie.setDomain(cookie.getDomain());
-                proxyCookie.setPath(cookie.getPath());
-                proxyCookie.setExpiryDate(cookie.getExpiryDate());
-                proxyCookie.setSecure(cookie.getSecure());
-                proxyCookie.setVersion(cookie.getVersion());
-                store.addCookie(proxyCookie);
-            }
-
-            BasicClientCookie ssoCookie = new BasicClientCookie("WarwickSSO", user.getOldWarwickSSOToken());
-            ssoCookie.setDomain(cookieDomain);
-            ssoCookie.setPath("/");
-            store.addCookie(ssoCookie);
-            
-            context.setAttribute(ClientContext.COOKIE_STORE, store);
-        }
-    }
-
-    @Override
     public Uri parseRequestUrl(Uri requestUrl) {
         return substituteWarwickTags(requestUrl);
     }
 
-    private boolean isWarwickServer(final String theUrl) {
-        return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
-    }
-    
     private Uri substituteWarwickTags(final Uri input) {
         if (isSubstituteTags()) {
             return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
         } else {
             return input;
         }
+    }
+
+    private static Uri substituted(final Uri input, final User user) {
+        return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
+    }
+
+    private class WarwickAwareHttpRequestDecorator implements HttpRequestDecorator {
+
+        private final User user;
+
+        private final String cookieDomain;
+
+        public WarwickAwareHttpRequestDecorator(String theCookieDomain, User user) {
+            this.cookieDomain = theCookieDomain;
+            this.user = user;
+        }
+
+        @Override
+        public void decorate(HttpUriRequest request, HttpContext context) {
+            if ((isWarwickServer(getUrl())) && user.isLoggedIn() && isSetCookie()) {
+                request.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+
+                Uri targetUri = Uri.fromJavaUri(request.getURI());
+                CookieStore store = new BasicCookieStore();
+
+                // This is a httpclient3 cookie at the moment, so we'll have to translate it
+                org.apache.commons.httpclient.Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetUri.toJavaUrl(), user);
+                if (cookie != null) {
+                    BasicClientCookie proxyCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
+                    proxyCookie.setDomain(cookie.getDomain());
+                    proxyCookie.setPath(cookie.getPath());
+                    proxyCookie.setExpiryDate(cookie.getExpiryDate());
+                    proxyCookie.setSecure(cookie.getSecure());
+                    proxyCookie.setVersion(cookie.getVersion());
+                    store.addCookie(proxyCookie);
+                }
+
+                BasicClientCookie ssoCookie = new BasicClientCookie("WarwickSSO", user.getOldWarwickSSOToken());
+                ssoCookie.setDomain(cookieDomain);
+                ssoCookie.setPath("/");
+                store.addCookie(ssoCookie);
+
+                context.setAttribute(ClientContext.COOKIE_STORE, store);
+            }
+        }
+
+        private boolean isWarwickServer(final String theUrl) {
+            return theUrl.indexOf("warwick.ac.uk") > -1 || theUrl.indexOf("137.205") > -1;
+        }
+
     }
 
 }

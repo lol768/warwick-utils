@@ -1,15 +1,14 @@
 package uk.ac.warwick.util.httpclient;
 
-import java.util.List;
-import java.util.Map.Entry;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class WarwickTagUrlMangler {
 

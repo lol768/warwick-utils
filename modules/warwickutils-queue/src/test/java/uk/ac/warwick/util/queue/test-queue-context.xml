@@ -37,35 +37,18 @@
         </bean>
       </property>
   </bean>
-  
-  <!-- This is passed in to the JsonMessageConverter. It's very verbose so you'll probably instead
-      define some annotations like with GrabMetadataJob, then add the class name to annotatedClasses. -->
-  <bean id="encodeVideoJobConverter" class="uk.ac.warwick.util.queue.conversion.SimpleFieldConverter">
-    <constructor-arg value="uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$EncodeVideoJob" />
-    <constructor-arg>
-      <list>
-        <value>filename</value>
-        <value>bitrate</value>
-        <value>format</value>
-      </list>
-    </constructor-arg>
-  </bean>
-  
+
   <bean id="sitebuilderJobQueue" parent="abstractQueue">
       <constructor-arg value="SitebuilderJobs" />
       <property name="persistent" value="true" />
       <property name="messageConverter">
         <bean class="uk.ac.warwick.util.queue.conversion.JsonMessageConverter">
-          <property name="objectConverters">
-            <map>
-              <entry key="EncodeVideoJob" value-ref="encodeVideoJobConverter" />
-            </map>
-          </property>
           <!-- Annotating all your objects and using annotatedClasses instead of objectConverters
             is recommended, as it's much neater and easier. -->
           <property name="annotatedClasses">
             <list>
               <value>uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$GrabMetadataJob</value>
+              <value>uk.ac.warwick.util.queue.ActiveMQQueueProviderTest$EncodeVideoJob</value>
             </list>
           </property>
         </bean>

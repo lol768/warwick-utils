@@ -10,10 +10,11 @@ import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
-import uk.ac.warwick.util.httpclient.HttpMethodExecutor;
-import uk.ac.warwick.util.httpclient.SimpleHttpMethodExecutor;
-import uk.ac.warwick.util.httpclient.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor;
+import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
+import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
@@ -85,13 +86,15 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
             ex.setUrl(new UriBuilder(apiUrl).addQueryParameter("path", goPath).toUri());
             
             try {
-                int statusCode = ex.execute();
+                Pair<Integer, String> response = ex.execute(HttpMethodExecutor.RESPONSE_AS_STRING);
+
+                int statusCode = response.getLeft();
                 
                 if (statusCode != HttpServletResponse.SC_OK) {
                     throw new CacheEntryUpdateException("Expected SC_OK but returned " + statusCode);
                 }
                 
-                JSONObject obj = new JSONObject(ex.retrieveContentsAsString());
+                JSONObject obj = new JSONObject(response.getRight());
                 boolean isFound = obj.getBoolean("found");
                 
                 if (isFound) {
@@ -103,8 +106,6 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
                 }
             } catch (Exception e) {
                 throw new CacheEntryUpdateException(e);
-            } finally {
-                ex.close();
             }
         }
 

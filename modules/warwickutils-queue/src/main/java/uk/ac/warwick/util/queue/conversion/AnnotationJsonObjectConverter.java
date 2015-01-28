@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanWrapper;
@@ -41,7 +41,7 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
             }
             
             return object;
-        } catch (JsonGenerationException e) {
+        } catch (JsonParseException e) {
             throw new IllegalArgumentException(e);
         } catch (JsonMappingException e) {
             throw new IllegalArgumentException(e);
@@ -117,7 +117,7 @@ public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanF
     public JSONObject toJson(Object o) {
         try {
             return new JSONObject(objectMapper.writeValueAsString(o));
-        } catch (JsonGenerationException e) {
+        } catch (JsonParseException e) {
             throw new IllegalArgumentException(e);
         } catch (JsonMappingException e) {
             throw new IllegalArgumentException(e);

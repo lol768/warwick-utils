@@ -135,13 +135,6 @@ public final class CollectionUtils {
     }
 
 	/**
-	 * @deprecated Use Lists.partition(list, batchSize) from Google Collections 1.0 or later
-	 */
-	public static <T> List<List<T>> batch(final List<T> list, final int batchSize) {
-		return Lists.partition(list, batchSize);
-	}
-
-	/**
 	 * Returns an Iterable wrapping the given Enumeration. Most useful for using
 	 * Enumerations in a new-style for loop.
 	 * <pre>

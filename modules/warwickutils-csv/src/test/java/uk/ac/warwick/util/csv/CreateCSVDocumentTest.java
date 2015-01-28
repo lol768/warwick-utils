@@ -33,7 +33,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         mockWriter.expects(once()).method("getColumn").with(eq(rowB), eq(1)).will(returnValue(rowBcolB));
 
         StringWriter writer = new StringWriter();
-        CSVDocument<Object> document = new CSVDocument<Object>((CSVLineWriter<Object>) mockWriter.proxy(), null);
+        GoodCsvDocument<Object> document = new GoodCsvDocument<>((CSVLineWriter<Object>) mockWriter.proxy(), null);
         document.addLine(rowA);
         document.addLine(rowB);
         document.write(writer);
@@ -60,7 +60,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         mockWriter.expects(once()).method("getColumn").with(eq(rowA), eq(1)).will(returnValue(rowAcolB));
 
         StringWriter writer = new StringWriter();
-        CSVDocument document = new CSVDocument((CSVLineWriter) mockWriter.proxy(), null);
+        GoodCsvDocument document = new GoodCsvDocument((CSVLineWriter) mockWriter.proxy(), null);
         document.addLine(rowA);
         document.write(writer);
 
@@ -84,7 +84,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         mockWriter.expects(once()).method("getColumn").with(eq(rowA), eq(1)).will(returnValue(rowAcolB));
 
         StringWriter writer = new StringWriter();
-        CSVDocument document = new CSVDocument((CSVLineWriter) mockWriter.proxy(), null);
+        GoodCsvDocument document = new GoodCsvDocument((CSVLineWriter) mockWriter.proxy(), null);
         document.addLine(rowA);
         document.write(writer);
 
@@ -130,7 +130,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         source +=  rowBcolA + discriminator + rowBcolB + lineSeperator;
         StringReader reader = new StringReader(source);
 
-        CSVDocument document = new CSVDocument(null, (CSVLineReader) mockReader.proxy());
+        GoodCsvDocument document = new GoodCsvDocument(null, (CSVLineReader) mockReader.proxy());
         document.read(reader);
         assertEquals("number of rows", 2, document.getNumberOfRows());
         assertEquals("first row", rowA, document.getRow(0));
@@ -161,7 +161,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         String source = fieldWrapper + rowAcolA + fieldWrapper + discriminator + rowAcolB + lineSeperator;
         StringReader reader = new StringReader(source);
 
-        CSVDocument document = new CSVDocument(null, (CSVLineReader) mockReader.proxy());
+        GoodCsvDocument document = new GoodCsvDocument(null, (CSVLineReader) mockReader.proxy());
         document.read(reader);
         assertEquals("number of rows", 1, document.getNumberOfRows());
         assertEquals("first row", rowA, document.getRow(0));
@@ -195,7 +195,7 @@ public final class CreateCSVDocumentTest extends MockObjectTestCase {
         String source = fieldWrapper + rowAcolA + fieldWrapper + discriminator + fieldWrapper + rowAcolB + fieldWrapper + discriminator + fieldWrapper + rowAcolC + fieldWrapper + lineSeperator;
         StringReader reader = new StringReader(source);
 
-        CSVDocument document = new CSVDocument(null, (CSVLineReader) mockReader.proxy());
+        GoodCsvDocument document = new GoodCsvDocument(null, (CSVLineReader) mockReader.proxy());
         document.read(reader);
         assertEquals("number of rows", 1, document.getNumberOfRows());
         assertEquals("first row", rowA, document.getRow(0));

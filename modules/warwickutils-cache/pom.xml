@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-cache</artifactId>
+	<artifactId>warwickutils_spring4-cache</artifactId>
 
 	<name>Warwick Utils :: Cache</name>
 	<description>Provides memory and EhCache-backed cache implementations</description>
@@ -22,12 +22,12 @@
 	<dependencies>
         <dependency>
             <groupId>uk.ac.warwick.util</groupId>
-            <artifactId>warwickutils-core</artifactId>
+            <artifactId>warwickutils_spring4-core</artifactId>
         </dependency>
 
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
+			<artifactId>ehcache</artifactId>
             <optional>true</optional>
 		</dependency>
 

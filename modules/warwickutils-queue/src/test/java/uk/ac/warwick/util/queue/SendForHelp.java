@@ -1,8 +1,7 @@
 package uk.ac.warwick.util.queue;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.ac.warwick.util.queue.conversion.ItemType;
 
 /**

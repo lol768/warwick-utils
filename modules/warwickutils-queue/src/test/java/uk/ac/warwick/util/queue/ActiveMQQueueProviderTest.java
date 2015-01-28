@@ -1,13 +1,13 @@
 package uk.ac.warwick.util.queue;
 
-import static java.util.Arrays.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.google.common.collect.Lists;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -17,10 +17,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.warwick.util.queue.activemq.ActiveMQQueueProvider;
+import uk.ac.warwick.util.queue.conversion.AnnotationJsonObjectConverter;
 import uk.ac.warwick.util.queue.conversion.ItemType;
 import uk.ac.warwick.util.queue.conversion.JsonMessageConverter;
 import uk.ac.warwick.util.queue.conversion.JsonObjectConverter;
-import uk.ac.warwick.util.queue.conversion.SimpleFieldConverter;
 
 /**
  * Tests programmatic creation of the default queue provider, sending
@@ -54,10 +54,9 @@ public class ActiveMQQueueProviderTest {
     
     @Test public void sendJsonMessage() throws Exception {
         JsonMessageConverter jsonConverter = new JsonMessageConverter();
-        Map<String, JsonObjectConverter> converters = new HashMap<String, JsonObjectConverter>();
-        converters.put("EncodeVideoJob", new SimpleFieldConverter(EncodeVideoJob.class, asList("filename", "bitrate", "format")));
-        converters.put("GrabMetadataJob", new SimpleFieldConverter(GrabMetadataJob.class, asList("pageUrl")));
-        jsonConverter.setObjectConverters(converters);
+        jsonConverter.setAnnotatedClasses(Lists.newArrayList(
+                EncodeVideoJob.class, GrabMetadataJob.class
+        ));
         queue.setMessageConverter(jsonConverter);
         
         unrelatedQueue.send("Hello!");
@@ -98,11 +97,12 @@ public class ActiveMQQueueProviderTest {
         
         queue.send("Pow!");
         
-        Thread.sleep(300);
+        Thread.sleep(3000);
+
         m.assertIsSatisfied();
     }
     
-    @Test public void thatsNoMoonItsASpaceStation() throws Exception {
+    @Test(timeout = 30000) public void thatsNoMoonItsASpaceStation() throws Exception {
         final MyListener listener1 = new MyListener();
         final MyListener listener2 = new MyListener();
 
@@ -113,10 +113,13 @@ public class ActiveMQQueueProviderTest {
 
         queue.send("Pow!");
 
-        Thread.sleep(300);
+        while (listener1.getMessagesReceived() < 0) {
+            Thread.sleep(100);
+        }
 
-        assertEquals("listener1 should receive message", 1, listener1.getMessagesReceived());
-        assertEquals("listener2 should receive message", 1, listener2.getMessagesReceived());
+        while (listener2.getMessagesReceived() < 0) {
+            Thread.sleep(100);
+        }
     }
     
     @After public void destroy() throws Exception {    
@@ -127,7 +130,9 @@ public class ActiveMQQueueProviderTest {
         assertFalse( "Embedded queue shouldn't create activemq-data directory", 
                 new File("activemq-data").exists() );
     }
-    
+
+    @ItemType("EncodeVideoJob")
+    @JsonAutoDetect
     public static class EncodeVideoJob {
         private String filename;
         private String format;

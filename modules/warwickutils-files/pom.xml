@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-files</artifactId>
+	<artifactId>warwickutils_spring4-files</artifactId>
 
 	<name>Warwick Utils :: Files</name>
 	<description>Hashing and non-hashing file management</description>
@@ -23,15 +23,15 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-hibernate</artifactId>
+			<artifactId>warwickutils_spring4-hibernate4</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

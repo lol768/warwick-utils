@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-hibernate4</artifactId>
+	<artifactId>warwickutils_spring4-hibernate4</artifactId>
 
 	<name>Warwick Utils :: Hibernate 4</name>
 	<description>Helpers for using Hibernate 4</description>

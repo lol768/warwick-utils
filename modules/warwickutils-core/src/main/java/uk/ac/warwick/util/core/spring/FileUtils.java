@@ -217,20 +217,18 @@ public final class FileUtils {
         return s.substring(0, indexOfLastDot + 1);
     }
 
-    /**
-     * Return the extension of the specified fileName. If there is no extension,
-     * this will return "".
-     * @deprecated use getLowerCaseExtension, which does exactly what it says on the tin
-     * 
-     */
-    public static String getExtension(final String s) {
+    private static String getExtension(final String s) {
         int indexOfLastDot = StringUtils.safeSubstring(s, 1).lastIndexOf('.');
         if (indexOfLastDot < 0) {
             return "";
         }
         return s.substring(indexOfLastDot + 2);
     }
-    
+
+    /**
+     * Return the extension of the specified fileName. If there is no extension,
+     * this will return "".
+     */
     public static String getLowerCaseExtension(final String filename){
     	return getExtension(filename).toLowerCase();
     }
@@ -260,7 +258,7 @@ public final class FileUtils {
         File file = new File(originalName.toLowerCase());
         String s = file.getName();
         String fileName = FileUtils.getFileNameWithoutExtension(s);
-        String extension = FileUtils.getExtension(s);
+        String extension = FileUtils.getLowerCaseExtension(s);
         StringBuffer fileNameSB = new StringBuffer();
         for (byte b: StringUtils.create(fileName)) {
             char c = (char) b;

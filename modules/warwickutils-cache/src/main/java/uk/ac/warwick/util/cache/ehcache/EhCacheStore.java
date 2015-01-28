@@ -73,7 +73,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 			} else {
 				LOGGER.info("Loading configuration from custom "+location+" file");
 			}
-			defaultCacheManager = new CacheManager(url);
+			defaultCacheManager = CacheManager.newInstance(url);
 		}
 		cacheManager = defaultCacheManager;
 		init();
@@ -127,7 +127,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 		if (element == null) {
 			return null;
 		}
-		return (CacheEntry<K,V>)element.getValue();
+		return (CacheEntry<K,V>)element.getObjectValue();
 	}
 	
 	public void put(CacheEntry<K,V> entry, long ttl, TimeUnit timeUnit) {
@@ -153,7 +153,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 
 	public CacheStatistics getStatistics() {
 		return new CacheStatistics(
-			cache.getStatistics().getObjectCount()
+			cache.getSize()
 		);
 	}
 

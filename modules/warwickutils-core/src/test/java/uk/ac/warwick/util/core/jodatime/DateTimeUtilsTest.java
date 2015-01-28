@@ -89,20 +89,7 @@ public final class DateTimeUtilsTest {
     	assertEquals(5, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(5)));
     	assertEquals(5, DateTimeUtils.getDifferenceInWeeks(dt, dt.plusWeeks(5).plusHours(1)));
     }
-    
-    @Test
-    @SuppressWarnings("deprecation")
-    public void mockDateTime() {
-    	final DateTime d = new DateTime(2009,8,17, 12,40,20,0);
-    	DateTimeUtils.useMockDateTime(new DateTime(2009,8,17, 12,40,20,0), new Callback() {
-			public void doSomething() {
-				assertEquals(d, DateTimeUtils.newDateTime());
-				// All JodaTime objects will obey this pretend time. It is magic
-				assertEquals(d, new DateTime());
-			}
-		});
-    }
-    
+
     private DateTime makeDateTime(int date, int hour) {
     	return new DateTime().withDate(2006, 11, date).withHourOfDay(hour);
     }

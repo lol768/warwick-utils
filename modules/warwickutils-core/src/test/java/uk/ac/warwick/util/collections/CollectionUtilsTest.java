@@ -116,68 +116,6 @@ public final class CollectionUtilsTest extends TestCase {
         }
     }
 
-    @SuppressWarnings("deprecation")
-	public void testBatch() {
-    	final List<String> list = new ArrayList<String>();
-
-    	for (int i=0; i<150; i++) {
-    		list.add(Integer.toString(i));
-    	}
-
-    	final List<List<String>> batches = CollectionUtils.batch(list, 20);
-
-    	// should have returned 7 batches of 20 and 1 batch of 10
-    	assertEquals(8, batches.size());
-    	for (int i=0;i<7;i++) {
-    		assertEquals(20, batches.get(i).size());
-    	}
-    	assertEquals(10, batches.get(7).size());
-
-    	for (int i=0;i<7;i++) {
-    		for (int j=0;j<20;j++) {
-    			final int expected = (i*20)+j;
-    			assertEquals(Integer.toString(expected), batches.get(i).get(j));
-    		}
-    	}
-
-    	for (int i=0;i<10;i++) {
-    		final int expected = 140 + i;
-    		assertEquals(Integer.toString(expected), batches.get(7).get(i));
-    	}
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testBatchExact() {
-    	final List<String> list = new ArrayList<String>();
-
-    	for (int i=0; i<150; i++) {
-    		list.add(Integer.toString(i));
-    	}
-
-    	final List<List<String>> batches = CollectionUtils.batch(list, 50);
-
-    	// should have returned 3 batches of 50
-    	assertEquals(3, batches.size());
-    	for (final List<String> batch : batches) {
-    		assertEquals(50, batch.size());
-    	}
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testBigBatchTinyList() {
-    	final List<String> list = new ArrayList<String>();
-
-    	for (int i=0; i<10; i++) {
-    		list.add(Integer.toString(i));
-    	}
-
-    	final List<List<String>> batches = CollectionUtils.batch(list, 50);
-
-    	// should have returned 1 batch of 10
-    	assertEquals(1, batches.size());
-    	assertEquals(10, batches.get(0).size());
-    }
-
     public void testIterableEnumerable() {
     	final Vector<String> vector = new Vector<String>();
     	vector.add("Hello");

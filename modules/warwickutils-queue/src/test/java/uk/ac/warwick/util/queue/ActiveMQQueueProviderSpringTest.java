@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.warwick.util.queue.ActiveMQQueueProviderTest.EncodeVideoJob;
 import uk.ac.warwick.util.queue.ActiveMQQueueProviderTest.GrabMetadataJob;
 import uk.ac.warwick.util.queue.activemq.ActiveMQQueueProvider;
-import uk.ac.warwick.util.queue.conversion.SimpleFieldConverter;
+import uk.ac.warwick.util.queue.conversion.AnnotationJsonObjectConverter;
 
 /**
  * Tests the default queue provider in embedded mode, in a 
@@ -43,31 +43,8 @@ public class ActiveMQQueueProviderSpringTest {
     @Resource(name="unimportantStuffQueue")
     private Queue unimportantStuffQueue;
     
-    @Resource(name="encodeVideoJobConverter")
-    private SimpleFieldConverter encodeVideoJobConverter;
-    
     @Test public void spring() {
         assertNotNull(queueProvider);
-    }
-    
-    /**
-     * Test a manually set-up SimpleFieldConverter that maps simple field
-     * values to a JSON map. This is more cumbersome than using the annotations,
-     * so I'm not sure we need to keep the feature in.
-     */
-    @Test public void individualConverter() {
-        EncodeVideoJob jorb = new EncodeVideoJob();
-        jorb.setBitrate(9000);
-        jorb.setFilename("wibble.mp3");
-        jorb.setFormat("OGG");
-        
-        assertTrue( encodeVideoJobConverter.supports(jorb) );
-        JSONObject json = encodeVideoJobConverter.toJson(jorb);
-        
-        EncodeVideoJob decoded = (EncodeVideoJob) encodeVideoJobConverter.fromJson("EncodeVideoJob", json);
-        assertThat( decoded, hasProperty("bitrate", is(9000)));
-        assertThat( decoded, hasProperty("filename", is("wibble.mp3")));
-        assertThat( decoded, hasProperty("format", is("OGG")));
     }
     
     @DirtiesContext

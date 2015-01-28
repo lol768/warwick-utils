@@ -3,14 +3,14 @@ package uk.ac.warwick.util.queue.conversion;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@JsonAutoDetect @ItemType("my-message-type")
+@JsonAutoDetect
+@ItemType("my-message-type")
 @JsonPropertyOrder({"name","currentAge"})
 public class TestItem {
     private String name;
@@ -51,7 +51,7 @@ public class TestItem {
         this.testServiceBean = testServiceBean;
     }
     
-    @JsonSerialize(include=Inclusion.NON_DEFAULT)
+    @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
     public List<TestItem> getChildren() {
         return children;
     }

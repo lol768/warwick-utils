@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-httpclient4</artifactId>
+	<artifactId>warwickutils_spring4-httpclient4</artifactId>
 
 	<name>Warwick Utils :: HttpClient 4</name>
 	<description>HTTP fetching architecture for HttpComponents 4.x</description>
@@ -23,17 +23,11 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-web</artifactId>
-		</dependency>
-
-		<!-- TODO remove this dependency -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-httpclient3</artifactId>
+			<artifactId>warwickutils_spring4-web</artifactId>
 		</dependency>
 
 		<dependency>
@@ -44,10 +38,6 @@
 		<dependency>
 			<groupId>uk.ac.warwick.sso</groupId>
 			<artifactId>sso-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
 		</dependency>
 
 		<dependency>

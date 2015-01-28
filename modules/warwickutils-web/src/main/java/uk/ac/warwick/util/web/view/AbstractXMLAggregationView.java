@@ -51,9 +51,8 @@ public abstract class AbstractXMLAggregationView<T extends WireFeed> implements 
             FileCopyUtils.copy(encoded, writer);
             
             // Write content type and also length (determined via byte array).
-            response.setContentType(getContentType());
+            response.setContentType(getContentType() + "; charset=" + getCharacterEncoding());
             response.setContentLength(baos.size());
-            response.setCharacterEncoding(getCharacterEncoding());
 
             // Flush byte array to servlet output stream.
             ServletOutputStream out = response.getOutputStream();

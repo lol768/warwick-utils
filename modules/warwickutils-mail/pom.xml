@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils-project</artifactId>
-		<version>20150128-1133</version>
+		<artifactId>warwickutils_spring4-project</artifactId>
+		<version>20150128</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils-mail</artifactId>
+	<artifactId>warwickutils_spring4-mail</artifactId>
 
 	<name>Warwick Utils :: Mail</name>
 	<description>Handling the delivery of email</description>
@@ -23,7 +23,7 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils-core</artifactId>
+			<artifactId>warwickutils_spring4-core</artifactId>
 		</dependency>
 
 		<dependency>

@@ -16,9 +16,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.ehcache.CacheManager;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.Sequence;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
@@ -45,6 +47,13 @@ public class ConfigurableFilterStackTest {
         f1 = ctx.mock(Filter.class, "f1");
         f2 = ctx.mock(Filter.class, "f2");
         f3 = ctx.mock(Filter.class, "f3");
+    }
+
+    @After public void tearDown() {
+        CacheManager cm = CacheManager.getCacheManager("warwickUtilsFiltersCache");
+        if (cm != null) {
+            cm.clearAll();
+        }
     }
     
     /**

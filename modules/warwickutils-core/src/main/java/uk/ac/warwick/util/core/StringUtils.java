@@ -335,26 +335,6 @@ public final class StringUtils {
 	public static boolean hasText(String s) {
 		return (s != null && s.trim().length() > 0);
 	}
-
-	/**
-     * Returns whether the entire given String is made of whitespace characters,
-     * including when the string has no characters.
-     * The logical opposite of {@link #hasText(String)}.
-     * 
-     * @deprecated Please use {@link #hasText(String)} instead.
-     */
-    public static boolean isWhitespace(final String text) {
-        return !hasText(text);
-    }
-
-    /**
-     * Identical to {@link #isWhitespace(String)}.
-     * 
-     * @deprecated Please use {@link #hasText(String)} instead.
-     */
-    public static boolean isEmpty(final String s) {
-        return isWhitespace(s);
-    }
  
 
 }

@@ -1,11 +1,10 @@
 package uk.ac.warwick.util.httpclient;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
 import uk.ac.warwick.userlookup.User;
 import uk.ac.warwick.util.web.Uri;
+
+import static org.junit.Assert.assertEquals;
 
 public class WarwickTagUrlManglerTest {
 
@@ -14,9 +13,9 @@ public class WarwickTagUrlManglerTest {
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		String testUrl = "http://www2.warwick.ac.uk/foo/<warwick_deptcode/>/bar";
 		User u = new User();
-		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());	
+		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
 		u.setDepartmentCode("IN");
-		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());	
+		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
 	}
 	
 	@SuppressWarnings("deprecation")

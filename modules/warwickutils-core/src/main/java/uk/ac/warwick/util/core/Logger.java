@@ -87,15 +87,6 @@ public class Logger {
    
     private final org.apache.log4j.Logger logger;
     
-    /**
-     * Create a new logger class using the caller's classname as the name of the
-     * category.
-     * @deprecated
-     */
-    Logger( String name ) {
-        logger = org.apache.log4j.Logger.getLogger(name);
-    }
-    
     private Logger(org.apache.log4j.Logger l) {
     	logger = l;
     }

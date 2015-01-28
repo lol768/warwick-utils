@@ -1,26 +1,29 @@
 package uk.ac.warwick.util.content.texttransformers.embed;
 
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 public class OEmbedJsonParser implements OEmbedParser {
 	private final ObjectMapper objectMapper;
 	
 	public OEmbedJsonParser() {
-		this.objectMapper = new ObjectMapper();
-		final AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+		this.objectMapper =	new ObjectMapper();
+
+		final AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
 		   
-		objectMapper.setDeserializationConfig(
+		objectMapper.setConfig(
 				objectMapper.getDeserializationConfig()
-					.withAnnotationIntrospector(introspector)
-					.without(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES)
+						.with(introspector)
+						.without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 		);
-		objectMapper.setSerializationConfig(objectMapper.getSerializationConfig().withAnnotationIntrospector(introspector));
+		objectMapper.setConfig(objectMapper.getSerializationConfig().with(introspector));
 	}
 	
 	public OEmbedResponse unmarshal(InputStream httpResponse) throws OEmbedException {

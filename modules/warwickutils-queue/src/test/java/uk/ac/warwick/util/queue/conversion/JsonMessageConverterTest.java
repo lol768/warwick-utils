@@ -6,10 +6,8 @@ import static org.junit.Assert.*;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.codehaus.jackson.map.MapperConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.PropertyNamingStrategy;
-import org.codehaus.jackson.map.introspect.AnnotatedField;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;

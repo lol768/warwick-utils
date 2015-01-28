@@ -88,21 +88,6 @@ public final class DateTimeUtils {
     }
     
     /**
-     * Returns a new DateTime object, which is the current time normally but
-     * during a test it may be set to a different time.
-     * 
-     * It's been deprecated because JodaTime allows us to set the apparent
-     * time to a fixed time and back to system time at will, so there's no
-     * need to use this factory method. Just make DateTimes as normal. Go nuts!
-     * 
-     * @deprecated
-     */
-    public static DateTime newDateTime() {
-    	// UTL-57 - now relies on JodaTime's build-in time bending ability
-        return new DateTime();
-    }
-    
-    /**
      * NOT threadsafe. Used for testing.
      * Does an action with a mockdatetime.
      * 
