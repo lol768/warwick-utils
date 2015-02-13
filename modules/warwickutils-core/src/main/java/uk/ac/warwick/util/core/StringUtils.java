@@ -133,6 +133,23 @@ public final class StringUtils {
     }
 
     /**
+     * Same as above but ignores escaped commas and removes escape backslashes
+     */
+    public static List<String> convertUnescapedCommaDelimitedStringToList(final String keywords) {
+        ArrayList<String> results = new ArrayList<String>();
+        if (!StringUtils.hasText(keywords)) {
+            return results;
+        }
+        String[] commaSeperatedElements = keywords.split("[^\\\\],");
+        for (String s: commaSeperatedElements) {
+            if (StringUtils.hasText(s)) {
+                results.add(s.replace("\\,", ",").trim());
+            }
+        }
+        return results;
+    }
+
+    /**
      * Implementation of String.substring which will never throw a NPE.
      */
     public static String safeSubstring(final String s, final int proposedStart, final int proposedEnd) {
