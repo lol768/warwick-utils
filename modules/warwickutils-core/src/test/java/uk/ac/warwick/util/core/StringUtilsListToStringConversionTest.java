@@ -71,4 +71,16 @@ public final class StringUtilsListToStringConversionTest extends TestCase {
         assertEquals("first result", firstKeyword.trim(), results.get(0));
         assertEquals("second result", secondKeyword.trim(), results.get(1));        
     }
+
+    public void testConvertCommaSeperatedKeywordToListButIgnoreEscapedCommas() {
+        String firstKeyword = "\\, \\ the_keyword\\, happenstance \\, withoutdoubt \\ "; //Commas are escaped with a single back slash
+        String secondKeyword = " the_second_keyword";
+
+        String keywords = firstKeyword + "," + secondKeyword;
+
+        List<String> results = StringUtils.convertUnescapedCommaDelimitedStringToList(keywords);
+        assertEquals("number of results", 2, results.size());
+        assertEquals("first result", firstKeyword.replace("\\,",",").trim(), results.get(0));
+        assertEquals("second result", secondKeyword.trim(), results.get(1));
+    }
 }

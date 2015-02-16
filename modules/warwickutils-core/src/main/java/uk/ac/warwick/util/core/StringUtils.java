@@ -134,15 +134,16 @@ public final class StringUtils {
 
     /**
      * Same as above but ignores escaped commas and removes escape backslashes
+     * Split using commas no immediately preceded by a backslash
      */
     public static List<String> convertUnescapedCommaDelimitedStringToList(final String keywords) {
         ArrayList<String> results = new ArrayList<String>();
-        if (!StringUtils.hasText(keywords)) {
+        if (!hasText(keywords)) {
             return results;
         }
-        String[] commaSeperatedElements = keywords.split("[^\\\\],");
+        String[] commaSeperatedElements = keywords.split("(?<!\\\\),");
         for (String s: commaSeperatedElements) {
-            if (StringUtils.hasText(s)) {
+            if (hasText(s)) {
                 results.add(s.replace("\\,", ",").trim());
             }
         }
