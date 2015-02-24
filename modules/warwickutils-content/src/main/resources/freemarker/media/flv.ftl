@@ -115,19 +115,11 @@
 				/* Attempt HTML5 Video */ 
 				var vidEl = document.getElementById('html5video_${uniqueId}');
 				var supportsVideo = !!vidEl.canPlayType;
-				
-				
-				// SBTWO-5551
-				if(typeof jQuery != "undefined"){
-					if ( !jQuery.browser.msie ) {
-						vidEl.setAttribute('preload', '${preload}');
-					}
-				} 
-				// if no jQuery, use Protoype
-				else {
-					if (!Prototype.Browser.IE) {
-						vidEl.setAttribute('preload', '${preload}');
-					}
+
+				// weak replacement for jQuery.browser.msie (IE 10 or less)
+				var ie_lte_10 = !!(window.navigator.appVersion.match("MSIE"));
+				if ( !ie_lte_10 ) { // SBTWO-5384
+					vidEl.setAttribute('preload', '${preload}');
 				}
 
 				var mimeType = '${mime_type?default('video/mp4')}';
