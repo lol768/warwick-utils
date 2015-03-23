@@ -22,7 +22,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.web.Uri;
@@ -33,7 +34,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
 
     private static final long serialVersionUID = -6884588480427697793L;
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractHttpMethodExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractHttpMethodExecutor.class);
     
     private HttpRequestBase request;
     

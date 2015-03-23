@@ -6,7 +6,8 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
 import org.apache.xerces.xni.QName;
@@ -33,7 +34,7 @@ import com.google.common.collect.Lists;
 
 public final class NekoHtmlParser implements HtmlParser {
     
-    private static final Logger LOGGER = Logger.getLogger(NekoHtmlParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NekoHtmlParser.class);
 
     private final DOMImplementation documentFactory = DocumentUtils.getDOMImplementation();
     

@@ -5,7 +5,8 @@ import java.util.List;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.jmx.MBeanServerNotFoundException;
 
@@ -22,7 +23,7 @@ public final class JbossJmxServerLocator extends AbstractFactoryBean<MBeanServer
 
     public static final String JBOSS_DOMAIN = "jboss";
     
-    private static final Logger LOGGER = Logger.getLogger(JbossJmxServerLocator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JbossJmxServerLocator.class);
     
     @Override
     protected MBeanServer createInstance() throws Exception {        

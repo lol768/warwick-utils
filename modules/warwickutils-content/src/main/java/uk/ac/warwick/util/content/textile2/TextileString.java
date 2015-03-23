@@ -8,7 +8,8 @@ import java.util.EnumSet;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.HtmlCleaner;
@@ -20,7 +21,7 @@ import uk.ac.warwick.util.content.textile2.lite.TextileLite;
  */
 public class TextileString {
 
-	private static final Logger LOGGER = Logger.getLogger(TextileString.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TextileString.class);
 
 	private String textileText;
 

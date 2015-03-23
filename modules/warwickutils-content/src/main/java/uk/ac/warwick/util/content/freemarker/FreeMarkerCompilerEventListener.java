@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
@@ -30,7 +31,7 @@ import freemarker.template.Configuration;
  *
  */
 public final class FreeMarkerCompilerEventListener implements ApplicationListener, ApplicationContextAware {
-    private static final Logger LOGGER = Logger.getLogger(FreeMarkerCompilerEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FreeMarkerCompilerEventListener.class);
     private final File templateDir;
     private final Configuration configuration;
     private ApplicationContext applicationContext;

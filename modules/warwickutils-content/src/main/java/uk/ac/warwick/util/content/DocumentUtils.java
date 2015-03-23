@@ -3,7 +3,8 @@ package uk.ac.warwick.util.content;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,7 +18,7 @@ import com.google.common.collect.Lists;
 
 public final class DocumentUtils {
     
-    private static final Logger LOGGER = Logger.getLogger(DocumentUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUtils.class);
     
     private static final List<String> HIDDEN_TAGS = Arrays.asList("script","style","input","textarea","select");
     

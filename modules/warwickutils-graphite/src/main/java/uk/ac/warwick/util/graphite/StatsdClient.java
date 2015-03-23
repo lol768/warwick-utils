@@ -38,11 +38,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class StatsdClient {
     private static Random RNG = new Random();
-    private static Logger log = Logger.getLogger(StatsdClient.class.getName());
+    private static Logger log = LoggerFactory.getLogger(StatsdClient.class.getName());
 
     private InetAddress _host;
     private int _port;

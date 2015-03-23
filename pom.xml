@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils_spring4-project</artifactId>
-	<version>20150224</version>
+	<version>20150320</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -185,8 +185,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 					<showDeprecation>true</showDeprecation>
@@ -253,14 +253,9 @@
 			<version>2.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.2</version>
+			<version>1.7.10</version>
 		</dependency>
 
 		<dependency>
@@ -492,8 +487,8 @@
 
 			<dependency>
 				<groupId>uk.ac.warwick.sso</groupId>
-				<artifactId>sso-client</artifactId>
-				<version>2.0</version>
+				<artifactId>sso-client_spring4</artifactId>
+				<version>2.4</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-codec</artifactId>

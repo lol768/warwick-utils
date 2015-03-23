@@ -5,12 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
-import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.impl.FileSystemBackedHashResolver;
 
@@ -30,7 +30,7 @@ import uk.ac.warwick.util.files.hash.impl.FileSystemBackedHashResolver;
  *
  */
 public final class CachingImageResizer implements FileExposingImageResizer {
-    private static final Logger LOGGER = Logger.getLogger(CachingImageResizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CachingImageResizer.class);
 
     private final ImageResizer delegate;
     private final ImageCache cache;

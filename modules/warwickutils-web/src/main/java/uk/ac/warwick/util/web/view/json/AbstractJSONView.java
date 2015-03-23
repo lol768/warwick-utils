@@ -11,7 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +29,7 @@ import com.google.common.collect.Lists;
 @Configurable
 abstract class AbstractJSONView<T> implements View {
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractJSONView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJSONView.class);
     
     private static final int OUTPUT_BYTE_ARRAY_INITIAL_SIZE = 4096;
     

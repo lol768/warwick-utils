@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.StackObjectPool;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Records request details against threads, so that when we are observing
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
  */
 public class RequestThreadFilter extends AbstractHttpFilter {
 
-    private static final Logger LOGGER = Logger.getLogger(RequestThreadFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestThreadFilter.class);
     
     private ConcurrentMap<Thread, RequestData> map = new ConcurrentHashMap<Thread, RequestData>();
 

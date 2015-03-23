@@ -11,7 +11,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides an application-wide bean to execute parallel tasks.
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public final class TaskExecutionService implements ExecutorService, CompletionServiceProvider {
     
-    private static final Logger LOGGER = Logger.getLogger(TaskExecutionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutionService.class);
 
     private final ExecutorService delegate;
 

@@ -11,7 +11,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.SimpleMailMessage;
@@ -31,7 +32,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
     
     private static final String DEFAULT_SENDER = "no-reply@warwick.ac.uk";
     
-    private static final Logger LOGGER = Logger.getLogger(AsynchronousWarwickMailSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsynchronousWarwickMailSender.class);
 
     private final TaskExecutionService executionService;
 

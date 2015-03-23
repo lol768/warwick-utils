@@ -7,7 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
@@ -20,7 +21,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource(description="Manage currently running threads")
 public class ThreadManager {
     
-    private static final Logger LOGGER = Logger.getLogger(ThreadManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadManager.class);
     
     Thread thread;
     

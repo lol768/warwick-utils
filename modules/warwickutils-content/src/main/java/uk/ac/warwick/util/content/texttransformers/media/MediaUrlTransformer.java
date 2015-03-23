@@ -3,7 +3,8 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.AbstractSquareTagTransformer;
@@ -13,7 +14,7 @@ import uk.ac.warwick.util.content.texttransformers.TextPatternTransformer.Callba
 public final class MediaUrlTransformer extends AbstractSquareTagTransformer {
     
     static final String[] ALLOWED_PARAMETERS = new String[] {"height", "width", "type", "previewimage", "align", "download", "altplayer", "fallback", "fallbackversion", "stretching", "title", "description", "locktopath"};
-    private static final Logger LOGGER = Logger.getLogger(MediaUrlTransformer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MediaUrlTransformer.class);
     
     private final Map<String, MediaUrlHandler> handlers;
     private final String closeButtonImgUrl;

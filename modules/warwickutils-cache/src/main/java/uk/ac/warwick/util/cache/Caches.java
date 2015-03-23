@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.cache.ehcache.EhCacheStore;
 import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
@@ -22,7 +23,7 @@ public final class Caches {
         InMemoryOnly
     };
 	
-	private static final Logger LOGGER = Logger.getLogger(Caches.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Caches.class);
 	
 	private static boolean ehChecked;
 	private static boolean ehAvailable;

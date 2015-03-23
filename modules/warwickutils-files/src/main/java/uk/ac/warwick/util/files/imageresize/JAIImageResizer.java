@@ -18,7 +18,8 @@ import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.joda.time.DateTime;
 import org.springframework.util.FileCopyUtils;
 
@@ -40,7 +41,7 @@ public final class JAIImageResizer implements ImageResizer {
     public static final int DEFAULT_MAX_WIDTH = 8000;
     public static final int DEFAULT_MAX_HEIGHT = 5000;
 
-    private static final Logger LOGGER = Logger.getLogger(JAIImageResizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JAIImageResizer.class);
     
     private Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
     

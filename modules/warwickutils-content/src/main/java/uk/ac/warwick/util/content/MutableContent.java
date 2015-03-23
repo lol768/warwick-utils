@@ -21,7 +21,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.google.common.base.Charsets;
@@ -35,7 +36,7 @@ import com.google.common.collect.Maps;
 public class MutableContent {
     public static final String MUTABLE_CONTENT_LISTENER = "MutableContentListener";
     
-    private static final Logger LOGGER = Logger.getLogger(MutableContent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MutableContent.class);
 
     // String representation of contentBytes taking into account the correct
     // encoding of the content.

@@ -10,7 +10,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanWrapper;
@@ -22,7 +23,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 public class AnnotationJsonObjectConverter implements JsonObjectConverter, BeanFactoryAware {
 
-    private final Logger LOGGER = Logger.getLogger(AnnotationJsonObjectConverter.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(AnnotationJsonObjectConverter.class);
     
     private Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
     private ObjectMapper objectMapper;

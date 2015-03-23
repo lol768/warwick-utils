@@ -5,6 +5,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
@@ -87,17 +88,8 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
                 Uri targetUri = Uri.fromJavaUri(request.getURI());
                 CookieStore store = new BasicCookieStore();
 
-                // This is a httpclient3 cookie at the moment, so we'll have to translate it
-                org.apache.commons.httpclient.Cookie cookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetUri.toJavaUrl(), user);
-                if (cookie != null) {
-                    BasicClientCookie proxyCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
-                    proxyCookie.setDomain(cookie.getDomain());
-                    proxyCookie.setPath(cookie.getPath());
-                    proxyCookie.setExpiryDate(cookie.getExpiryDate());
-                    proxyCookie.setSecure(cookie.getSecure());
-                    proxyCookie.setVersion(cookie.getVersion());
-                    store.addCookie(proxyCookie);
-                }
+                Cookie proxyCookie = new SSOProxyCookieHelper().getProxyHttpClientCookie(targetUri.toJavaUrl(), user);
+                store.addCookie(proxyCookie);
 
                 BasicClientCookie ssoCookie = new BasicClientCookie("WarwickSSO", user.getOldWarwickSSOToken());
                 ssoCookie.setDomain(cookieDomain);

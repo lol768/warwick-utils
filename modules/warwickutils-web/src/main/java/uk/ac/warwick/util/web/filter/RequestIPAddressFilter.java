@@ -10,7 +10,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -20,7 +21,7 @@ public final class RequestIPAddressFilter extends AbstractFilter {
     public static final String CURRENT_IP_ATTRIBUTE = "REMOTE_IP_ADDRESS";
     public static final String CURRENT_IP_STRING_ATTRIBUTE = "REMOTE_IP_ADDRESS_STRING";
     
-    private static final Logger LOGGER = Logger.getLogger(RequestIPAddressFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestIPAddressFilter.class);
 
     private final Collection<String> disallowedIpAddresses;
     

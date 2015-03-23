@@ -3,7 +3,8 @@ package uk.ac.warwick.util.cache.memcached;
 import net.spy.memcached.*;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import net.spy.memcached.transcoders.Transcoder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.DigestUtils;
 import uk.ac.warwick.util.cache.*;
@@ -30,7 +31,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
      */
     public static final String CUSTOM_CONFIG_URL = "memcached.properties";
 
-    private static final Logger LOGGER = Logger.getLogger(MemcachedCacheStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemcachedCacheStore.class);
 
     private static final int SIZE_INFO_THRESHOLD = 100 * 1024; // 100kb
 

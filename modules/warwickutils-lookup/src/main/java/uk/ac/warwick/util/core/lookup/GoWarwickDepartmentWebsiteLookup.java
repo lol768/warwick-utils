@@ -2,7 +2,8 @@ package uk.ac.warwick.util.core.lookup;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 
 import uk.ac.warwick.util.cache.Cache;
@@ -30,7 +31,7 @@ import uk.ac.warwick.util.web.UriBuilder;
  */
 public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsiteLookup {
     
-    private static final Logger LOGGER = Logger.getLogger(GoWarwickDepartmentWebsiteLookup.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoWarwickDepartmentWebsiteLookup.class);
     
     public static final String CACHE_NAME = "DepartmentWebsiteCache";
     

@@ -7,11 +7,12 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class RequestIPAddressHolderImpl implements RequestIPAddressHolder {
     
-    public static final Logger LOGGER = Logger.getLogger(RequestIPAddressHolderImpl.class); 
+    public static final Logger LOGGER = LoggerFactory.getLogger(RequestIPAddressHolderImpl.class);
 
     public static final Pattern IP_ADDRESS_PATTERN = Pattern.compile("[0-9]{1,3}(:?\\.[0-9]{1,3}){3}");
 

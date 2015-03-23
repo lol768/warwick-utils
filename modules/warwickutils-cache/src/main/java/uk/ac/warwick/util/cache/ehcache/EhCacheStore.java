@@ -10,7 +10,8 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import net.sf.ehcache.ObjectExistsException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.joda.time.DateTime;
 import uk.ac.warwick.util.cache.*;
@@ -26,7 +27,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 	 */
 	public static final String CUSTOM_CONFIG_URL = "ehcache-config.xml";
 
-	private static final Logger LOGGER = Logger.getLogger(EhCacheStore.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EhCacheStore.class);
 	
 	private static CacheManager defaultCacheManager;
 	

@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.cache.BasicCache.KeyEntry;
 
 final class UpdateCacheEntryTask<K extends Serializable,V extends Serializable,T> implements Runnable {
 
-	private final static Logger LOGGER = Logger.getLogger(UpdateCacheEntryTask.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(UpdateCacheEntryTask.class);
 	
 	private final Collection<KeyEntry<K,V,T>> entries;
 	

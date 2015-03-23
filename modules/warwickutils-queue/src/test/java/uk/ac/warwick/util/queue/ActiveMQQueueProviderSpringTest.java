@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -58,7 +59,7 @@ public class ActiveMQQueueProviderSpringTest {
         final QueueListener listener = m.mock(QueueListener.class);
         m.checking(new Expectations(){{
             exactly(1).of(listener).isListeningToQueue(); will(returnValue(true));
-            exactly(1).of(listener).onReceive(with(hasProperty("pageUrl", equal("/services/wibble.ogg"))));
+            exactly(1).of(listener).onReceive(with((Matcher<Object>)hasProperty("pageUrl", equal("/services/wibble.ogg"))));
         }});
         sitebuilderQueue.setSingleListener(listener);
       

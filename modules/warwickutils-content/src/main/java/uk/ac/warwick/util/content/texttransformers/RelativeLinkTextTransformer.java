@@ -3,7 +3,8 @@ package uk.ac.warwick.util.content.texttransformers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.web.Uri;
@@ -14,7 +15,7 @@ import uk.ac.warwick.util.web.Uri.UriException;
  */
 public final class RelativeLinkTextTransformer implements TextTransformer {
     
-    private static final Logger LOGGER = Logger.getLogger(RelativeLinkTextTransformer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelativeLinkTextTransformer.class);
 
     private static final int MATCH_OUTRO = 3;
 

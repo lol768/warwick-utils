@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -25,7 +24,8 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.blocking.CacheEntryFactory;
 import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import uk.ac.warwick.util.collections.google.BasePredicate;
@@ -56,7 +56,7 @@ import com.google.common.collect.Sets;
  */
 public final class ConfigurableFilterStack implements Filter, InitializingBean {
 
-    private static final Logger LOGGER = Logger.getLogger(ConfigurableFilterStack.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurableFilterStack.class);
     
     private final ImmutableList<FilterStackSet> filterSets;
     private final CacheManager cacheManager;

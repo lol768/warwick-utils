@@ -8,11 +8,12 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 
 import com.google.common.collect.Lists;
 
-public final class RedirectJULToLog4JContextListener extends ContextLoaderListener {
+public final class RedirectJULToSLF4JContextListener extends ContextLoaderListener {
 
     private Handler activeHandler;
 
@@ -25,7 +26,7 @@ public final class RedirectJULToLog4JContextListener extends ContextLoaderListen
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
-            JULToLog4JHandler.getTargetLogger(RedirectJULToLog4JContextListener.class).info(
+            JULToSLF4JHandler.getTargetLogger(RedirectJULToSLF4JContextListener.class).info(
                     "start(): Redirecting java.util.logging to Log4J...");
             Logger rootLogger = LogManager.getLogManager().getLogger("");
             // remove old handlers
@@ -34,15 +35,15 @@ public final class RedirectJULToLog4JContextListener extends ContextLoaderListen
                 rootLogger.removeHandler(handler);
             }
             // add our own
-            activeHandler = new JULToLog4JHandler();
+            activeHandler = new JULToSLF4JHandler();
             activeHandler.setLevel(handlerLevel);
             rootLogger.addHandler(activeHandler);
             rootLogger.setLevel(rootLevel);
             // done, let's check it right away!!!
 
-            Logger.getLogger(RedirectJULToLog4JContextListener.class.getName()).info("started: sending JDK log messages to Log4J");
+            LoggerFactory.getLogger(RedirectJULToSLF4JContextListener.class.getName()).info("started: sending JDK log messages to SLF4J");
         } catch (Exception exc) {
-            JULToLog4JHandler.getTargetLogger(RedirectJULToLog4JContextListener.class).error("start() failed", exc);
+            JULToSLF4JHandler.getTargetLogger(RedirectJULToSLF4JContextListener.class).error("start() failed", exc);
         }
     }
 
@@ -54,7 +55,7 @@ public final class RedirectJULToLog4JContextListener extends ContextLoaderListen
         for (Handler oldHandler: oldHandlers) {
             rootLogger.addHandler(oldHandler);
         }
-        Logger.getLogger(JULToLog4JHandler.class.getName()).info("stopped");
+        LoggerFactory.getLogger(JULToSLF4JHandler.class.getName()).info("stopped");
     }
 
 }

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150224</version>
+		<version>20150320</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -67,6 +67,12 @@
 			<version>5.1.10</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>uk.org.lidalia</groupId>
+            <artifactId>slf4j-test</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 </project>

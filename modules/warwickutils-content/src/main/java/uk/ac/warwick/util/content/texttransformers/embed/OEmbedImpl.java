@@ -9,7 +9,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,7 +28,7 @@ import uk.ac.warwick.util.web.UriBuilder;
 import com.google.common.collect.Maps;
 
 public class OEmbedImpl extends SingularCacheEntryFactory<OEmbedRequest, OEmbedResponse> implements OEmbed {   
-    private static final Logger LOGGER = Logger.getLogger(OEmbedImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OEmbedImpl.class);
     
     private static final int DEFAULT_CACHE_TIME_IN_SECONDS = 60 * 60; // 1 hour, but can be overridden by the response
     private static final int DEFAULT_CACHE_TIME_FAILURES_IN_SECONDS = 24 * 60 * 60; // 24 hours

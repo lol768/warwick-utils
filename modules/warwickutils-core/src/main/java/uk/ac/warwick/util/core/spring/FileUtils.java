@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
@@ -27,7 +28,7 @@ public final class FileUtils {
 
     public static final String GIGA_BYTE_LABEL = "GB";
     
-    private static final Logger LOGGER = Logger.getLogger(FileUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
     
     private static final int TEMP_FILE_RETRIES = 5; 
     

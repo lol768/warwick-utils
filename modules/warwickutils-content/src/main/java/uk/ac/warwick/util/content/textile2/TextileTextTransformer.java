@@ -1,17 +1,20 @@
 package uk.ac.warwick.util.content.textile2;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.texttransformers.TextTransformer;
 
@@ -51,29 +54,28 @@ public final class TextileTextTransformer implements TextTransformer {
 
 	public MutableContent apply(final MutableContent mc) {
 		try {
-			HttpClient client = new HttpClient();
-			PostMethod method = new PostMethod(TEXTILE_SERVICE_URL);
-			
-			NameValuePair textileData = new NameValuePair("textile", mc.getContent());
-			
-			method.setRequestBody(new NameValuePair[] { textileData });
-			
-			// set reasonable connection timeouts
-	        HttpConnectionManagerParams params = client.getHttpConnectionManager().getParams();
-	        params.setConnectionTimeout(CONNECTION_TIMEOUT);
-	        params.setSoTimeout(CONNECTION_TIMEOUT);
+            HttpClient client = HttpClientBuilder.create().build();
+			HttpPost method = new HttpPost(TEXTILE_SERVICE_URL);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("textile", mc.getContent()));
+            method.setEntity(new UrlEncodedFormEntity(nvps));
+
+            RequestConfig config =
+                RequestConfig.custom()
+                    .setConnectionRequestTimeout(CONNECTION_TIMEOUT)
+                    .setConnectTimeout(CONNECTION_TIMEOUT)
+                    .setSocketTimeout(CONNECTION_TIMEOUT)
+                    .build();
+
+            method.setConfig(config);
 	        
-	        //don't retry!
-	        client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0,false));
-			
-			int returnCode = client.executeMethod(method);
-			if (returnCode != HttpServletResponse.SC_OK) {
-				throw new IllegalStateException("Error connecting with Textile server - response code was " + returnCode);
+			HttpResponse response = client.execute(method);
+			if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
+				throw new IllegalStateException("Error connecting with Textile server - response code was " + response.getStatusLine().getStatusCode());
 			}
-			mc.setContent(method.getResponseBodyAsString().trim());
+			mc.setContent(EntityUtils.toString(response.getEntity()).trim());
 			return mc;
-		} catch (HttpException e) {
-			throw new IllegalStateException("Error connecting with Textile server - " + e.getMessage(), e);
 		} catch (IOException e) {
 			throw new IllegalStateException("Error connecting with Textile server - " + e.getMessage(), e);
 		}

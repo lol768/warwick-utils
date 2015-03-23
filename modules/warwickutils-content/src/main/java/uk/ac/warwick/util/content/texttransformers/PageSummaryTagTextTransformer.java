@@ -17,7 +17,7 @@ public final class PageSummaryTagTextTransformer extends AbstractSquareTagTransf
 
     private static final String[] ALLOWED_PARAMETERS = new String[] { "visible" };
 
-//    private static final Logger LOGGER = Logger.getLogger(PageSummaryTagTextTransformer.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(PageSummaryTagTextTransformer.class);
 
     public PageSummaryTagTextTransformer() {
         super("page-summary",true,true,true);

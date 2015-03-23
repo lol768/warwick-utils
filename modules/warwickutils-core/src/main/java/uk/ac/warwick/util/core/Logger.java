@@ -20,11 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Formatter;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
-import org.apache.log4j.or.ObjectRenderer;
-
 /**
  * (Swiped from Log5J - http://code.google.com/p/log5j)
  *
@@ -45,7 +40,7 @@ import org.apache.log4j.or.ObjectRenderer;
  *
  * For example old usage was:
  *
- * private static final Logger log = Logger.getLogger( FeedTask.class );
+ * private static final Logger log = LoggerFactory.getLogger( FeedTask.class );
  *
  * and the new syntax with Log5j:
  *
@@ -85,18 +80,14 @@ public class Logger {
 
     private static ThrowableRenderer throwableRenderer = new ThrowableRenderer();
    
-    private final org.apache.log4j.Logger logger;
+    private final org.slf4j.Logger logger;
     
-    private Logger(org.apache.log4j.Logger l) {
+    private Logger(org.slf4j.Logger l) {
     	logger = l;
     }
     
     public String getName() {
     	return logger.getName();
-    }
-    
-    public void addAppender(Appender a) {
-    	logger.addAppender(a);
     }
 
     /**
@@ -125,7 +116,7 @@ public class Logger {
         //looks like you can set your own RepositorySelector which implements
         //getLogger which can decide to ignore loggerFactory and return whatever
         //it wants to return.
-    	org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger( name );
+    	org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( name );
         return new Logger(log);
 
     }
@@ -161,7 +152,7 @@ public class Logger {
 
     public void error( String format, Object... args ) {
 
-        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isErrorEnabled() ) return;
        
         logger.error( sprintf( format, args ) );
     }
@@ -170,7 +161,7 @@ public class Logger {
                        Throwable t,
                        Object... args ) {
 
-        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isErrorEnabled() ) return;
        
         logger.error( sprintf( format, args ) + throwableRenderer.doRender( t ) );
     }
@@ -178,31 +169,14 @@ public class Logger {
     public void error( String format,
                        Throwable t ) {
 
-        if ( ! logger.isEnabledFor( Priority.ERROR ) ) return;
+        if ( ! logger.isErrorEnabled() ) return;
        
         logger.error( sprintf( format ) + throwableRenderer.doRender( t ) );
     }
 
-
-    public void fatal( String format, Object... args ) {
-
-        if ( ! logger.isEnabledFor( Priority.FATAL ) ) return;
-       
-        logger.fatal( sprintf( format, args ) );
-    }
-
-    public void fatal( String format,
-                       Throwable t,
-                       Object... args ) {
-
-        if ( ! logger.isEnabledFor( Priority.FATAL ) ) return;
-       
-        logger.fatal( sprintf( format, args ), t );
-    }
-
     public void warn( String format, Object... args ) {
 
-        if ( ! logger.isEnabledFor( Priority.WARN ) ) return;
+        if ( ! logger.isWarnEnabled() ) return;
        
         logger.warn( sprintf( format, args ) );
     }
@@ -211,7 +185,7 @@ public class Logger {
                       Throwable t,
                       Object... args ) {
 
-        if ( ! logger.isEnabledFor( Priority.WARN ) ) return;
+        if ( ! logger.isWarnEnabled() ) return;
        
         logger.warn( sprintf( format, args ), t );
     }
@@ -253,10 +227,6 @@ public class Logger {
         return formatterCache.get();
     }
 
-	public void setLevel(Level level) {
-		logger.setLevel(level);
-	}
-
 }
 
 /**
@@ -274,17 +244,17 @@ class FormatterCache extends ThreadLocal<Formatter> {
  *
  *
  */
-class ThrowableRenderer implements ObjectRenderer {
-   
+class ThrowableRenderer {
+
     public String doRender(Object o) {
         Throwable t = (Throwable) o;
-           
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream( bos );
         ps.println();
         t.printStackTrace( ps );
-       
+
         return bos.toString();
-       
+
     }
 }

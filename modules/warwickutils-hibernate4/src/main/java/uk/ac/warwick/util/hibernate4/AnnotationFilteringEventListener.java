@@ -24,7 +24,7 @@ public final class AnnotationFilteringEventListener implements PostLoadEventList
 
     private static final long serialVersionUID = 8652156835267250103L;
 
-    //private static final Logger LOGGER = Logger.getLogger(AnnotationFilteringEventListener.class);
+    //private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationFilteringEventListener.class);
 
     private final List<ObjectListener> listeners;
 

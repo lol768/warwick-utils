@@ -3,7 +3,8 @@ package uk.ac.warwick.util.content.textile2.jruby;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jruby.Ruby;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.jruby.runtime.builtin.IRubyObject;
@@ -21,14 +22,14 @@ public final class JRubyTextileTextTransformer implements TextTransformer {
     
     private static JRubyTextileTextTransformer INSTANCE;
     
-    private static final Logger LOGGER = Logger.getLogger(JRubyTextileTextTransformer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JRubyTextileTextTransformer.class);
     
     static {
         try {
             INSTANCE = new JRubyTextileTextTransformer();
         } catch (IOException e) {
             INSTANCE = null;
-            LOGGER.fatal("Could not instantiate JRuby server", e);
+            LOGGER.error("Could not instantiate JRuby server", e);
         }
     }
     

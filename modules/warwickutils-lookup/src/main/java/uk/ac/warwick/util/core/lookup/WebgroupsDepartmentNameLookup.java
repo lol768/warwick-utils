@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Text;
@@ -35,7 +36,7 @@ import uk.ac.warwick.util.web.Uri;
  */
 public final class WebgroupsDepartmentNameLookup implements DepartmentNameLookup {
     
-    private static final Logger LOGGER = Logger.getLogger(WebgroupsDepartmentNameLookup.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebgroupsDepartmentNameLookup.class);
     
     public static final String CACHE_NAME = "DepartmentNameCache";
     
