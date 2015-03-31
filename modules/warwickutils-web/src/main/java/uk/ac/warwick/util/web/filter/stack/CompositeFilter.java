@@ -68,7 +68,13 @@ public final class CompositeFilter implements Filter {
         return filters;
     }
 
-    public void init(FilterConfig config) throws ServletException {}
-    public void destroy() {}
+    public void init(FilterConfig config) throws ServletException {
+        for (Filter filter: filters) {
+            filter.init(config);
+        }
+    }
+    public void destroy() {
+        filters.forEach(Filter::destroy);
+    }
 
 }
