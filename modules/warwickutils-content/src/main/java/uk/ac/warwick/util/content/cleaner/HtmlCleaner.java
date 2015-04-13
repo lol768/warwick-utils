@@ -16,7 +16,6 @@ import uk.ac.warwick.html5.HTML5Schema;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
 import uk.ac.warwick.util.content.MutableContent;
-import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
 
 import com.google.common.collect.Lists;
@@ -59,7 +58,8 @@ public final class HtmlCleaner implements Cleaner {
         this.straightReplacements.add(Pair.of("_mce_tsrc=", "src="));
         this.straightReplacements.add(Pair.of("mce_thref=", "href="));
         this.straightReplacements.add(Pair.of("mce_tsrc=", "src="));
-        this.straightReplacements.add(Pair.of(NewWindowLinkTextTransformer.HTML_IMAGE, ""));
+        this.straightReplacements.add(Pair.of("<img class='targetBlank' alt='' title='Link opens in a new window' src='/static_war/images/shim.gif' />", ""));
+        this.straightReplacements.add(Pair.of("<i class='new-window-link' title='Link opens in a new window'></i>", ""));
         this.straightReplacements.add(Pair.of("\u00b7", "&#183;"));
         this.straightReplacements.add(Pair.of("&#65279;", ""));
         

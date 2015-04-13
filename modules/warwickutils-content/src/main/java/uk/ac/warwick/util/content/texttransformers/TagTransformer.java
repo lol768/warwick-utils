@@ -21,11 +21,11 @@ public final class TagTransformer extends TextPatternTransformer {
     private final Callback callback;
     private final boolean generatesHead;
     
-    TagTransformer(final String tagName, final Callback callback, final boolean generatesHead) {
+    public TagTransformer(final String tagName, final Callback callback, final boolean generatesHead) {
         this(tagName,"<", ">", callback, generatesHead);
     }
-    
-    TagTransformer(final String tagName, final String openSymbol, final String closeSymbol, final Callback callback, final boolean generatesHead) {
+
+    public TagTransformer(final String tagName, final String openSymbol, final String closeSymbol, final Callback callback, final boolean generatesHead) {
         String lt = openSymbol;
         String gt = closeSymbol;
         this.pattern = Pattern.compile(lt+tagName+" ([^"+gt+lt+"]+)"+gt+".+?"+lt+"/"+tagName+gt, Pattern.CASE_INSENSITIVE + Pattern.DOTALL);

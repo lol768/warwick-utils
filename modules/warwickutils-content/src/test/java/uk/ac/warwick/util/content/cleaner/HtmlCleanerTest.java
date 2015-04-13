@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.content.MutableContent;
-import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 
 public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     
@@ -429,7 +428,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     public void pastedNewWindowLinksAreRemoved() {
         String string = "<p>Hello I've pasted this <a href=\"blah\" target=\"_blank\">Link";
         String string2 = "</a> in from another page</p>";
-        String input = string + NewWindowLinkTextTransformer.HTML_IMAGE + string2;
+        String input = string + "<img class='targetBlank' alt='' title='Link opens in a new window' src='/static_war/images/shim.gif' />" + string2;
 
         String expected = string + string2;
         verify(expected, input);
