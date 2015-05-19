@@ -107,7 +107,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
      */
     @Test
     public void highByteCharsRemainEntities() {
-        String input = "<p>Characters &#20013;&#22269;&#25253;&#36947;</p>";
+        String input = "<p>Characters &#20013;&#22269;&#25253;&#36947;&#128694;</p>";
         verify(input, input);
     }
 

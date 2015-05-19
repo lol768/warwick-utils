@@ -289,7 +289,14 @@ public final class StringUtils {
                     break;
                 }
                 if (c > HIGH_CHAR) {
-                    sb.append("&#" + c + ";");
+                    if (Character.isHighSurrogate((char)c)) {
+                        // Character on astral plane is encoded as 2 chars, so grab
+                        // the next one and read them together as a single code point
+                        int point = Character.toCodePoint((char)c, (char)reader.read());
+                        sb.append("&#" + point + ";");
+                    } else {
+                        sb.append("&#" + c + ";");
+                    }
                 } else {
                     sb.append((char) c);
                 }
