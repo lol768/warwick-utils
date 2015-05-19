@@ -146,7 +146,13 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
         for (int i = 0; i < escaped.length(); i++) {
             char character = escaped.charAt(i);
             if (character > MAX_ASCII_VALUE) {
-                result.append("&#" + (int) character + ";");
+                if (Character.isHighSurrogate(character)) {
+                    int astralPoint = Character.toCodePoint(character, escaped.charAt(i+1));
+                    result.append("&#" + astralPoint + ";");
+                    i++;
+                } else {
+                    result.append("&#" + (int) character + ";");
+                }
             } else {
                 result.append(character);
             }
