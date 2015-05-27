@@ -83,17 +83,6 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
 
     @Test
-    public void boldTags() {
-        String input = "<b><strong><em>Hello";
-        String expected = "<strong><em>Hello</em></strong>";
-        verify(expected, input);
-
-        String input3 = "<strong><strong><strong><strong>X</strong></strong></strong></strong>";
-        String expected3 = "<strong>X</strong>";
-        verify(expected3, input3);
-    }
-
-    @Test
     public void paragraphsSeparated() {
         String input = "<p>para 1</p><p>para 2</p>";
         String expected = "<p>para 1</p>\n\n<p>para 2</p>";
@@ -382,13 +371,6 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     }
 
     @Test
-    public void replaceBandIWithAlternates() {
-        String input = "<b><i>test</i></b>";
-        String expected = "<strong><em>test</em></strong>";
-        verify(expected, input);
-    }
-
-    @Test
     public void noNestedFormsPlease() {
         String input = "<form action='jim' method='post'><input type='blah' value='boo' /><form action='jim' method='post'><input type='blah' value='boo' /></form></form>";
         String expected = "<form action=\"jim\" method=\"post\">  <input type=\"blah\" value=\"boo\" />  <input type=\"blah\" value=\"boo\" /></form>";
@@ -537,7 +519,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
     	long stop = System.currentTimeMillis();
     	
     	// assert that this took less than 5 seconds. It should take MUCH less than that!
-    	assertTrue((stop-start) < 5000);
+    	assertTrue((stop - start) < 5000);
     }
     
     @Test
@@ -688,6 +670,23 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         String input = readResourceToString("/htmlClean/input10.html");
         
         verifyNoLineBreaks(input);
+    }
+
+    @Test
+    public void sbtwo7119() throws Exception {
+        String input = "<a href=\"jim\">\n" +
+            "  <h2>Jim</h2>\n" +
+            "  <p>Sings</p>\n" +
+            "</a>";
+
+        verifyNoLineBreaks(input, input);
+    }
+
+    @Test
+    public void sbtwo7120() throws Exception {
+        String input = "<i class=\"fa fa-user\"></i>";
+
+        verify(input, input);
     }
     
     private void verifyNoLineBreaks(String input) {
