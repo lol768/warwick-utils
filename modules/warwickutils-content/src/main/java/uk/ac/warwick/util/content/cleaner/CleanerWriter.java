@@ -91,9 +91,9 @@ public final class CleanerWriter implements ContentHandler, LexicalHandler {
         this.contentWriter = new DefaultHtmlContentWriter(filter, contentFilter);
 
         this.tagReplacements = new HashMap<String, String>();
-        this.tagReplacements.put("b", "strong");
         this.tagReplacements.put("h1", "h2");
-        this.tagReplacements.put("i", "em");
+
+        // Don't do <b> -> <strong> or <i> -> <em> any more as HTML5 gives new meaning to them
     }
     
     public CleanerWriter(final TagAndAttributeFilter theFilter, final BodyContentFilter theContentFilter, final MutableContent mc) {

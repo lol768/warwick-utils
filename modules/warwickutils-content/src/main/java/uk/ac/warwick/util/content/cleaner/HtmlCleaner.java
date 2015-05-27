@@ -113,6 +113,7 @@ public final class HtmlCleaner implements Cleaner {
         		"</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "&#183;", "<li>$1</li>"));
         
         this.postParseStraightReplacements = Lists.newArrayList();
+        this.postParseStraightReplacements.add(Pair.of("<b></b>", ""));
         this.postParseStraightReplacements.add(Pair.of("<strong></strong>", ""));
         
         this.postParseRegexReplacements = Lists.newArrayList();
