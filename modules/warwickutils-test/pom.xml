@@ -141,6 +141,13 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-hibernate4</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-httpclient3</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
