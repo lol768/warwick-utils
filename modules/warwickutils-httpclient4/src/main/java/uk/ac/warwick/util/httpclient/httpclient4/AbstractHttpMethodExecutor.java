@@ -10,29 +10,20 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.DateUtils;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.impl.client.RequestWrapper;
-import org.apache.http.impl.cookie.DateParseException;
-import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.http.protocol.HttpCoreContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.web.Uri;
@@ -43,9 +34,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
 
     private static final long serialVersionUID = -6884588480427697793L;
     
-    private static final Logger LOGGER = Logger.getLogger(AbstractHttpMethodExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractHttpMethodExecutor.class);
     
-    private HttpUriRequest request;
+    private HttpRequestBase request;
     
     private Uri requestUrl;
     
@@ -89,25 +80,27 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     public final <T> Pair<Integer, T> execute(final ResponseHandler<T> responseHandler) throws IOException {
         assertNotExecuted();
         createRequest();
-        
-        HttpParams params = request.getParams();
+
+        RequestConfig.Builder configBuilder = RequestConfig.copy(request.getConfig());
+
         if (connectionTimeout > 0) {
-            ConnManagerParams.setTimeout(params, connectionTimeout);
-            HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+            configBuilder.setConnectionRequestTimeout(connectionTimeout);
+            configBuilder.setConnectTimeout(connectionTimeout);
         }
         if (retrievalTimeout > 0) {
-            HttpConnectionParams.setSoTimeout(params, retrievalTimeout);
+            configBuilder.setSocketTimeout(retrievalTimeout);
         }
+
+        request.setConfig(configBuilder.build());
         
         try {
-            beforeExecution(request, context);
             httpRequestDecorator.decorate(request, context);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
         
         Pair<HttpResponse, Pair<Integer, T>> response = factory.getClient().execute(request, new ResponseHandler<Pair<HttpResponse, Pair<Integer, T>>>() {
-            public Pair<HttpResponse, Pair<Integer, T>> handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+            public Pair<HttpResponse, Pair<Integer, T>> handleResponse(HttpResponse response) throws IOException {
                 return 
                     Pair.of(
                         response, 
@@ -125,7 +118,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     public final int execute(final StreamCallback callback) throws IOException {
         return execute(new ResponseHandler<Void>() {
-            public Void handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+            public Void handleResponse(HttpResponse response) throws IOException {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
                     callback.doWithStream(entity.getContent());
@@ -137,7 +130,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     }
 
     private void createRequest() {
-        HttpUriRequest r;
+        HttpRequestBase r;
         switch (methodType) {
             case get:
                 r = new HttpGet(parseRequestUrl(requestUrl).toJavaUri());
@@ -145,13 +138,15 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
             case post:
                 HttpPost postRequest = new HttpPost(parseRequestUrl(requestUrl).toJavaUri());
                 if (multipartBody != null && !multipartBody.isEmpty()) {
-                    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    MultipartEntityBuilder builder =
+                        MultipartEntityBuilder.create()
+                            .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                     
                     for (Pair<String, ? extends ContentBody> multipart : multipartBody) {
-                        entity.addPart(multipart.getLeft(), multipart.getRight());
+                        builder.addPart(multipart.getLeft(), multipart.getRight());
                     }
                     
-                    postRequest.setEntity(entity);
+                    postRequest.setEntity(builder.build());
                 } else if (postBody != null) {
                     try {
                         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postBody, "UTF-8");
@@ -171,18 +166,22 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         } 
         
         this.request = r;
-        
+
+        RequestConfig.Builder configBuilder = RequestConfig.copy(MultiThreadedHttpClientFactory.DEFAULT_REQUEST_CONFIG);
+
         if (followRedirectsSet) {
-            HttpClientParams.setRedirecting(r.getParams(), followRedirects);
+            configBuilder.setRedirectsEnabled(followRedirects);
         }
         
         if (http10Only) {
-            HttpProtocolParams.setVersion(r.getParams(), HttpVersion.HTTP_1_0);
+            r.setProtocolVersion(HttpVersion.HTTP_1_0);
         }
         
         if (useExpectSet) {
-            HttpProtocolParams.setUseExpectContinue(r.getParams(), useExpect);
+            configBuilder.setExpectContinueEnabled(useExpect);
         }
+
+        r.setConfig(configBuilder.build());
         
         // Add headers
         for (Header header : headers) {
@@ -192,13 +191,6 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     
     public abstract Uri parseRequestUrl(Uri requestUrl);
     
-    /**
-     * @deprecated since 2013-07-05. Use {@link #setHttpRequestDecorator(HttpRequestDecorator)} instead
-     * 
-     * @see {@link HttpRequestDecorator}
-     */
-    public abstract void beforeExecution(HttpUriRequest request, HttpContext context) throws Exception;
-
     public final HttpRequestDecorator getHttpRequestDecorator() {
         return httpRequestDecorator;
     }
@@ -270,7 +262,7 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         this.requestUrl = parse(url);
     }
     
-    protected static final Uri parse(String uri) {
+    protected static Uri parse(String uri) {
         if (uri == null) { return null; }
         
         return Uri.parse(uri);
@@ -309,12 +301,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         
         if (lastModifiedHeader != null) {
             String value = lastModifiedHeader.getValue();
-            //we'll need to parse the date and whatnot
-            try {
-                result = DateUtils.parseDate(value);
-            } catch (DateParseException e) {
-                LOGGER.error("Could not parse last-modified header for page",e);
-            }
+
+            // we'll need to parse the date and whatnot
+            result = DateUtils.parseDate(value);
         }
         return result;
     }
@@ -328,9 +317,9 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
     public final Uri getUri() {
         assertExecuted();
         
-        HttpUriRequest finalRequest = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        if (finalRequest instanceof RequestWrapper) {
-            return Uri.fromJavaUri(request.getURI()).resolve(Uri.parse(((RequestWrapper)finalRequest).getOriginal().getRequestLine().getUri()));
+        HttpUriRequest finalRequest = (HttpUriRequest) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
+        if (finalRequest instanceof HttpRequestBase) {
+            return Uri.fromJavaUri(request.getURI()).resolve(Uri.parse(finalRequest.getRequestLine().getUri()));
         } else if (finalRequest != null) {
             return Uri.fromJavaUri(request.getURI()).resolve(Uri.fromJavaUri(finalRequest.getURI()));
         } else {

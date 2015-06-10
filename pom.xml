@@ -11,7 +11,7 @@
 
 	<groupId>uk.ac.warwick.util</groupId>
 	<artifactId>warwickutils-project</artifactId>
-	<version>20150528</version>
+	<version>20150610</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -549,22 +549,22 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.1.1</version>
+				<version>4.3.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
-				<version>4.1.1</version>
+				<version>4.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore-nio</artifactId>
-				<version>4.1.1</version>
+				<version>4.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
-				<version>4.1.1</version>
+				<version>4.3.6</version>
 			</dependency>
 
 			<dependency>

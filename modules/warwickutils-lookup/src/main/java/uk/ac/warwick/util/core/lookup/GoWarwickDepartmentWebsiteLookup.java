@@ -2,7 +2,8 @@ package uk.ac.warwick.util.core.lookup;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 
 import uk.ac.warwick.util.cache.Cache;
@@ -10,10 +11,11 @@ import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
-import uk.ac.warwick.util.httpclient.HttpMethodExecutor;
-import uk.ac.warwick.util.httpclient.SimpleHttpMethodExecutor;
-import uk.ac.warwick.util.httpclient.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor;
+import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
+import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
@@ -24,21 +26,21 @@ import uk.ac.warwick.util.web.UriBuilder;
  * <p>
  * Expected to fail gracefully and will use a Cache to store the results of the
  * lookup.
- * 
+ *
  * @author Mat
  */
 public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsiteLookup {
-    
-    private static final Logger LOGGER = Logger.getLogger(GoWarwickDepartmentWebsiteLookup.class);
-    
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoWarwickDepartmentWebsiteLookup.class);
+
     public static final String CACHE_NAME = "DepartmentWebsiteCache";
-    
+
     private static final Uri DEFAULT_GO_API_URL = Uri.parse("http://sitebuilder.warwick.ac.uk/sitebuilder2/api/go/redirect.json");
-    
+
     private static final long DEFAULT_CACHE_TIMEOUT = 60 * 60 * 24; // Cache for one day
-    
+
     private final Cache<String, String> cache;
-    
+
     public GoWarwickDepartmentWebsiteLookup() {
         this(DEFAULT_GO_API_URL);
     }
@@ -59,9 +61,9 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
         if (!StringUtils.hasText(code)) {
             return null;
         }
-        
+
         code = code.toLowerCase().trim();
-        
+
         try {
             return cache.get(code);
         } catch (CacheEntryUpdateException e) {
@@ -69,49 +71,49 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
             return null;
         }
     }
-    
+
     public static final class WebsiteLookupEntryFactory extends SingularCacheEntryFactory<String, String> {
-        
+
         private final Uri apiUrl;
-        
+
         public WebsiteLookupEntryFactory(Uri goApiUrl) {
             this.apiUrl = goApiUrl;
         }
-        
+
         public String create(String code) throws CacheEntryUpdateException {
             String goPath = "dep-code-" + code;
-            
+
             HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.get);
             ex.setUrl(new UriBuilder(apiUrl).addQueryParameter("path", goPath).toUri());
-            
+
             try {
-                int statusCode = ex.execute();
-                
+                Pair<Integer, String> response = ex.execute(HttpMethodExecutor.RESPONSE_AS_STRING);
+
+                int statusCode = response.getLeft();
+
                 if (statusCode != HttpServletResponse.SC_OK) {
                     throw new CacheEntryUpdateException("Expected SC_OK but returned " + statusCode);
                 }
-                
-                JSONObject obj = new JSONObject(ex.retrieveContentsAsString());
+
+                JSONObject obj = new JSONObject(response.getRight());
                 boolean isFound = obj.getBoolean("found");
-                
+
                 if (isFound) {
                     JSONObject redirect = obj.getJSONObject("redirect");
-                    
+
                     return redirect.getString("target");
                 } else {
                     return null;
                 }
             } catch (Exception e) {
                 throw new CacheEntryUpdateException(e);
-            } finally {
-                ex.close();
             }
         }
 
         public boolean shouldBeCached(String val) {
             return true; // always cache
         }
-        
+
     }
 
 }
