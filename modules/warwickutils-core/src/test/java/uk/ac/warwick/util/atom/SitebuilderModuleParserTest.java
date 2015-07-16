@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.io.WireFeedInput;
+import uk.ac.warwick.util.atom.spring.SitebuilderModule;
 
 public class SitebuilderModuleParserTest extends TestCase {
     @SuppressWarnings("unchecked")

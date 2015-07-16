@@ -6,7 +6,8 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import uk.ac.warwick.util.concurrency.ThreadManager.ThreadSorting;
+import uk.ac.warwick.util.concurrency.spring.ThreadManager;
+import uk.ac.warwick.util.concurrency.spring.ThreadManager.ThreadSorting;
 
 
 public class ThreadManagerTest {

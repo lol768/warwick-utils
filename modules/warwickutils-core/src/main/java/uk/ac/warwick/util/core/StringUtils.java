@@ -1,7 +1,9 @@
 package uk.ac.warwick.util.core;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -353,6 +355,36 @@ public final class StringUtils {
 	public static boolean hasText(String s) {
 		return (s != null && s.trim().length() > 0);
 	}
- 
+
+    /**
+     * Copy the contents of the given Reader into a String.
+     * Closes the reader when done.
+     * @param in the reader to copy from
+     * @return the String that has been copied to
+     * @throws IOException in case of I/O errors
+     */
+    public static String copyToString(Reader in) throws IOException {
+        StringWriter out = new StringWriter();
+
+        try {
+            int byteCount = 0;
+            char[] buffer = new char[8192];
+            int bytesRead = -1;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+                byteCount += bytesRead;
+            }
+            out.flush();
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {}
+            try {
+                out.close();
+            } catch (IOException ex) {}
+        }
+
+        return out.toString();
+    }
 
 }

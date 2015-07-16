@@ -5,14 +5,14 @@ import net.spy.memcached.transcoders.SerializingTranscoder;
 import net.spy.memcached.transcoders.Transcoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
-import org.springframework.util.DigestUtils;
 import uk.ac.warwick.util.cache.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.SocketAddress;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +36,11 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     private static final int SIZE_INFO_THRESHOLD = 100 * 1024; // 100kb
 
     private static final int SIZE_WARN_THRESHOLD = 2 * 1024 * 1024; // 2mb
+
+    private static final String MD5_ALGORITHM_NAME = "MD5";
+
+    private static final char[] HEX_CHARS =
+        {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private static MemcachedClient defaultMemcachedClient;
 
@@ -136,8 +141,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     private String prefix(K key) {
         byte[] encodedKey = memcachedClient.getTranscoder().encode(key).getData();
 
-        // FIXME this requires spring.util but that seems excessive, particularly if we weren't using Spring
-        String keyAsString = DigestUtils.md5DigestAsHex(encodedKey);
+        String keyAsString = md5DigestAsHex(encodedKey);
         return getName() + ":" + keyAsString;
     }
 
@@ -184,7 +188,9 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
 
             @Override
             public CachedData encode(CacheEntry<K, V> o) {
-                Assert.isTrue(o == entry);
+                if (o != entry) {
+                    throw new IllegalStateException();
+                }
 
                 if (data != null) {
                     return data;
@@ -307,5 +313,47 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             defaultMemcachedClient.shutdown();
             defaultMemcachedClient = null;
         }
+    }
+
+    // Some methods from Spring DigestUtils to avoid a dependency on Spring
+    private static String md5DigestAsHex(byte[] bytes) {
+        return digestAsHexString(MD5_ALGORITHM_NAME, bytes);
+    }
+
+    private static String digestAsHexString(String algorithm, byte[] bytes) {
+        char[] hexDigest = digestAsHexChars(algorithm, bytes);
+        return new String(hexDigest);
+    }
+
+    /**
+     * Creates a new {@link MessageDigest} with the given algorithm. Necessary
+     * because {@code MessageDigest} is not thread-safe.
+     */
+    private static MessageDigest getDigest(String algorithm) {
+        try {
+            return MessageDigest.getInstance(algorithm);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("Could not find MessageDigest with algorithm \"" + algorithm + "\"", ex);
+        }
+    }
+
+    private static byte[] digest(String algorithm, byte[] bytes) {
+        return getDigest(algorithm).digest(bytes);
+    }
+
+    private static char[] digestAsHexChars(String algorithm, byte[] bytes) {
+        byte[] digest = digest(algorithm, bytes);
+        return encodeHex(digest);
+    }
+
+    private static char[] encodeHex(byte[] bytes) {
+        char chars[] = new char[32];
+        for (int i = 0; i < chars.length; i = i + 2) {
+            byte b = bytes[i / 2];
+            chars[i] = HEX_CHARS[(b >>> 0x4) & 0xf];
+            chars[i + 1] = HEX_CHARS[b & 0xf];
+        }
+        return chars;
     }
 }

@@ -14,9 +14,9 @@ import org.joda.time.MutableDateTime;
 import org.joda.time.base.BaseDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.termdates.Term.TermType;
 
 import com.google.common.collect.Lists;
@@ -28,7 +28,7 @@ public final class TermFactoryImpl implements TermFactory {
     private LinkedList<Term> termDates;
     
     public TermFactoryImpl() throws IOException {
-        String source = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("termdates.txt")));
+        String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("termdates.txt")));
         this.termDates = new LinkedList<Term>();
         
         for (StringTokenizer st = new StringTokenizer(source, "\n"); st.hasMoreTokens();) {

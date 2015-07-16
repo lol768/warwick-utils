@@ -4,10 +4,10 @@ import java.util.Set;
 
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
+import uk.ac.warwick.util.core.StringUtils;
 
 /**
  * A wrapper onto {@link ScrollableResults} which enforces strong typing and

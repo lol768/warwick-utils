@@ -45,7 +45,7 @@ public class BatchHashTaskTest extends BuildFileTestBase {
     
     @SuppressWarnings("unchecked")
     public void testRun() throws Exception {
-        assertFalse( new FileSystemResource("build/statichashes.properties").exists() );
+        assertFalse(new File("build/statichashes.properties").exists());
         
         executeTarget("run");
         

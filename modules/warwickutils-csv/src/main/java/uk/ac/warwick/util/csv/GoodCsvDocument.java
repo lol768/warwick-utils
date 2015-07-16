@@ -5,8 +5,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import uk.ac.warwick.util.core.StringUtils;
 
 import com.csvreader.CsvReader;
@@ -121,7 +119,9 @@ public final class GoodCsvDocument<T> extends AbstractCSVDocument<T> {
         
         for (T line: getLines()) {
             int numberOfCols = getWriter().getNoOfColumns(line);
-            Assert.isTrue(numberOfCols > 0, "The number of columns must be greater than 0");
+            if (numberOfCols == 0) {
+                throw new IllegalStateException("The number of columns must be greater than 0");
+            }
             
             String[] record = new String[numberOfCols];
             

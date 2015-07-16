@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150617</version>
+		<version>20150716</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -20,9 +20,17 @@
 	</properties>
 
 	<dependencies>
+		<!-- project dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils_spring4-core</artifactId>
+		</dependency>
+
+		<!-- Optional, for uk.ac.warwick.util.hibernate4.spring package -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

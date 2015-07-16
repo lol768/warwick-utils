@@ -4,11 +4,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.MutableDateTime;
 import org.joda.time.base.BaseDateTime;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 
-@Configurable
 public final class TermImpl implements Term {
     
     private final TermFactory termFactory;

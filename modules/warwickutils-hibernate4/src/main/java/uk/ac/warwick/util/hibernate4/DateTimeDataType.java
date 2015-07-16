@@ -6,15 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.internal.util.StringHelper;
 import org.hibernate.internal.util.compare.EqualsHelper;
-import org.hibernate.type.Type;
 import org.hibernate.usertype.UserType;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
@@ -29,11 +24,7 @@ import org.joda.time.chrono.ISOChronology;
 public final class DateTimeDataType implements UserType {
 
     public static final DateTimeDataType INSTANCE = new DateTimeDataType();
-    
-    private static final boolean IS_VALUE_TRACING_ENABLED = LogFactory.getLog(StringHelper.qualifier(Type.class.getName())).isTraceEnabled();
-    private static final Log LOGGER = LogFactory.getLog(DateTimeDataType.class);
-    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"; // for logging
-    
+
     private static final Chronology DEFAULT_CHRONOLOGY = ISOChronology.getInstance();
 
     private static final int[] SQL_TYPES = new int[] { Types.TIMESTAMP };
@@ -50,48 +41,23 @@ public final class DateTimeDataType implements UserType {
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
         Timestamp ts = rs.getTimestamp(names[0]);
         if (ts == null || rs.wasNull()) {
-            if (IS_VALUE_TRACING_ENABLED) {
-                LOGGER.trace("returning null as column: " + names[0]);
-            }
-            
+
             return null;
         }
         
-        DateTime dt = new DateTime(ts.getTime(), DEFAULT_CHRONOLOGY);
-        
-        if (IS_VALUE_TRACING_ENABLED) {
-            LOGGER.trace("returning '" + dt.toString(TIMESTAMP_FORMAT) + "' as column: " + names[0]);
-        }
-        
-        return dt;
+        return new DateTime(ts.getTime(), DEFAULT_CHRONOLOGY);
     }
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            if (IS_VALUE_TRACING_ENABLED) {
-                LOGGER.trace("binding null to parameter: " + index);
-            }
-            
             st.setNull(index, Types.TIMESTAMP);
         } else if (value instanceof ReadableInstant) {
             Timestamp ts = new Timestamp(((ReadableInstant)value).getMillis());
-            if (IS_VALUE_TRACING_ENABLED) {
-                LOGGER.trace("binding '" + new SimpleDateFormat(TIMESTAMP_FORMAT).format((java.util.Date) ts) + "' to parameter: " + index);
-            }
-            
             st.setTimestamp(index, ts);
         } else if (value instanceof Timestamp) {
-            if (IS_VALUE_TRACING_ENABLED) {
-                LOGGER.trace("binding '" + new SimpleDateFormat(TIMESTAMP_FORMAT).format((java.util.Date) value) + "' to parameter: " + index);
-            }            
-            
             st.setTimestamp(index, (Timestamp)value);
         } else if (value instanceof java.sql.Date) {
-            if (IS_VALUE_TRACING_ENABLED) {
-                LOGGER.trace("binding '" + new SimpleDateFormat(TIMESTAMP_FORMAT).format((java.util.Date) value) + "' to parameter: " + index);
-            }            
-            
             st.setDate(index, (java.sql.Date)value);
         } else {
             throw new IllegalStateException("value is a " + value.getClass().getName());

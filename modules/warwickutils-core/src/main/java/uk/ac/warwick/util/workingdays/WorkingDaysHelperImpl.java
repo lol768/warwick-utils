@@ -5,16 +5,14 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-import org.springframework.beans.factory.annotation.Configurable;
+import uk.ac.warwick.util.core.StringUtils;
 
-@Configurable
 public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("ddMMyy");
@@ -22,7 +20,7 @@ public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 	private Set<LocalDate> holidayDates = new HashSet<LocalDate>();
 
 	public WorkingDaysHelperImpl() throws IOException {
-		String source = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("workingdays.txt")));
+		String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("workingdays.txt")));
 
 		for (StringTokenizer st = new StringTokenizer(source, "\n"); st.hasMoreTokens();) {
 			String line = st.nextToken().trim();

@@ -11,6 +11,8 @@ import org.junit.Test;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.io.WireFeedInput;
 import com.sun.syndication.io.WireFeedOutput;
+import uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator;
+import uk.ac.warwick.util.atom.spring.SitebuilderModuleImpl;
 
 public final class SitebuilderModuleGeneratorTest {
     
