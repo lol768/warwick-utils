@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.media.jai.JAI;
@@ -18,7 +19,6 @@ import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-import uk.ac.warwick.util.files.imageresize.JAIImageResizer;
 import uk.ac.warwick.util.files.impl.HashBackedFileReference;
 
 import com.sun.media.jai.codec.ByteArraySeekableStream;
@@ -56,8 +56,12 @@ public final class JAIImageResizerTest {
     @Test
     public void resizeAsFileNotByteArray() throws Exception {
         JAIImageResizer resizer = new JAIImageResizer();
+
         // tallThinSample.jpg is 100 x 165 px
-        File input = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
+        File input = File.createTempFile("tallThinSample", ".jpg");
+        input.deleteOnExit();
+        FileCopyUtils.copy(this.getClass().getResourceAsStream("/tallThinSample.jpg"), new FileOutputStream(input));
+
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int maxWidth = 50;
         int maxHeight = 165;
@@ -108,7 +112,11 @@ public final class JAIImageResizerTest {
         final DateTime lastModified = new DateTime();
         
         JAIImageResizer resizer = new JAIImageResizer();
-        File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
+
+        File f = File.createTempFile("tallThinSample", ".jpg");
+        f.deleteOnExit();
+        FileCopyUtils.copy(this.getClass().getResourceAsStream("/tallThinSample.jpg"), new FileOutputStream(f));
+
         FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
@@ -149,8 +157,11 @@ public final class JAIImageResizerTest {
     @Test
     public void resizeTheWorld() throws Exception {
         JAIImageResizer resizer = new JAIImageResizer();
-       
-        File input = new File(this.getClass().getResource("/pendulum_crop1.jpg").getFile());
+
+        File input = File.createTempFile("pendulum_crop1", ".jpg");
+        input.deleteOnExit();
+        FileCopyUtils.copy(this.getClass().getResourceAsStream("/pendulum_crop1.jpg"), new FileOutputStream(input));
+
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int maxWidth = 350;
         int maxHeight = 149;
@@ -167,8 +178,11 @@ public final class JAIImageResizerTest {
         final DateTime lastModified = new DateTime();
         
         JAIImageResizer resizer = new JAIImageResizer();
-        
-        File f = new File(this.getClass().getResource("/October.jpg").getFile());
+
+        File f = File.createTempFile("October", ".jpg");
+        f.deleteOnExit();
+        FileCopyUtils.copy(this.getClass().getResourceAsStream("/October.jpg"), new FileOutputStream(f));
+
         FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
