@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150716</version>
+		<artifactId>warwickutils-project</artifactId>
+		<version>20150910</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils_spring4-content</artifactId>
+	<artifactId>warwickutils-content</artifactId>
 
 	<name>Warwick Utils :: Content</name>
 	<description>Content parsing and transformation</description>
@@ -23,28 +23,28 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-cache</artifactId>
+			<artifactId>warwickutils-cache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-core</artifactId>
+			<artifactId>warwickutils-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-web</artifactId>
+			<artifactId>warwickutils-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-httpclient4</artifactId>
+			<artifactId>warwickutils-httpclient4</artifactId>
 		</dependency>
 		<!-- lookup for Twitter auth http request decorator -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-lookup</artifactId>
+			<artifactId>warwickutils-lookup</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-core</artifactId>
+			<artifactId>warwickutils-core</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

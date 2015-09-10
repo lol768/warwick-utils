@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150716</version>
+		<artifactId>warwickutils-project</artifactId>
+		<version>20150910</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils_spring4-all</artifactId>
+	<artifactId>warwickutils-all</artifactId>
 
 	<name>Warwick Utils :: All JARs</name>
 	<description>Puts together a WarwickUtils jar bundle</description>
@@ -85,55 +85,55 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-ant</artifactId>
+			<artifactId>warwickutils-ant</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-cache</artifactId>
+			<artifactId>warwickutils-cache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-content</artifactId>
+			<artifactId>warwickutils-content</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-core</artifactId>
+			<artifactId>warwickutils-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-csv</artifactId>
+			<artifactId>warwickutils-csv</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-files</artifactId>
+			<artifactId>warwickutils-files</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-graphite</artifactId>
+			<artifactId>warwickutils-graphite</artifactId>
 		</dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>warwickutils_spring4-hibernate4</artifactId>
+            <artifactId>warwickutils-hibernate4</artifactId>
         </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-httpclient4</artifactId>
+			<artifactId>warwickutils-httpclient4</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-lookup</artifactId>
+			<artifactId>warwickutils-lookup</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-mail</artifactId>
+			<artifactId>warwickutils-mail</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-queue</artifactId>
+			<artifactId>warwickutils-queue</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-web</artifactId>
+			<artifactId>warwickutils-web</artifactId>
 		</dependency>
 	</dependencies>
 </project>

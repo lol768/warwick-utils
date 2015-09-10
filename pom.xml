@@ -10,8 +10,8 @@
 	</parent>
 
 	<groupId>uk.ac.warwick.util</groupId>
-	<artifactId>warwickutils_spring4-project</artifactId>
-	<version>20150716</version>
+	<artifactId>warwickutils-project</artifactId>
+	<version>20150910</version>
 	<packaging>pom</packaging>
 
 	<name>Warwick Utils</name>
@@ -295,77 +295,77 @@
 			<!-- project dependencies -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-all</artifactId>
+				<artifactId>warwickutils-all</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-ant</artifactId>
+				<artifactId>warwickutils-ant</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-cache</artifactId>
+				<artifactId>warwickutils-cache</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-content</artifactId>
+				<artifactId>warwickutils-content</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-core</artifactId>
+				<artifactId>warwickutils-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-csv</artifactId>
+				<artifactId>warwickutils-csv</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-files</artifactId>
+				<artifactId>warwickutils-files</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-graphite</artifactId>
+				<artifactId>warwickutils-graphite</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-hibernate4</artifactId>
+				<artifactId>warwickutils-hibernate4</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-httpclient4</artifactId>
+				<artifactId>warwickutils-httpclient4</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-lookup</artifactId>
+				<artifactId>warwickutils-lookup</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-mail</artifactId>
+				<artifactId>warwickutils-mail</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-queue</artifactId>
+				<artifactId>warwickutils-queue</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-web</artifactId>
+				<artifactId>warwickutils-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils_spring4-core</artifactId>
+				<artifactId>warwickutils-core</artifactId>
 				<version>${project.version}</version>
 				<type>test-jar</type>
 				<scope>test</scope>
@@ -487,7 +487,7 @@
 
 			<dependency>
 				<groupId>uk.ac.warwick.sso</groupId>
-				<artifactId>sso-client_spring4</artifactId>
+				<artifactId>sso-client</artifactId>
 				<version>2.4</version>
 				<exclusions>
 					<exclusion>
@@ -496,7 +496,7 @@
 					</exclusion>
                     <exclusion>
                         <groupId>uk.ac.warwick.util</groupId>
-                        <artifactId>warwickutils_spring4-web</artifactId>
+                        <artifactId>warwickutils-web</artifactId>
                     </exclusion>
 				</exclusions>
 			</dependency>

@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150716</version>
+		<artifactId>warwickutils-project</artifactId>
+		<version>20150910</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils_spring4-httpclient4</artifactId>
+	<artifactId>warwickutils-httpclient4</artifactId>
 
 	<name>Warwick Utils :: HttpClient 4</name>
 	<description>HTTP fetching architecture for HttpComponents 4.x</description>
@@ -23,11 +23,11 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-core</artifactId>
+			<artifactId>warwickutils-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-web</artifactId>
+			<artifactId>warwickutils-web</artifactId>
 		</dependency>
 
 		<dependency>
@@ -37,7 +37,7 @@
 
 		<dependency>
 			<groupId>uk.ac.warwick.sso</groupId>
-			<artifactId>sso-client_spring4</artifactId>
+			<artifactId>sso-client</artifactId>
 		</dependency>
 
 		<dependency>

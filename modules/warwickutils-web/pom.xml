@@ -5,12 +5,12 @@
 
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
-		<artifactId>warwickutils_spring4-project</artifactId>
-		<version>20150716</version>
+		<artifactId>warwickutils-project</artifactId>
+		<version>20150910</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>warwickutils_spring4-web</artifactId>
+	<artifactId>warwickutils-web</artifactId>
 
 	<name>Warwick Utils :: Web</name>
 	<description>Helpers for web applications</description>
@@ -23,11 +23,11 @@
 		<!-- project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-core</artifactId>
+			<artifactId>warwickutils-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>warwickutils_spring4-cache</artifactId>
+			<artifactId>warwickutils-cache</artifactId>
 		</dependency>
 
 		<!-- Optional dependency on Spring for uk.ac.warwick.util.web.spring packages -->
@@ -69,7 +69,7 @@
 
 		<dependency>
 			<groupId>uk.ac.warwick.sso</groupId>
-			<artifactId>sso-client_spring4</artifactId>
+			<artifactId>sso-client</artifactId>
 		</dependency>
 
 		<dependency>
