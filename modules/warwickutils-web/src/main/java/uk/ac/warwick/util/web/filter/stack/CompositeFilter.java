@@ -74,7 +74,9 @@ public final class CompositeFilter implements Filter {
         }
     }
     public void destroy() {
-        filters.forEach(Filter::destroy);
+        for (Filter filter: filters) {
+          filter.destroy();
+        }
     }
 
 }
