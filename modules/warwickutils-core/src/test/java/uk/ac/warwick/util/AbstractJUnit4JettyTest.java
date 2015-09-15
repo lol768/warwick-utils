@@ -14,7 +14,18 @@ import org.mortbay.jetty.servlet.WebApplicationHandler;
 import org.mortbay.servlet.MultiPartFilter;
 import org.mortbay.util.InetAddrPort;
 
-
+/**
+ * Adds support for firing up a Jetty server equipped with the servlet mappings of
+ * your choice - perfect for unit testing something that needs to call a web service
+ * without depending on the outside world.
+ *
+ * You will need your own @BeforeClass method where you call startServer, passing in
+ * a map of servlets. Any other URL will 404. Then pass `serverAddress` to whatever
+ * is making the requests.
+ *
+ * Extends @AbstractJUnit4FileBasedTest though it doesn't depend on it - I think it's
+ * for some tests that needed support for both.
+ */
 public abstract class AbstractJUnit4JettyTest extends AbstractJUnit4FileBasedTest {
     private static final String SITEBUILDER_CONTENT_ENCODING = "ISO-8859-1";
     // SBTWO-6192 Pick a random port between 20000 and 30000
@@ -160,6 +171,18 @@ public abstract class AbstractJUnit4JettyTest extends AbstractJUnit4FileBasedTes
     public static class GatewayTimeoutServlet extends StatusCodeSettingServlet {
         @Override
         int getCode() {
+            return HttpServletResponse.SC_GATEWAY_TIMEOUT;
+        }
+    }
+
+    public static class SlowServlet extends StatusCodeSettingServlet {
+        @Override
+        int getCode() {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Stop interrupting me", e);
+            }
             return HttpServletResponse.SC_GATEWAY_TIMEOUT;
         }
     }
