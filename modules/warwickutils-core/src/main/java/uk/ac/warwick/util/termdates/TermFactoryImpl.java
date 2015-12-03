@@ -109,9 +109,14 @@ public final class TermFactoryImpl implements TermFactory {
             DateTime start = dt.toDateTime();
             dt.addWeeks(1);
             DateTime end = dt.toDateTime();
-            
-            weeks.add(Pair.of(weekNumber, new Interval(start, end)));
-            weekNumber = autumnTerm.getAcademicWeekNumber(dt);
+
+            int newWeekNumber = autumnTerm.getAcademicWeekNumber(dt);
+
+            if (newWeekNumber > 0) {
+                weeks.add(Pair.of(weekNumber, new Interval(start, end)));
+            }
+
+            weekNumber = newWeekNumber;
         }
         
         return weeks;

@@ -62,7 +62,7 @@ public final class TermFactoryImplTest {
     public void getAcademicWeeksForYear() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
         List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2007, DateTimeConstants.APRIL, 23));
-        assertEquals(53, weeks.size());
+        assertEquals(52, weeks.size());
         
         /*
          * 021006;091206;a
@@ -117,6 +117,39 @@ public final class TermFactoryImplTest {
                 new DateMidnight(2007, DateTimeConstants.SEPTEMBER, 24), 
                 new DateMidnight(2007, DateTimeConstants.OCTOBER, 1)
             ), 
+            week52.getRight()
+        );
+    }
+
+    @Test
+    public void getAcademicWeeksForYear2015() throws Exception {
+        TermFactoryImpl factory = new TermFactoryImpl();
+        List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2015, DateTimeConstants.NOVEMBER, 1));
+        assertEquals(52, weeks.size());
+
+        /*
+         * 051015;121215;a
+         * 110116;190316;sp
+         * 250416;020716;su
+         */
+
+        Pair<Integer, Interval> week1 = weeks.get(0);
+        assertEquals(1, week1.getLeft().intValue());
+        assertEquals(
+            new Interval(
+                new DateMidnight(2015, DateTimeConstants.OCTOBER, 5),
+                new DateMidnight(2015, DateTimeConstants.OCTOBER, 12)
+            ),
+            week1.getRight()
+        );
+
+        Pair<Integer, Interval> week52 = weeks.get(51);
+        assertEquals(52, week52.getLeft().intValue());
+        assertEquals(
+            new Interval(
+                new DateMidnight(2016, DateTimeConstants.SEPTEMBER, 26),
+                new DateMidnight(2016, DateTimeConstants.OCTOBER, 3)
+            ),
             week52.getRight()
         );
     }
