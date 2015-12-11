@@ -131,7 +131,7 @@ public class ConfigurableFilterStackTest {
             inSequence(filterOrder);
         }});
         
-        FilterStackSet set = new FilterStackSet(asList(f1), asList("/api/dataentry/*"), asList("/api/dataentry/entries.*"));
+        FilterStackSet set = new FilterStackSet(asList(f1), asList("/api/dataentry/*"), asList("/api/*/entries.*"));
         
         filter = new ConfigurableFilterStack(asList(set));
         filter.afterPropertiesSet();
