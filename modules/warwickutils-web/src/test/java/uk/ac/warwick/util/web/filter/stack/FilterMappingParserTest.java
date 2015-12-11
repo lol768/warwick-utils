@@ -38,6 +38,14 @@ public class FilterMappingParserTest {
         assertDoesNotMatch("*.css",
                 "/render/css", "/edit/page.css/more");
     }
+
+    @Test public void wildcardExtension() {
+        assertMatches("/render/renderPage.*",
+                "/render/renderPage.htm", "/render/renderPage.html");
+        assertDoesNotMatch("/render/renderPage.*",
+                "/render/renderPage/anything", "/hello", "/Render",
+                "/context/render/", "/context/render/renderPage.htm");
+    }
     
     @Test public void exact() {
         assertMatches("/edit/api/deleteWebsite","/edit/api/deleteWebsite");

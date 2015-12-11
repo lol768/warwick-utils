@@ -15,7 +15,8 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
     }
 
     private static boolean matchesExtension(String requestPath, String mapping) {
-        return (mapping.startsWith("*.") && FileUtils.extensionMatches(requestPath, mapping.substring(2)));
+        return (mapping.startsWith("*.") && FileUtils.extensionMatches(requestPath, mapping.substring(2))) ||
+               (mapping.endsWith(".*") && mapping.substring(0, mapping.length() - 2).equals(FileUtils.getFileNameWithoutExtension(requestPath)));
     }
 
     /**
