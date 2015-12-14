@@ -122,6 +122,41 @@ public final class TermFactoryImplTest {
     }
 
     @Test
+    public void getAcademicWeeksForYear2014() throws Exception {
+        // 2014/15 is special, it has 53 weeks
+
+        TermFactoryImpl factory = new TermFactoryImpl();
+        List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2014, DateTimeConstants.NOVEMBER, 1));
+        assertEquals(53, weeks.size());
+
+        /*
+         * 290914;061214;a
+         * 050115;140315;sp
+         * 200415;270615;su
+         */
+
+        Pair<Integer, Interval> week1 = weeks.get(0);
+        assertEquals(1, week1.getLeft().intValue());
+        assertEquals(
+            new Interval(
+                new DateMidnight(2014, DateTimeConstants.SEPTEMBER, 29),
+                new DateMidnight(2014, DateTimeConstants.OCTOBER, 6)
+            ),
+            week1.getRight()
+        );
+
+        Pair<Integer, Interval> week53 = weeks.get(52);
+        assertEquals(53, week53.getLeft().intValue());
+        assertEquals(
+            new Interval(
+                new DateMidnight(2015, DateTimeConstants.SEPTEMBER, 28),
+                new DateMidnight(2015, DateTimeConstants.OCTOBER, 5)
+            ),
+            week53.getRight()
+        );
+    }
+
+    @Test
     public void getAcademicWeeksForYear2015() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
         List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2015, DateTimeConstants.NOVEMBER, 1));

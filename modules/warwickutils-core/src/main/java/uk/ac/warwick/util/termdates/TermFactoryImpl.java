@@ -102,21 +102,24 @@ public final class TermFactoryImpl implements TermFactory {
         while (autumnTerm.getTermType() != TermType.autumn) {
             autumnTerm = getPreviousTerm(autumnTerm);
         }
+
+        Term nextYearAutumnTerm = autumnTerm;
+        do {
+            nextYearAutumnTerm = getNextTerm(nextYearAutumnTerm);
+        } while (nextYearAutumnTerm.getTermType() != TermType.autumn);
         
         MutableDateTime dt = autumnTerm.getStartDate().withMillisOfDay(0).withDayOfWeek(DateTimeConstants.MONDAY).toMutableDateTime();
         int weekNumber = autumnTerm.getAcademicWeekNumber(dt);
-        while (weekNumber > 0) {            
+        while (weekNumber > 0 && dt.isBefore(nextYearAutumnTerm.getStartDate())) {
             DateTime start = dt.toDateTime();
             dt.addWeeks(1);
             DateTime end = dt.toDateTime();
 
-            int newWeekNumber = autumnTerm.getAcademicWeekNumber(dt);
+            weekNumber = autumnTerm.getAcademicWeekNumber(start);
 
-            if (newWeekNumber > 0) {
+            if (weekNumber > 0) {
                 weeks.add(Pair.of(weekNumber, new Interval(start, end)));
             }
-
-            weekNumber = newWeekNumber;
         }
         
         return weeks;
