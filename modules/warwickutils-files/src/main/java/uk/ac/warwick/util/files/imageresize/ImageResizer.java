@@ -9,7 +9,7 @@ import uk.ac.warwick.util.files.FileReference;
 
 public interface ImageResizer {
     
-    public enum FileType { png, gif, jpg }
+    enum FileType { png, gif, jpg }
 
     void renderResized(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType)
             throws IOException;
