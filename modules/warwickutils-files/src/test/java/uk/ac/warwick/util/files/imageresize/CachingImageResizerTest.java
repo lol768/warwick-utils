@@ -1,34 +1,27 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
+import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.hash.HashString;
+import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
+import uk.ac.warwick.util.files.impl.HashBackedFileReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.util.FileCopyUtils;
-
-import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
-import uk.ac.warwick.util.files.FileData;
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.hash.HashString;
-import uk.ac.warwick.util.files.imageresize.CachingImageResizer;
-import uk.ac.warwick.util.files.imageresize.CachingImageResizer.ImageCache;
-import uk.ac.warwick.util.files.imageresize.ImageResizer;
-import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
+import static org.junit.Assert.*;
 
 public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
 
     private File cacheRoot;
     private File contentRoot;
-    private ImageCache cache;
+    private ScaledImageCache cache;
 
     @Before
     public void createCache() {
@@ -36,7 +29,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
         contentRoot = new File(getRoot(),"content");
         cacheRoot.mkdir();
         contentRoot.mkdirs();
-        cache = new CachingImageResizer.FileSystemScaledImageCache(cacheRoot, "@");
+        cache = new FileSystemScaledImageCache(cacheRoot, "@");
     }
     
     @Test
