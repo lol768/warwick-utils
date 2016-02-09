@@ -20,7 +20,7 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
     
     public void testUrlWithExtraParams() throws MalformedURLException {
         String videoId = "TFl-iBlW14Y";
-        String address = "http://www.youtube.com/watch?param=hello&v="+videoId+"&mode=related&search=";
+        String address = "http://www.youtube.com/watch?param=hello&amp;v="+videoId+"&amp;mode=related&search=";
         checkAddressWorks(videoId, address);
     }
     
@@ -54,7 +54,7 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
         String url = address;
         YouTubeMediaUrlHandler handler = new YouTubeMediaUrlHandler();
         assertTrue("should recognise url", handler.recognises(url));
-        assertEquals("http://www.youtube.com/embed/"+videoId + "?wmode=transparent", handler.getFlashUrl(url));
+        assertEquals("http://www.youtube.com/embed/"+videoId + "?wmode=transparent&rel=0", handler.getFlashUrl(url));
     }
     
     private void checkAddressDoesntWork(String videoId, String address) throws MalformedURLException {
