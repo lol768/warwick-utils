@@ -16,7 +16,7 @@ import uk.ac.warwick.util.httpclient.WarwickTagUrlMangler;
 import uk.ac.warwick.util.web.Uri;
 
 public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHttpMethodExecutor {
-    
+
 	private static final long serialVersionUID = -2713163190560555670L;
 
 	private boolean setCookie;
@@ -24,26 +24,26 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
     private boolean substituteTags;
 
     private final User user;
-    
+
     public AbstractWarwickAwareHttpMethodExecutor(Method method, Uri requestUrl, String theCookieDomain, User user) {
         super(method, requestUrl);
         this.user = user;
 
         super.setHttpRequestDecorator(new WarwickAwareHttpRequestDecorator(theCookieDomain, user));
     }
-    
+
     public AbstractWarwickAwareHttpMethodExecutor(Method method, String requestUrl, String theCookieDomain, User user) {
         this(method, parse(requestUrl), theCookieDomain, user);
     }
-    
+
     final boolean isSetCookie() {
         return setCookie;
     }
-    
+
     final boolean isSubstituteTags() {
         return substituteTags;
     }
-    
+
     public final void setSSOCookie(final boolean cookie) {
         this.setCookie = cookie;
     }
@@ -93,6 +93,7 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
 
                 BasicClientCookie ssoCookie = new BasicClientCookie("WarwickSSO", user.getOldWarwickSSOToken());
                 ssoCookie.setDomain(cookieDomain);
+                ssoCookie.setAttribute("domain", cookieDomain);
                 ssoCookie.setPath("/");
                 store.addCookie(ssoCookie);
 
