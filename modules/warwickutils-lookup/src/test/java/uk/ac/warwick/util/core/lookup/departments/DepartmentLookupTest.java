@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -58,8 +59,18 @@ public class DepartmentLookupTest {
     public void testGetAllDepartments() throws Exception {
         Collection<Department> allDepartments = departmentLookup.getAllDepartments();
 
-        assertNotNull(allDepartments);
         assertFalse(allDepartments.isEmpty());
+
+        // Assert that the list of departments is sorted by the ordering on Department
+        Department lastDepartment = null;
+
+        for (Department department : allDepartments) {
+            if (lastDepartment != null) {
+                assertTrue(lastDepartment.compareTo(department) <= 0);
+            }
+
+            lastDepartment = department;
+        }
     }
 
     @Test

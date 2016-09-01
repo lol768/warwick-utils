@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.core.lookup.departments;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -18,12 +19,9 @@ import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory<String, HashMap<String, Department>>, DepartmentNameLookup {
+public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory<String, LinkedHashMap<String, Department>>, DepartmentNameLookup {
 
     private static final String CACHE_NAME = "departments";
     private static final String DEPTS_KEY = "all.departments";
@@ -31,7 +29,7 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
 
     private static final Logger LOGGER = Logger.getLogger(DepartmentLookupImpl.class);
 
-    private final Cache<String, HashMap<String, Department>> cache;
+    private final Cache<String, LinkedHashMap<String, Department>> cache;
 
     private final String url;
 
@@ -82,26 +80,37 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     }
 
     @Override
-    public HashMap<String, Department> create(String ignored) throws CacheEntryUpdateException {
+    public LinkedHashMap<String, Department> create(String ignored) throws CacheEntryUpdateException {
         HttpGet get = new HttpGet(this.url);
         try {
             LOGGER.info("Updating departments from " + this.url);
 
-            return new SimpleHttpMethodExecutor(Method.get, this.url).execute(new ResponseHandler<HashMap<String, Department>>() {
+            return new SimpleHttpMethodExecutor(Method.get, this.url).execute(new ResponseHandler<LinkedHashMap<String, Department>>() {
                 @Override
-                public HashMap<String, Department> handleResponse(HttpResponse response) throws IOException {
+                public LinkedHashMap<String, Department> handleResponse(HttpResponse response) throws IOException {
                     HttpEntity entity = response.getEntity();
 
                     try {
-                        JSONArray depts = new JSONArray(EntityUtils.toString(entity));
-                        HashMap<String, Department> deptMap = new HashMap<>();
+                        JSONArray jsonDepartments = new JSONArray(EntityUtils.toString(entity));
 
-                        for (int i = 0; i < depts.length(); i++) {
-                            JSONObject dept = depts.getJSONObject(i);
-                            deptMap.put(dept.get("code").toString(), DepartmentLookupImpl.parseJsonToDepartment(dept));
+                        ArrayList<Department> departments = new ArrayList<>();
+
+                        for (int i = 0; i < jsonDepartments.length(); i++) {
+                            JSONObject jsonDepartment = jsonDepartments.getJSONObject(i);
+                            Department department = DepartmentLookupImpl.parseJsonToDepartment(jsonDepartment);
+
+                            departments.add(department);
                         }
 
-                        return deptMap;
+                        Collections.sort(departments);
+
+                        LinkedHashMap<String, Department> departmentsMap = new LinkedHashMap<>();
+
+                        for (Department department : departments) {
+                            departmentsMap.put(department.getCode(), department);
+                        }
+
+                        return departmentsMap;
                     } catch (Exception e) {
                         throw new IOException(e);
                     }
@@ -114,7 +123,7 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     }
 
     @Override
-    public Map<String, HashMap<String, Department>> create(List<String> keys) throws CacheEntryUpdateException {
+    public Map<String, LinkedHashMap<String, Department>> create(List<String> keys) throws CacheEntryUpdateException {
         throw new CacheEntryUpdateException("Unsupported cache operation");
     }
 
@@ -124,7 +133,7 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     }
 
     @Override
-    public boolean shouldBeCached(HashMap<String, Department> val) {
+    public boolean shouldBeCached(LinkedHashMap<String, Department> val) {
         return true;
     }
 
