@@ -61,9 +61,9 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     }
 
     @Override
-    public Collection<Department> getAllDepartments() {
+    public List<Department> getAllDepartments() {
         try {
-            return this.cache.get(DEPTS_KEY).values();
+            return new ArrayList<>(this.cache.get(DEPTS_KEY).values());
         } catch (CacheEntryUpdateException e) {
             LOGGER.error("Error updating cache, trying to fetch all entries", e);
             return null;

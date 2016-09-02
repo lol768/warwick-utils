@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -57,7 +58,7 @@ public class DepartmentLookupTest {
 
     @Test
     public void testGetAllDepartments() throws Exception {
-        Collection<Department> allDepartments = departmentLookup.getAllDepartments();
+        List<Department> allDepartments = departmentLookup.getAllDepartments();
 
         assertFalse(allDepartments.isEmpty());
 
