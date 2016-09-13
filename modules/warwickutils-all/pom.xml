@@ -97,6 +97,10 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-convert</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-core</artifactId>
 		</dependency>
 		<dependency>

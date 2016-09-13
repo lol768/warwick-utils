@@ -185,8 +185,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 					<showDeprecation>true</showDeprecation>
@@ -311,6 +311,11 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>warwickutils-content</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>warwickutils-convert</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -538,22 +543,22 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.3.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpcore</artifactId>
-				<version>4.3.3</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpcore-nio</artifactId>
-				<version>4.3.3</version>
+				<version>4.5.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
-				<version>4.3.6</version>
+				<version>4.5.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.4.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore-nio</artifactId>
+				<version>4.4.5</version>
 			</dependency>
 
 			<dependency>
@@ -676,6 +681,7 @@
 		<module>modules/warwickutils-ant</module>
 		<module>modules/warwickutils-cache</module>
 		<module>modules/warwickutils-content</module>
+		<module>modules/warwickutils-convert</module>
 		<module>modules/warwickutils-core</module>
 		<module>modules/warwickutils-csv</module>
 		<module>modules/warwickutils-files</module>
