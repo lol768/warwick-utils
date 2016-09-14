@@ -11,7 +11,7 @@ import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 public class WebServiceHttpMethodExecutorTest extends TestCase {
 
     public void testItWorks() throws Exception {
-        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, "http://www.warwick.ac.uk", null, new User());
+        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, "http://www.warwick.ac.uk", ".warwick.ac.uk", new User());
 
         // this depends on us having a website. That is probably the case.
 
@@ -34,7 +34,7 @@ public class WebServiceHttpMethodExecutorTest extends TestCase {
         //only if logged in
         user.setIsLoggedIn(true);
 
-        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, "http://www.warwick.ac.uk", null, user);
+        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.get, "http://www.warwick.ac.uk", ".warwick.ac.uk", user);
         ex.setSSOCookie(true);
 
         // this depends on us having a website. That is probably the case.
@@ -49,7 +49,7 @@ public class WebServiceHttpMethodExecutorTest extends TestCase {
     }
 
     public void testUnsupportedOperation() throws Exception {
-        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.head, "http://www.warwick.ac.uk", null, new User());
+        HttpMethodExecutor ex = new WebServiceHttpMethodExecutor(Method.head, "http://www.warwick.ac.uk", ".warwick.ac.uk", new User());
 
         try {
             ex.setHttpClientFactoryStrategyAsString("always");
