@@ -4,6 +4,8 @@ import uk.ac.warwick.util.web.Uri;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.function.Consumer;
 
 public interface ConversionService {
 
@@ -37,5 +39,9 @@ public interface ConversionService {
     Uri getEncodedFileUrl(ConversionStatus status) throws IOException;
 
     Uri getScreenshotUrl(ConversionStatus status) throws IOException;
+
+    void getEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
+
+    void getScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
 
 }

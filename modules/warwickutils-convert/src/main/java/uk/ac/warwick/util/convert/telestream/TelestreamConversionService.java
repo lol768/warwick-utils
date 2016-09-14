@@ -5,6 +5,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.util.IOUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -38,11 +41,13 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TelestreamConversionService implements ConversionService, InitializingBean, DisposableBean {
@@ -87,7 +92,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             try {
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 
-                return ConversionMedia.fromJSON(json);
+                return TelestreamConversionMedia.fromJSON(json);
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -104,7 +109,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             try {
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 
-                return ConversionMedia.fromJSON(json);
+                return TelestreamConversionMedia.fromJSON(json);
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -125,7 +130,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             try {
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 
-                return ConversionStatus.fromJSON(json);
+                return TelestreamConversionStatus.fromJSON(json);
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -144,7 +149,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             try {
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
 
-                return ConversionStatus.fromJSON(json);
+                return TelestreamConversionStatus.fromJSON(json);
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -187,6 +192,34 @@ public class TelestreamConversionService implements ConversionService, Initializ
         }
 
         return generateS3PrivateUrl(status.getScreenshots().iterator().next());
+    }
+
+    private void handleS3Object(String objectKey, Consumer<InputStream> consumer) {
+        S3Object object = s3.getObject(new GetObjectRequest(bucketName, objectKey));
+        final InputStream is = object.getObjectContent();
+        try {
+            consumer.accept(object.getObjectContent());
+        } finally {
+            IOUtils.closeQuietly(is, null);
+        }
+    }
+
+    @Override
+    public void getEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
+        if (status.getStatus() != ConversionStatus.Status.success || status.getFiles().isEmpty()) {
+            throw new ConversionException("Can only get encoded file once encoding is successful");
+        }
+
+        handleS3Object(status.getFiles().iterator().next(), consumer);
+    }
+
+    @Override
+    public void getScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
+        if (status.getStatus() != ConversionStatus.Status.success || status.getScreenshots().isEmpty()) {
+            throw new ConversionException("Conversion not successful or no screenshots generated");
+        }
+
+        handleS3Object(status.getScreenshots().iterator().next(), consumer);
     }
 
     private <T> T get(String url, ResponseHandler<T> handler) throws IOException {
