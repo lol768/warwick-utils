@@ -1,20 +1,14 @@
 package uk.ac.warwick.util.files.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.google.common.io.ByteSource;
+import com.google.common.io.Files;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.core.io.InputStreamSource;
-
-import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.core.spring.FileUtils;
-import uk.ac.warwick.util.files.CopyToOutput;
 import uk.ac.warwick.util.files.FileData;
-import uk.ac.warwick.util.files.hash.HashString;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * FileData that is stored on the filesystem. This doesn't make any
@@ -22,51 +16,32 @@ import uk.ac.warwick.util.files.hash.HashString;
  * stored under a hash-based filename - just that the bytes are on disk.
  */
 @Configurable
-public abstract class AbstractFileBackedFileData implements FileData, InputStreamSource {
+public abstract class AbstractFileBackedFileData implements FileData {
 
     @Autowired(required = true)
     private DeletionBinHolder deletionBinHolder;
 
+    @Override
     public final boolean isExists() {
         return getFile().exists(); 
     }
 
-    public final long length() {
-        return getFile().length();
-    }
-    
-    public final HashString overwrite(final File fileToCopy) throws IOException {
-        return overwrite(new CopyToOutput(fileToCopy));
+    @Override
+    public ByteSource asByteSource() {
+        return Files.asByteSource(getFile());
     }
 
-    public final HashString overwrite(final byte[] contents) throws IOException {
-        return overwrite(new CopyToOutput(new ByteArrayInputStream(contents)));
+    @Override
+    public final URI getFileLocation() {
+        return getFile().toURI();
     }
 
-    public final HashString overwrite(final String contents) throws IOException {
-        return overwrite(StringUtils.create(contents));
-    }
-
-    public final InputStream getInputStream() throws IOException {
-        return new FileInputStream(getFile());
-    }
-    
-    public final InputStreamSource getInputStreamSource() {
-        return this;
-    }
-
-    public final String getRealPath() {
-        return getFile().getAbsolutePath();
-    }
-
+    @Override
     public final boolean isFileBacked() {
         return true;
     }
 
-    public final File getRealFile() {
-        return getFile();
-    }
-    
+    @Override
     public final boolean delete() {
         // Sometimes, files don't exist any more. The end result is still "the file doesn't exist", so just quit early.
         if (!isExists()) { return true; }

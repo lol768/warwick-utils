@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.files;
 
-import java.io.File;
+import com.google.common.io.ByteSource;
 
 /**
  * Return the same strategy all the time, for easy testing.
@@ -20,11 +20,7 @@ public final class StaticFileReferenceCreationStrategy implements FileReferenceC
         return new StaticFileReferenceCreationStrategy(Target.hash);
     }
     
-    public Target select(UploadedFileDetails file) {
-        return strategy;
-    }
-
-    public Target select(File temporaryFile) {
+    public Target select(ByteSource in) {
         return strategy;
     }
 

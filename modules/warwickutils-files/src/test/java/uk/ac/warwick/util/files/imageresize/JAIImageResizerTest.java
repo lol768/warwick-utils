@@ -20,7 +20,7 @@ import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
 import com.sun.media.jai.codec.ByteArraySeekableStream;
 
@@ -118,7 +118,7 @@ public final class JAIImageResizerTest {
         f.deleteOnExit();
         FileCopyUtils.copy(this.getClass().getResourceAsStream("/tallThinSample.jpg"), new FileOutputStream(f));
 
-        FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
         
@@ -185,7 +185,7 @@ public final class JAIImageResizerTest {
         f.deleteOnExit();
         FileCopyUtils.copy(this.getClass().getResourceAsStream("/October.jpg"), new FileOutputStream(f));
 
-        FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
         

@@ -1,12 +1,10 @@
 package uk.ac.warwick.util.files;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.joda.time.DateTime;
-
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
+
+import java.io.IOException;
 
 /**
  * A file reference backed by local file system data.
@@ -30,13 +28,11 @@ public interface LocalFileReference extends FileReference {
      * what you want. Avoid it unless you do really need it, though.
      */
     String getPath();
-    
-    File getFile();
 
     /**
      * This method should only be called on {@link LocalFileReference}s and
      * should definitely <strong>not</strong> exist on
-     * {@link HashBackedFileReference} unless we store each hash reference in
+     * {@link FileBackedHashFileReference} unless we store each hash reference in
      * the database by ID pointing from the content fetcher to the hash. This
      * used to delegate to the {@link FileData} but this is unsafe as a way of
      * determining the last modified date of hash references. See SBTWO-3630

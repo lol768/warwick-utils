@@ -1,31 +1,29 @@
 package uk.ac.warwick.util.files;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import com.google.common.io.ByteSource;
 import org.joda.time.DateTime;
-
 import uk.ac.warwick.util.core.spring.FileUtils;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.impl.AbstractFileReference;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class MockFileStore implements FileStore {
-    
+
+    @Override
     public FileReference get(Storeable storeable) throws FileNotFoundException {
         return null;
     }
 
+    @Override
     public LocalFileReference getForPath(Storeable storeable, String path) throws FileNotFoundException {
         return null;
     }
 
-    public FileReference store(Storeable storeable, String storeName, UploadedFileDetails uploadedFile) throws IOException {
-        return null;
-    }
-
-    public LocalFileReference store(Storeable storeable, String storeName, UsingOutput delegate) throws IOException {
+    @Override
+    public FileReference store(Storeable storeable, String storeName, ByteSource in) throws IOException {
         return null;
     }
 
@@ -67,10 +65,6 @@ public class MockFileStore implements FileStore {
 
         public boolean isLocal() {
             return true;
-        }
-
-        public File getFile() {
-            return null;
         }
 
         public LocalFileReference renameTo(String path) throws IOException {

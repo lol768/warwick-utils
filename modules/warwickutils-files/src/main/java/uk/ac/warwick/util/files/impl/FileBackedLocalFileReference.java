@@ -1,20 +1,16 @@
 package uk.ac.warwick.util.files.impl;
 
+import com.google.common.io.ByteSource;
+import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
+import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.files.*;
+import uk.ac.warwick.util.files.Storeable.StorageStrategy;
+import uk.ac.warwick.util.files.hash.HashString;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
-
-import uk.ac.warwick.util.files.FileData;
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.FileStore.UsingOutput;
-import uk.ac.warwick.util.files.LocalFileReference;
-import uk.ac.warwick.util.files.LocalFileStore;
-import uk.ac.warwick.util.files.Storeable;
-import uk.ac.warwick.util.files.Storeable.StorageStrategy;
-import uk.ac.warwick.util.files.hash.HashString;
 
 /**
  * A type of reference that backs on to a single file, and doesn't offer
@@ -28,7 +24,7 @@ import uk.ac.warwick.util.files.hash.HashString;
  * you can create one of these with a null FileStore, being aware that
  * some operations (copy) will not work.
  */
-public final class FileBackedFileReference extends AbstractFileReference implements LocalFileReference {
+public final class FileBackedLocalFileReference extends AbstractFileReference implements LocalFileReference {
 
     private final File file;
     private final Data data;
@@ -42,7 +38,7 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
      * @param f
      * @param thepath The URL path to identify the file by. 
      */
-    public FileBackedFileReference(LocalFileStore store, File f, String thepath, StorageStrategy theStorageStrategy) {
+    public FileBackedLocalFileReference(LocalFileStore store, File f, String thepath, StorageStrategy theStorageStrategy) {
         this.fileStore = store;
         this.file = f;
         this.path = FilenameUtils.separatorsToUnix(thepath);
@@ -50,26 +46,32 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
         this.storageStrategy = theStorageStrategy;
     }
 
+    @Override
     public FileData getData() {
         return data;
     }
 
+    @Override
     public String getFileName() {
         return uk.ac.warwick.util.core.spring.FileUtils.getFileName(path);
     }
 
+    @Override
     public String getPath() {
         return path;
     }
-    
+
+    @Override
     public HashString getHash() {
         return null;
     }
-    
+
+    @Override
     public LocalFileReference copyTo(FileReference target) throws IOException {
         return copyTo(target.toLocalReference().getPath());
     }
-    
+
+    @Override
     public LocalFileReference copyTo(String target) throws IOException {
         return copyTo(new FileStoreable(storageStrategy, target));
     }
@@ -77,11 +79,13 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
     private LocalFileReference copyTo(Storeable target) throws IOException {
         return fileStore.copy(this, target);
     }
-    
+
+    @Override
     public LocalFileReference renameTo(FileReference target) throws IOException {
         return renameTo(target.toLocalReference().getPath());
     }
-    
+
+    @Override
     public LocalFileReference renameTo(String target) throws IOException {
         return renameTo(new FileStoreable(storageStrategy, target));
     }
@@ -93,15 +97,18 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
     public File getFile() {
         return file;
     }
-    
+
+    @Override
     public boolean isLocal() {
         return true;
     }
 
+    @Override
     public DateTime getLastModified() {
         return data.getLastModified();
     }
-    
+
+    @Override
     public StorageStrategy getStorageStrategy() {
         return storageStrategy;
     }
@@ -117,8 +124,8 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
     }
 
     class Data extends AbstractFileBackedFileData {
-        
-        public DateTime getLastModified() {
+
+        DateTime getLastModified() {
             return new DateTime(getFile().lastModified());
         }
 
@@ -127,16 +134,12 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
             return file;
         }
 
-        public HashString overwrite(UsingOutput callback) throws IOException {
-            FileOutputStream os = new FileOutputStream(file);
-            try {
-                callback.doWith(os);
-            } finally {
-                os.close();
-            }
-            return null;
+        @Override
+        public FileData overwrite(ByteSource in) throws IOException {
+            FileCopyUtils.copy(in.openBufferedStream(), new FileOutputStream(file));
+            return this;
         }
-        
+
     }
     
     private static class FileStoreable implements Storeable {
@@ -144,7 +147,7 @@ public final class FileBackedFileReference extends AbstractFileReference impleme
         private final String path;
         private final StorageStrategy strategy;
         
-        public FileStoreable(StorageStrategy theStrategy, String thePath) {
+        FileStoreable(StorageStrategy theStrategy, String thePath) {
             this.strategy = theStrategy;
             this.path = thePath;
         }

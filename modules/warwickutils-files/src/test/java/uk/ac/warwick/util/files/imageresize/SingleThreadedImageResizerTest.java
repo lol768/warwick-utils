@@ -1,33 +1,25 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import com.google.common.io.ByteSource;
+import com.sun.media.jai.codec.ByteArraySeekableStream;
+import org.joda.time.DateTime;
+import org.junit.Test;
+import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.files.FileData;
+import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.hash.HashString;
+import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
+import uk.ac.warwick.util.files.impl.AbstractFileReference;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
-import org.joda.time.DateTime;
-import org.junit.Test;
-import org.springframework.core.io.InputStreamSource;
-import org.springframework.util.FileCopyUtils;
-
-import uk.ac.warwick.util.files.imageresize.JAIImageResizer;
-import uk.ac.warwick.util.files.imageresize.SingleThreadedImageResizer;
-import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-import uk.ac.warwick.util.files.FileData;
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.FileStore.UsingOutput;
-import uk.ac.warwick.util.files.hash.HashString;
-import uk.ac.warwick.util.files.impl.AbstractFileReference;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
-
-
-import com.sun.media.jai.codec.ByteArraySeekableStream;
+import static org.junit.Assert.*;
 
 public final class SingleThreadedImageResizerTest {
     
@@ -91,7 +83,7 @@ public final class SingleThreadedImageResizerTest {
         final DateTime lastModified = new DateTime();
         
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
-        FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
         
@@ -135,58 +127,35 @@ public final class SingleThreadedImageResizerTest {
 
             public FileData getData() {
                 return new FileData() {
-                    public InputStream getInputStream() throws IOException {
-                        return new ByteArrayInputStream(input);
-                    }
-                    
-                    public InputStreamSource getInputStreamSource() {
-                        return new InputStreamSource() {
-                            public InputStream getInputStream() {
-                                return new ByteArrayInputStream(input);
-                            }
-                        };
-                    }
-                    
+                    @Override
                     public boolean isExists() {
                         return true;
                     }
 
+                    @Override
                     public boolean isFileBacked() {
                         return false;
                     }
 
-                    public long length() {
-                        return input.length;
-                    }
-                    
+                    @Override
                     public boolean delete() {
                         throw new UnsupportedOperationException();
                     }
 
-                    public File getRealFile() {
+                    @Override
+                    public URI getFileLocation() {
                         throw new UnsupportedOperationException();
                     }
 
-                    public String getRealPath() {
+                    @Override
+                    public FileData overwrite(ByteSource in) throws IOException {
                         throw new UnsupportedOperationException();
                     }
 
-                    public HashString overwrite(UsingOutput callback) throws IOException {
-                        throw new UnsupportedOperationException();
+                    @Override
+                    public ByteSource asByteSource() {
+                        return ByteSource.wrap(input);
                     }
-
-                    public HashString overwrite(File file) throws IOException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    public HashString overwrite(byte[] contents) throws IOException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    public HashString overwrite(String contents) throws IOException {
-                        throw new UnsupportedOperationException();
-                    }
-                    
                 };
             }
 

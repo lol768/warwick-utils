@@ -12,8 +12,8 @@ import uk.ac.warwick.util.files.hash.HashString;
  */
 public interface Storeable {
 
-    public interface StorageStrategy {
-        public enum MissingContentStrategy { 
+    interface StorageStrategy {
+        enum MissingContentStrategy {
             /** Return a FileBackedFileReference pointing to a non-existant File */
             Local,
             
@@ -25,10 +25,10 @@ public interface Storeable {
         };
         
         /**
-         * Return the root directory for resolving path names for
-         * {@link Storeable#getPath()}.
+         * Return the root path. For filesystem storeables this will be a path that can
+         * be resolved to a directory; for blob store it will be the container name.
          */
-        File getRootDirectory();
+        String getRootPath();
 
         /**
          * Return the {@link MissingContentStrategy} for returning a

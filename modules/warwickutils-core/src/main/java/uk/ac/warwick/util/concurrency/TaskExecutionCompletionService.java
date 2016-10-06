@@ -74,11 +74,7 @@ public final class TaskExecutionCompletionService<T> extends ExecutorCompletionS
         for (int i = submittedTasks; i > 0; i--) {
             try {
                 results.add(take().get());
-            } catch (ExecutionException e) {
-                if (throwOnException) {
-                    throw e;
-                }
-            } catch (CancellationException e) {
+            } catch (CancellationException | ExecutionException e) {
                 if (throwOnException) {
                     throw e;
                 }
