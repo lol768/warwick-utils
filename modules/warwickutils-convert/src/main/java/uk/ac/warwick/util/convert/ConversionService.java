@@ -1,8 +1,8 @@
 package uk.ac.warwick.util.convert;
 
+import com.google.common.io.ByteSource;
 import uk.ac.warwick.util.web.Uri;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
@@ -26,7 +26,7 @@ public interface ConversionService {
         }
     }
 
-    ConversionMedia upload(File file) throws IOException;
+    ConversionMedia upload(ByteSource source) throws IOException;
 
     ConversionMedia getMediaById(String id) throws IOException;
 

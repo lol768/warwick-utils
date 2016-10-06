@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
+import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -39,7 +40,6 @@ import uk.ac.warwick.util.web.Uri;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -80,8 +80,8 @@ public class TelestreamConversionService implements ConversionService, Initializ
     }
 
     @Override
-    public ConversionMedia upload(File file) throws IOException {
-        return postMultipart("/videos.json", "file", file, new HashMap<String, String>() {{
+    public ConversionMedia upload(ByteSource source) throws IOException {
+        return postMultipart("/videos.json", "file", source, new HashMap<String, String>() {{
             put("profiles", "none");
             put("path_format", ":id");
         }}, response -> {
@@ -286,7 +286,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
         return httpClient.execute(post, handler);
     }
 
-    private <T> T postMultipart(String url, String fileParam, File file, Map<String, String> params, ResponseHandler<T> handler) throws IOException {
+    private <T> T postMultipart(String url, String fileParam, ByteSource source, Map<String, String> params, ResponseHandler<T> handler) throws IOException {
         Map<String, String> allParams = new HashMap<>();
         allParams.putAll(params);
         allParams.put("access_key", accessKey);
@@ -309,7 +309,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
 
-        entity.addBinaryBody(fileParam, file);
+        entity.addBinaryBody(fileParam, source.openStream());
         allParams.forEach(entity::addTextBody);
         entity.addTextBody("signature", signature.replace("+", "%2B"));
 
