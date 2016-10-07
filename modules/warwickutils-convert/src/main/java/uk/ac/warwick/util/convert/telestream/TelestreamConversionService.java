@@ -194,18 +194,35 @@ public class TelestreamConversionService implements ConversionService, Initializ
         return generateS3PrivateUrl(status.getScreenshots().iterator().next());
     }
 
-    private void handleS3Object(String objectKey, Consumer<InputStream> consumer) {
-        S3Object object = s3.getObject(new GetObjectRequest(bucketName, objectKey));
-        final InputStream is = object.getObjectContent();
-        try {
-            consumer.accept(object.getObjectContent());
-        } finally {
-            IOUtils.closeQuietly(is, null);
+    private void handleS3Object(String objectKey, Consumer<InputStream> consumer) throws IOException {
+        ByteSource source = getS3Object(objectKey);
+        try (InputStream is = source.openBufferedStream()) {
+            consumer.accept(is);
         }
     }
 
+    private ByteSource getS3Object(String objectKey) {
+        final S3Object object = s3.getObject(new GetObjectRequest(bucketName, objectKey));
+        return new ByteSource() {
+            @Override
+            public InputStream openStream() throws IOException {
+                return object.getObjectContent();
+            }
+
+            @Override
+            public boolean isEmpty() throws IOException {
+                return object == null;
+            }
+
+            @Override
+            public long size() throws IOException {
+                return object.getObjectMetadata().getContentLength();
+            }
+        };
+    }
+
     @Override
-    public void getEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
+    public void processEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
         if (status.getStatus() != ConversionStatus.Status.success || status.getFiles().isEmpty()) {
             throw new ConversionException("Can only get encoded file once encoding is successful");
         }
@@ -214,12 +231,30 @@ public class TelestreamConversionService implements ConversionService, Initializ
     }
 
     @Override
-    public void getScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
+    public void processScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException {
         if (status.getStatus() != ConversionStatus.Status.success || status.getScreenshots().isEmpty()) {
             throw new ConversionException("Conversion not successful or no screenshots generated");
         }
 
         handleS3Object(status.getScreenshots().iterator().next(), consumer);
+    }
+
+    @Override
+    public ByteSource getEncodedFile(ConversionStatus status) throws IOException {
+        if (status.getStatus() != ConversionStatus.Status.success || status.getFiles().isEmpty()) {
+            throw new ConversionException("Can only get encoded file once encoding is successful");
+        }
+
+        return getS3Object(status.getFiles().iterator().next());
+    }
+
+    @Override
+    public ByteSource getScreenshot(ConversionStatus status) throws IOException {
+        if (status.getStatus() != ConversionStatus.Status.success || status.getScreenshots().isEmpty()) {
+            throw new ConversionException("Conversion not successful or no screenshots generated");
+        }
+
+        return getS3Object(status.getScreenshots().iterator().next());
     }
 
     private <T> T get(String url, ResponseHandler<T> handler) throws IOException {

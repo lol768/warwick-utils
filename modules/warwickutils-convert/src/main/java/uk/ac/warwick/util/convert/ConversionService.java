@@ -40,8 +40,11 @@ public interface ConversionService {
 
     Uri getScreenshotUrl(ConversionStatus status) throws IOException;
 
-    void getEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
+    void processEncodedFile(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
 
-    void getScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
+    ByteSource getEncodedFile(ConversionStatus status) throws IOException;
 
+    void processScreenshot(ConversionStatus status, Consumer<InputStream> consumer) throws IOException;
+
+    ByteSource getScreenshot(ConversionStatus status) throws IOException;
 }
