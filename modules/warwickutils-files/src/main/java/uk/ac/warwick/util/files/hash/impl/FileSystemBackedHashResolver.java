@@ -13,7 +13,7 @@ import uk.ac.warwick.util.files.dao.HashInfoDAO;
 import uk.ac.warwick.util.files.hash.FileHashResolver;
 import uk.ac.warwick.util.files.hash.FileHasher;
 import uk.ac.warwick.util.files.hash.HashString;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
 /**
  * Simple implementation of {@link FileHashResolver} that expects all hash
@@ -27,11 +27,6 @@ import uk.ac.warwick.util.files.impl.HashBackedFileReference;
  * are the same as existing hashes from before we added multiple stores.)
  */
 public final class FileSystemBackedHashResolver implements FileHashResolver {
-    
-    /**
-     * NEVER EVER CHANGE THIS VALUE!!! Changing this will *BREAK* existing references.
-     */
-    private static final int SEPARATE_PATH_LIMIT = 10;
 
     private final File storeLocation;
     private final String storeName;
@@ -52,31 +47,31 @@ public final class FileSystemBackedHashResolver implements FileHashResolver {
 
     public HashFileReference lookupByHash(HashFileStore store, HashString fileHash, boolean storeNewHash) {
         File file = resolve(fileHash, storeNewHash);
-        return new HashBackedFileReference(store, file, fileHash);
+        return new FileBackedHashFileReference(store, file, fileHash);
     }
-    
+
     /**
      * Partition a hash into a path.
      */
     public static String partition(String fileHash) {
         // Insert path separators for the first 5 sets of 2 characters
         StringBuilder path = new StringBuilder();
-        
+
         String separator = FilenameUtils.separatorsToSystem("/");
-        
+
         char[] hash = fileHash.toCharArray();
         for (int i = 0; i < hash.length; i++) {
             char ch = hash[i];
-            
+
             if (i > 0 && (i % 2 == 0) && i <= SEPARATE_PATH_LIMIT) {
                 path.append(separator);
             }
-            
+
             path.append(ch);
         }
-        
+
         path.append(".data");
-        
+
         return path.toString();
     }
     

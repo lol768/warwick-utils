@@ -8,7 +8,7 @@ import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-import uk.ac.warwick.util.files.impl.HashBackedFileReference;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -127,7 +127,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
         doesExistCacheEntry.createNewFile();
 
         FileReference doesExist = file("/ab/cd/ef.data");
-        File realFile = doesExist.getRealFile();
+        File realFile = new File(doesExist.getFileLocation().getPath());
         realFile.getParentFile().mkdirs();
         realFile.createNewFile();
         
@@ -138,7 +138,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     private FileReference file(String path) throws IOException {
         File f = new File(contentRoot, path);
-        FileReference ref = new HashBackedFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         return ref;
     }
     

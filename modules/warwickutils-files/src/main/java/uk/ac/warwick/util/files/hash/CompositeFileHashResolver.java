@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.files.hash;
 
-import java.io.File;
+import uk.ac.warwick.util.files.HashFileReference;
+import uk.ac.warwick.util.files.HashFileStore;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-
-import uk.ac.warwick.util.files.HashFileReference;
-import uk.ac.warwick.util.files.HashFileStore;
 
 /**
  * FileHashResolver which contains a map of other hash resolvers. The key
@@ -26,19 +25,6 @@ public final class CompositeFileHashResolver implements FileHashResolver {
     public HashString generateHash(InputStream is) throws IOException {
         // Don't currently care who generates a hash so just use the default one
         return defaultResolver.generateHash(is);
-    }
-    
-    public HashString resolve(File file, String storeName ) {
-        
-        if (storeName.equals(FileHashResolver.STORE_NAME_DEFAULT)){
-            return defaultResolver.resolve(file, storeName);
-        } else {
-            FileHashResolver fileHashResolver = resolvers.get(storeName);
-            if (fileHashResolver == null) {
-                throw new IllegalArgumentException("No hash resolver for store " + storeName);
-            }
-            return fileHashResolver.resolve(file, storeName);
-        }
     }
 
     public HashFileReference lookupByHash(HashFileStore store, HashString fileHash, boolean storeNewHash) {

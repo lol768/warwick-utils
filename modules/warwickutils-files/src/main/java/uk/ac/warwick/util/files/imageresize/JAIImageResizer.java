@@ -77,15 +77,15 @@ public final class JAIImageResizer implements ImageResizer {
     
     public void renderResized(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight,
             final FileType fileType) throws IOException {
-        Pair<Integer, Integer> dimensions = getDimensions(sourceFile.getInputStream());
+        Pair<Integer, Integer> dimensions = getDimensions(sourceFile.asByteSource().openStream());
         if (isOversized(dimensions.getLeft(), dimensions.getRight())) {
             LOGGER.warn("Refusing to resize image of dimensions " + dimensions.getLeft() + "x" + dimensions.getRight() + ": " + sourceFile);
-            FileCopyUtils.copy(sourceFile.getInputStream(), out);
+            FileCopyUtils.copy(sourceFile.asByteSource().openBufferedStream(), out);
             return;
         }
         
         long start = System.currentTimeMillis();
-        SeekableStream sourceBASS = new FileCacheSeekableStream(sourceFile.getInputStream());
+        SeekableStream sourceBASS = new FileCacheSeekableStream(sourceFile.asByteSource().openStream());
         renderResizedStream(out, maxWidth, maxHeight, start, sourceBASS, fileType, dimensions.getLeft(), dimensions.getRight());
     }
 

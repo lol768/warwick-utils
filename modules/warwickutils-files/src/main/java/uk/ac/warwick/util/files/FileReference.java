@@ -1,8 +1,8 @@
 package uk.ac.warwick.util.files;
 
-import java.io.IOException;
-
 import uk.ac.warwick.util.files.hash.HashString;
+
+import java.io.IOException;
 
 /**
  * A reference to some binary data, as stored by {@link FileData}, which may or
@@ -20,7 +20,7 @@ public interface FileReference extends FileData {
      * For a binary file this is equivalent to the page URL, but like the URL is
      * a virtual resource and may not exist as a path on disk.
      * <p>
-     * If for some reason you need the real path, {@link FileData#getRealPath()}
+     * If for some reason you need the real path, {@link FileData#getFileLocation()}
      * is what you want. Avoid it unless you do really need it, though.
      */
     String getPath();
@@ -42,8 +42,6 @@ public interface FileReference extends FileData {
      * Iff this returns true, then {@link #toLocalReference()} will succeed.
      */
     boolean isLocal();
-
-    //FileData getData();
     
     /**
      * The equivalent of delete for regular files - the actual behaviour
@@ -77,10 +75,4 @@ public interface FileReference extends FileData {
      * returns false.
      */
     HashFileReference toHashReference();
-
-    /**
-     * Read the file reference into a string. Will return an empty string if the
-     * reference doesn't exist.
-     */
-    String getContentsAsString() throws IOException;
 }

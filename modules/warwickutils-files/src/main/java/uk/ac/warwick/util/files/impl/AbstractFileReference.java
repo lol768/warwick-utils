@@ -1,22 +1,17 @@
 package uk.ac.warwick.util.files.impl;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import org.springframework.core.io.InputStreamSource;
-import org.springframework.util.FileCopyUtils;
-
-import uk.ac.warwick.util.core.StringUtils;
+import com.google.common.io.ByteSource;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.FileStore.UsingOutput;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.LocalFileReference;
-import uk.ac.warwick.util.files.hash.HashString;
+
+import java.io.IOException;
+import java.net.URI;
 
 public abstract class AbstractFileReference implements FileReference {
 
+    @Override
     public final LocalFileReference toLocalReference() {
         if (isLocal()) {
             return (LocalFileReference) this;
@@ -24,7 +19,8 @@ public abstract class AbstractFileReference implements FileReference {
             throw new IllegalArgumentException("Not locally stored");
         }
     }
-    
+
+    @Override
     public final HashFileReference toHashReference() {
         if (!isLocal()) {
             return (HashFileReference) this;
@@ -34,61 +30,34 @@ public abstract class AbstractFileReference implements FileReference {
     }
     
     protected abstract FileData getData();
-    
+
+    @Override
     public final boolean isExists() {
         return getData().isExists();
     }
 
-    public final long length() {
-        return getData().length();
-    }
-
+    @Override
     public final boolean delete() {
         return getData().delete();
     }
 
-    public final InputStream getInputStream() throws IOException {
-        return getData().getInputStream();
+    @Override
+    public ByteSource asByteSource() {
+        return getData().asByteSource();
     }
 
-    public final InputStreamSource getInputStreamSource() {
-        return getData().getInputStreamSource();
+    @Override
+    public final URI getFileLocation() {
+        return getData().getFileLocation();
     }
 
-    public final File getRealFile() {
-        return getData().getRealFile();
-    }
-
-    public final String getRealPath() {
-        return getData().getRealPath();
-    }
-
+    @Override
     public final boolean isFileBacked() {
         return getData().isFileBacked();
     }
 
-    public final HashString overwrite(UsingOutput callback) throws IOException {
-        return getData().overwrite(callback);
+    @Override
+    public FileData overwrite(ByteSource in) throws IOException {
+        return getData().overwrite(in);
     }
-
-    public final HashString overwrite(File file) throws IOException {
-        return getData().overwrite(file);
-    }
-
-    public final HashString overwrite(byte[] contents) throws IOException {
-        return getData().overwrite(contents);
-    }
-
-    public final HashString overwrite(String contents) throws IOException {
-        return getData().overwrite(contents);
-    }
-    
-    public final String getContentsAsString() throws IOException {
-        if (!isExists()) {
-            return "";
-        }
-        
-        return FileCopyUtils.copyToString(new InputStreamReader(getInputStream(), StringUtils.DEFAULT_ENCODING));
-    }
-
 }

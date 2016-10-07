@@ -1,16 +1,16 @@
 package uk.ac.warwick.util.files.impl;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.google.common.io.ByteSource;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.FileStore.UsingOutput;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.hash.HashString;
 
-public final class HashBackedFileReference extends AbstractFileReference implements HashFileReference {
+import java.io.File;
+import java.io.IOException;
+
+public final class FileBackedHashFileReference extends AbstractFileReference implements HashFileReference {
     
     private final HashFileStore fileStore;
     private final FileData data;
@@ -18,7 +18,7 @@ public final class HashBackedFileReference extends AbstractFileReference impleme
     private File file;
     private HashString hash;
     
-    public HashBackedFileReference(final HashFileStore store, final File backingFile, final HashString theHash) {
+    public FileBackedHashFileReference(final HashFileStore store, final File backingFile, final HashString theHash) {
         this.fileStore = store;
         this.file = backingFile;
         this.hash = theHash;
@@ -33,13 +33,13 @@ public final class HashBackedFileReference extends AbstractFileReference impleme
         return null;
     }
     
-    public void update(File backingFile, HashString theHash) {
+    private void update(File backingFile, HashString theHash) {
         this.file = backingFile;
         this.hash = theHash;
     }
 
     public HashFileReference copyTo(FileReference target) throws IOException {
-        return new HashBackedFileReference(fileStore, file, hash);
+        return new FileBackedHashFileReference(fileStore, file, hash);
     }
 
     public HashFileReference renameTo(FileReference target) throws IOException {
@@ -71,13 +71,14 @@ public final class HashBackedFileReference extends AbstractFileReference impleme
             return file;
         }
 
-        public HashString overwrite(UsingOutput callback) throws IOException {
+        @Override
+        public FileData overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
-            HashFileReference newReference = fileStore.createHashReference(callback, getHash().getStoreName());
+            HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
             
-            update(newReference.getRealFile(), newReference.getHash());
+            update(new File(newReference.getFileLocation().getPath()), newReference.getHash());
             
-            return hash;
+            return this;
         }
         
     }
