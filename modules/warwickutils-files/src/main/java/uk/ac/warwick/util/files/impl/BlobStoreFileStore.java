@@ -105,7 +105,7 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
     }
     
     private HashFileReference doStore(ByteSource in, HashString hash, HashFileReference target) throws IOException {
-        return doStore(in, hash.getHash(), containerPrefix + hash.getStoreName(), target);
+        return doStore(in, hash.getHash(), containerPrefix + (hash.isDefaultStore() ? HashString.DEFAULT_STORE : hash.getStoreName()), target);
     }
 
     <T extends FileReference> T doStore(ByteSource in, String key, String container, T target) throws IOException {
