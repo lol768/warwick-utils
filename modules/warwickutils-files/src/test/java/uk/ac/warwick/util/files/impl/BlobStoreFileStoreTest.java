@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
+import uk.ac.warwick.util.core.StringUtils;
+import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.FileReferenceCreationStrategy;
 import uk.ac.warwick.util.files.Storeable;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
@@ -21,6 +23,7 @@ import uk.ac.warwick.util.files.hash.impl.BlobStoreBackedHashResolver;
 import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -64,11 +67,15 @@ public class BlobStoreFileStoreTest {
             allowing(s).getStrategy(); will(returnValue(ss));
         }});
 
-        fileStore.store(s, FileHashResolver.STORE_NAME_HTML, ByteSource.wrap(DATA));
+        FileReference ref = fileStore.store(s, FileHashResolver.STORE_NAME_HTML, ByteSource.wrap(DATA));
 
         Blob blob = blobStoreContext.getBlobStore().getBlob("uk.ac.warwick.sbr.html", "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0");
         assertNotNull(blob);
-        assertEquals(new String(DATA), FileCopyUtils.copyToString(new InputStreamReader(blob.getPayload().openStream())));
+        assertEquals("Hello", FileCopyUtils.copyToString(new InputStreamReader(blob.getPayload().openStream())));
+
+        // Test fetching
+        assertEquals("Hello", ref.asByteSource().asCharSource(Charset.defaultCharset()).read());
+        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(Charset.defaultCharset()).read());
         
         m.assertIsSatisfied();
     }

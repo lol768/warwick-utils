@@ -3,6 +3,7 @@ package uk.ac.warwick.util.files.impl;
 import com.google.common.io.ByteSource;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
+import org.jclouds.blobstore.options.GetOptions;
 import uk.ac.warwick.util.files.FileData;
 
 import java.io.IOException;
@@ -26,6 +27,32 @@ public abstract class AbstractBlobBackedFileData implements FileData {
             @Override
             public InputStream openStream() throws IOException {
                 return blob.getPayload().openStream();
+            }
+
+            @Override
+            public ByteSource slice(long offset, long length) {
+                Blob slicedBlob = getBlobStore().getBlob(getContainerName(), getBlobName(), GetOptions.Builder.range(offset, (offset + length) - 1));
+                return new ByteSource() {
+                    @Override
+                    public InputStream openStream() throws IOException {
+                        return slicedBlob.getPayload().openStream();
+                    }
+
+                    @Override
+                    public boolean isEmpty() throws IOException {
+                        return false;
+                    }
+
+                    @Override
+                    public long size() throws IOException {
+                        return length;
+                    }
+                };
+            }
+
+            @Override
+            public boolean isEmpty() throws IOException {
+                return blob != null;
             }
 
             @Override
