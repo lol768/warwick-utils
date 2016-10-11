@@ -24,9 +24,12 @@ import uk.ac.warwick.util.files.hash.HashString;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * File store which can ask a FileReferenceCreationStrategy
@@ -139,7 +142,14 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
             }
 
             try {
-                blobStore.completeMultipartUpload(multipartUpload, completionService.waitForCompletion(true));
+                // Parts are returned in the order they completed, so we need to sort them into the correct order or the file will be stitched together wrong
+                List<MultipartPart> parts =
+                    completionService.waitForCompletion(true)
+                        .stream()
+                        .sorted(Comparator.comparing(MultipartPart::partNumber))
+                        .collect(Collectors.toList());
+
+                blobStore.completeMultipartUpload(multipartUpload, parts);
             } catch (InterruptedException | ExecutionException e) {
                 throw new IOException(e);
             }

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20161010</version>
+		<version>20161011</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -79,6 +79,12 @@
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
 			<artifactId>openstack-swift</artifactId>
+			<version>${org.apache.jclouds.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jclouds.api</groupId>
+			<artifactId>filesystem</artifactId>
 			<version>${org.apache.jclouds.version}</version>
 			<optional>true</optional>
 		</dependency>
