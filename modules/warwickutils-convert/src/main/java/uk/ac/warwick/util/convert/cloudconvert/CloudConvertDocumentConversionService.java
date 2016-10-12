@@ -79,7 +79,7 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
         this.apiKey = apiKey;
         this.s3 = new AmazonS3Client(new BasicAWSCredentials(awsAccessKey, awsSecretKey));
         this.awsAccessKey = awsAccessKey;
-        this.awsSecretKey = awsAccessKey;
+        this.awsSecretKey = awsSecretKey;
         this.bucketName = awsBucketName;
     }
 
