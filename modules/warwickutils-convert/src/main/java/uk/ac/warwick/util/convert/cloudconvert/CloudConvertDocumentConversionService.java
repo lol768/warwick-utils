@@ -183,13 +183,4 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
             .build();
     }
 
-    public static void main(String[] args) throws Exception {
-        CloudConvertDocumentConversionService service = new CloudConvertDocumentConversionService("GoIdfNdB_4k6dJOgZwpWx8BcrOBr3GkL8ano05TDwHOYHEkBWU5KRc1yu7cbRripLc5pEG6iygex8GPyrjTWxw", "AKIAI2IWTE7FDZGVCEEA", "7E7AEaZRWfntsukqN6nvc0ByZ1wvh4jj8l9tXuIe", "uk.ac.warwick.sitebuilder.convert");
-        service.afterPropertiesSet();
-
-        System.out.println(service.convert(Files.asByteSource(new File("/home/mat/Downloads/VAT invoices.pptx")), "VAT invoices.pptx", "pptx", "png"));
-
-        service.destroy();
-    }
-
 }
