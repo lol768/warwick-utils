@@ -6,6 +6,8 @@ import java.io.IOException;
 
 public interface DocumentConversionService {
 
-    ByteSource convert(ByteSource in, String filename, String inputFormat, String outputFormat) throws IOException;
+    DocumentConversionResult convert(ByteSource in, String filename, String inputFormat, String outputFormat) throws IOException;
+
+    ByteSource getConvertedFile(DocumentConversionResult result, String id);
 
 }
