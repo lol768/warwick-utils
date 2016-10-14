@@ -40,5 +40,5 @@ public interface FileStore {
      * <p>
      * This is mainly used for returning source files.
      */
-    LocalFileReference getForPath(Storeable storeable, String path) throws FileNotFoundException;
+    LocalFileReference getForPath(Storeable.StorageStrategy storageStrategy, String path) throws FileNotFoundException;
 }

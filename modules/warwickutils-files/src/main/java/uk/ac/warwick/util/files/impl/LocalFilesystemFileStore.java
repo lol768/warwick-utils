@@ -124,22 +124,22 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
     }
 
     private File resolve(Storeable storeable) {
-        return resolve(storeable, storeable.getPath());
+        return resolve(storeable.getStrategy(), storeable.getPath());
     }
     
-    private File resolve(Storeable storeable, String path) {
-        File rootDirectory = new File(storeable.getStrategy().getRootPath());
+    private File resolve(Storeable.StorageStrategy storageStrategy, String path) {
+        File rootDirectory = new File(storageStrategy.getRootPath());
         Assert.notNull(rootDirectory);
         return new File(rootDirectory, path);
     }
 
     @Override
-    public LocalFileReference getForPath(Storeable storeable, String path) {
-        File newFile = resolve(storeable, path);
+    public LocalFileReference getForPath(Storeable.StorageStrategy storageStrategy, String path) {
+        File newFile = resolve(storageStrategy, path);
         
         // If the file doesn't exist, we still return a file backed reference,
         // and just allow the delegation to file.exists() to do its work.
-        return new FileBackedLocalFileReference(this, newFile, path, storeable.getStrategy());
+        return new FileBackedLocalFileReference(this, newFile, path, storageStrategy);
     }
 
     private HashFileReference getByFileHash(HashString fileHash) {
@@ -154,7 +154,7 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
             FileReference ref;
             LocalFileReference localRef = null;
             if (storeable.getStrategy().isSupportsLocalReferences() || storeable.getStrategy().getMissingContentStrategy() == MissingContentStrategy.Local) {
-                localRef = getForPath(storeable, storeable.getPath());
+                localRef = getForPath(storeable.getStrategy(), storeable.getPath());
             }
             
             if (localRef != null && localRef.isExists()) { 

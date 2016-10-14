@@ -161,12 +161,12 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
     }
 
     @Override
-    public LocalFileReference getForPath(Storeable storeable, String path) {
-        String container = containerPrefix + storeable.getStrategy().getRootPath();
+    public LocalFileReference getForPath(Storeable.StorageStrategy storageStrategy, String path) {
+        String container = containerPrefix + storageStrategy.getRootPath();
         
         // If the blob doesn't exist, we still return a file backed reference,
         // and just allow the delegation to isExists() to do its work.
-        return new BlobBackedLocalFileReference(this, blobStore, container, path, storeable.getStrategy());
+        return new BlobBackedLocalFileReference(this, blobStore, container, path, storageStrategy);
     }
     
     private HashFileReference getByFileHash(HashString fileHash) {
@@ -181,7 +181,7 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
             FileReference ref;
             LocalFileReference localRef = null;
             if (storeable.getStrategy().isSupportsLocalReferences() || storeable.getStrategy().getMissingContentStrategy() == MissingContentStrategy.Local) {
-                localRef = getForPath(storeable, storeable.getPath());
+                localRef = getForPath(storeable.getStrategy(), storeable.getPath());
             }
             
             if (localRef != null && localRef.isExists()) { 
@@ -209,7 +209,7 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
 
     @Override
     public LocalFileReference storeLocalReference(Storeable storeable, ByteSource in) throws IOException {
-        LocalFileReference ref = getForPath(storeable, storeable.getPath());
+        LocalFileReference ref = getForPath(storeable.getStrategy(), storeable.getPath());
         return doStore(in, storeable.getPath(), containerPrefix + storeable.getStrategy().getRootPath(), ref);
     }
 
