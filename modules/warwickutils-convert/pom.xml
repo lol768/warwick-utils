@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20161011-1601</version>
+		<version>20161013</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -57,6 +57,12 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+            <version>1.1</version>
 		</dependency>
 
 		<dependency>
