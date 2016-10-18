@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.files.impl;
 
 import com.google.common.io.ByteSource;
-import com.sun.istack.internal.Nullable;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.*;
@@ -198,7 +197,7 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
         return listKeys(containerName, prefix, firstResults.getNextMarker(), firstResults.stream().map(StorageMetadata::getName));
     }
 
-    private Stream<String> listKeys(String containerName, String prefix, @Nullable String nextMarker, Stream<String> accumulator) {
+    private Stream<String> listKeys(String containerName, String prefix, String nextMarker, Stream<String> accumulator) {
         if (nextMarker == null) {
             // No more results
             return accumulator;
