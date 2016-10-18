@@ -3,6 +3,7 @@ package uk.ac.warwick.util.files.impl;
 import com.google.common.io.ByteSource;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
+import org.jclouds.blobstore.domain.BlobMetadata;
 import org.jclouds.blobstore.options.GetOptions;
 import uk.ac.warwick.util.files.FileData;
 
@@ -69,6 +70,12 @@ public abstract class AbstractBlobBackedFileData implements FileData {
                 return "AbstractBlobBackedFileData.asByteSource(" + getBlobName() + ")";
             }
         };
+    }
+
+    @Override
+    public long length() {
+        BlobMetadata metadata = getBlobStore().blobMetadata(getContainerName(), getBlobName());
+        return metadata != null ? metadata.getSize() : 0L;
     }
 
     @Override

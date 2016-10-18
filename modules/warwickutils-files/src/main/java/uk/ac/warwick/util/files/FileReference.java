@@ -62,6 +62,10 @@ public interface FileReference extends FileData {
      */
     FileReference copyTo(final FileReference target) throws IOException;
 
+    /**
+     * This will throw an IllegalArgumentException if the FileReference is of
+     * differing types or (e.g.) belongs to a different store.
+     */
     FileReference renameTo(final FileReference target) throws IOException;
 
     /**

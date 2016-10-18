@@ -33,12 +33,4 @@ public interface FileStore {
      */
     FileReference get(Storeable storeable) throws FileNotFoundException;
 
-    /**
-     * Helper specialisation of {@link #get(Storeable)} which takes only a
-     * file name, not a hash, and is guaranteed to return a local file reference
-     * if one exists.
-     * <p>
-     * This is mainly used for returning source files.
-     */
-    LocalFileReference getForPath(Storeable.StorageStrategy storageStrategy, String path) throws FileNotFoundException;
 }

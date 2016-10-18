@@ -70,6 +70,11 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
         }
 
         @Override
+        public long length() {
+            return 0L;
+        }
+
+        @Override
         public URI getFileLocation() {
             throw new UnsupportedOperationException("This file reference doesn't exist");
         }

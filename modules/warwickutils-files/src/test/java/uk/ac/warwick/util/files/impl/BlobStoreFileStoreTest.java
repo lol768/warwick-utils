@@ -25,6 +25,7 @@ import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -65,6 +66,7 @@ public class BlobStoreFileStoreTest {
             oneOf(strategy).select(with(any(ByteSource.class))); will(returnValue(FileReferenceCreationStrategy.Target.hash));
             allowing(s).getPath(); will(returnValue("/file.htm"));
             allowing(s).getStrategy(); will(returnValue(ss));
+            allowing(ss).getRootPath(); will(returnValue(FileHashResolver.STORE_NAME_HTML));
         }});
 
         FileReference ref = fileStore.store(s, FileHashResolver.STORE_NAME_HTML, ByteSource.wrap(DATA));
@@ -77,6 +79,33 @@ public class BlobStoreFileStoreTest {
         assertEquals("Hello", ref.asByteSource().asCharSource(Charset.defaultCharset()).read());
         assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(Charset.defaultCharset()).read());
         
+        m.assertIsSatisfied();
+    }
+
+    @Test public void storeLocalFile() throws Exception {
+        final Storeable s = m.mock(Storeable.class);
+        final StorageStrategy ss = m.mock(StorageStrategy.class);
+
+        m.checking(new Expectations(){{
+            oneOf(strategy).select(with(any(ByteSource.class))); will(returnValue(FileReferenceCreationStrategy.Target.local));
+            allowing(s).getPath(); will(returnValue("/file.htm"));
+            allowing(s).getStrategy(); will(returnValue(ss));
+            allowing(ss).getRootPath(); will(returnValue(FileHashResolver.STORE_NAME_HTML));
+        }});
+
+        FileReference ref = fileStore.store(s, FileHashResolver.STORE_NAME_HTML, ByteSource.wrap(DATA));
+
+        Blob blob = blobStoreContext.getBlobStore().getBlob("uk.ac.warwick.sbr.html", "/file.htm");
+        assertNotNull(blob);
+        assertEquals("Hello", FileCopyUtils.copyToString(new InputStreamReader(blob.getPayload().openStream())));
+
+        // Test fetching
+        assertEquals("Hello", ref.asByteSource().asCharSource(Charset.defaultCharset()).read());
+        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(Charset.defaultCharset()).read());
+
+        assertEquals(Collections.singletonList("/file.htm"), fileStore.list(ss, "").collect(Collectors.toList()));
+        assertEquals(Collections.emptyList(), fileStore.list(ss, "dir").collect(Collectors.toList()));
+
         m.assertIsSatisfied();
     }
 }

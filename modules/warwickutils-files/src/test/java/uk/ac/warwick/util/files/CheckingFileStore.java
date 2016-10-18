@@ -40,11 +40,6 @@ class CheckingFileStore implements HashFileStore {
     }
 
     @Override
-    public LocalFileReference getForPath(Storeable.StorageStrategy storageStrategy, String path) throws FileNotFoundException {
-        return null;
-    }
-
-    @Override
     public FileReference store(Storeable storeable, String storeName, ByteSource in) throws IOException {
         return null;
     }

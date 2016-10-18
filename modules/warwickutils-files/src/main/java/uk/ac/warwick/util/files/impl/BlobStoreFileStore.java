@@ -1,16 +1,19 @@
 package uk.ac.warwick.util.files.impl;
 
 import com.google.common.io.ByteSource;
+import com.sun.istack.internal.Nullable;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.blobstore.domain.Blob;
-import org.jclouds.blobstore.domain.MultipartPart;
-import org.jclouds.blobstore.domain.MultipartUpload;
+import org.jclouds.blobstore.domain.*;
+import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.blobstore.strategy.internal.MultipartUploadSlicingAlgorithm;
+import org.jclouds.http.HttpResponseException;
 import org.jclouds.io.Payload;
 import org.jclouds.io.PayloadSlicer;
 import org.jclouds.io.internal.BasePayloadSlicer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import uk.ac.warwick.util.concurrency.TaskExecutionCompletionService;
@@ -30,11 +33,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * File store which can ask a FileReferenceCreationStrategy
  */
 public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, InitializingBean, DisposableBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlobStoreFileStore.class);
 
     private final Map<String, FileHashResolver> hashResolvers;
 
@@ -124,6 +130,21 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
                 .contentLength(size)
                 .build();
 
+        try {
+            doPut(container, blob, size);
+        } catch (HttpResponseException e) {
+            // PHO-247
+            LOGGER.warn("PUT: HttpResponseException encountered; might be a 401, so checking for fresh tokens and retrying...");
+
+            // almost any other request will handle a 401 by refreshing the auth token.
+            blobStore.blobMetadata(container, key);
+            doPut(container, blob, size);
+        }
+
+        return target;
+    }
+
+    private void doPut(String container, Blob blob, long size) throws IOException {
         // TAB-4144 Use large object support for anything over 50mb
         // TAB-4235 If you want this done in parallel, you have to do it yourself
         if (size > 50 * 1024 * 1024) {
@@ -156,8 +177,6 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
         } else {
             blobStore.putBlob(container, blob, PutOptions.NONE);
         }
-
-        return target;
     }
 
     @Override
@@ -168,7 +187,28 @@ public final class BlobStoreFileStore implements LocalFileStore, HashFileStore, 
         // and just allow the delegation to isExists() to do its work.
         return new BlobBackedLocalFileReference(this, blobStore, container, path, storageStrategy);
     }
-    
+
+    @Override
+    public Stream<String> list(Storeable.StorageStrategy storageStrategy, String basePath) {
+        String containerName = containerPrefix + storageStrategy.getRootPath();
+        String prefix = basePath + "/";
+
+        PageSet<? extends StorageMetadata> firstResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(prefix));
+
+        return listKeys(containerName, prefix, firstResults.getNextMarker(), firstResults.stream().map(StorageMetadata::getName));
+    }
+
+    private Stream<String> listKeys(String containerName, String prefix, @Nullable String nextMarker, Stream<String> accumulator) {
+        if (nextMarker == null) {
+            // No more results
+            return accumulator;
+        } else {
+            PageSet<? extends StorageMetadata> nextResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(prefix).afterMarker(nextMarker));
+
+            return Stream.concat(accumulator, listKeys(containerName, prefix, nextResults.getNextMarker(), nextResults.stream().map(StorageMetadata::getName)));
+        }
+    }
+
     private HashFileReference getByFileHash(HashString fileHash) {
         return getHashResolver(fileHash).lookupByHash(this, fileHash, false);
     }

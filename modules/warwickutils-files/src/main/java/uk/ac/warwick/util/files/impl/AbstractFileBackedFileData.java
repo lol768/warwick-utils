@@ -32,6 +32,11 @@ public abstract class AbstractFileBackedFileData implements FileData {
     }
 
     @Override
+    public long length() {
+        return isExists() ? getFile().length() : 0L;
+    }
+
+    @Override
     public final URI getFileLocation() {
         return getFile().toURI();
     }

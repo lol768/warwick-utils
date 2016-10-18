@@ -30,6 +30,8 @@ public interface FileData {
     FileData overwrite(ByteSource in) throws IOException;
 
     ByteSource asByteSource();
+
+    long length();
     
     boolean isExists();
     

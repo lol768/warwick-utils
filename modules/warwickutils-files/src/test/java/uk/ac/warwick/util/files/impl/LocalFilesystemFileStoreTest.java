@@ -21,6 +21,7 @@ import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -72,12 +73,16 @@ public class LocalFilesystemFileStoreTest extends AbstractJUnit4FileBasedTest {
             oneOf(strategy).select(with(any(ByteSource.class))); will(returnValue(FileReferenceCreationStrategy.Target.hash));
             allowing(s).getPath(); will(returnValue("/file.htm"));
             allowing(s).getStrategy(); will(returnValue(ss));
+            allowing(ss).getRootPath(); will(returnValue(getRoot().getAbsolutePath()));
         }});
 
         fileStore.store(s, FileHashResolver.STORE_NAME_HTML, ByteSource.wrap(DATA));
         
         File createdFile = new File(getRoot(), "f7/ff/9e/8b/7b/b2e09b70935a5d785e0cc5d9d0abf0.data");
         assertEquals(new String(DATA), FileCopyUtils.copyToString(new FileReader(createdFile)));
+
+        assertEquals(Collections.singletonList("ff"), fileStore.list(ss, "f7/").collect(Collectors.toList()));
+        assertEquals(Collections.singletonList("b2e09b70935a5d785e0cc5d9d0abf0.data"), fileStore.list(ss, "f7/ff/9e/8b/7b").collect(Collectors.toList()));
         
         m.assertIsSatisfied();
     }

@@ -11,6 +11,7 @@ import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.*;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * File store which can ask a FileReferenceCreationStrategy
@@ -140,6 +141,18 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
         // If the file doesn't exist, we still return a file backed reference,
         // and just allow the delegation to file.exists() to do its work.
         return new FileBackedLocalFileReference(this, newFile, path, storageStrategy);
+    }
+
+    @Override
+    public Stream<String> list(Storeable.StorageStrategy storageStrategy, String basePath) {
+        File dir = resolve(storageStrategy, basePath);
+        String[] fileNames = dir.list();
+        if (fileNames == null) {
+            // Not a directory
+            return Stream.empty();
+        } else {
+            return Stream.of(fileNames);
+        }
     }
 
     private HashFileReference getByFileHash(HashString fileHash) {

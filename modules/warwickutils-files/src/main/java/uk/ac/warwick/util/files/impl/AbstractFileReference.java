@@ -47,6 +47,11 @@ public abstract class AbstractFileReference implements FileReference {
     }
 
     @Override
+    public long length() {
+        return getData().length();
+    }
+
+    @Override
     public final URI getFileLocation() {
         return getData().getFileLocation();
     }

@@ -156,6 +156,11 @@ public final class SingleThreadedImageResizerTest {
                     public ByteSource asByteSource() {
                         return ByteSource.wrap(input);
                     }
+
+                    @Override
+                    public long length() {
+                        return input.length;
+                    }
                 };
             }
 
