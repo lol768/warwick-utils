@@ -2,7 +2,6 @@ package uk.ac.warwick.util.files.impl;
 
 import com.google.common.io.ByteSource;
 import org.jclouds.blobstore.BlobStore;
-import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobMetadata;
 import org.jclouds.blobstore.options.GetOptions;
 import uk.ac.warwick.util.files.FileData;
@@ -20,56 +19,76 @@ public abstract class AbstractBlobBackedFileData implements FileData {
 
     private static final long TEMPURL_EXPIRY_SECS = 60 * 60; // One hour
 
+    private static class BlobBackedByteSource extends ByteSource {
+
+        private final BlobStore blobStore;
+        private final String containerName;
+        private final String blobName;
+        private final long offset;
+        private final long length;
+
+        private BlobBackedByteSource(BlobStore blobStore, String containerName, String blobName, GetOptions options) {
+            this(blobStore, containerName, blobName, -1, -1);
+        }
+
+        private BlobBackedByteSource(BlobStore blobStore, String containerName, String blobName, long offset, long length) {
+            this.blobStore = blobStore;
+            this.containerName = containerName;
+            this.blobName = blobName;
+            this.offset = offset;
+            this.length = length;
+        }
+
+        @Override
+        public InputStream openStream() throws IOException {
+            final GetOptions options;
+            if (offset >= 0 && length > 0) {
+                options = GetOptions.Builder.range(offset, (offset + length) - 1);
+            } else {
+                options = GetOptions.NONE;
+            }
+
+            // The payload from getting the blob isn't repeatable by default, so we need to get a new blob every time
+            return blobStore.getBlob(containerName, blobName, options).getPayload().openStream();
+        }
+
+        @Override
+        public ByteSource slice(long offset, long length) {
+            long actualOffset = offset;
+            if (this.offset >= 0 && length > 0) {
+                actualOffset = this.offset + offset;
+            }
+
+            return new BlobBackedByteSource(blobStore, containerName, blobName, actualOffset, length);
+        }
+
+        @Override
+        public boolean isEmpty() throws IOException {
+            return blobStore.blobExists(containerName, blobName);
+        }
+
+        @Override
+        public long size() throws IOException {
+            if (length > 0) return length;
+
+            BlobMetadata metadata = blobStore.blobMetadata(containerName, blobName);
+
+            if (metadata == null) {
+                return 0;
+            } else {
+                return metadata.getSize();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "BlobBackedByteSource.asByteSource(" + containerName + "/" + blobName + ")";
+        }
+    }
+
     @Override
     public ByteSource asByteSource() {
-        Blob blob = getBlobStore().getBlob(getContainerName(), getBlobName());
-
-        return new ByteSource() {
-            @Override
-            public InputStream openStream() throws IOException {
-                return blob.getPayload().openStream();
-            }
-
-            @Override
-            public ByteSource slice(long offset, long length) {
-                Blob slicedBlob = getBlobStore().getBlob(getContainerName(), getBlobName(), GetOptions.Builder.range(offset, (offset + length) - 1));
-                return new ByteSource() {
-                    @Override
-                    public InputStream openStream() throws IOException {
-                        return slicedBlob.getPayload().openStream();
-                    }
-
-                    @Override
-                    public boolean isEmpty() throws IOException {
-                        return false;
-                    }
-
-                    @Override
-                    public long size() throws IOException {
-                        return length;
-                    }
-                };
-            }
-
-            @Override
-            public boolean isEmpty() throws IOException {
-                return blob != null;
-            }
-
-            @Override
-            public long size() throws IOException {
-                if (blob == null) {
-                    return 0;
-                } else {
-                    return blob.getMetadata().getSize();
-                }
-            }
-
-            @Override
-            public String toString() {
-                return "AbstractBlobBackedFileData.asByteSource(" + getBlobName() + ")";
-            }
-        };
+        return new BlobBackedByteSource(getBlobStore(), getContainerName(), getBlobName(), GetOptions.NONE);
     }
 
     @Override
