@@ -1,7 +1,7 @@
 require 'redcloth'
 require 'java'
 
-include_class "uk.ac.warwick.util.content.textile2.jruby.TextileService"
+java_import "uk.ac.warwick.util.content.textile2.jruby.TextileService"
 
 class RedClothTextileEngine
   include TextileService

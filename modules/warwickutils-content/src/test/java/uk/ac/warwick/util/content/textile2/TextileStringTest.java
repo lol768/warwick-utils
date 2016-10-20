@@ -9,10 +9,6 @@ public final class TextileStringTest {
 	
 	@Before
 	public void setUp() throws Exception {
-	    System.setProperty(
-                TextileTextTransformer.TEXTILE_SERVICE_LOCATION_PROPERTY_KEY,
-                "http://localhost:2000/textile");
-        
         System.setProperty("textile.media.mp3WimpyPlayerLocation", "wimpy.swf");
         System.setProperty("textile.media.mp3AlternatePlayerLocation", "mp3player.swf");
         System.setProperty("textile.media.quicktimePreviewImage", "qt.png");
@@ -44,18 +40,6 @@ public final class TextileStringTest {
 		if (formattedText == null) {
 		    throwError("Error formatting text, null value returned for: "+input);
 		}
-//		// textile seems to append 2 new line characters to the returned string, so remove them
-//		int inputNlCount = countTrailingNewlines(input);
-//		int outputNlCount = countTrailingNewlines(formattedText);
-//		if (outputNlCount > inputNlCount) {
-//			formattedText = formattedText.substring(0, formattedText.length()-(outputNlCount-inputNlCount)); // remove extra newlines
-//		}
-//		// textile may also remove new line characters from the start of the string, so restore them
-//		inputNlCount = countLeadingNewlines(input);
-//		outputNlCount = countLeadingNewlines(formattedText);
-//		if (outputNlCount < inputNlCount) {
-//			formattedText = input.substring(0, inputNlCount-outputNlCount)+formattedText; // restore newlines
-//		}
 		return formattedText;
 	}
 
