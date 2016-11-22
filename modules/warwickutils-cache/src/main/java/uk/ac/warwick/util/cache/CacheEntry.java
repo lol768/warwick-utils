@@ -3,6 +3,7 @@ package uk.ac.warwick.util.cache;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents an entry in the cache. Contains the key and the value.
@@ -56,7 +57,7 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 		
 		try {
 			CacheEntry<K, V> e = (CacheEntry<K, V>) obj;
-			return key.equals(e.key) && e.value == value;
+			return key.equals(e.key) && Objects.equals(e.value, value);
 		} catch (ClassCastException e) {
 		    return false;
 		}
