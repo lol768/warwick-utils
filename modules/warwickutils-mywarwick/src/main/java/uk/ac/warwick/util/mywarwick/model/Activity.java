@@ -17,6 +17,31 @@ public class Activity {
         this.type = type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Activity)) return false;
+
+        Activity activity = (Activity) o;
+
+        if (!getType().equals(activity.getType())) return false;
+        if (!getTitle().equals(activity.getTitle())) return false;
+        if (getUrl() != null ? !getUrl().equals(activity.getUrl()) : activity.getUrl() != null) return false;
+        if (!getRecipients().equals(activity.getRecipients())) return false;
+        return getText() != null ? getText().equals(activity.getText()) : activity.getText() == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getType().hashCode();
+        result = 31 * result + getTitle().hashCode();
+        result = 31 * result + (getUrl() != null ? getUrl().hashCode() : 0);
+        result = 31 * result + getRecipients().hashCode();
+        result = 31 * result + (getText() != null ? getText().hashCode() : 0);
+        return result;
+    }
+
     public String getType() {
         return type;
     }
