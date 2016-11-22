@@ -38,25 +38,6 @@ public class MyWarwickServiceImplMultiConfigTest {
         activity = new Activity("id", "title", "url", "text", "fake-type");
     }
 
-    @Test
-    public void baseUrlShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com", myWarwickService.getConfigs().get(0).getBaseUrl());
-    }
-
-    @Test
-    public void providerIdShouldBeCorrectForConfig1() {
-        assertEquals("fakeProviderId", myWarwickService.getConfigs().get(0).getProviderId());
-    }
-
-    @Test
-    public void providerUserNameShouldBeCorrectForConfig1() {
-        assertEquals("shylock-mywarwick-api-user", myWarwickService.getConfigs().get(0).getApiUser());
-    }
-
-    @Test
-    public void providerPasswordShouldBeCorrectForConfig1() {
-        assertEquals("blinking", myWarwickService.getConfigs().get(0).getApiPassword());
-    }
 
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
@@ -93,26 +74,6 @@ public class MyWarwickServiceImplMultiConfigTest {
                         .get("content-type")
                         .get(0)
         );
-    }
-
-    @Test
-    public void baseUrlShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com", myWarwickService.getConfigs().get(1).getBaseUrl());
-    }
-
-    @Test
-    public void providerIdShouldBeCorrectForConfig2() {
-        assertEquals("fakerProviderId", myWarwickService.getConfigs().get(1).getProviderId());
-    }
-
-    @Test
-    public void providerUserNameShouldBeCorrectForConfig2() {
-        assertEquals("moonwalker-api-user", myWarwickService.getConfigs().get(1).getApiUser());
-    }
-
-    @Test
-    public void providerPasswordShouldBeCorrectForConfig2() {
-        assertEquals("hanging", myWarwickService.getConfigs().get(1).getApiPassword());
     }
 
     @Test

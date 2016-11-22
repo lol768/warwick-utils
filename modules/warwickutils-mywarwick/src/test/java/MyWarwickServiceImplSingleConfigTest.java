@@ -17,26 +17,6 @@ public class MyWarwickServiceImplSingleConfigTest {
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
     @Test
-    public void baseUrlShouldBeCorrect() {
-        assertEquals("https://fake.com", myWarwickService.getConfigs().get(0).getBaseUrl());
-    }
-
-    @Test
-    public void providerIdShouldBeCorrect() {
-        assertEquals("fakeProviderId", myWarwickService.getConfigs().get(0).getProviderId());
-    }
-
-    @Test
-    public void providerUserNameShouldBeCorrect() {
-        assertEquals("shylock-mywarwick-api-user", myWarwickService.getConfigs().get(0).getApiUser());
-    }
-
-    @Test
-    public void providerPasswordShouldBeCorrect() {
-        assertEquals("blinking", myWarwickService.getConfigs().get(0).getApiPassword());
-    }
-
-    @Test
     public void activityPathShouldBeCorrect() {
         assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
     }
@@ -48,7 +28,6 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     @Test
     public void shouldCreateJsonBodyCorrectly() {
-
         assertEquals(
                 new ObjectMapper().convertValue(activity, JsonNode.class),
                 myWarwickService.makeJsonBody(activity)
