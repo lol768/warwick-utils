@@ -3,7 +3,8 @@ package uk.ac.warwick.util.mywarwick;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.RequestBodyEntity;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import uk.ac.warwick.util.mywarwick.model.Activity;
@@ -17,9 +18,8 @@ import java.util.stream.Collectors;
 
 public class MyWarwickServiceImpl implements MyWarwickService {
 
-    private static final Logger LOGGER = Logger.getRootLogger();
-
-    List<Config> configs;
+    private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
+    private List<Config> configs;
 
     public MyWarwickServiceImpl() {
         this.configs = new ArrayList<>();
