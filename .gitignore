@@ -12,3 +12,4 @@ pom.xml.versionsBackup
 dependency-reduced-pom.xml
 /.idea
 *.iml
+.DS_Store
