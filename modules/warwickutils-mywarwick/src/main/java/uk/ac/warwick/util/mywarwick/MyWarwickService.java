@@ -1,12 +1,13 @@
 package uk.ac.warwick.util.mywarwick;
 import uk.ac.warwick.util.mywarwick.model.Activity;
-import java.util.Set;
+import uk.ac.warwick.util.mywarwick.model.Response;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface MyWarwickService {
-    Integer sendAsActivity(Activity activity) throws ExecutionException, InterruptedException;
-    Integer sendAsNotification(Activity activity) throws ExecutionException, InterruptedException;
 
-    void sendAsActivities(Set<Activity> activities);
-    void sendAsNotifications(Set<Activity> activities);
+    // default sending to prod
+    List<Response> sendAsActivity(Activity activity) throws ExecutionException, InterruptedException;
+    List<Response> sendAsNotification(Activity activity) throws ExecutionException, InterruptedException;
 }
