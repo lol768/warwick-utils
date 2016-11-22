@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutionException;
 
 public interface MyWarwickService {
 
-    // default sending to prod
     List<Response> sendAsActivity(Activity activity) throws ExecutionException, InterruptedException;
     List<Response> sendAsNotification(Activity activity) throws ExecutionException, InterruptedException;
 }
