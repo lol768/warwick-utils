@@ -5,41 +5,41 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+@Named
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
     private List<Config> configs;
     private final Gson gson = new Gson();
 
-    private CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+    @Inject
+    AsyncHttpCLient httpclient;
 
-    private MyWarwickServiceImpl() {
-        httpclient.start();
-    }
-
-    public MyWarwickServiceImpl(Config config) {
-        this();
+    @Inject
+    public MyWarwickServiceImpl(Config config ) {
         this.configs = new ArrayList<>();
         configs.add(config);
     }
 
+    @Inject
     public MyWarwickServiceImpl(List<Config> configs) {
-        this();
         this.configs = configs;
     }
 
     private List<Future<HttpResponse>> send(Activity activity, boolean isNotification) {
+        httpclient.start();
         return configs.parallelStream().limit(2).map(config -> {
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
             Future<HttpResponse> futureResponse = null;

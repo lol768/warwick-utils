@@ -1,6 +1,11 @@
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import uk.ac.warwick.util.mywarwick.AsyncHttpCLient;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
@@ -11,11 +16,20 @@ import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplSingleConfigTest {
 
     Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
-    MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(config);
+
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+
+    @Mock
+    AsyncHttpCLient asyncHttpCLient = new AsyncHttpCLient();
+
+    @InjectMocks
+    MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(config);
+
+
 
     @Test
     public void activityPathShouldBeCorrect() {
