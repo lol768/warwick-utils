@@ -34,12 +34,16 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         this.configs = configs;
     }
 
-    @Override
-    public List<Response> sendAsActivity(Activity activity) throws ExecutionException, InterruptedException {
+    private List<Response> send(Activity activity, boolean isNotification){
         return configs.parallelStream().limit(2).map(config -> {
             Integer responseCode = null;
             try {
-                responseCode = postToMyWarwick(makeRequest(config.getActivityPath(), makeJsonBody(activity), config.getApiUser(), config.getApiPassword()));
+                if (isNotification){
+                    responseCode = postToMyWarwick(makeRequest(config.getNotificationPath(), makeJsonBody(activity), config.getApiUser(), config.getApiPassword()));
+                } else {
+                    responseCode = postToMyWarwick(makeRequest(config.getActivityPath(), makeJsonBody(activity), config.getApiUser(), config.getApiPassword()));
+                }
+
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -48,16 +52,13 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     @Override
+    public List<Response> sendAsActivity(Activity activity) throws ExecutionException, InterruptedException {
+        return send(activity, false);
+    }
+
+    @Override
     public List<Response> sendAsNotification(Activity activity) throws ExecutionException, InterruptedException {
-        return configs.parallelStream().limit(2).map(config -> {
-            Integer responseCode = null;
-            try {
-                responseCode = postToMyWarwick(makeRequest(config.getNotificationPath(), makeJsonBody(activity), config.getApiUser(), config.getApiPassword()));
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-            return new Response(activity, config.getNotificationPath(), responseCode);
-        }).collect(Collectors.toList());
+        return send(activity,true);
     }
 
     public JsonNode makeJsonBody(Activity activity) {
