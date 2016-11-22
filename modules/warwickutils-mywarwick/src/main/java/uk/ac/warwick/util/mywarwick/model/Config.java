@@ -13,7 +13,6 @@ public class Config {
         this.providerId = providerId;
         this.apiUser = apiUser;
         this.apiPassword = apiPassword;
-        initPath();
     }
 
     public String getBaseUrl() {
@@ -33,23 +32,12 @@ public class Config {
     }
 
     public String getActivityPath() {
+        if (activityPath == null) activityPath = baseUrl + "/api/streams/" + providerId + "/activities";
         return activityPath;
     }
 
     public String getNotificationPath() {
+        if (notificationPath == null) notificationPath = baseUrl + "/api/streams/" + providerId + "/notifications";
         return notificationPath;
-    }
-
-    private void initActivityPath() {
-        activityPath = baseUrl + "/api/streams/" + providerId + "/activities";
-    }
-
-    private void initNotificationPath() {
-        notificationPath = baseUrl + "/api/streams/" + providerId + "/notifications";
-    }
-
-    private void initPath() {
-        initActivityPath();
-        initNotificationPath();
     }
 }
