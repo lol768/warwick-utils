@@ -1,7 +1,4 @@
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -10,7 +7,6 @@ import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +24,7 @@ public class MyWarwickServiceImplMultiConfigTest {
     Activity activity;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         Config config1 = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
         Config config2 = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
         configs = new ArrayList<>();
@@ -55,11 +51,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),configs.get(0).getApiUser(),configs.get(0).getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("Authorization")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword())
+                        .getFirstHeader("Authorization").getValue()
         );
     }
 
@@ -68,11 +61,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),configs.get(0).getApiUser(),configs.get(0).getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("content-type")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword())
+                        .getFirstHeader("content-type").getValue()
         );
     }
 
@@ -91,11 +81,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic bW9vbndhbGtlci1hcGktdXNlcjpoYW5naW5n",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),configs.get(1).getApiUser(),configs.get(1).getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("Authorization")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword())
+                        .getFirstHeader("Authorization").getValue()
         );
     }
 
@@ -104,11 +91,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),configs.get(1).getApiUser(),configs.get(1).getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("content-type")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword())
+                        .getFirstHeader("content-type").getValue()
         );
     }
 

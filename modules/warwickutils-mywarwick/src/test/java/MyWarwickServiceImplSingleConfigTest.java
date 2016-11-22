@@ -1,12 +1,13 @@
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import uk.ac.warwick.util.mywarwick.MyWarwickService;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +30,7 @@ public class MyWarwickServiceImplSingleConfigTest {
     @Test
     public void shouldCreateJsonBodyCorrectly() {
         assertEquals(
-                new ObjectMapper().convertValue(activity, JsonNode.class),
+                new Gson().toJson(activity),
                 myWarwickService.makeJsonBody(activity)
         );
     }
@@ -37,17 +38,19 @@ public class MyWarwickServiceImplSingleConfigTest {
     @Test
     public void requestShouldHaveCorrectJsonBody() throws IOException {
 
+        String expected = myWarwickService.makeJsonBody(activity);
         assertEquals(
-                myWarwickService.makeJsonBody(activity),
-                new ObjectMapper().readTree(new ObjectMapper().convertValue(myWarwickService.makeRequest("", myWarwickService.makeJsonBody(activity),config.getApiUser(),config.getApiPassword()).getBody().toString(), JsonNode.class).asText())
+                expected,
+                IOUtils.toString(myWarwickService.makeRequest("", expected, "", "").getEntity().getContent(), Charset.defaultCharset())
         );
     }
 
     @Test
-    public void requestShouldHaveCorrectPath() {
+    public void requestShouldHaveCorrectPath() throws MalformedURLException {
+        String expected = "http://test.com";
         assertEquals(
-                "http://test.com",
-                myWarwickService.makeRequest("http://test.com", myWarwickService.makeJsonBody(new Activity("id", "title", "url", "text", "fake-type")),config.getApiUser(),config.getApiPassword()).getHttpRequest().getUrl()
+                expected,
+                myWarwickService.makeRequest(expected, "", "", "").getURI().toURL().toString()
         );
     }
 
@@ -56,11 +59,8 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),config.getApiUser(),config.getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("Authorization")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword())
+                        .getFirstHeader("Authorization").getValue()
         );
     }
 
@@ -69,11 +69,8 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity),config.getApiUser(),config.getApiPassword())
-                        .getHttpRequest()
-                        .getHeaders()
-                        .get("content-type")
-                        .get(0)
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword())
+                        .getFirstHeader("content-type").getValue()
         );
     }
 

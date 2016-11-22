@@ -1,12 +1,10 @@
 package uk.ac.warwick.util.mywarwick;
+import org.apache.http.HttpResponse;
 import uk.ac.warwick.util.mywarwick.model.Activity;
-import uk.ac.warwick.util.mywarwick.model.Response;
-
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public interface MyWarwickService {
-
-    List<Response> sendAsActivity(Activity activity) throws ExecutionException, InterruptedException;
-    List<Response> sendAsNotification(Activity activity) throws ExecutionException, InterruptedException;
+    List<Future<HttpResponse>> sendAsActivity(Activity activity);
+    List<Future<HttpResponse>> sendAsNotification(Activity activity);
 }
