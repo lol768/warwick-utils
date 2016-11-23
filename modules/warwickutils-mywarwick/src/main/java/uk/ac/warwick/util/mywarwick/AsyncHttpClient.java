@@ -13,19 +13,26 @@ import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.concurrent.Future;
 
 @Named
+@Singleton
 public class AsyncHttpClient implements HttpAsyncClient {
 
     private CloseableHttpAsyncClient httpClient;
 
     public AsyncHttpClient() {
         httpClient = HttpAsyncClients.createDefault();
+        httpClient.start();
     }
 
     public void start() {
         httpClient.start();
+    }
+
+    public boolean isRunning() {
+        return httpClient.isRunning();
     }
 
     @Override

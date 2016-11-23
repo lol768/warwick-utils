@@ -1,5 +1,8 @@
 package uk.ac.warwick.util.mywarwick.model;
 
+import javax.inject.Named;
+
+@Named
 public class Config {
     private String baseUrl;
     private String providerId;

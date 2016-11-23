@@ -1,35 +1,34 @@
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.AsyncHttpClient;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplSingleConfigTest {
 
-    Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    private Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
 
-    Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+    private Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
-    @Mock
-    AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+    private AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
-    @InjectMocks
-    MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(config);
+    private MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, config);
 
+    @Test
+    public void httpClientShouldNotBeNull() {
+        assert (myWarwickService.getHttpclient() != null);
+    }
 
+    @Test
+    public void httpClientShouldBeStarted() {
+        assertEquals(true, myWarwickService.getHttpclient().isRunning());
+    }
 
     @Test
     public void activityPathShouldBeCorrect() {

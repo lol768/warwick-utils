@@ -12,33 +12,40 @@ import uk.ac.warwick.util.mywarwick.model.Config;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Named
+@Singleton
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
     private List<Config> configs;
     private final Gson gson = new Gson();
+    private AsyncHttpClient httpclient;
+
+    private MyWarwickServiceImpl(AsyncHttpClient httpclient){
+        this.httpclient = httpclient;
+        httpclient.start();
+    }
 
     @Inject
-    AsyncHttpClient httpclient;
-
-    public MyWarwickServiceImpl(Config config ) {
+    public MyWarwickServiceImpl(AsyncHttpClient httpclient, Config config) {
+        this(httpclient);
         this.configs = new ArrayList<>();
         configs.add(config);
     }
 
     @Inject
-    public MyWarwickServiceImpl(List<Config> configs) {
+    public MyWarwickServiceImpl(AsyncHttpClient httpclient, List<Config> configs) {
+        this(httpclient);
         this.configs = configs;
     }
 
     private List<Future<HttpResponse>> send(Activity activity, boolean isNotification) {
-        httpclient.start();
         return configs.parallelStream().limit(2).map(config -> {
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
             Future<HttpResponse> futureResponse = null;
@@ -101,4 +108,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     public List<Config> getConfigs() {
         return configs;
     }
+
+    public AsyncHttpClient getHttpclient() {
+        return httpclient;
+    }
+
 }

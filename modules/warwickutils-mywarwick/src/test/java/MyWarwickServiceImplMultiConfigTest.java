@@ -1,27 +1,18 @@
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import uk.ac.warwick.util.mywarwick.AsyncHttpClient;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplMultiConfigTest {
-    @Mock
     List<Config> configs;
-
-    @Mock
     MyWarwickServiceImpl myWarwickService;
-
-    @Mock
     Activity activity;
+    AsyncHttpClient asyncHttpClient;
 
     @Before
     public void setUp() {
@@ -30,10 +21,10 @@ public class MyWarwickServiceImplMultiConfigTest {
         configs = new ArrayList<>();
         configs.add(config1);
         configs.add(config2);
-        myWarwickService = new MyWarwickServiceImpl(configs);
+        asyncHttpClient = new AsyncHttpClient();
+        myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, configs);
         activity = new Activity("id", "title", "url", "text", "fake-type");
     }
-
 
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
