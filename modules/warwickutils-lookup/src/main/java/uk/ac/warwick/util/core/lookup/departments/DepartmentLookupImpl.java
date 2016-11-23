@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.core.lookup.departments;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -17,6 +16,7 @@ import uk.ac.warwick.util.core.Logger;
 import uk.ac.warwick.util.core.lookup.DepartmentNameLookup;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
+import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
 import java.util.*;
@@ -26,18 +26,30 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     private static final String CACHE_NAME = "departments";
     private static final String DEPTS_KEY = "all.departments";
     private static final long MAX_CACHE_AGE_SECS = 60 * 60 * 24 * 7; // 7 days
-
     private static final Logger LOGGER = Logger.getLogger(DepartmentLookupImpl.class);
+
+    private static final Uri DEFAULT_DEPARTMENTS_API_URL = Uri.parse("https://departments.warwick.ac.uk/public/api/department.json");
+    private static final Uri DEFAULT_FACULTY_API_URL = Uri.parse("https://departments.warwick.ac.uk/public/api/faculty.json");
+
+    static final String ACADEMIC = "ACADEMIC";
+    static final String RESERVED = "RESERVED";
+    static final String SERVICE = "SERVICE";
+    static final String SELF_FINANCING = "SELF_FINANCING";
+
 
     private final Cache<String, LinkedHashMap<String, Department>> cache;
 
     private final String url;
+    private final FacultyLookup facultyLookup;
 
-    public DepartmentLookupImpl(final String url) {
+    public DepartmentLookupImpl() {
+        this(DEFAULT_DEPARTMENTS_API_URL.toString(), DEFAULT_FACULTY_API_URL.toString());
+    }
+
+    public DepartmentLookupImpl(final String url, final String facultyUrl) {
         this.url = url;
-
+        this.facultyLookup = new FacultyLookupImpl(facultyUrl);
         this.cache = Caches.newCache(CACHE_NAME, this, MAX_CACHE_AGE_SECS, Caches.CacheStrategy.InMemoryOnly);
-
         // Pre-warm cache by immediately fetching a department
         getDepartment("IN");
     }
@@ -70,13 +82,47 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
         }
     }
 
-    private static Department parseJsonToDepartment(final JSONObject json) throws JSONException {
-        return new Department(
-                json.get("code").toString(),
-                json.get("name").toString(),
-                json.get("shortName").toString(),
-                json.get("faculty").toString()
-        );
+    private Set<Department> filterDepartments(String deptType) {
+        List<Department> allDepts = getAllDepartments();
+        Set<Department> filteredDepts = new HashSet<Department>();
+        for (Department d : allDepts) {
+            if(d.getType().equals(deptType)) {
+                filteredDepts.add(d);
+            }
+        }
+        return filteredDepts;
+    }
+
+    @Override
+    public Set<Department> getAllAcademicDepartments() {
+        return filterDepartments(ACADEMIC);
+    }
+
+    @Override
+    public Set<Department> getAllServiceDepartments() {
+        return filterDepartments(SERVICE);
+    }
+
+    @Override
+    public Set<Department> getAllAdminDepartments() {
+        return filterDepartments(RESERVED);
+    }
+
+    @Override
+    public Set<Department> getAllSelfFundingDepartments() {
+        return filterDepartments(SELF_FINANCING);
+    }
+
+    private Department parseJsonToDepartment(final JSONObject json) throws JSONException {
+        Department d = new Department();
+        d.setCode(json.getString("code"));
+        d.setName(json.getString("name"));
+        d.setShortName(json.getString("shortName"));
+        d.setType(json.getString("type"));
+        d.setCurrent(json.getBoolean("inUse"));
+        d.setLastModified(new Date(json.getLong("lastModified")));
+        d.setFaculty(facultyLookup.getFaculty(json.getString("faculty")));
+        return d;
     }
 
     @Override
@@ -97,7 +143,7 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
 
                         for (int i = 0; i < jsonDepartments.length(); i++) {
                             JSONObject jsonDepartment = jsonDepartments.getJSONObject(i);
-                            Department department = DepartmentLookupImpl.parseJsonToDepartment(jsonDepartment);
+                            Department department = parseJsonToDepartment(jsonDepartment);
 
                             departments.add(department);
                         }
