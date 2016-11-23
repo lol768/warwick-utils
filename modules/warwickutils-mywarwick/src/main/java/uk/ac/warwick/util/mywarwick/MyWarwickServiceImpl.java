@@ -54,7 +54,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             path,
                             makeJsonBody(activity),
                             config.getApiUser(),
-                            config.getApiPassword()),
+                            config.getApiPassword(),
+                            config.getProviderId()),
                     new FutureCallback<HttpResponse>() {
                         @Override
                         public void completed(HttpResponse response) {
@@ -93,7 +94,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return gson.toJson(activity);
     }
 
-    public HttpPost makeRequest(String path, String json, String apiUser, String apiPassword) {
+    public HttpPost makeRequest(String path, String json, String apiUser, String apiPassword, String providerId) {
         final HttpPost request = new HttpPost(path);
         request.addHeader(
                 "Authorization",
@@ -101,9 +102,14 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         request.addHeader(
                 "Content-type",
                 "application/json");
+        request.addHeader(
+                "User-Agent",
+                providerId
+        );
         request.setEntity(new StringEntity(json, Charset.defaultCharset()));
         return request;
     }
+
 
     public List<Config> getConfigs() {
         return configs;
