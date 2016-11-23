@@ -1,5 +1,8 @@
 package uk.ac.warwick.util.mywarwick.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,17 +27,21 @@ public class Recipients {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Recipients)) return false;
+
+        if (o == null || getClass() != o.getClass()) return false;
 
         Recipients that = (Recipients) o;
 
-        return getUsers().equals(that.getUsers());
-
+        return new EqualsBuilder()
+                .append(getUsers(), that.getUsers())
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return getUsers().hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(getUsers())
+                .toHashCode();
     }
 
     public Set<String> getUsers() {

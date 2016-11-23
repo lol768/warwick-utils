@@ -2,6 +2,9 @@ package uk.ac.warwick.util.mywarwick.model;
 
 // activity and notification share the same data model, they are only different
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Activity {
     String type;
     String title;
@@ -20,26 +23,29 @@ public class Activity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Activity)) return false;
+
+        if (o == null || getClass() != o.getClass()) return false;
 
         Activity activity = (Activity) o;
 
-        if (!getType().equals(activity.getType())) return false;
-        if (!getTitle().equals(activity.getTitle())) return false;
-        if (getUrl() != null ? !getUrl().equals(activity.getUrl()) : activity.getUrl() != null) return false;
-        if (!getRecipients().equals(activity.getRecipients())) return false;
-        return getText() != null ? getText().equals(activity.getText()) : activity.getText() == null;
-
+        return new EqualsBuilder()
+                .append(getType(), activity.getType())
+                .append(getTitle(), activity.getTitle())
+                .append(getUrl(), activity.getUrl())
+                .append(getRecipients(), activity.getRecipients())
+                .append(getText(), activity.getText())
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = getType().hashCode();
-        result = 31 * result + getTitle().hashCode();
-        result = 31 * result + (getUrl() != null ? getUrl().hashCode() : 0);
-        result = 31 * result + getRecipients().hashCode();
-        result = 31 * result + (getText() != null ? getText().hashCode() : 0);
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(getType())
+                .append(getTitle())
+                .append(getUrl())
+                .append(getRecipients())
+                .append(getText())
+                .toHashCode();
     }
 
     public String getType() {
