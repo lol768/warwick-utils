@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Recipients {
-    Set<String> users;
+    private Set<String> users;
 
     public Recipients() {
         this.users = new HashSet<>();

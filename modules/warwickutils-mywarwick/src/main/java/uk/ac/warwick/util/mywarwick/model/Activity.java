@@ -6,11 +6,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Activity {
-    String type;
-    String title;
-    String url;
-    Recipients recipients;
-    String text;
+    private String type;
+    private String title;
+    private String url;
+    private Recipients recipients;
+    private String text;
 
     public Activity(String userId, String title, String url, String text, String type) {
         this.recipients = new Recipients(userId);
