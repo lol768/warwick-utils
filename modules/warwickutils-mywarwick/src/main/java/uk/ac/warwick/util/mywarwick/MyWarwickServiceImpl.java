@@ -25,9 +25,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private final Gson gson = new Gson();
 
     @Inject
-    AsyncHttpCLient httpclient;
+    AsyncHttpClient httpclient;
 
-    @Inject
     public MyWarwickServiceImpl(Config config ) {
         this.configs = new ArrayList<>();
         configs.add(config);

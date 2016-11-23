@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.ac.warwick.util.mywarwick.AsyncHttpCLient;
+import uk.ac.warwick.util.mywarwick.AsyncHttpClient;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
@@ -24,7 +24,7 @@ public class MyWarwickServiceImplSingleConfigTest {
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
     @Mock
-    AsyncHttpCLient asyncHttpCLient = new AsyncHttpCLient();
+    AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
     @InjectMocks
     MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(config);

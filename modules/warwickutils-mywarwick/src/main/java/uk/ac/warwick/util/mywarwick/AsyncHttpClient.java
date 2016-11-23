@@ -16,11 +16,11 @@ import javax.inject.Named;
 import java.util.concurrent.Future;
 
 @Named
-public class AsyncHttpCLient implements HttpAsyncClient {
+public class AsyncHttpClient implements HttpAsyncClient {
 
     private CloseableHttpAsyncClient httpClient;
 
-    public AsyncHttpCLient() {
+    public AsyncHttpClient() {
         httpClient = HttpAsyncClients.createDefault();
     }
 
