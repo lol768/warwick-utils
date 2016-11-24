@@ -57,7 +57,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     private List<Future<HttpResponse>> send(Activity activity, boolean isNotification) {
-        return configs.parallelStream().limit(2).map(config -> {
+        return configs.stream().map(config -> {
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
             Future<HttpResponse> futureResponse = null;
             futureResponse = httpclient.execute(
