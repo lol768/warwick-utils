@@ -34,22 +34,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    private MyWarwickServiceImpl(HttpClient httpclient) {
+    public MyWarwickServiceImpl(HttpClient httpclient) {
         this.httpclient = httpclient;
         httpclient.start();
-    }
-
-    @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient, Config config) {
-        this(httpclient);
-        this.configs = new ArrayList<>();
-        configs.add(config);
-    }
-
-    @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient, List<Config> configs) {
-        this(httpclient);
-        setConfigs(configs);
     }
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
@@ -149,9 +136,13 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return httpclient;
     }
 
-    private void setConfigs(List<Config> configs) {
+    public void setConfigs(List<Config> configs) {
         if (this.configs == null) this.configs = new ArrayList<>();
         HashSet<Config> configsSet = new HashSet<>(configs);
         this.configs = new ArrayList<>(configsSet);
+    }
+
+    public void setConfig(Config config){
+        this.setConfigs(Arrays.asList(config));
     }
 }

@@ -2,6 +2,10 @@ package uk.ac.warwick.util.mywarwick;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 
@@ -10,32 +14,36 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplMultiConfigTest {
-    List<Config> configs;
-    MyWarwickServiceImpl myWarwickService;
-    Activity activity;
+
+    List<Config> configs = new ArrayList<>();
+
+    Config config1 = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    Config config2 = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
+    Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+
+    @Mock
     HttpClient httpClient;
+
+    @InjectMocks
+    MyWarwickServiceImpl myWarwickService;
 
     @Before
     public void setUp() {
-        Config config1 = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
-        Config config2 = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
-        configs = new ArrayList<>();
         configs.add(config1);
         configs.add(config2);
-        httpClient = new HttpClient();
-        myWarwickService = new MyWarwickServiceImpl(httpClient, configs);
-        activity = new Activity("id", "title", "url", "text", "fake-type");
+        myWarwickService.setConfigs(configs);
     }
 
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(1).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getConfigs().get(1).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getConfigs().get(0).getNotificationPath());
     }
 
 
@@ -61,12 +69,12 @@ public class MyWarwickServiceImplMultiConfigTest {
 
     @Test
     public void activityPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getConfigs().get(1).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getConfigs().get(0).getNotificationPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getConfigs().get(1).getNotificationPath());
     }
 
     @Test
@@ -96,7 +104,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         ArrayList<Config> configArrayList = new ArrayList<>();
         configArrayList.addAll(configs);
         configArrayList.add(config2copy);
-        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, configArrayList);
+        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient);
+        myWarwickService.setConfigs(configArrayList);
         assertEquals(2, myWarwickService.getConfigs().size());
     }
 

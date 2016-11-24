@@ -3,7 +3,12 @@ package uk.ac.warwick.util.mywarwick;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import java.io.IOException;
@@ -11,24 +16,26 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplSingleConfigTest {
 
-    private Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
-    private Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+    @Mock
+    HttpClient httpClient;
 
-    private HttpClient httpClient = new HttpClient();
+    @InjectMocks
+    private MyWarwickServiceImpl myWarwickService;
 
-    private MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, config);
+    @Before
+    public void setup(){
+        myWarwickService.setConfig(config);
+    }
 
     @Test
     public void httpClientShouldNotBeNull() {
         assert (myWarwickService.getHttpclient() != null);
-    }
-
-    @Test
-    public void httpClientShouldBeStarted() {
-        assertEquals(true, myWarwickService.getHttpclient().isRunning());
     }
 
     @Test
