@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -41,7 +43,15 @@ public class MyWarwickServiceImplSingleConfigTest {
     }
 
     @Test
-    public void shouldCreateJsonBodyCorrectly() {
+    public void shouldCreateJsonBodyCorrectly() throws JsonProcessingException {
+        assertEquals(
+                new ObjectMapper().writeValueAsString(activity),
+                myWarwickService.makeJsonBody(activity)
+        );
+    }
+
+    @Test
+    public void shouldCreateIdenticalJsonBodyAgainstAnotherJsonLibrary() {
         assertEquals(
                 new Gson().toJson(activity),
                 myWarwickService.makeJsonBody(activity)
@@ -50,11 +60,10 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     @Test
     public void requestShouldHaveCorrectJsonBody() throws IOException {
-
-        String expected = myWarwickService.makeJsonBody(activity);
+        String expected = "{\"type\":\"fake-type\",\"title\":\"title\",\"url\":\"url\",\"recipients\":{\"users\":[\"id\"]},\"text\":\"text\"}";
         assertEquals(
                 expected,
-                IOUtils.toString(myWarwickService.makeRequest("", expected, "", "").getEntity().getContent(), Charset.defaultCharset())
+                IOUtils.toString(myWarwickService.makeRequest("", expected, "", "","").getEntity().getContent(), Charset.defaultCharset())
         );
     }
 
@@ -63,7 +72,7 @@ public class MyWarwickServiceImplSingleConfigTest {
         String expected = "http://test.com";
         assertEquals(
                 expected,
-                myWarwickService.makeRequest(expected, "", "", "").getURI().toURL().toString()
+                myWarwickService.makeRequest(expected, "", "", "","").getURI().toURL().toString()
         );
     }
 
@@ -72,7 +81,7 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword(),"")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -82,7 +91,7 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword(),"")
                         .getFirstHeader("content-type").getValue()
         );
     }

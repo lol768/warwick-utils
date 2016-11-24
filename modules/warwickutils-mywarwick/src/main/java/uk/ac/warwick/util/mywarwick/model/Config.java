@@ -1,5 +1,8 @@
 package uk.ac.warwick.util.mywarwick.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import javax.inject.Named;
 
 @Named
@@ -43,4 +46,35 @@ public class Config {
         if (notificationPath == null) notificationPath = baseUrl + "/api/streams/" + providerId + "/notifications";
         return notificationPath;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Config config = (Config) o;
+
+        return new EqualsBuilder()
+                .append(getBaseUrl(), config.getBaseUrl())
+                .append(getProviderId(), config.getProviderId())
+                .append(getApiUser(), config.getApiUser())
+                .append(getApiPassword(), config.getApiPassword())
+                .append(getActivityPath(), config.getActivityPath())
+                .append(getNotificationPath(), config.getNotificationPath())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(getBaseUrl())
+                .append(getProviderId())
+                .append(getApiUser())
+                .append(getApiPassword())
+                .append(getActivityPath())
+                .append(getNotificationPath())
+                .toHashCode();
+    }
+
 }

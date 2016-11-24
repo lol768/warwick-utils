@@ -4,8 +4,10 @@ import uk.ac.warwick.util.mywarwick.AsyncHttpClient;
 import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class MyWarwickServiceImplMultiConfigTest {
@@ -28,12 +30,12 @@ public class MyWarwickServiceImplMultiConfigTest {
 
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(1).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getConfigs().get(0).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getConfigs().get(1).getNotificationPath());
     }
 
 
@@ -42,7 +44,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -52,19 +54,19 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
     }
 
     @Test
     public void activityPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getConfigs().get(1).getActivityPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getConfigs().get(1).getNotificationPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getConfigs().get(0).getNotificationPath());
     }
 
     @Test
@@ -72,7 +74,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic bW9vbndhbGtlci1hcGktdXNlcjpoYW5naW5n",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -82,9 +84,20 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword())
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(0).getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
+    }
+
+    @Test
+    public void configsShouldNotHaveDuplicate() {
+
+        Config config2copy = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
+        ArrayList<Config> configArrayList = new ArrayList<>();
+        configArrayList.addAll(configs);
+        configArrayList.add(config2copy);
+        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, configArrayList);
+        assertEquals(2, myWarwickService.getConfigs().size());
     }
 
 }

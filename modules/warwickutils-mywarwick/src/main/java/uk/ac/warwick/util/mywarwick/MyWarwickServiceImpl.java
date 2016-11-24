@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.mywarwick;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
+import uk.ac.warwick.util.mywarwick.model.Configs;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,8 +26,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
     private List<Config> configs;
-    private final Gson gson = new Gson();
     private AsyncHttpClient httpclient;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private MyWarwickServiceImpl(AsyncHttpClient httpclient){
         this.httpclient = httpclient;
@@ -40,9 +42,18 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     @Inject
+    public MyWarwickServiceImpl(AsyncHttpClient httpclient, Configs configs) {
+        this(httpclient);
+        ArrayList<Config> configArrayList = new ArrayList<>();
+        configArrayList.add(configs.getDevConfig());
+        configArrayList.add(configs.getProdConfig());
+        configArrayList.add(configs.getTestConfig());
+        setConfigs(configArrayList);
+    }
+
     public MyWarwickServiceImpl(AsyncHttpClient httpclient, List<Config> configs) {
         this(httpclient);
-        this.configs = configs;
+        setConfigs(configs);
     }
 
     private List<Future<HttpResponse>> send(Activity activity, boolean isNotification) {
@@ -91,7 +102,14 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     public String makeJsonBody(Activity activity) {
-        return gson.toJson(activity);
+        String jsonString;
+        try {
+            jsonString = mapper.writeValueAsString(activity);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            jsonString = "{}";
+        }
+        return jsonString;
     }
 
     public HttpPost makeRequest(String path, String json, String apiUser, String apiPassword, String providerId) {
@@ -119,4 +137,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return httpclient;
     }
 
+    private void setConfigs(List<Config> configs){
+        if (this.configs == null) this.configs = new ArrayList<>();
+        HashSet<Config> configsSet = new HashSet<>(configs);
+        this.configs = new ArrayList<>(configsSet);
+    }
 }
