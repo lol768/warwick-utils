@@ -5,15 +5,35 @@ package uk.ac.warwick.util.mywarwick.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Activity {
     private String type;
     private String title;
-    private String url;
-    private Recipients recipients;
     private String text;
+    private String url;
+    private Set<Tag> tags;
+    private Recipients recipients;
 
     public Activity(String userId, String title, String url, String text, String type) {
         this.recipients = new Recipients(userId);
+        this.title = title;
+        this.text = text;
+        this.url = url;
+        this.type = type;
+    }
+
+    public Activity(Set<String> userIds, String title, String url, String text, String type) {
+        this.recipients = new Recipients(userIds);
+        this.title = title;
+        this.text = text;
+        this.url = url;
+        this.type = type;
+    }
+
+    public Activity(Set<String> userIds, Set<String> groups, String title, String url, String text, String type) {
+        this.recipients = new Recipients(userIds, groups);
         this.title = title;
         this.text = text;
         this.url = url;
@@ -86,5 +106,18 @@ public class Activity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Set<Tag> getTags() {
+        if (tags == null) tags = new HashSet<>();
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void setTags(Tag tag) {
+        getTags().add(tag);
     }
 }

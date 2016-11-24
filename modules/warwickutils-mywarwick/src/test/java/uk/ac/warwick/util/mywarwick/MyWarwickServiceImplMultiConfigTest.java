@@ -1,3 +1,5 @@
+package uk.ac.warwick.util.mywarwick;
+
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.mywarwick.AsyncHttpClient;

@@ -1,10 +1,9 @@
+package uk.ac.warwick.util.mywarwick;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import uk.ac.warwick.util.mywarwick.AsyncHttpClient;
-import uk.ac.warwick.util.mywarwick.MyWarwickServiceImpl;
 import uk.ac.warwick.util.mywarwick.model.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import java.io.IOException;
@@ -51,16 +50,8 @@ public class MyWarwickServiceImplSingleConfigTest {
     }
 
     @Test
-    public void shouldCreateIdenticalJsonBodyAgainstAnotherJsonLibrary() {
-        assertEquals(
-                new Gson().toJson(activity),
-                myWarwickService.makeJsonBody(activity)
-        );
-    }
-
-    @Test
     public void requestShouldHaveCorrectJsonBody() throws IOException {
-        String expected = "{\"type\":\"fake-type\",\"title\":\"title\",\"url\":\"url\",\"recipients\":{\"users\":[\"id\"]},\"text\":\"text\"}";
+        String expected = "{\"type\":\"fake-type\",\"title\":\"title\",\"url\":\"url\",\"tags\":[]\"recipients\":{\"users\":[\"id\"]},\"text\":\"text\"}";
         assertEquals(
                 expected,
                 IOUtils.toString(myWarwickService.makeRequest("", expected, "", "","").getEntity().getContent(), Charset.defaultCharset())
