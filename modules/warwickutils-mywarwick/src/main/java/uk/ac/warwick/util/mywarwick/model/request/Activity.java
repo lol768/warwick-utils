@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.mywarwick.model;
+package uk.ac.warwick.util.mywarwick.model.request;
 
 // activity and notification share the same data model, they are only different
 

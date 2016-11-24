@@ -1,11 +1,9 @@
-package uk.ac.warwick.util.mywarwick.model;
+package uk.ac.warwick.util.mywarwick.model.request;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Recipients {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import uk.ac.warwick.util.mywarwick.model.Activity;
+import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import java.io.IOException;
 import java.net.MalformedURLException;

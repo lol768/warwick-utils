@@ -8,15 +8,20 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.warwick.util.mywarwick.model.Activity;
+import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import uk.ac.warwick.util.mywarwick.model.Configs;
+import uk.ac.warwick.util.mywarwick.model.response.Error;
+import uk.ac.warwick.util.mywarwick.model.response.Response;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -29,7 +34,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private AsyncHttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private MyWarwickServiceImpl(AsyncHttpClient httpclient){
+    private MyWarwickServiceImpl(AsyncHttpClient httpclient) {
         this.httpclient = httpclient;
         httpclient.start();
     }
@@ -56,11 +61,10 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         setConfigs(configs);
     }
 
-    private List<Future<HttpResponse>> send(Activity activity, boolean isNotification) {
-        return configs.stream().map(config -> {
+    private Future<List<Response>> send(Activity activity, boolean isNotification) {
+        List<Future<HttpResponse>> futureList = configs.stream().map(config -> {
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
-            Future<HttpResponse> futureResponse = null;
-            futureResponse = httpclient.execute(
+            return httpclient.execute(
                     makeRequest(
                             path,
                             makeJsonBody(activity),
@@ -72,7 +76,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         public void completed(HttpResponse response) {
                             LOGGER.info("request completed");
                             if (response.getStatusLine().getStatusCode() != 201) {
-                                LOGGER.error("request completed" + "but status code is " + response.getStatusLine().getStatusCode());
+                                LOGGER.error("request completed" + "but status code is not right" + response.getStatusLine().getStatusCode());
                             }
                         }
 
@@ -86,18 +90,34 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             LOGGER.info("request canceled");
                         }
                     });
-
-            return futureResponse;
         }).collect(Collectors.toList());
+
+        return CompletableFuture
+                .allOf(futureList.toArray(new CompletableFuture[futureList.size()]))
+                .thenApply(value -> futureList.stream()
+                        .map(element -> {
+                            Response response = new Response();
+                            if (element.isDone()){
+                                try {
+                                    HttpResponse httpResponse = element.get();
+                                    response = mapper.readValue(httpResponse.getEntity().toString(), Response.class);
+                                } catch (InterruptedException | ExecutionException | IOException e) {
+                                    e.printStackTrace();
+                                    response.setError(new Error("",e.getMessage()));
+                                }
+                            }
+                            return response;
+                        }).collect(Collectors.toList())
+                );
     }
 
     @Override
-    public List<Future<HttpResponse>> sendAsActivity(Activity activity) {
+    public Future<List<Response>> sendAsActivity(Activity activity) {
         return send(activity, false);
     }
 
     @Override
-    public List<Future<HttpResponse>> sendAsNotification(Activity activity) {
+    public Future<List<Response>> sendAsNotification(Activity activity) {
         return send(activity, true);
     }
 
@@ -137,7 +157,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return httpclient;
     }
 
-    private void setConfigs(List<Config> configs){
+    private void setConfigs(List<Config> configs) {
         if (this.configs == null) this.configs = new ArrayList<>();
         HashSet<Config> configsSet = new HashSet<>(configs);
         this.configs = new ArrayList<>(configsSet);

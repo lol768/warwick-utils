@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.mywarwick.model;
+package uk.ac.warwick.util.mywarwick.model.request;
 
 public class Tag {
     private String name;
