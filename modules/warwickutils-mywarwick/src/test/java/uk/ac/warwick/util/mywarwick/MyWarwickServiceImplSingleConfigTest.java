@@ -17,9 +17,9 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     private Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
-    private AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+    private HttpClient httpClient = new HttpClient();
 
-    private MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, config);
+    private MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, config);
 
     @Test
     public void httpClientShouldNotBeNull() {

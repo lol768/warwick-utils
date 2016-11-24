@@ -30,24 +30,24 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
     private List<Config> configs;
-    private AsyncHttpClient httpclient;
+    private HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    private MyWarwickServiceImpl(AsyncHttpClient httpclient) {
+    private MyWarwickServiceImpl(HttpClient httpclient) {
         this.httpclient = httpclient;
         httpclient.start();
     }
 
     @Inject
-    public MyWarwickServiceImpl(AsyncHttpClient httpclient, Config config) {
+    public MyWarwickServiceImpl(HttpClient httpclient, Config config) {
         this(httpclient);
         this.configs = new ArrayList<>();
         configs.add(config);
     }
 
     @Inject
-    public MyWarwickServiceImpl(AsyncHttpClient httpclient, List<Config> configs) {
+    public MyWarwickServiceImpl(HttpClient httpclient, List<Config> configs) {
         this(httpclient);
         setConfigs(configs);
     }
@@ -145,7 +145,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return configs;
     }
 
-    public AsyncHttpClient getHttpclient() {
+    public HttpClient getHttpclient() {
         return httpclient;
     }
 

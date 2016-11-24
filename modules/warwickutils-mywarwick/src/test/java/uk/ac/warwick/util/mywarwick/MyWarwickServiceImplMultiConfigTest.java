@@ -14,7 +14,7 @@ public class MyWarwickServiceImplMultiConfigTest {
     List<Config> configs;
     MyWarwickServiceImpl myWarwickService;
     Activity activity;
-    AsyncHttpClient asyncHttpClient;
+    HttpClient httpClient;
 
     @Before
     public void setUp() {
@@ -23,8 +23,8 @@ public class MyWarwickServiceImplMultiConfigTest {
         configs = new ArrayList<>();
         configs.add(config1);
         configs.add(config2);
-        asyncHttpClient = new AsyncHttpClient();
-        myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, configs);
+        httpClient = new HttpClient();
+        myWarwickService = new MyWarwickServiceImpl(httpClient, configs);
         activity = new Activity("id", "title", "url", "text", "fake-type");
     }
 
@@ -96,7 +96,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         ArrayList<Config> configArrayList = new ArrayList<>();
         configArrayList.addAll(configs);
         configArrayList.add(config2copy);
-        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(asyncHttpClient, configArrayList);
+        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, configArrayList);
         assertEquals(2, myWarwickService.getConfigs().size());
     }
 
