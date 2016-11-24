@@ -60,8 +60,6 @@ public class Config {
                 .append(getProviderId(), config.getProviderId())
                 .append(getApiUser(), config.getApiUser())
                 .append(getApiPassword(), config.getApiPassword())
-                .append(getActivityPath(), config.getActivityPath())
-                .append(getNotificationPath(), config.getNotificationPath())
                 .isEquals();
     }
 
@@ -72,9 +70,6 @@ public class Config {
                 .append(getProviderId())
                 .append(getApiUser())
                 .append(getApiPassword())
-                .append(getActivityPath())
-                .append(getNotificationPath())
                 .toHashCode();
     }
-
 }
