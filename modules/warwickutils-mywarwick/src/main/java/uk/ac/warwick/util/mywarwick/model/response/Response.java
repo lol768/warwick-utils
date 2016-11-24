@@ -3,21 +3,34 @@ package uk.ac.warwick.util.mywarwick.model.response;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Response {
+
     Boolean success;
     String status;
     Data data;
-    Error error;
+    List<Error> errors;
+
 
     public Response() {
-        super();
+        this.errors = new ArrayList<>();
+    }
+
+    public Response(Boolean success, String status, Data data, List<Error> errors) {
+        this.success = success;
+        this.status = status;
+        this.data = data;
+        this.errors = errors;
     }
 
     public Response(Boolean success, String status, Data data, Error error) {
         this.success = success;
         this.status = status;
         this.data = data;
-        this.error = error;
+        this.errors = new ArrayList<>();
+        this.errors.add(error);
     }
 
     public Boolean getSuccess() {
@@ -44,12 +57,17 @@ public class Response {
         this.data = data;
     }
 
-    public Error getError() {
-        return error;
+    public List<Error> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<Error> errors) {
+        this.errors = errors;
     }
 
     public void setError(Error error) {
-        this.error = error;
+        if (this.errors == null) this.errors = new ArrayList<>();
+        this.errors.add(error);
     }
 
     @Override
@@ -64,7 +82,7 @@ public class Response {
                 .append(getSuccess(), response.getSuccess())
                 .append(getStatus(), response.getStatus())
                 .append(getData(), response.getData())
-                .append(getError(), response.getError())
+                .append(getErrors(), response.getErrors())
                 .isEquals();
     }
 
@@ -74,7 +92,17 @@ public class Response {
                 .append(getSuccess())
                 .append(getStatus())
                 .append(getData())
-                .append(getError())
+                .append(getErrors())
                 .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "success=" + success +
+                ", status='" + status + '\'' +
+                ", data=" + data +
+                ", errors=" + errors +
+                '}';
     }
 }

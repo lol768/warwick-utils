@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.mywarwick.model;
+package uk.ac.warwick.util.mywarwick.model.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,6 @@ public class ActivityTest {
         userIds.add("u1234567");
         groups.add("ch-students");
 
-        Recipients recipients = new Recipients(userIds, groups);
         Activity activity = new Activity(userIds,groups,"faketitle","fakeurl","faketext","faketype");
 
         Tag tag = new Tag();
