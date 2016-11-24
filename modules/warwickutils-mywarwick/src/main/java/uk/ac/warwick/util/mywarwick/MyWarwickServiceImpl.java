@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
-import uk.ac.warwick.util.mywarwick.model.Configs;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
@@ -34,6 +33,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private AsyncHttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    @Inject
     private MyWarwickServiceImpl(AsyncHttpClient httpclient) {
         this.httpclient = httpclient;
         httpclient.start();
@@ -47,15 +47,6 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     @Inject
-    public MyWarwickServiceImpl(AsyncHttpClient httpclient, Configs configs) {
-        this(httpclient);
-        ArrayList<Config> configArrayList = new ArrayList<>();
-        configArrayList.add(configs.getDevConfig());
-        configArrayList.add(configs.getProdConfig());
-        configArrayList.add(configs.getTestConfig());
-        setConfigs(configArrayList);
-    }
-
     public MyWarwickServiceImpl(AsyncHttpClient httpclient, List<Config> configs) {
         this(httpclient);
         setConfigs(configs);
@@ -97,13 +88,13 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 .thenApply(value -> futureList.stream()
                         .map(element -> {
                             Response response = new Response();
-                            if (element.isDone()){
+                            if (element.isDone()) {
                                 try {
                                     HttpResponse httpResponse = element.get();
                                     response = mapper.readValue(httpResponse.getEntity().toString(), Response.class);
                                 } catch (InterruptedException | ExecutionException | IOException e) {
                                     e.printStackTrace();
-                                    response.setError(new Error("",e.getMessage()));
+                                    response.setError(new Error("", e.getMessage()));
                                 }
                             }
                             return response;
@@ -142,7 +133,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 "application/json");
         request.addHeader(
                 "User-Agent",
-                providerId
+                providerId + ":" + this.getClass().getCanonicalName()
         );
         request.setEntity(new StringEntity(json, Charset.defaultCharset()));
         return request;
