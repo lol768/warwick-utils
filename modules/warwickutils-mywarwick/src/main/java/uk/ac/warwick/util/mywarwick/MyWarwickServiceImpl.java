@@ -41,9 +41,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
         assert this.configs != null;
-        List<Future<HttpResponse>> futureList = configs.stream().map(config -> {
+        List<CompletableFuture<HttpResponse>> futureList = configs.stream().map(config -> {
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
-            return httpclient.execute(
+            return makeCompletableFuture(httpclient.execute(
                     makeRequest(
                             path,
                             makeJsonBody(activity),
@@ -68,7 +68,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         public void cancelled() {
                             LOGGER.info("request canceled");
                         }
-                    });
+                    }));
         }).collect(Collectors.toList());
 
         return CompletableFuture
@@ -142,7 +142,17 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         this.configs = new ArrayList<>(configsSet);
     }
 
-    public void setConfig(Config config){
-        this.setConfigs(Arrays.asList(config));
+    public void setConfig(Config config) {
+        this.setConfigs(Collections.singletonList(config));
+    }
+
+    private static <T> CompletableFuture<T> makeCompletableFuture(Future<T> future) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
