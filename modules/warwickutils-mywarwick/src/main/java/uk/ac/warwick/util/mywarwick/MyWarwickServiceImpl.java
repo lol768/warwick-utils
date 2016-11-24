@@ -40,10 +40,10 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
-        assert this.configs != null;
-        List<CompletableFuture<HttpResponse>> futureList = configs.stream().map(config -> {
+        List<CompletableFuture<Response>> listOfCompletableFutures = configs.stream().map(config -> {
+            CompletableFuture<Response> completableFuture = new CompletableFuture<Response>();
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
-            return makeCompletableFuture(httpclient.execute(
+            httpclient.execute(
                     makeRequest(
                             path,
                             makeJsonBody(activity),
@@ -51,42 +51,46 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             config.getApiPassword(),
                             config.getProviderId()),
                     new FutureCallback<HttpResponse>() {
+                        Response response = new Response();
+
                         @Override
-                        public void completed(HttpResponse response) {
+                        public void completed(HttpResponse httpResponse) {
                             LOGGER.info("request completed");
-                            if (response.getStatusLine().getStatusCode() != 201) {
-                                LOGGER.error("request completed" + "but status code is not right" + response.getStatusLine().getStatusCode());
+                            try {
+                                response = mapper.readValue(httpResponse.getEntity().toString(), Response.class);
+                                completableFuture.complete(response);
+                                if (httpResponse.getStatusLine().getStatusCode() != 201) {
+                                    LOGGER.error("request completed" + "but status code is not right" + httpResponse.getStatusLine().getStatusCode());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                LOGGER.error(e.getMessage());
+                                response.setError(new Error("", e.getMessage()));
+                                completableFuture.complete(response);
                             }
                         }
 
                         @Override
                         public void failed(Exception e) {
                             LOGGER.error("error talking to mywarwick" + e.getMessage());
+                            response.setError(new Error("", e.getMessage()));
+                            completableFuture.complete(response);
                         }
 
                         @Override
                         public void cancelled() {
                             LOGGER.info("request canceled");
+                            response.setError(new Error("", "http request cancelled"));
+                            completableFuture.complete(response);
                         }
-                    }));
+                    });
+            return completableFuture;
         }).collect(Collectors.toList());
 
-        return CompletableFuture
-                .allOf(futureList.toArray(new CompletableFuture[futureList.size()]))
-                .thenApply(value -> futureList.stream()
-                        .map(element -> {
-                            Response response = new Response();
-                            if (element.isDone()) {
-                                try {
-                                    HttpResponse httpResponse = element.get();
-                                    response = mapper.readValue(httpResponse.getEntity().toString(), Response.class);
-                                } catch (InterruptedException | ExecutionException | IOException e) {
-                                    e.printStackTrace();
-                                    response.setError(new Error("", e.getMessage()));
-                                }
-                            }
-                            return response;
-                        }).collect(Collectors.toList())
+        return CompletableFuture.allOf(listOfCompletableFutures.toArray(new CompletableFuture[listOfCompletableFutures.size()]))
+                .thenApply(v -> listOfCompletableFutures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList())
                 );
     }
 
@@ -121,8 +125,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 "application/json");
         request.addHeader(
                 "User-Agent",
-                providerId + ":" + this.getClass().getCanonicalName()
-        );
+                providerId + ":" + this.getClass().getCanonicalName());
         request.setEntity(new StringEntity(json, Charset.defaultCharset()));
         return request;
     }
@@ -144,15 +147,5 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     public void setConfig(Config config) {
         this.setConfigs(Collections.singletonList(config));
-    }
-
-    private static <T> CompletableFuture<T> makeCompletableFuture(Future<T> future) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 }
