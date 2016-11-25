@@ -365,6 +365,11 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>warwickutils-mywarwick</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>warwickutils-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -691,6 +696,7 @@
 		<module>modules/warwickutils-lookup</module>
 		<module>modules/warwickutils-mail</module>
 		<module>modules/warwickutils-queue</module>
+		<module>modules/warwickutils-mywarwick</module>
 		<module>modules/warwickutils-web</module>
 
 		<module>modules/warwickutils-test</module>
