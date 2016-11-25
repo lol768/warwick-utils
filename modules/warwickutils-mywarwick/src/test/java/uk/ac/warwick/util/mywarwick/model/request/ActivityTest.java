@@ -3,10 +3,6 @@ package uk.ac.warwick.util.mywarwick.model.request;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.ac.warwick.util.mywarwick.model.request.Activity;
-import uk.ac.warwick.util.mywarwick.model.request.Recipients;
-import uk.ac.warwick.util.mywarwick.model.request.Tag;
-
 import java.util.HashSet;
 import java.util.Set;
 

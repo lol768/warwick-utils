@@ -8,10 +8,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,6 +33,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         configs.add(config1);
         configs.add(config2);
         myWarwickService.setConfigs(configs);
+        when(httpClient.isRunning()).thenReturn(true);
     }
 
     @Test

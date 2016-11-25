@@ -62,7 +62,6 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                                     LOGGER.error("request completed" + "but status code is not right" + httpResponse.getStatusLine().getStatusCode());
                                 }
                             } catch (IOException e) {
-                                e.printStackTrace();
                                 LOGGER.error(e.getMessage());
                                 response.setError(new Error("", e.getMessage()));
                                 completableFuture.complete(response);
@@ -87,7 +86,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         }).collect(Collectors.toList());
 
         return CompletableFuture.allOf(listOfCompletableFutures.toArray(new CompletableFuture[listOfCompletableFutures.size()]))
-                .thenApply(v -> listOfCompletableFutures.stream()
+                .thenApply(v -> listOfCompletableFutures
+                        .stream()
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList())
                 );
@@ -108,7 +108,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         try {
             jsonString = mapper.writeValueAsString(activity);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             jsonString = "{}";
         }
         return jsonString;
