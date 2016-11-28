@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.ac.warwick.util.mywarwick.model.Configs;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import java.util.ArrayList;
@@ -15,23 +17,28 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplMultiConfigTest {
-
-    List<Config> configs = new ArrayList<>();
-
     Config config1 = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
     Config config2 = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+    List<Config> configList = new ArrayList<>();
 
     @Mock
     HttpClient httpClient;
+
+    @Mock
+    Configs configs;
 
     @InjectMocks
     MyWarwickServiceImpl myWarwickService;
 
     @Before
     public void setUp() {
-        configs.add(config1);
-        configs.add(config2);
+
+        configList.add(config1);
+        configList.add(config2);
+
+        when(configs.getConfigs()).thenReturn(configList);
+
         myWarwickService.setConfigs(configs);
         when(httpClient.isRunning()).thenReturn(true);
     }
@@ -52,7 +59,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.getConfigs().get(0).getApiUser(), configs.getConfigs().get(0).getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -62,7 +69,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(0).getApiUser(), configs.get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.getConfigs().get(0).getApiUser(), configs.getConfigs().get(0).getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
     }
@@ -82,7 +89,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "Basic bW9vbndhbGtlci1hcGktdXNlcjpoYW5naW5n",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(1).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.getConfigs().get(1).getApiUser(), configs.getConfigs().get(1).getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -92,7 +99,7 @@ public class MyWarwickServiceImplMultiConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.get(1).getApiUser(), configs.get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), configs.getConfigs().get(1).getApiUser(), configs.getConfigs().get(0).getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
     }
@@ -101,11 +108,8 @@ public class MyWarwickServiceImplMultiConfigTest {
     public void configsShouldNotHaveDuplicate() {
 
         Config config2copy = new Config("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
-        ArrayList<Config> configArrayList = new ArrayList<>();
-        configArrayList.addAll(configs);
-        configArrayList.add(config2copy);
-        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient);
-        myWarwickService.setConfigs(configArrayList);
+        configList.add(config2copy);
+        MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, configs);
         assertEquals(2, myWarwickService.getConfigs().size());
     }
 

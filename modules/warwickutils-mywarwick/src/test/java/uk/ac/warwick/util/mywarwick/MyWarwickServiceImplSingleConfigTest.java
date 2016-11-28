@@ -9,15 +9,23 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.ac.warwick.util.mywarwick.model.Configs;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.Config;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplSingleConfigTest {
+
+    @Mock
+    Configs configs;
 
     Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
@@ -30,6 +38,11 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     @Before
     public void setup(){
+        List<Config> configList = new ArrayList<>();
+        configList.add(config);
+
+        when(configs.getConfigs()).thenReturn(configList);
+
         myWarwickService.setConfig(config);
     }
 

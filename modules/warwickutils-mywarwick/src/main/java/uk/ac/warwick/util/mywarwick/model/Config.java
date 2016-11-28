@@ -3,9 +3,6 @@ package uk.ac.warwick.util.mywarwick.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.inject.Named;
-
-@Named
 public class Config {
     private String baseUrl;
     private String providerId;
@@ -13,6 +10,10 @@ public class Config {
     private String apiPassword;
     private String activityPath;
     private String notificationPath;
+
+    public Config(){
+        super();
+    }
 
     public Config(String baseUrl, String providerId, String apiUser, String apiPassword) {
         this.baseUrl = baseUrl;
