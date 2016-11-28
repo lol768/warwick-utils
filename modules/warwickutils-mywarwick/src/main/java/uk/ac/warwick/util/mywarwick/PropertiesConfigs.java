@@ -1,0 +1,60 @@
+package uk.ac.warwick.util.mywarwick;
+
+import uk.ac.warwick.util.mywarwick.model.Config;
+import uk.ac.warwick.util.mywarwick.model.Configs;
+import javax.inject.Singleton;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Singleton
+public class PropertiesConfigs implements Configs {
+
+    private Properties applicationProperties;
+
+    private List<Config> configList;
+
+    private void initMyWarwickConfigs() {
+
+        HashMap<Integer, String> configBaseUrls = new HashMap<>();
+        HashMap<Integer, String> configProviderIds = new HashMap<>();
+        HashMap<Integer, String> configUserNames = new HashMap<>();
+        HashMap<Integer, String> configPasswords = new HashMap<>();
+        applicationProperties
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().toString().contains("mywarwick.services."))
+                .forEach(element -> {
+                    String key = element.getKey().toString();
+                    Integer propertyIndex = Integer.valueOf(key.split("\\.")[2]);
+                    if (key.contains("baseUrl")) configBaseUrls.put(propertyIndex, element.getValue().toString());
+                    if (key.contains("providerId")) configProviderIds.put(propertyIndex, element.getValue().toString());
+                    if (key.contains("userName")) configUserNames.put(propertyIndex, element.getValue().toString());
+                    if (key.contains("password")) configPasswords.put(propertyIndex, element.getValue().toString());
+                });
+
+        configList = configBaseUrls.entrySet().stream().map(baseUrl -> {
+            Integer index = baseUrl.getKey();
+            return new Config(
+                    baseUrl.getValue(),
+                    configProviderIds.get(index),
+                    configUserNames.get(index),
+                    configPasswords.get(index));
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Config> getConfigs() {
+        if (configList == null) configList = new ArrayList<>();
+        if (configList.size() == 0) initMyWarwickConfigs();
+        return configList;
+    }
+
+    @Override
+    public void setConfigs(List<Config> configs) {
+        this.configList = configs;
+    }
+
+    public void setApplicationProperties(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+}

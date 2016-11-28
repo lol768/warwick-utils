@@ -48,6 +48,22 @@ public class Config {
         return notificationPath;
     }
 
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public void setApiUser(String apiUser) {
+        this.apiUser = apiUser;
+    }
+
+    public void setApiPassword(String apiPassword) {
+        this.apiPassword = apiPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
