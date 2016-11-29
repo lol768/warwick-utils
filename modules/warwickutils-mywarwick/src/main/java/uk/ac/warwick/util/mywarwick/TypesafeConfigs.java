@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Singleton
-public class TypeSafeConfigs implements uk.ac.warwick.util.mywarwick.model.Configs {
+public class TypesafeConfigs implements uk.ac.warwick.util.mywarwick.model.Configs {
 
     @Inject
     private com.typesafe.config.Config typeSafeConfigProperties;
