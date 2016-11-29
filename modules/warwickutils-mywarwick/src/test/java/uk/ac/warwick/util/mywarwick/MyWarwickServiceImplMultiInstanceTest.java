@@ -41,7 +41,7 @@ public class MyWarwickServiceImplMultiInstanceTest {
 
         when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setInstances(configuration.getInstances());
+        myWarwickService.setConfiguration(configuration);
         when(httpClient.isRunning()).thenReturn(true);
     }
 

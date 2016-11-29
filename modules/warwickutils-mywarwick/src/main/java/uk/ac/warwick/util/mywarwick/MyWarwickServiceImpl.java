@@ -33,11 +33,13 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private Set<Instance> instances;
     private HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
+    private Configuration configuration;
 
     @Inject
     public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         this.httpclient = httpclient;
-        this.setInstances(configuration.getInstances());
+        this.configuration = configuration;
+        this.setConfiguration(this.configuration);
         httpclient.start();
     }
 
@@ -146,7 +148,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         this.httpclient = httpclient;
     }
 
-    public void setInstances(Collection<Instance> instances) {
-        this.instances = instances.stream().distinct().collect(Collectors.toSet());
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+        this.instances = this.configuration.getInstances().stream().distinct().collect(Collectors.toSet());
     }
 }

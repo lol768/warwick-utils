@@ -46,7 +46,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
 
         when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setInstances(Collections.singletonList(instance));
+        myWarwickService.setConfiguration(configuration);
     }
 
     @Test
