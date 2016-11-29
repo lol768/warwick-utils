@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.mywarwick;
 
-import uk.ac.warwick.util.mywarwick.model.Config;
+import uk.ac.warwick.util.mywarwick.model.Instance;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -9,18 +10,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Singleton
-public class TypesafeConfigs implements uk.ac.warwick.util.mywarwick.model.Configs {
+public class TypesafeConfiguration implements Configuration {
 
     @Inject
     private com.typesafe.config.Config typeSafeConfigProperties;
 
-    List<Config> configList;
+    List<Instance> instanceList;
 
     private void initConfigList() {
-        configList = typeSafeConfigProperties
+        instanceList = typeSafeConfigProperties
                 .getConfigList("mywarwick.services")
                 .stream()
-                .map(e -> new Config(
+                .map(e -> new Instance(
                         e.getString("baseUrl"),
                         e.getString("providerId"),
                         e.getString("userName"),
@@ -30,15 +31,15 @@ public class TypesafeConfigs implements uk.ac.warwick.util.mywarwick.model.Confi
     }
 
     @Override
-    public List<uk.ac.warwick.util.mywarwick.model.Config> getConfigs() {
-        if (configList == null) configList = new ArrayList<>();
-        if (configList.size() == 0) initConfigList();
-        return configList;
+    public List<Instance> getInstances() {
+        if (instanceList == null) instanceList = new ArrayList<>();
+        if (instanceList.size() == 0) initConfigList();
+        return instanceList;
     }
 
     @Override
-    public void setConfigs(List<uk.ac.warwick.util.mywarwick.model.Config> configs) {
-        this.configList = configs;
+    public void setInstances(List<Instance> instances) {
+        this.instanceList = instances;
     }
 
     public void setTypeSafeConfigProperties(com.typesafe.config.Config typeSafeConfigProperties) {

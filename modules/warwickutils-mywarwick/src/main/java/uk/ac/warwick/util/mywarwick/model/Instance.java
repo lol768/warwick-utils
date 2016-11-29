@@ -3,7 +3,7 @@ package uk.ac.warwick.util.mywarwick.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Config {
+public class Instance {
     private String baseUrl;
     private String providerId;
     private String apiUser;
@@ -11,11 +11,11 @@ public class Config {
     private String activityPath;
     private String notificationPath;
 
-    public Config(){
+    public Instance(){
         super();
     }
 
-    public Config(String baseUrl, String providerId, String apiUser, String apiPassword) {
+    public Instance(String baseUrl, String providerId, String apiUser, String apiPassword) {
         this.baseUrl = baseUrl;
         this.providerId = providerId;
         this.apiUser = apiUser;
@@ -70,13 +70,13 @@ public class Config {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        Config config = (Config) o;
+        Instance instance = (Instance) o;
 
         return new EqualsBuilder()
-                .append(getBaseUrl(), config.getBaseUrl())
-                .append(getProviderId(), config.getProviderId())
-                .append(getApiUser(), config.getApiUser())
-                .append(getApiPassword(), config.getApiPassword())
+                .append(getBaseUrl(), instance.getBaseUrl())
+                .append(getProviderId(), instance.getProviderId())
+                .append(getApiUser(), instance.getApiUser())
+                .append(getApiPassword(), instance.getApiPassword())
                 .isEquals();
     }
 

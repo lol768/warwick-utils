@@ -9,9 +9,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.ac.warwick.util.mywarwick.model.Configs;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
+import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
-import uk.ac.warwick.util.mywarwick.model.Config;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -22,12 +23,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MyWarwickServiceImplSingleConfigTest {
+public class MyWarwickServiceImplSingleInstanceTest {
 
     @Mock
-    Configs configs;
+    Configuration configuration;
 
-    Config config = new Config("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    Instance instance = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
     @Mock
@@ -38,12 +39,12 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     @Before
     public void setup(){
-        List<Config> configList = new ArrayList<>();
-        configList.add(config);
+        List<Instance> instanceList = new ArrayList<>();
+        instanceList.add(instance);
 
-        when(configs.getConfigs()).thenReturn(configList);
+        when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setConfig(config);
+        myWarwickService.setConfig(instance);
     }
 
     @Test
@@ -53,12 +54,12 @@ public class MyWarwickServiceImplSingleConfigTest {
 
     @Test
     public void activityPathShouldBeCorrect() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getConfigs().get(0).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().get(0).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrect() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getConfigs().get(0).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().get(0).getNotificationPath());
     }
 
     @Test
@@ -92,7 +93,7 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword(),"")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), instance.getApiUser(), instance.getApiPassword(),"")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -102,7 +103,7 @@ public class MyWarwickServiceImplSingleConfigTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), config.getApiUser(), config.getApiPassword(),"")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), instance.getApiUser(), instance.getApiPassword(),"")
                         .getFirstHeader("content-type").getValue()
         );
     }

@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.mywarwick;
 
-import uk.ac.warwick.util.mywarwick.model.Config;
-import uk.ac.warwick.util.mywarwick.model.Configs;
+import uk.ac.warwick.util.mywarwick.model.Instance;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -9,12 +9,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Singleton
-public class PropertiesConfigs implements Configs { //this implementation is for Spring applications
+public class PropertiesConfiguration implements Configuration { //this implementation is for Spring applications
 
     @Inject
     private Properties applicationProperties;
 
-    private List<Config> configList;
+    private List<Instance> instanceList;
 
     private void initMyWarwickConfigs() {
 
@@ -35,9 +35,9 @@ public class PropertiesConfigs implements Configs { //this implementation is for
                     if (key.contains("password")) configPasswords.put(propertyIndex, element.getValue().toString());
                 });
 
-        configList = configBaseUrls.entrySet().stream().map(baseUrl -> {
+        instanceList = configBaseUrls.entrySet().stream().map(baseUrl -> {
             Integer index = baseUrl.getKey();
-            return new Config(
+            return new Instance(
                     baseUrl.getValue(),
                     configProviderIds.get(index),
                     configUserNames.get(index),
@@ -46,14 +46,14 @@ public class PropertiesConfigs implements Configs { //this implementation is for
     }
 
     @Override
-    public List<Config> getConfigs() {
-        if (configList == null) configList = new ArrayList<>();
-        if (configList.size() == 0) initMyWarwickConfigs();
-        return configList;
+    public List<Instance> getInstances() {
+        if (instanceList == null) instanceList = new ArrayList<>();
+        if (instanceList.size() == 0) initMyWarwickConfigs();
+        return instanceList;
     }
 
     @Override
-    public void setConfigs(List<Config> configs) {
-        this.configList = configs;
+    public void setInstances(List<Instance> instances) {
+        this.instanceList = instances;
     }
 }

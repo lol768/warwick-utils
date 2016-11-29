@@ -9,9 +9,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.warwick.util.mywarwick.model.Configs;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
+import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
-import uk.ac.warwick.util.mywarwick.model.Config;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
@@ -30,19 +30,19 @@ import java.util.stream.Collectors;
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
-    private List<Config> configs;
+    private List<Instance> instances;
     private HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient, Configs configs) {
+    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         this.httpclient = httpclient;
-        this.setConfigs(configs);
+        this.setConfigs(configuration);
         httpclient.start();
     }
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
-        List<CompletableFuture<Response>> listOfCompletableFutures = configs.stream().map(config -> {
+        List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(config -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<Response>();
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
             httpclient.execute(
@@ -134,25 +134,25 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
 
-    public List<Config> getConfigs() {
-        return configs;
+    public List<Instance> getInstances() {
+        return instances;
     }
 
     public HttpClient getHttpclient() {
         return httpclient;
     }
 
-    public void setConfigs(List<Config> configs) {
-        if (this.configs == null) this.configs = new ArrayList<>();
-        HashSet<Config> configsSet = new HashSet<>(configs);
-        this.configs = new ArrayList<>(configsSet);
+    public void setInstances(List<Instance> instances) {
+        if (this.instances == null) this.instances = new ArrayList<>();
+        HashSet<Instance> configsSet = new HashSet<>(instances);
+        this.instances = new ArrayList<>(configsSet);
     }
 
-    public void setConfigs(Configs configs){
-        this.setConfigs(configs.getConfigs());
+    public void setConfigs(Configuration configuration){
+        this.setInstances(configuration.getInstances());
     }
 
-    public void setConfig(Config config) {
-        this.setConfigs(Collections.singletonList(config));
+    public void setConfig(Instance instance) {
+        this.setInstances(Collections.singletonList(instance));
     }
 }
