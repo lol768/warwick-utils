@@ -1,8 +1,7 @@
 package uk.ac.warwick.util.mywarwick.model;
-
-import java.util.List;
+import java.util.Set;
 
 public interface Configuration {
-    List<Instance> getInstances();
-    void setInstances(List<Instance> instances);
+    Set<Instance> getInstances();
+    void setInstances(Set<Instance> instances);
 }

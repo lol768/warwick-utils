@@ -3,9 +3,10 @@ package uk.ac.warwick.util.mywarwick;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.mywarwick.model.Instance;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import uk.ac.warwick.util.mywarwick.model.PropertiesConfiguration;
+
+import java.util.*;
+
 import static org.junit.Assert.*;
 
 public class PropertiesConfigurationTest {
@@ -14,7 +15,6 @@ public class PropertiesConfigurationTest {
 
     @Before
     public void setup() {
-        propertiesConfiguration = new PropertiesConfiguration();
         Properties properties = new Properties();
         properties.setProperty("mywarwick.services.0.baseUrl", "1");
         properties.setProperty("mywarwick.services.0.providerId", "2");
@@ -24,15 +24,14 @@ public class PropertiesConfigurationTest {
         properties.setProperty("mywarwick.services.1.providerId", "6");
         properties.setProperty("mywarwick.services.1.userName", "7");
         properties.setProperty("mywarwick.services.1.password", "8");
-        propertiesConfiguration.setApplicationProperties(properties);
+        propertiesConfiguration = new PropertiesConfiguration(properties);
     }
 
     @Test
     public void shouldReadPropertiesFileAndFormatToConfiguration() {
-        List<Instance> expected = new ArrayList<>();
+        Set<Instance> expected = new HashSet<>();
         expected.add(new Instance("1", "2", "3", "4"));
         expected.add(new Instance("5", "6", "7", "8"));
-
         assertEquals(expected, propertiesConfiguration.getInstances());
     }
 

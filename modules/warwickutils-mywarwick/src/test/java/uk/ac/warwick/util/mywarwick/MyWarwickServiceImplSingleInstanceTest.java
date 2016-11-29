@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.model.Configuration;
@@ -16,9 +15,7 @@ import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -36,17 +33,16 @@ public class MyWarwickServiceImplSingleInstanceTest {
     @Mock
     HttpClient httpClient;
 
-    @InjectMocks
     private MyWarwickServiceImpl myWarwickService;
 
     @Before
     public void setup(){
-        List<Instance> instanceList = new ArrayList<>();
+        Set<Instance> instanceList = new HashSet<>();
         instanceList.add(instance);
 
         when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setConfiguration(configuration);
+        myWarwickService = new MyWarwickServiceImpl(httpClient, configuration);
     }
 
     @Test

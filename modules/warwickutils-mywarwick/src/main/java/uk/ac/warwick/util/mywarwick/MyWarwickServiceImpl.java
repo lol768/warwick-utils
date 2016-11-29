@@ -39,7 +39,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         this.httpclient = httpclient;
         this.configuration = configuration;
-        this.setConfiguration(this.configuration);
+        instances = this.configuration.getInstances();
         httpclient.start();
     }
 
@@ -136,20 +136,11 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
 
-    public Collection<Instance> getInstances() {
+    public Set<Instance> getInstances() {
         return instances;
     }
 
     public HttpClient getHttpclient() {
         return httpclient;
-    }
-
-    public void setHttpclient(HttpClient httpclient) {
-        this.httpclient = httpclient;
-    }
-
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-        this.instances = this.configuration.getInstances().stream().distinct().collect(Collectors.toSet());
     }
 }

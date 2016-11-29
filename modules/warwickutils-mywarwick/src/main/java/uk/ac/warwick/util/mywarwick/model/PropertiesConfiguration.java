@@ -1,7 +1,4 @@
-package uk.ac.warwick.util.mywarwick;
-
-import uk.ac.warwick.util.mywarwick.model.Instance;
-import uk.ac.warwick.util.mywarwick.model.Configuration;
+package uk.ac.warwick.util.mywarwick.model;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -11,10 +8,15 @@ import java.util.stream.Collectors;
 @Singleton
 public class PropertiesConfiguration implements Configuration { //this implementation is for Spring applications
 
-    @Inject
+
     private Properties applicationProperties;
 
-    private List<Instance> instanceList;
+    private Set<Instance> instanceSet;
+
+    @Inject
+    public PropertiesConfiguration(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
     private void initMyWarwickConfigs() {
 
@@ -35,29 +37,25 @@ public class PropertiesConfiguration implements Configuration { //this implement
                     if (key.contains("password")) configPasswords.put(propertyIndex, element.getValue().toString());
                 });
 
-        instanceList = configBaseUrls.entrySet().stream().map(baseUrl -> {
+        instanceSet = configBaseUrls.entrySet().stream().map(baseUrl -> {
             Integer index = baseUrl.getKey();
             return new Instance(
                     baseUrl.getValue(),
                     configProviderIds.get(index),
                     configUserNames.get(index),
                     configPasswords.get(index));
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toSet());
     }
 
     @Override
-    public List<Instance> getInstances() {
-        if (instanceList == null) instanceList = new ArrayList<>();
-        if (instanceList.size() == 0) initMyWarwickConfigs();
-        return instanceList;
+    public Set<Instance> getInstances() {
+        if (instanceSet == null) instanceSet = new HashSet<>();
+        if (instanceSet.size() == 0) initMyWarwickConfigs();
+        return instanceSet;
     }
 
     @Override
-    public void setInstances(List<Instance> instances) {
-        this.instanceList = instances;
-    }
-
-    public void setApplicationProperties(Properties applicationProperties) {
-        this.applicationProperties = applicationProperties;
+    public void setInstances(Set<Instance> instances) {
+        this.instanceSet = instances;
     }
 }
