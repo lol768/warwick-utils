@@ -3,10 +3,7 @@ package uk.ac.warwick.util.mywarwick.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.inject.Named;
-
-@Named
-public class Config {
+public class Instance {
     private String baseUrl;
     private String providerId;
     private String apiUser;
@@ -14,7 +11,11 @@ public class Config {
     private String activityPath;
     private String notificationPath;
 
-    public Config(String baseUrl, String providerId, String apiUser, String apiPassword) {
+    public Instance(){
+        super();
+    }
+
+    public Instance(String baseUrl, String providerId, String apiUser, String apiPassword) {
         this.baseUrl = baseUrl;
         this.providerId = providerId;
         this.apiUser = apiUser;
@@ -47,19 +48,35 @@ public class Config {
         return notificationPath;
     }
 
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public void setApiUser(String apiUser) {
+        this.apiUser = apiUser;
+    }
+
+    public void setApiPassword(String apiPassword) {
+        this.apiPassword = apiPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        Config config = (Config) o;
+        Instance instance = (Instance) o;
 
         return new EqualsBuilder()
-                .append(getBaseUrl(), config.getBaseUrl())
-                .append(getProviderId(), config.getProviderId())
-                .append(getApiUser(), config.getApiUser())
-                .append(getApiPassword(), config.getApiPassword())
+                .append(getBaseUrl(), instance.getBaseUrl())
+                .append(getProviderId(), instance.getProviderId())
+                .append(getApiUser(), instance.getApiUser())
+                .append(getApiPassword(), instance.getApiPassword())
                 .isEquals();
     }
 

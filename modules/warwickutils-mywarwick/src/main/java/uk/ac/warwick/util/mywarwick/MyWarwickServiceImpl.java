@@ -6,10 +6,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
+import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
-import uk.ac.warwick.util.mywarwick.model.Config;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
@@ -28,18 +30,21 @@ import java.util.stream.Collectors;
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
-    private List<Config> configs;
+    private Set<Instance> instances;
     private HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
+    private Configuration configuration;
 
     @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient) {
+    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         this.httpclient = httpclient;
+        this.configuration = configuration;
+        instances = this.configuration.getInstances();
         httpclient.start();
     }
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
-        List<CompletableFuture<Response>> listOfCompletableFutures = configs.stream().map(config -> {
+        List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(config -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<Response>();
             final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
             httpclient.execute(
@@ -56,7 +61,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         public void completed(HttpResponse httpResponse) {
                             LOGGER.info("request completed");
                             try {
-                                response = mapper.readValue(httpResponse.getEntity().toString(), Response.class);
+                                String responseString =  EntityUtils.toString(httpResponse.getEntity());
+                                response = mapper.readValue(responseString, Response.class);
                                 completableFuture.complete(response);
                                 if (httpResponse.getStatusLine().getStatusCode() != 201) {
                                     LOGGER.error("request completed" + "but status code is not right" + httpResponse.getStatusLine().getStatusCode());
@@ -130,21 +136,11 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
 
-    public List<Config> getConfigs() {
-        return configs;
+    public Set<Instance> getInstances() {
+        return instances;
     }
 
     public HttpClient getHttpclient() {
         return httpclient;
-    }
-
-    public void setConfigs(List<Config> configs) {
-        if (this.configs == null) this.configs = new ArrayList<>();
-        HashSet<Config> configsSet = new HashSet<>(configs);
-        this.configs = new ArrayList<>(configsSet);
-    }
-
-    public void setConfig(Config config) {
-        this.setConfigs(Collections.singletonList(config));
     }
 }
