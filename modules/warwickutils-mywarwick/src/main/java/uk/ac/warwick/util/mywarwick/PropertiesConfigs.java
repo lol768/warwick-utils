@@ -2,13 +2,16 @@ package uk.ac.warwick.util.mywarwick;
 
 import uk.ac.warwick.util.mywarwick.model.Config;
 import uk.ac.warwick.util.mywarwick.model.Configs;
+
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Singleton
-public class PropertiesConfigs implements Configs {
+public class PropertiesConfigs implements Configs { //this implementation is for Spring applications
 
+    @Inject
     private Properties applicationProperties;
 
     private List<Config> configList;
@@ -52,9 +55,5 @@ public class PropertiesConfigs implements Configs {
     @Override
     public void setConfigs(List<Config> configs) {
         this.configList = configs;
-    }
-
-    public void setApplicationProperties(Properties applicationProperties) {
-        this.applicationProperties = applicationProperties;
     }
 }
