@@ -11,24 +11,6 @@ import java.util.stream.Collectors;
 @Singleton
 public class TypeSafeConfigs implements uk.ac.warwick.util.mywarwick.model.Configs {
 
-    /*
-
-mywarwick.services {
-  config1 {
-    baseUrl=""
-    providerId=""
-    userName=""
-    password=""
-  }
-  config2 {
-    baseUrl=""
-    providerId=""
-    userName=""
-    password=""
-  }
-}
-     */
-
     @Inject
     private com.typesafe.config.Config typeSafeConfigProperties;
 
@@ -57,5 +39,9 @@ mywarwick.services {
     @Override
     public void setConfigs(List<uk.ac.warwick.util.mywarwick.model.Config> configs) {
         this.configList = configs;
+    }
+
+    public void setTypeSafeConfigProperties(com.typesafe.config.Config typeSafeConfigProperties) {
+        this.typeSafeConfigProperties = typeSafeConfigProperties;
     }
 }
