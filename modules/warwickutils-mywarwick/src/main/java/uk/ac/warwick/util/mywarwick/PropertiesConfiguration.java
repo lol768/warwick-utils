@@ -56,4 +56,8 @@ public class PropertiesConfiguration implements Configuration { //this implement
     public void setInstances(List<Instance> instances) {
         this.instanceList = instances;
     }
+
+    public void setApplicationProperties(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 }
