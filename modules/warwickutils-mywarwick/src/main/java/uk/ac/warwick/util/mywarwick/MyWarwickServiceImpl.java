@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
-    private List<Instance> instances;
+    private Set<Instance> instances;
     private HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
     public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         this.httpclient = httpclient;
-        this.setConfigs(configuration);
+        this.setInstances(configuration.getInstances());
         httpclient.start();
     }
 
@@ -134,7 +134,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
 
-    public List<Instance> getInstances() {
+    public Collection<Instance> getInstances() {
         return instances;
     }
 
@@ -142,17 +142,11 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return httpclient;
     }
 
-    public void setInstances(List<Instance> instances) {
-        if (this.instances == null) this.instances = new ArrayList<>();
-        HashSet<Instance> configsSet = new HashSet<>(instances);
-        this.instances = new ArrayList<>(configsSet);
+    public void setHttpclient(HttpClient httpclient) {
+        this.httpclient = httpclient;
     }
 
-    public void setConfigs(Configuration configuration){
-        this.setInstances(configuration.getInstances());
-    }
-
-    public void setConfig(Instance instance) {
-        this.setInstances(Collections.singletonList(instance));
+    public void setInstances(Collection<Instance> instances) {
+        this.instances = instances.stream().distinct().collect(Collectors.toSet());
     }
 }

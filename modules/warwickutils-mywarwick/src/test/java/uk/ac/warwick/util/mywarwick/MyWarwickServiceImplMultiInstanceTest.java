@@ -12,6 +12,8 @@ import uk.ac.warwick.util.mywarwick.model.request.Activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 
@@ -39,18 +41,18 @@ public class MyWarwickServiceImplMultiInstanceTest {
 
         when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setConfigs(configuration);
+        myWarwickService.setInstances(configuration.getInstances());
         when(httpClient.isRunning()).thenReturn(true);
     }
 
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().get(0).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().get(0).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getNotificationPath());
     }
 
 
@@ -76,12 +78,12 @@ public class MyWarwickServiceImplMultiInstanceTest {
 
     @Test
     public void activityPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getInstances().get(1).getActivityPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(1).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getInstances().get(1).getNotificationPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(1).getNotificationPath());
     }
 
     @Test
@@ -110,6 +112,7 @@ public class MyWarwickServiceImplMultiInstanceTest {
         Instance instance2Copy = new Instance("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
         instanceList.add(instance2Copy);
         MyWarwickServiceImpl myWarwickService = new MyWarwickServiceImpl(httpClient, configuration);
+        assertEquals(3,configuration.getInstances().size());
         assertEquals(2, myWarwickService.getInstances().size());
     }
 

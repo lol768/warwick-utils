@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -44,7 +46,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
 
         when(configuration.getInstances()).thenReturn(instanceList);
 
-        myWarwickService.setConfig(instance);
+        myWarwickService.setInstances(Collections.singletonList(instance));
     }
 
     @Test
@@ -54,12 +56,12 @@ public class MyWarwickServiceImplSingleInstanceTest {
 
     @Test
     public void activityPathShouldBeCorrect() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().get(0).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrect() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().get(0).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getNotificationPath());
     }
 
     @Test
