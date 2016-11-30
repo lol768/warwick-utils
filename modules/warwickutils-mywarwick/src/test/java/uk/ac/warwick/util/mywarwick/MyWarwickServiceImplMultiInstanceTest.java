@@ -9,7 +9,6 @@ import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 
-import javax.naming.ConfigurationException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public class MyWarwickServiceImplMultiInstanceTest {
     MyWarwickServiceImpl myWarwickService;
 
     @Before
-    public void setUp() throws ConfigurationException {
+    public void setUp() {
 
         instanceList.add(instance1);
         instanceList.add(instance2);

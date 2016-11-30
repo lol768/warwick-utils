@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.mywarwick.model;
 import org.junit.Test;
-import javax.naming.ConfigurationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,13 +8,13 @@ public class ConfigurationTest {
     ConfigurationWithEmptyInstances configurationWithEmptyInstances = new ConfigurationWithEmptyInstances();
     ConfigurationWithNullInstances configurationWithNullInstances = new ConfigurationWithNullInstances();
 
-    @Test(expected = ConfigurationException.class)
-    public void expectExceptionThrownWithEmptyInstances() throws ConfigurationException {
+    @Test(expected = IllegalArgumentException.class)
+    public void expectExceptionThrownWithEmptyInstances()  {
         configurationWithEmptyInstances.validate();
     }
 
-    @Test(expected = ConfigurationException.class)
-    public void expectExceptionThrownWithNullInstances() throws ConfigurationException {
+    @Test(expected = IllegalArgumentException.class)
+    public void expectExceptionThrownWithNullInstances()  {
         configurationWithNullInstances.validate();
     }
 
@@ -33,7 +32,6 @@ class ConfigurationWithEmptyInstances implements Configuration{
 
     }
 }
-
 
 class ConfigurationWithNullInstances implements Configuration{
 

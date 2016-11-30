@@ -18,7 +18,6 @@ import uk.ac.warwick.util.mywarwick.model.response.Response;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.naming.ConfigurationException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -37,7 +36,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private Configuration configuration;
 
     @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) throws ConfigurationException {
+    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         configuration.validate();
         this.httpclient = httpclient;
         this.configuration = configuration;
