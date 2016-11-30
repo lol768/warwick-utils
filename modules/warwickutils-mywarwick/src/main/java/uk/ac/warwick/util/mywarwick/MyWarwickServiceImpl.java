@@ -60,21 +60,22 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                         @Override
                         public void completed(HttpResponse httpResponse) {
-                            LOGGER.debug("request completed");
+                            if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
                             try {
                                 String responseString = EntityUtils.toString(httpResponse.getEntity());
                                 response = mapper.readValue(responseString, Response.class);
                                 completableFuture.complete(response);
                                 if (response.getErrors().size() != 0) {
-                                    LOGGER.error("request completed but it contains error!" +
-                                            "\nInstance:\n" + instance.toString() +
+                                    LOGGER.error("Request completed but it contains an error:" +
+                                            "\nbaseUrl:" + instance.getBaseUrl() +
                                             "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
                                             "\nResponse:\n" + response.toString()
                                     );
                                 }
                             } catch (IOException e) {
-                                LOGGER.error("IOException: " + e.getMessage() +
-                                        "\nInstance:\n" + instance.toString());
+                                LOGGER.error("An IOException was thrown during communicating with mywarwick:\n" +
+                                        e.getMessage() +
+                                        "\nbaseUrl: " + instance.getBaseUrl());
                                 response.setError(new Error("", e.getMessage()));
                                 completableFuture.complete(response);
                             }
@@ -82,15 +83,16 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                         @Override
                         public void failed(Exception e) {
-                            LOGGER.error("error talking to mywarwick" + e.getMessage());
+                            LOGGER.error("Request to mywarwick API has failed with errors: " + e.getMessage());
                             response.setError(new Error("", e.getMessage()));
                             completableFuture.complete(response);
                         }
 
                         @Override
                         public void cancelled() {
-                            LOGGER.debug("request canceled");
-                            response.setError(new Error("", "http request cancelled"));
+                            String message = "Request to mywarwick has been canceled";
+                            if (LOGGER.isDebugEnabled()) LOGGER.debug(message);
+                            response.setError(new Error("", message));
                             completableFuture.complete(response);
                         }
                     });
