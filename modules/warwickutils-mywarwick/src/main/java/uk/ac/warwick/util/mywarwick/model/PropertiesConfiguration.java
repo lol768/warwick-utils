@@ -27,7 +27,7 @@ public class PropertiesConfiguration implements Configuration { //this implement
         applicationProperties
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().toString().contains("mywarwick.services."))
+                .filter(e -> e.getKey().toString().contains("mywarwick.instances."))
                 .forEach(element -> {
                     String key = element.getKey().toString();
                     Integer propertyIndex = Integer.valueOf(key.split("\\.")[2]);

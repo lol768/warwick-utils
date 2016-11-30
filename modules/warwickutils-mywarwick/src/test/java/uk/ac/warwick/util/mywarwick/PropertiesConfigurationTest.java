@@ -16,14 +16,14 @@ public class PropertiesConfigurationTest {
     @Before
     public void setup() {
         Properties properties = new Properties();
-        properties.setProperty("mywarwick.services.0.baseUrl", "1");
-        properties.setProperty("mywarwick.services.0.providerId", "2");
-        properties.setProperty("mywarwick.services.0.userName", "3");
-        properties.setProperty("mywarwick.services.0.password", "4");
-        properties.setProperty("mywarwick.services.1.baseUrl", "5");
-        properties.setProperty("mywarwick.services.1.providerId", "6");
-        properties.setProperty("mywarwick.services.1.userName", "7");
-        properties.setProperty("mywarwick.services.1.password", "8");
+        properties.setProperty("mywarwick.instances.0.baseUrl", "1");
+        properties.setProperty("mywarwick.instances.0.providerId", "2");
+        properties.setProperty("mywarwick.instances.0.userName", "3");
+        properties.setProperty("mywarwick.instances.0.password", "4");
+        properties.setProperty("mywarwick.instances.1.baseUrl", "5");
+        properties.setProperty("mywarwick.instances.1.providerId", "6");
+        properties.setProperty("mywarwick.instances.1.userName", "7");
+        properties.setProperty("mywarwick.instances.1.password", "8");
         propertiesConfiguration = new PropertiesConfiguration(properties);
     }
 
