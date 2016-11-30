@@ -20,7 +20,7 @@ public class TypesafeConfiguration implements Configuration {
 
     private void initConfigList() {
         instanceSet = typeSafeConfigProperties
-                .getConfigList("mywarwick.services")
+                .getConfigList("mywarwick.instances")
                 .stream()
                 .map(e -> new Instance(
                         e.getString("baseUrl"),

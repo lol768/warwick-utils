@@ -12,6 +12,7 @@ import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 
+import javax.naming.ConfigurationException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -36,7 +37,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
     private MyWarwickServiceImpl myWarwickService;
 
     @Before
-    public void setup(){
+    public void setup() throws ConfigurationException {
         Set<Instance> instanceList = new HashSet<>();
         instanceList.add(instance);
 

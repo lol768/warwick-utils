@@ -18,6 +18,7 @@ import uk.ac.warwick.util.mywarwick.model.response.Response;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.naming.ConfigurationException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -36,7 +37,8 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private Configuration configuration;
 
     @Inject
-    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
+    public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) throws ConfigurationException {
+        configuration.validate();
         this.httpclient = httpclient;
         this.configuration = configuration;
         instances = this.configuration.getInstances();
@@ -44,31 +46,36 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     private Future<List<Response>> send(Activity activity, boolean isNotification) {
-        List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(config -> {
-            CompletableFuture<Response> completableFuture = new CompletableFuture<Response>();
-            final String path = isNotification ? config.getNotificationPath() : config.getActivityPath();
+        List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
+            CompletableFuture<Response> completableFuture = new CompletableFuture<>();
+            final String path = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
             httpclient.execute(
                     makeRequest(
                             path,
                             makeJsonBody(activity),
-                            config.getApiUser(),
-                            config.getApiPassword(),
-                            config.getProviderId()),
+                            instance.getApiUser(),
+                            instance.getApiPassword(),
+                            instance.getProviderId()),
                     new FutureCallback<HttpResponse>() {
                         Response response = new Response();
 
                         @Override
                         public void completed(HttpResponse httpResponse) {
-                            LOGGER.info("request completed");
+                            LOGGER.debug("request completed");
                             try {
-                                String responseString =  EntityUtils.toString(httpResponse.getEntity());
+                                String responseString = EntityUtils.toString(httpResponse.getEntity());
                                 response = mapper.readValue(responseString, Response.class);
                                 completableFuture.complete(response);
-                                if (httpResponse.getStatusLine().getStatusCode() != 201) {
-                                    LOGGER.error("request completed" + "but status code is not right" + httpResponse.getStatusLine().getStatusCode());
+                                if (response.getErrors().size() != 0) {
+                                    LOGGER.error("request completed but it contains error!" +
+                                            "\nInstance:\n" + instance.toString() +
+                                            "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
+                                            "\nResponse:\n" + response.toString()
+                                    );
                                 }
                             } catch (IOException e) {
-                                LOGGER.error(e.getMessage());
+                                LOGGER.error("IOException: " + e.getMessage() +
+                                        "\nInstance:\n" + instance.toString());
                                 response.setError(new Error("", e.getMessage()));
                                 completableFuture.complete(response);
                             }
@@ -83,7 +90,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                         @Override
                         public void cancelled() {
-                            LOGGER.info("request canceled");
+                            LOGGER.debug("request canceled");
                             response.setError(new Error("", "http request cancelled"));
                             completableFuture.complete(response);
                         }

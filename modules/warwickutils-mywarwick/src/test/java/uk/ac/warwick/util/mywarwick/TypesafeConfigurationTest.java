@@ -18,7 +18,7 @@ public class TypesafeConfigurationTest {
 
     @Before
     public void setup() {
-        typeSafeConfigProperties = ConfigFactory.parseString("mywarwick.services = [\n" +
+        typeSafeConfigProperties = ConfigFactory.parseString("mywarwick.instances = [\n" +
                 "   {\n" +
                 "    baseUrl=\"1\"\n" +
                 "    providerId=\"2\"\n" +
