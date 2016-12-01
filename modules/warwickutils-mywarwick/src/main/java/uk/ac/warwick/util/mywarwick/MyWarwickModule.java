@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.TypesafeConfiguration;
 
-public class MyWarwickServiceGuiceModule extends AbstractModule {
+public class MyWarwickModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(MyWarwickService.class).to(MyWarwickServiceImpl.class);
