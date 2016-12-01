@@ -27,10 +27,6 @@ class ConfigurationWithEmptyInstances implements Configuration{
         return new HashSet<>();
     }
 
-    @Override
-    public void setInstances(Set<Instance> instances) {
-
-    }
 }
 
 class ConfigurationWithNullInstances implements Configuration{
@@ -40,8 +36,4 @@ class ConfigurationWithNullInstances implements Configuration{
         return null;
     }
 
-    @Override
-    public void setInstances(Set<Instance> instances) {
-
-    }
 }

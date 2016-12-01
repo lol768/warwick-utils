@@ -3,7 +3,9 @@ package uk.ac.warwick.util.mywarwick.model;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton
 public class PropertiesConfiguration implements Configuration { //this implementation is for Spring applications
@@ -19,7 +21,6 @@ public class PropertiesConfiguration implements Configuration { //this implement
     }
 
     private void initMyWarwickConfigs() {
-
         HashMap<Integer, String> configBaseUrls = new HashMap<>();
         HashMap<Integer, String> configProviderIds = new HashMap<>();
         HashMap<Integer, String> configUserNames = new HashMap<>();
@@ -49,13 +50,10 @@ public class PropertiesConfiguration implements Configuration { //this implement
 
     @Override
     public Set<Instance> getInstances() {
-        if (instanceSet == null) instanceSet = new HashSet<>();
-        if (instanceSet.size() == 0) initMyWarwickConfigs();
+        if (instanceSet == null) {
+            instanceSet = new HashSet<>();
+            initMyWarwickConfigs();
+        }
         return instanceSet;
-    }
-
-    @Override
-    public void setInstances(Set<Instance> instances) {
-        this.instanceSet = instances;
     }
 }
