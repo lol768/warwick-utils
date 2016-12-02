@@ -4,8 +4,6 @@ import java.util.Set;
 public interface Configuration {
     Set<Instance> getInstances();
 
-    void setInstances(Set<Instance> instances);
-
     default void validate() throws IllegalArgumentException {
         if (getInstances() == null)
             throw new IllegalArgumentException("mywarwick Configuration getInstances() returns null");
