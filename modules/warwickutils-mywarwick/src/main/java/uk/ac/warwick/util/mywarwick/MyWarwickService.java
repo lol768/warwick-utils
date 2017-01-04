@@ -5,7 +5,6 @@ import uk.ac.warwick.util.mywarwick.model.response.Response;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public interface MyWarwickService {
     CompletableFuture<List<Response>> sendAsActivity(Activity activity);
