@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Named
@@ -44,7 +43,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         httpclient.start();
     }
 
-    private Future<List<Response>> send(Activity activity, boolean isNotification) {
+    private CompletableFuture<List<Response>> send(Activity activity, boolean isNotification) {
         List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<>();
             final String path = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
@@ -108,12 +107,12 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     }
 
     @Override
-    public Future<List<Response>> sendAsActivity(Activity activity) {
+    public CompletableFuture<List<Response>> sendAsActivity(Activity activity) {
         return send(activity, false);
     }
 
     @Override
-    public Future<List<Response>> sendAsNotification(Activity activity) {
+    public CompletableFuture<List<Response>> sendAsNotification(Activity activity) {
         return send(activity, true);
     }
 
