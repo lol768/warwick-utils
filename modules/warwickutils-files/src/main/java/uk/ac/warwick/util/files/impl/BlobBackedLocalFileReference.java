@@ -3,10 +3,11 @@ package uk.ac.warwick.util.files.impl;
 import com.google.common.io.ByteSource;
 import org.apache.commons.io.FilenameUtils;
 import org.jclouds.blobstore.BlobStore;
-import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.options.CopyOptions;
 import org.joda.time.DateTime;
-import uk.ac.warwick.util.files.*;
+import uk.ac.warwick.util.files.FileData;
+import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.LocalFileReference;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.hash.HashString;
 
@@ -44,7 +45,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         this.blobStore = blobStore;
         this.containerName = containerName;
         this.path = FilenameUtils.separatorsToUnix(thepath);
-        this.data = new Data();
+        this.data = new Data(blobStore, containerName, path);
         this.storageStrategy = theStorageStrategy;
     }
 
@@ -107,54 +108,19 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
 
     class Data extends AbstractBlobBackedFileData {
 
-        @Override
-        public BlobStore getBlobStore() {
-            return blobStore;
-        }
-
-        @Override
-        public String getBlobName() {
-            return path;
-        }
-
-        @Override
-        public String getContainerName() {
-            return containerName;
+        private Data(BlobStore blobStore, String containerName, String blobName) {
+            super(blobStore, containerName, blobName);
         }
 
         @Override
         public FileData overwrite(ByteSource in) throws IOException {
             fileStore.doStore(in, path, containerName, BlobBackedLocalFileReference.this);
+            byteSource.invalidate();
             return this;
         }
 
         DateTime getLastModified() {
-            Blob blob = blobStore.getBlob(containerName, path);
-            return blob == null ? null : new DateTime(blob.getMetadata().getLastModified().getTime());
-        }
-        
-    }
-    
-    private static class FileStoreable implements Storeable {
-        
-        private final String path;
-        private final StorageStrategy strategy;
-        
-        FileStoreable(StorageStrategy theStrategy, String thePath) {
-            this.strategy = theStrategy;
-            this.path = thePath;
-        }
-
-        public StorageStrategy getStrategy() {
-            return strategy;
-        }
-
-        public String getPath() {
-            return path;
-        }
-        
-        public HashString getHash() {
-            return null;
+            return byteSource.getLastModified();
         }
         
     }

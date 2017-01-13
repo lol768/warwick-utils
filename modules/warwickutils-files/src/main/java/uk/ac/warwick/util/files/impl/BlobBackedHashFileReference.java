@@ -25,7 +25,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         this.blobStore = blobStore;
         this.containerName = containerName;
         this.hash = theHash;
-        this.data = new Data();
+        this.data = new Data(blobStore, containerName, theHash.getHash());
     }
 
     public HashString getHash() {
@@ -68,19 +68,8 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
 
     class Data extends AbstractBlobBackedFileData {
 
-        @Override
-        public BlobStore getBlobStore() {
-            return blobStore;
-        }
-
-        @Override
-        public String getBlobName() {
-            return hash.getHash();
-        }
-
-        @Override
-        public String getContainerName() {
-            return containerName;
+        private Data(BlobStore blobStore, String containerName, String blobName) {
+            super(blobStore, containerName, blobName);
         }
 
         @Override
@@ -88,6 +77,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
             update(newReference.getHash());
+            byteSource.invalidate();
             
             return this;
         }

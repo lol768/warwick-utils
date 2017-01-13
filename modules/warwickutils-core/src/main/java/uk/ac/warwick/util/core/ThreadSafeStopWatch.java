@@ -31,6 +31,10 @@ public final class ThreadSafeStopWatch {
         return stopWatch.get().prettyPrint();
     }
 
+    public static void setDisplayThresholdInMs(int threshold) {
+        stopWatch.get().setDisplayThresholdInMs(threshold);
+    }
+
     public static void destroy() {
         stopWatch.remove();
     }
