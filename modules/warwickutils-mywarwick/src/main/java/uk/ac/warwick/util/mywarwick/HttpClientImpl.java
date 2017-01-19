@@ -12,6 +12,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
+import org.springframework.beans.factory.DisposableBean;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -42,7 +43,6 @@ public class HttpClientImpl implements HttpClient {
                         .setRedirectsEnabled(false)
                         .build()
                 )
-                .setConnectionManagerShared(true)
                 .setMaxConnPerRoute(5) // Only allow 5 connections per host
                 .build();
 
@@ -51,6 +51,11 @@ public class HttpClientImpl implements HttpClient {
 
     public void start() {
         httpClient.start();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        httpClient.close();
     }
 
     public boolean isRunning() {
