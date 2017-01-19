@@ -11,14 +11,16 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplSingleInstanceTest {
@@ -46,7 +48,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
 
     @Test
     public void httpClientShouldNotBeNull() {
-        assert (myWarwickService.getHttpclient() != null);
+        assert (myWarwickService.getHttpClient() != null);
     }
 
     @Test
@@ -72,7 +74,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
         String expected = "{\"type\":\"fake-type\",\"title\":\"title\",\"url\":\"url\",\"tags\":[]\"recipients\":{\"users\":[\"id\"]},\"text\":\"text\"}";
         assertEquals(
                 expected,
-                IOUtils.toString(myWarwickService.makeRequest("", expected, "", "","").getEntity().getContent(), Charset.defaultCharset())
+                IOUtils.toString(myWarwickService.makeRequest("", expected, "", "","").getEntity().getContent(), StandardCharsets.UTF_8)
         );
     }
 

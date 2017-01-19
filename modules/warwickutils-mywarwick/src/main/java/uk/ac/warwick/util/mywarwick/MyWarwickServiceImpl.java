@@ -2,6 +2,7 @@ package uk.ac.warwick.util.mywarwick;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
@@ -20,6 +21,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -29,17 +31,17 @@ import java.util.stream.Collectors;
 public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
-    private Set<Instance> instances;
-    private HttpClient httpclient;
+    private final Set<Instance> instances;
+    private final HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
-    private Configuration configuration;
 
     @Inject
     public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
         configuration.validate();
+
         this.httpclient = httpclient;
-        this.configuration = configuration;
-        instances = this.configuration.getInstances();
+        this.instances = configuration.getInstances();
+
         httpclient.start();
     }
 
@@ -116,7 +118,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return send(activity, true);
     }
 
-    public String makeJsonBody(Activity activity) {
+    String makeJsonBody(Activity activity) {
         String jsonString;
         try {
             jsonString = mapper.writeValueAsString(activity);
@@ -127,27 +129,26 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         return jsonString;
     }
 
-    public HttpPost makeRequest(String path, String json, String apiUser, String apiPassword, String providerId) {
+    HttpPost makeRequest(String path, String json, String apiUser, String apiPassword, String providerId) {
         final HttpPost request = new HttpPost(path);
         request.addHeader(
                 "Authorization",
-                "Basic " + Base64.getEncoder().encodeToString((apiUser + ":" + apiPassword).getBytes(Charset.defaultCharset())));
+                "Basic " + Base64.getEncoder().encodeToString((apiUser + ":" + apiPassword).getBytes(StandardCharsets.UTF_8)));
         request.addHeader(
                 "Content-type",
                 "application/json");
         request.addHeader(
                 "User-Agent",
                 providerId + ":" + this.getClass().getCanonicalName());
-        request.setEntity(new StringEntity(json, Charset.defaultCharset()));
+        request.setEntity(new StringEntity(json, StandardCharsets.UTF_8));
         return request;
     }
-
 
     public Set<Instance> getInstances() {
         return instances;
     }
 
-    public HttpClient getHttpclient() {
+    HttpClient getHttpClient() {
         return httpclient;
     }
 }
