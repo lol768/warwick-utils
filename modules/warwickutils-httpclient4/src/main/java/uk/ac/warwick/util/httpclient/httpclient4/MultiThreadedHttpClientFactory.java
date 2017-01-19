@@ -10,7 +10,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 
 import java.net.ProxySelector;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public final class MultiThreadedHttpClientFactory implements HttpClientFactory {
 
@@ -31,7 +31,7 @@ public final class MultiThreadedHttpClientFactory implements HttpClientFactory {
         ConnectionConfig connectionConfig =
             ConnectionConfig.custom()
                 .setBufferSize(8192)
-                .setCharset(Charset.forName("UTF-8"))
+                .setCharset(StandardCharsets.UTF_8)
                 .build();
 
         SocketConfig socketConfig =

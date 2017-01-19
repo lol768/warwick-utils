@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
-import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.FileReferenceCreationStrategy;
 import uk.ac.warwick.util.files.Storeable;
@@ -23,7 +22,7 @@ import uk.ac.warwick.util.files.hash.impl.BlobStoreBackedHashResolver;
 import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -76,8 +75,8 @@ public class BlobStoreFileStoreTest {
         assertEquals("Hello", FileCopyUtils.copyToString(new InputStreamReader(blob.getPayload().openStream())));
 
         // Test fetching
-        assertEquals("Hello", ref.asByteSource().asCharSource(Charset.defaultCharset()).read());
-        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(Charset.defaultCharset()).read());
+        assertEquals("Hello", ref.asByteSource().asCharSource(StandardCharsets.UTF_8).read());
+        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(StandardCharsets.UTF_8).read());
         
         m.assertIsSatisfied();
     }
@@ -100,8 +99,8 @@ public class BlobStoreFileStoreTest {
         assertEquals("Hello", FileCopyUtils.copyToString(new InputStreamReader(blob.getPayload().openStream())));
 
         // Test fetching
-        assertEquals("Hello", ref.asByteSource().asCharSource(Charset.defaultCharset()).read());
-        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(Charset.defaultCharset()).read());
+        assertEquals("Hello", ref.asByteSource().asCharSource(StandardCharsets.UTF_8).read());
+        assertEquals("el", ref.asByteSource().slice(1, 2).asCharSource(StandardCharsets.UTF_8).read());
 
         assertEquals(Collections.singletonList("/file.htm"), fileStore.list(ss, "").collect(Collectors.toList()));
         assertEquals(Collections.emptyList(), fileStore.list(ss, "dir").collect(Collectors.toList()));

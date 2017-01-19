@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteSource;
-import com.google.common.io.Files;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -33,11 +32,10 @@ import org.springframework.beans.factory.InitializingBean;
 import uk.ac.warwick.util.convert.DocumentConversionResult;
 import uk.ac.warwick.util.convert.DocumentConversionService;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -177,7 +175,7 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
             .setDefaultConnectionConfig(
                 ConnectionConfig.custom()
                     .setBufferSize(8192)
-                    .setCharset(Charset.forName("UTF-8"))
+                    .setCharset(StandardCharsets.UTF_8)
                     .build()
             )
             .setDefaultRequestConfig(

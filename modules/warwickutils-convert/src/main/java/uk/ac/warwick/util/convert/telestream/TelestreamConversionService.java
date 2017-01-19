@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.util.IOUtils;
 import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
@@ -45,7 +44,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -398,7 +397,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             .setDefaultConnectionConfig(
                 ConnectionConfig.custom()
                     .setBufferSize(8192)
-                    .setCharset(Charset.forName("UTF-8"))
+                    .setCharset(StandardCharsets.UTF_8)
                     .build()
             )
             .setDefaultRequestConfig(

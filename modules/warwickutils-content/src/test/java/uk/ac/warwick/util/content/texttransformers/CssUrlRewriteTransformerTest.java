@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
@@ -16,7 +17,7 @@ public class CssUrlRewriteTransformerTest {
 		CssUrlRewriteTransformer transformer = new CssUrlRewriteTransformer("http://www2.warwick.ac.uk/services/its/");
 		InputStream resource = getClass().getClassLoader().getResourceAsStream("style.css");
 		assertNotNull("file not foond", resource);
-		String content = FileCopyUtils.copyToString(new InputStreamReader(resource , Charset.defaultCharset()));
+		String content = FileCopyUtils.copyToString(new InputStreamReader(resource , StandardCharsets.UTF_8));
 		String result = transformer.apply(new MutableContent(null, content)).getContent();
 		System.out.println(result);
 		

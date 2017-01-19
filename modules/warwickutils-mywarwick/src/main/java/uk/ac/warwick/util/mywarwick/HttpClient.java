@@ -11,5 +11,5 @@ import java.util.concurrent.Future;
 public interface HttpClient extends Provider<HttpAsyncClient> {
     void start();
     boolean isRunning();
-    Future<HttpResponse> execute(HttpUriRequest var1, FutureCallback<HttpResponse> var2);
+    Future<HttpResponse> execute(HttpUriRequest request, FutureCallback<HttpResponse> callback);
 }
