@@ -22,13 +22,13 @@ import java.net.URI;
 import static org.junit.Assert.*;
 
 public final class SingleThreadedImageResizerTest {
-    
+
     private final SingleThreadedImageResizer resizer = new SingleThreadedImageResizer(new JAIImageResizer());
 
     @Test
     public void resizeTallThinImage() throws IOException {
         final DateTime lastModified = new DateTime();
-        
+
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -48,7 +48,7 @@ public final class SingleThreadedImageResizerTest {
     @Test
     public void resizeTallThinImageByHeight() throws IOException {
         final DateTime lastModified = new DateTime();
-        
+
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -57,7 +57,7 @@ public final class SingleThreadedImageResizerTest {
         resizer.renderResized(ref(input), lastModified, output, maxWidth, maxHeight, FileType.jpg);
 
         RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
-        
+
         // subsample average avoids black line at the bottom
         assertEquals(154, result.getHeight());
     }
@@ -65,7 +65,7 @@ public final class SingleThreadedImageResizerTest {
     @Test
     public void resizeShortWideImage() throws IOException {
         final DateTime lastModified = new DateTime();
-        
+
         // shortWide.jpg is 200 x 150px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/shortWideSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -74,26 +74,26 @@ public final class SingleThreadedImageResizerTest {
         RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
         assertEquals(50, result.getWidth());
     }
-    
+
     /**
      * SBTWO-3196 - we were only testing with byte arrays, meanwhile reading from a file started failing.
      */
     @Test
     public void fileReferenceInput() throws Exception {
         final DateTime lastModified = new DateTime();
-        
+
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
         FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
-        
+
         assertEquals(output.size(), resizer.getResizedImageLength(ref, lastModified, 50, 165, FileType.jpg));
     }
 
     @Test
     public void dontResizeLargerThanOriginal() throws IOException {
         final DateTime lastModified = new DateTime();
-        
+
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -102,26 +102,26 @@ public final class SingleThreadedImageResizerTest {
         RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
         assertEquals(100, result.getWidth());
         assertEquals(165, result.getHeight());
-        
+
         assertEquals("Output should be the same as input", input.length,output.toByteArray().length);
     }
-    
+
     @Test
     public void PNGResizing() throws IOException {
         final DateTime lastModified = new DateTime();
-        
+
         // award.png is 220x233px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/award.png"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref(input), lastModified, output, 110, 116, FileType.png);
 
         RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
-        
+
         // subsample average avoids black line at the bottom
         assertEquals(109, result.getWidth());
         assertEquals(116, result.getHeight());
     }
-    
+
     private FileReference ref(final byte[] input) {
         return new AbstractFileReference() {
 
@@ -148,7 +148,7 @@ public final class SingleThreadedImageResizerTest {
                     }
 
                     @Override
-                    public FileData overwrite(ByteSource in) throws IOException {
+                    public FileReference overwrite(ByteSource in) throws IOException {
                         throw new UnsupportedOperationException();
                     }
 
@@ -187,7 +187,7 @@ public final class SingleThreadedImageResizerTest {
             public void unlink() {
                 getData().delete();
             }
-            
+
         };
     }
 

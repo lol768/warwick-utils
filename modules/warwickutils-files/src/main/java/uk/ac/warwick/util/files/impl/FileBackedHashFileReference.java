@@ -11,13 +11,13 @@ import java.io.File;
 import java.io.IOException;
 
 public final class FileBackedHashFileReference extends AbstractFileReference implements HashFileReference {
-    
+
     private final HashFileStore fileStore;
     private final FileData data;
-    
+
     private File file;
     private HashString hash;
-    
+
     public FileBackedHashFileReference(final HashFileStore store, final File backingFile, final HashString theHash) {
         this.fileStore = store;
         this.file = backingFile;
@@ -28,11 +28,11 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
     public HashString getHash() {
         return hash; // he'll save every one of us
     }
-    
+
     public String getPath() {
         return null;
     }
-    
+
     private void update(File backingFile, HashString theHash) {
         this.file = backingFile;
         this.hash = theHash;
@@ -53,7 +53,7 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
     public boolean isLocal() {
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return toString().hashCode();
@@ -72,15 +72,15 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileData overwrite(ByteSource in) throws IOException {
+        public FileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
-            
+
             update(new File(newReference.getFileLocation().getPath()), newReference.getHash());
-            
-            return this;
+
+            return newReference;
         }
-        
+
     }
 
     public void unlink() {

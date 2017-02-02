@@ -29,14 +29,14 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
     private final File file;
     private final Data data;
     private final String path;
-    
+
     private final LocalFileStore fileStore;
     private final StorageStrategy storageStrategy;
-    
+
     /**
      * @param store FileStore required for certain operations. In some cases this can be null.
      * @param f
-     * @param thepath The URL path to identify the file by. 
+     * @param thepath The URL path to identify the file by.
      */
     public FileBackedLocalFileReference(LocalFileStore store, File f, String thepath, StorageStrategy theStorageStrategy) {
         this.fileStore = store;
@@ -135,18 +135,19 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileData overwrite(ByteSource in) throws IOException {
+        public FileReference overwrite(ByteSource in) throws IOException {
+            FileReference thisReference = FileBackedLocalFileReference.this;
             FileCopyUtils.copy(in.openBufferedStream(), new FileOutputStream(file));
-            return this;
+            return thisReference;
         }
 
     }
-    
+
     private static class FileStoreable implements Storeable {
-        
+
         private final String path;
         private final StorageStrategy strategy;
-        
+
         FileStoreable(StorageStrategy theStrategy, String thePath) {
             this.strategy = theStrategy;
             this.path = thePath;
@@ -159,15 +160,15 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         public String getPath() {
             return path;
         }
-        
+
         public HashString getHash() {
             return null;
         }
-        
+
     }
 
     public void unlink() {
         getData().delete();
-    }    
+    }
 
 }

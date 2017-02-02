@@ -60,24 +60,24 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
     public String getPath() {
         return path;
     }
-    
+
     public HashString getHash() {
         return null;
     }
-    
+
     public LocalFileReference copyTo(FileReference target) throws IOException {
         return copyTo(target.toLocalReference().getPath());
     }
-    
+
     public LocalFileReference copyTo(String newPath) throws IOException {
         blobStore.copyBlob(containerName, path, containerName, newPath, CopyOptions.NONE);
         return new BlobBackedLocalFileReference(fileStore, blobStore, containerName, newPath, storageStrategy);
     }
-    
+
     public LocalFileReference renameTo(FileReference target) throws IOException {
         return renameTo(target.toLocalReference().getPath());
     }
-    
+
     public LocalFileReference renameTo(String newPath) throws IOException {
         LocalFileReference renamed = copyTo(newPath);
         unlink();
@@ -91,7 +91,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
     public DateTime getLastModified() {
         return data.getLastModified();
     }
-    
+
     public StorageStrategy getStorageStrategy() {
         return storageStrategy;
     }
@@ -113,20 +113,21 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileData overwrite(ByteSource in) throws IOException {
-            fileStore.doStore(in, path, containerName, BlobBackedLocalFileReference.this);
+        public FileReference overwrite(ByteSource in) throws IOException {
+            FileReference thisReference = BlobBackedLocalFileReference.this;
+            fileStore.doStore(in, path, containerName, thisReference);
             byteSource.invalidate();
-            return this;
+            return thisReference;
         }
 
         DateTime getLastModified() {
             return byteSource.getLastModified();
         }
-        
+
     }
 
     public void unlink() {
         getData().delete();
-    }    
+    }
 
 }

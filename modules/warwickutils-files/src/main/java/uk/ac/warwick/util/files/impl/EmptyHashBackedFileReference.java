@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.net.URI;
 
 public final class EmptyHashBackedFileReference extends AbstractFileReference implements HashFileReference {
-    
+
     private final HashFileStore fileStore;
     private final String storeName;
     private final Data data = new Data();
-    
+
     public EmptyHashBackedFileReference(final HashFileStore store, final String theStoreName) {
         this.fileStore = store;
         this.storeName = theStoreName;
@@ -58,10 +58,9 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileData overwrite(ByteSource in) throws IOException {
+        public FileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it seperately, and return the new hash
-            HashFileReference newReference = fileStore.createHashReference(in, storeName);
-            return ((AbstractFileReference) newReference).getData();
+            return fileStore.createHashReference(in, storeName);
         }
 
         @Override
@@ -93,6 +92,6 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
     public void unlink() {
         // Doesn't make sense
     }
-    
+
 
 }

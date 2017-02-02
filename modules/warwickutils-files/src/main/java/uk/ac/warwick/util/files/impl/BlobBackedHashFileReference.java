@@ -30,7 +30,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
     public HashString getHash() {
         return hash; // he'll save every one of us
     }
-    
+
     public String getPath() {
         return null;
     }
@@ -55,7 +55,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
     public boolean isLocal() {
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return toString().hashCode();
@@ -73,14 +73,14 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileData overwrite(ByteSource in) throws IOException {
+        public FileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
             update(newReference.getHash());
-            
-            return this;
+
+            return newReference;
         }
-        
+
     }
 
     public void unlink() {
