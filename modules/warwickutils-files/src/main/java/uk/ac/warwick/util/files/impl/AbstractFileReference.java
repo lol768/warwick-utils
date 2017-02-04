@@ -28,7 +28,7 @@ public abstract class AbstractFileReference implements FileReference {
             throw new IllegalArgumentException("Locally stored");
         }
     }
-    
+
     protected abstract FileData getData();
 
     @Override
