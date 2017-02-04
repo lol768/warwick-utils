@@ -6,7 +6,7 @@ import org.jmock.Mockery;
 import org.jmock.Sequence;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
-import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.HashFileStore;
 
@@ -42,7 +42,7 @@ public class EmptyHashBackedFileReferenceTest {
 
         }});
 
-        FileReference newRef = emptyRef.overwrite(bs);
+        FileData newRef = emptyRef.overwrite(bs);
         assertEquals(hashRef, newRef); // overwrite returns new hash reference with the expected data
         m.assertIsSatisfied();
     }

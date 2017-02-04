@@ -62,7 +62,7 @@ public abstract class AbstractFileReference implements FileReference {
     }
 
     @Override
-    public FileReference overwrite(ByteSource in) throws IOException {
+    public FileData overwrite(ByteSource in) throws IOException {
         return getData().overwrite(in);
     }
 }

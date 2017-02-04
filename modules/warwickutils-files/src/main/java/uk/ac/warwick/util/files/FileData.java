@@ -27,7 +27,7 @@ public interface FileData {
      * updated in the content fetcher, because you'll need it
      * to find the data again.
      */
-    FileReference overwrite(ByteSource in) throws IOException;
+    FileData overwrite(ByteSource in) throws IOException;
 
     ByteSource asByteSource();
 
