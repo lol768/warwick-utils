@@ -13,7 +13,7 @@ import java.io.IOException;
 public final class FileBackedHashFileReference extends AbstractFileReference implements HashFileReference {
 
     private final HashFileStore fileStore;
-    private final FileData data;
+    private final Data data;
 
     private File file;
     private HashString hash;
@@ -46,6 +46,10 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         return this;
     }
 
+    public HashFileReference overwrite(ByteSource in) throws IOException {
+        return data.overwrite(in);
+    }
+
     public FileData getData() {
         return data;
     }
@@ -72,7 +76,7 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
+        public HashFileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
 

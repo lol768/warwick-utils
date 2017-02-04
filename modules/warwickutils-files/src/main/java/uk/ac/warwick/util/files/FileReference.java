@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.files;
 
+import com.google.common.io.ByteSource;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
@@ -10,8 +11,8 @@ import java.io.IOException;
  * <p>
  * File references can be identified by {@link #getPath()} and
  * {@link #getHash()}, of which at least one is guaranteed not to return null.
- * 
- * 
+ *
+ *
  */
 public interface FileReference extends FileData {
 
@@ -34,25 +35,42 @@ public interface FileReference extends FileData {
      * Returns true if this reference is backed by a physical file, stored in a
      * physical point on the disk. This is the model for all "traditionally"
      * stored files in Sitebuilder.
-     * 
+     *
      * (Slightly confusing term, but local means it's NOT hash based, even though
      * most hash based referenced WILL store their data as a file on disk.)
-     * 
+     *
      * <p>
      * Iff this returns true, then {@link #toLocalReference()} will succeed.
      */
     boolean isLocal();
-    
+
     /**
      * The equivalent of delete for regular files - the actual behaviour
      * will depend on the implementation. Local file references most likely
      * will delete the content. Hash references may simply do nothing and
      * leave cleanup to handle things.
-     * 
+     *
      * After calling this method, it makes sense to unset or reset the variable
      * holding it, or else you may be pointing at a nonexistent file.
      */
     void unlink();
+
+    /**
+     * Erase the original data and replace it with the data
+     * written to the ByteSource given in the callback.
+     * Handles opening and closing around the callback.
+     *
+     * Depending on the implementation, this may result in a
+     * copy of the underlying data being made (for example
+     * if the data is shared with other pages).
+     *
+     * @return the new FileReference to identify this file.
+     * If the return value is not null it should be
+     * updated in the content fetcher, because you'll need it
+     * to find the data again.
+     */
+    @Override
+    FileReference overwrite(ByteSource in) throws IOException;
 
     /**
      * Copy this {@link FileReference} to another. If the {@link FileReference}s

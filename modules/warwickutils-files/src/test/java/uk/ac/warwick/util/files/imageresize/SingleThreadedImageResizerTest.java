@@ -148,7 +148,7 @@ public final class SingleThreadedImageResizerTest {
                     }
 
                     @Override
-                    public FileReference overwrite(ByteSource in) throws IOException {
+                    public FileData overwrite(ByteSource in) throws IOException {
                         throw new UnsupportedOperationException();
                     }
 
@@ -181,6 +181,10 @@ public final class SingleThreadedImageResizerTest {
             }
 
             public FileReference copyTo(FileReference target) throws IOException {
+                throw new UnsupportedOperationException();
+            }
+
+            public FileReference overwrite(ByteSource in) throws IOException {
                 throw new UnsupportedOperationException();
             }
 

@@ -18,7 +18,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
     private String containerName;
 
     private HashString hash;
-    private transient FileData data;
+    private transient Data data;
 
     public BlobBackedHashFileReference(final HashFileStore store, final BlobStore blobStore, final String containerName, final HashString theHash) {
         this.fileStore = store;
@@ -48,6 +48,10 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         return this;
     }
 
+    public HashFileReference overwrite(ByteSource in) throws IOException {
+        return data.overwrite(in);
+    }
+
     public FileData getData() {
         return data;
     }
@@ -73,7 +77,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
+        public HashFileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
             update(newReference.getHash());

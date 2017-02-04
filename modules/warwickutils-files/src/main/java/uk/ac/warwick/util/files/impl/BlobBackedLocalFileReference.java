@@ -84,6 +84,10 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         return renamed;
     }
 
+    public LocalFileReference overwrite(ByteSource in) throws IOException {
+        return data.overwrite(in);
+    }
+
     public boolean isLocal() {
         return true;
     }
@@ -113,8 +117,8 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
-            FileReference thisReference = BlobBackedLocalFileReference.this;
+        public LocalFileReference overwrite(ByteSource in) throws IOException {
+            LocalFileReference thisReference = BlobBackedLocalFileReference.this;
             fileStore.doStore(in, path, containerName, thisReference);
             byteSource.invalidate();
             return thisReference;

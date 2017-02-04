@@ -94,6 +94,10 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         return fileStore.rename(this, target);
     }
 
+    public LocalFileReference overwrite(ByteSource in) throws IOException {
+        return data.overwrite(in);
+    }
+
     public File getFile() {
         return file;
     }
@@ -135,8 +139,8 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
-            FileReference thisReference = FileBackedLocalFileReference.this;
+        public LocalFileReference overwrite(ByteSource in) throws IOException {
+            LocalFileReference thisReference = FileBackedLocalFileReference.this;
             FileCopyUtils.copy(in.openBufferedStream(), new FileOutputStream(file));
             return thisReference;
         }

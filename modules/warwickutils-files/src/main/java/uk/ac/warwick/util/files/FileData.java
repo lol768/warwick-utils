@@ -15,17 +15,16 @@ import java.net.URI;
 public interface FileData {
     /**
      * Erase the original data and replace it with the data
-     * written to the OutputStream given in the callback.
+     * written to the ByteSource given in the callback.
      * Handles opening and closing around the callback.
      *
      * Depending on the implementation, this may result in a
      * copy of the underlying data being made (for example
      * if the data is shared with other pages).
      *
-     * @return the new hash to identify this file (if the file store
-     * uses hashes). If the return value is not null it should be
-     * updated in the content fetcher, because you'll need it
-     * to find the data again.
+     * @return the resulting FileData. If the return value is
+     * not null it should be updated in the content fetcher
+     * because you'll need it to find the data again.
      */
     FileData overwrite(ByteSource in) throws IOException;
 

@@ -23,9 +23,9 @@ public class MockFileStore implements FileStore {
     }
 
     public class MockFileReference extends AbstractFileReference implements LocalFileReference {
-        
+
         private final String path;
-        
+
         public MockFileReference(String path) {
             this.path = path;
         }
@@ -37,11 +37,11 @@ public class MockFileStore implements FileStore {
         public String getPath() {
             return path;
         }
-        
+
         public DateTime getLastModified() {
             return null;
         }
-        
+
         public HashString getHash() {
             return null;
         }
@@ -70,13 +70,17 @@ public class MockFileStore implements FileStore {
             return null;
         }
 
+        public FileReference overwrite(ByteSource in) throws IOException {
+            return null;
+        }
+
         public StorageStrategy getStorageStrategy() {
             return null;
         }
 
         public void unlink() {
         }
-        
+
     }
 
 }

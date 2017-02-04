@@ -41,6 +41,10 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
         return this;
     }
 
+    public HashFileReference overwrite(ByteSource in) throws IOException {
+        return data.overwrite(in);
+    }
+
     @Override
     public FileData getData() {
         return data;
@@ -58,7 +62,7 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
+        public HashFileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, store it separately, return the new hash, leave this empty ref for GC
             return fileStore.createHashReference(in, storeName);
         }
