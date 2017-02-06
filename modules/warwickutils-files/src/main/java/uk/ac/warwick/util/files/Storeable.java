@@ -1,7 +1,5 @@
 package uk.ac.warwick.util.files;
 
-import java.io.File;
-
 import uk.ac.warwick.util.files.hash.FileHashResolver;
 import uk.ac.warwick.util.files.hash.HashString;
 
@@ -16,14 +14,14 @@ public interface Storeable {
         enum MissingContentStrategy {
             /** Return a FileBackedFileReference pointing to a non-existant File */
             Local,
-            
+
             /** Return an EmptyHashBackedFileReference */
             Hash,
-            
+
             /** Throw a FileNotFoundException if the content doesn't exist */
-            Exception 
-        };
-        
+            Exception
+        }
+
         /**
          * Return the root path. For filesystem storeables this will be a path that can
          * be resolved to a directory; for blob store it will be the container name.
@@ -35,12 +33,12 @@ public interface Storeable {
          * FileReference when the content doesn't exist.
          */
         MissingContentStrategy getMissingContentStrategy();
-        
+
         /**
          * Return the default Hash store name.
          */
         String getDefaultHashStore();
-        
+
         /**
          * Returns true if this storeable supports local references.
          */

@@ -10,10 +10,10 @@ import java.io.IOException;
  * <p>
  * File references can be identified by {@link #getPath()} and
  * {@link #getHash()}, of which at least one is guaranteed not to return null.
- * 
- * 
+ *
+ *
  */
-public interface FileReference extends FileData {
+public interface FileReference extends FileData<FileReference> {
 
     /**
      * The absolute virtual path that identifies this particular file reference.
@@ -34,21 +34,21 @@ public interface FileReference extends FileData {
      * Returns true if this reference is backed by a physical file, stored in a
      * physical point on the disk. This is the model for all "traditionally"
      * stored files in Sitebuilder.
-     * 
+     *
      * (Slightly confusing term, but local means it's NOT hash based, even though
      * most hash based referenced WILL store their data as a file on disk.)
-     * 
+     *
      * <p>
      * Iff this returns true, then {@link #toLocalReference()} will succeed.
      */
     boolean isLocal();
-    
+
     /**
      * The equivalent of delete for regular files - the actual behaviour
      * will depend on the implementation. Local file references most likely
      * will delete the content. Hash references may simply do nothing and
      * leave cleanup to handle things.
-     * 
+     *
      * After calling this method, it makes sense to unset or reset the variable
      * holding it, or else you may be pointing at a nonexistent file.
      */

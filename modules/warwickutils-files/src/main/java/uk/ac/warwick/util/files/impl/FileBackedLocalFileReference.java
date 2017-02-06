@@ -46,8 +46,9 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         this.storageStrategy = theStorageStrategy;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public FileData getData() {
+    public FileData<FileReference> getData() {
         return data;
     }
 
@@ -135,8 +136,8 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
-            FileReference thisReference = FileBackedLocalFileReference.this;
+        public LocalFileReference overwrite(ByteSource in) throws IOException {
+            LocalFileReference thisReference = FileBackedLocalFileReference.this;
             FileCopyUtils.copy(in.openBufferedStream(), new FileOutputStream(file));
             return thisReference;
         }

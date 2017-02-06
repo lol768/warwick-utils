@@ -23,60 +23,77 @@ public class MockFileStore implements FileStore {
     }
 
     public class MockFileReference extends AbstractFileReference implements LocalFileReference {
-        
+
         private final String path;
-        
+
         public MockFileReference(String path) {
             this.path = path;
         }
 
+        @Override
         public String getFileName() {
             return FileUtils.getFileName(path);
         }
 
+        @Override
         public String getPath() {
             return path;
         }
-        
+
+        @Override
         public DateTime getLastModified() {
             return null;
         }
-        
+
+        @Override
         public HashString getHash() {
             return null;
         }
 
+        @Override
         public LocalFileReference copyTo(String path) throws IOException {
             return null;
         }
 
-        public FileData getData() {
+        @Override
+        public FileData<FileReference> getData() {
             return null;
         }
 
+        @Override
         public FileReference copyTo(FileReference target) throws IOException {
             return null;
         }
 
+        @Override
         public boolean isLocal() {
             return true;
         }
 
+        @Override
         public LocalFileReference renameTo(String path) throws IOException {
             return null;
         }
 
+        @Override
         public FileReference renameTo(FileReference target) throws IOException {
             return null;
         }
 
+        @Override
+        public FileReference overwrite(ByteSource in) throws IOException {
+            return null;
+        }
+
+        @Override
         public StorageStrategy getStorageStrategy() {
             return null;
         }
 
+        @Override
         public void unlink() {
         }
-        
+
     }
 
 }

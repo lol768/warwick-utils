@@ -13,12 +13,11 @@ import java.io.IOException;
 public final class BlobBackedHashFileReference extends AbstractFileReference implements HashFileReference {
 
     private final HashFileStore fileStore;
-
-    private BlobStore blobStore;
-    private String containerName;
+    private final BlobStore blobStore;
+    private final String containerName;
 
     private HashString hash;
-    private transient FileData data;
+    private transient Data data;
 
     public BlobBackedHashFileReference(final HashFileStore store, final BlobStore blobStore, final String containerName, final HashString theHash) {
         this.fileStore = store;
@@ -27,10 +26,12 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         update(theHash);
     }
 
+    @Override
     public HashString getHash() {
         return hash; // he'll save every one of us
     }
 
+    @Override
     public String getPath() {
         return null;
     }
@@ -40,18 +41,23 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         this.data = new Data(blobStore, containerName, theHash.getHash());
     }
 
+    @Override
     public HashFileReference copyTo(FileReference target) {
         return new BlobBackedHashFileReference(fileStore, blobStore, containerName, hash);
     }
 
+    @Override
     public HashFileReference renameTo(FileReference target) {
         return this;
     }
 
-    public FileData getData() {
+    @Override
+    @SuppressWarnings("unchecked")
+    public FileData<FileReference> getData() {
         return data;
     }
 
+    @Override
     public boolean isLocal() {
         return false;
     }
@@ -73,7 +79,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
+        public HashFileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
             update(newReference.getHash());
@@ -83,6 +89,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
 
     }
 
+    @Override
     public void unlink() {
         // Do nothing - leave file data in place, and let the periodic
         // cleanup get rid of the data as necessary.

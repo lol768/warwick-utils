@@ -29,7 +29,12 @@ public abstract class AbstractFileReference implements FileReference {
         }
     }
 
-    protected abstract FileData getData();
+    public abstract FileData<FileReference> getData();
+
+    @Override
+    public FileReference overwrite(ByteSource in) throws IOException {
+        return getData().overwrite(in);
+    }
 
     @Override
     public final boolean isExists() {
@@ -59,10 +64,5 @@ public abstract class AbstractFileReference implements FileReference {
     @Override
     public final boolean isFileBacked() {
         return getData().isFileBacked();
-    }
-
-    @Override
-    public FileData overwrite(ByteSource in) throws IOException {
-        return getData().overwrite(in);
     }
 }

@@ -13,7 +13,7 @@ import java.io.IOException;
 public final class FileBackedHashFileReference extends AbstractFileReference implements HashFileReference {
 
     private final HashFileStore fileStore;
-    private final FileData data;
+    private final Data data;
 
     private File file;
     private HashString hash;
@@ -25,10 +25,12 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         this.data = new Data();
     }
 
+    @Override
     public HashString getHash() {
         return hash; // he'll save every one of us
     }
 
+    @Override
     public String getPath() {
         return null;
     }
@@ -38,18 +40,23 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         this.hash = theHash;
     }
 
+    @Override
     public HashFileReference copyTo(FileReference target) throws IOException {
         return new FileBackedHashFileReference(fileStore, file, hash);
     }
 
+    @Override
     public HashFileReference renameTo(FileReference target) throws IOException {
         return this;
     }
 
-    public FileData getData() {
+    @Override
+    @SuppressWarnings("unchecked")
+    public FileData<FileReference> getData() {
         return data;
     }
 
+    @Override
     public boolean isLocal() {
         return false;
     }
@@ -72,7 +79,7 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
+        public HashFileReference overwrite(ByteSource in) throws IOException {
             // Create a new file, storing it separately, and return the new hash
             HashFileReference newReference = fileStore.createHashReference(in, getHash().getStoreName());
 
@@ -83,6 +90,7 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
 
     }
 
+    @Override
     public void unlink() {
         // Do nothing - leave file data in place, and let the periodic
         // cleanup get rid of the data as necessary.

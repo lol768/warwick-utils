@@ -125,7 +125,8 @@ public final class SingleThreadedImageResizerTest {
     private FileReference ref(final byte[] input) {
         return new AbstractFileReference() {
 
-            public FileData getData() {
+            @SuppressWarnings("unchecked")
+            public FileData<FileReference> getData() {
                 return new FileData() {
                     @Override
                     public boolean isExists() {
@@ -181,6 +182,11 @@ public final class SingleThreadedImageResizerTest {
             }
 
             public FileReference copyTo(FileReference target) throws IOException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public FileReference overwrite(ByteSource in) throws IOException {
                 throw new UnsupportedOperationException();
             }
 

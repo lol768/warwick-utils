@@ -49,49 +49,61 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         this.storageStrategy = theStorageStrategy;
     }
 
-    public FileData getData() {
+    @Override
+    @SuppressWarnings("unchecked")
+    public FileData<FileReference> getData() {
         return data;
     }
 
+    @Override
     public String getFileName() {
         return uk.ac.warwick.util.core.spring.FileUtils.getFileName(path);
     }
 
+    @Override
     public String getPath() {
         return path;
     }
 
+    @Override
     public HashString getHash() {
         return null;
     }
 
+    @Override
     public LocalFileReference copyTo(FileReference target) throws IOException {
         return copyTo(target.toLocalReference().getPath());
     }
 
+    @Override
     public LocalFileReference copyTo(String newPath) throws IOException {
         blobStore.copyBlob(containerName, path, containerName, newPath, CopyOptions.NONE);
         return new BlobBackedLocalFileReference(fileStore, blobStore, containerName, newPath, storageStrategy);
     }
 
+    @Override
     public LocalFileReference renameTo(FileReference target) throws IOException {
         return renameTo(target.toLocalReference().getPath());
     }
 
+    @Override
     public LocalFileReference renameTo(String newPath) throws IOException {
         LocalFileReference renamed = copyTo(newPath);
         unlink();
         return renamed;
     }
 
+    @Override
     public boolean isLocal() {
         return true;
     }
 
+    @Override
     public DateTime getLastModified() {
         return data.getLastModified();
     }
 
+    @Override
     public StorageStrategy getStorageStrategy() {
         return storageStrategy;
     }
@@ -113,8 +125,8 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         }
 
         @Override
-        public FileReference overwrite(ByteSource in) throws IOException {
-            FileReference thisReference = BlobBackedLocalFileReference.this;
+        public LocalFileReference overwrite(ByteSource in) throws IOException {
+            LocalFileReference thisReference = BlobBackedLocalFileReference.this;
             fileStore.doStore(in, path, containerName, thisReference);
             byteSource.invalidate();
             return thisReference;
@@ -126,6 +138,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
 
     }
 
+    @Override
     public void unlink() {
         getData().delete();
     }
