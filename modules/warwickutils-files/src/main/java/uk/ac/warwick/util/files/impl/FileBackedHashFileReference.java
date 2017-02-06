@@ -25,10 +25,12 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         this.data = new Data();
     }
 
+    @Override
     public HashString getHash() {
         return hash; // he'll save every one of us
     }
 
+    @Override
     public String getPath() {
         return null;
     }
@@ -38,22 +40,23 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
         this.hash = theHash;
     }
 
+    @Override
     public HashFileReference copyTo(FileReference target) throws IOException {
         return new FileBackedHashFileReference(fileStore, file, hash);
     }
 
+    @Override
     public HashFileReference renameTo(FileReference target) throws IOException {
         return this;
     }
 
-    public HashFileReference overwrite(ByteSource in) throws IOException {
-        return data.overwrite(in);
-    }
-
-    public FileData getData() {
+    @Override
+    @SuppressWarnings("unchecked")
+    public FileData<FileReference> getData() {
         return data;
     }
 
+    @Override
     public boolean isLocal() {
         return false;
     }
@@ -87,6 +90,7 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
 
     }
 
+    @Override
     public void unlink() {
         // Do nothing - leave file data in place, and let the periodic
         // cleanup get rid of the data as necessary.

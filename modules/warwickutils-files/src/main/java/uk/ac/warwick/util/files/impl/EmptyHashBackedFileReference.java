@@ -41,12 +41,9 @@ public final class EmptyHashBackedFileReference extends AbstractFileReference im
         return this;
     }
 
-    public HashFileReference overwrite(ByteSource in) throws IOException {
-        return data.overwrite(in);
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
-    public FileData getData() {
+    public FileData<FileReference> getData() {
         return data;
     }
 

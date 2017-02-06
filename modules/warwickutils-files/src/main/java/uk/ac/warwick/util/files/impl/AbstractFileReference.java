@@ -6,6 +6,7 @@ import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.LocalFileReference;
 
+import java.io.IOException;
 import java.net.URI;
 
 public abstract class AbstractFileReference implements FileReference {
@@ -28,7 +29,12 @@ public abstract class AbstractFileReference implements FileReference {
         }
     }
 
-    protected abstract FileData getData();
+    public abstract FileData<FileReference> getData();
+
+    @Override
+    public FileReference overwrite(ByteSource in) throws IOException {
+        return getData().overwrite(in);
+    }
 
     @Override
     public final boolean isExists() {

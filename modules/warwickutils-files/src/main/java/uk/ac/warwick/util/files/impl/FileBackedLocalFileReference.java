@@ -46,8 +46,9 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
         this.storageStrategy = theStorageStrategy;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public FileData getData() {
+    public FileData<FileReference> getData() {
         return data;
     }
 
@@ -92,10 +93,6 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
 
     private LocalFileReference renameTo(Storeable target) throws IOException {
         return fileStore.rename(this, target);
-    }
-
-    public LocalFileReference overwrite(ByteSource in) throws IOException {
-        return data.overwrite(in);
     }
 
     public File getFile() {

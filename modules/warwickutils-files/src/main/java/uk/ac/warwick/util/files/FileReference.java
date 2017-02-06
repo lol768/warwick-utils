@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.files;
 
-import com.google.common.io.ByteSource;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
@@ -14,7 +13,7 @@ import java.io.IOException;
  *
  *
  */
-public interface FileReference extends FileData {
+public interface FileReference extends FileData<FileReference> {
 
     /**
      * The absolute virtual path that identifies this particular file reference.
@@ -54,23 +53,6 @@ public interface FileReference extends FileData {
      * holding it, or else you may be pointing at a nonexistent file.
      */
     void unlink();
-
-    /**
-     * Erase the original data and replace it with the data
-     * written to the ByteSource given in the callback.
-     * Handles opening and closing around the callback.
-     *
-     * Depending on the implementation, this may result in a
-     * copy of the underlying data being made (for example
-     * if the data is shared with other pages).
-     *
-     * @return the new FileReference to identify this file.
-     * If the return value is not null it should be
-     * updated in the content fetcher, because you'll need it
-     * to find the data again.
-     */
-    @Override
-    FileReference overwrite(ByteSource in) throws IOException;
 
     /**
      * Copy this {@link FileReference} to another. If the {@link FileReference}s
