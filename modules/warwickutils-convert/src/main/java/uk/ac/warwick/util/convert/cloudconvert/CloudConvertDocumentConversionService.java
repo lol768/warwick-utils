@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import uk.ac.warwick.util.convert.DocumentConversionResult;
 import uk.ac.warwick.util.convert.DocumentConversionService;
 
@@ -41,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CloudConvertDocumentConversionService implements DocumentConversionService, InitializingBean, DisposableBean {
+public class CloudConvertDocumentConversionService implements DocumentConversionService, DisposableBean {
 
     private static final Map<String, String> PRESETS = new HashMap<String, String>() {{
         put("doc", "l13YvUeMsA");
@@ -62,7 +61,7 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
 
     private static final String API_HOST = "api.cloudconvert.com";
 
-    private CloseableHttpClient httpClient;
+    private final CloseableHttpClient httpClient;
 
     private final String apiKey;
 
@@ -82,6 +81,33 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
         this.awsAccessKey = awsAccessKey;
         this.awsSecretKey = awsSecretKey;
         this.bucketName = awsBucketName;
+
+        this.httpClient = HttpClientBuilder.create()
+            .setDefaultConnectionConfig(
+                ConnectionConfig.custom()
+                    .setBufferSize(8192)
+                    .setCharset(StandardCharsets.UTF_8)
+                    .build()
+            )
+            .setDefaultRequestConfig(
+                RequestConfig.custom()
+                    .setConnectTimeout(30000) // 30 seconds
+                    .setSocketTimeout(30000) // 30 seconds
+                    .setExpectContinueEnabled(true)
+                    .setCircularRedirectsAllowed(true)
+                    .setRedirectsEnabled(true)
+                    .setMaxRedirects(10)
+                    .build()
+            )
+            .setDefaultSocketConfig(
+                SocketConfig.custom()
+                    .setTcpNoDelay(true)
+                    .build()
+            )
+            .setMaxConnPerRoute(5)
+            .setRetryHandler(new DefaultHttpRequestRetryHandler(1, false)) // Retry each request once
+            .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
+            .build();
     }
 
     @Override
@@ -167,34 +193,6 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
     @Override
     public void destroy() throws Exception {
         httpClient.close();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        httpClient = HttpClientBuilder.create()
-            .setDefaultConnectionConfig(
-                ConnectionConfig.custom()
-                    .setBufferSize(8192)
-                    .setCharset(StandardCharsets.UTF_8)
-                    .build()
-            )
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setConnectTimeout(300000) // 5 minutes
-                    .setSocketTimeout(300000) // 5 minutes
-                    .setExpectContinueEnabled(true)
-                    .setRedirectsEnabled(true)
-                    .build()
-            )
-            .setDefaultSocketConfig(
-                SocketConfig.custom()
-                    .setTcpNoDelay(true)
-                    .build()
-            )
-            .setMaxConnPerRoute(5)
-            .setRetryHandler(new DefaultHttpRequestRetryHandler(1, false)) // Retry each request once
-            .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
-            .build();
     }
 
 }

@@ -14,9 +14,11 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -28,8 +30,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.convert.ConversionException;
 import uk.ac.warwick.util.convert.ConversionMedia;
 import uk.ac.warwick.util.convert.ConversionService;
@@ -49,15 +53,19 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TelestreamConversionService implements ConversionService, InitializingBean, DisposableBean {
+public class TelestreamConversionService implements ConversionService, DisposableBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TelestreamConversionService.class);
 
     private static final String API_URL = "api.pandastream.com";
 
     private static final String API_VERSION = "v3.0";
 
+    private static final long UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024; // 5mb
+
     private static final DateTimeFormatter ISO8601_STRICT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
-    private CloseableHttpClient httpClient;
+    private final CloseableHttpClient httpClient;
 
     private final String accessKey;
 
@@ -76,22 +84,119 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
         this.s3 = new AmazonS3Client(new BasicAWSCredentials(awsAccessKey, awsSecretKey));
         this.bucketName = awsBucketName;
+
+        this.httpClient = HttpClientBuilder.create()
+            .setDefaultConnectionConfig(
+                ConnectionConfig.custom()
+                    .setBufferSize(8192)
+                    .setCharset(StandardCharsets.UTF_8)
+                    .build()
+            )
+            .setDefaultRequestConfig(
+                RequestConfig.custom()
+                    .setConnectTimeout(30000) // 30 seconds
+                    .setSocketTimeout(30000) // 30 seconds
+                    .setExpectContinueEnabled(true)
+                    .setCircularRedirectsAllowed(true)
+                    .setRedirectsEnabled(true)
+                    .setMaxRedirects(10)
+                    .build()
+            )
+            .setDefaultSocketConfig(
+                SocketConfig.custom()
+                    .setTcpNoDelay(true)
+                    .build()
+            )
+            .setMaxConnPerRoute(5)
+            .setRetryHandler(new DefaultHttpRequestRetryHandler(1, false)) // Retry each request once
+            .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
+            .build();
     }
 
     @Override
     public ConversionMedia upload(ByteSource source) throws IOException {
-        return postMultipart("/videos.json", "file", source, new HashMap<String, String>() {{
+        // Create an upload session
+        LOGGER.info("Starting an upload session for " + source);
+        Pair<String, String> idAndLocation = post("/videos/upload.json", new HashMap<String, String>() {{
+            put("file_name", UUID.randomUUID().toString());
+            put("file_size", Long.toString(source.size()));
             put("profiles", "none");
             put("path_format", ":id");
         }}, response -> {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+                throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
+            }
+
+            try {
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Response received for request to start upload session: " + responseContents);
+                }
+
+                JSONObject json = new JSONObject(responseContents);
+
+                return Pair.of(json.getString("id"), json.getString("location"));
+            } catch (JSONException e) {
+                throw new ConversionException("Invalid JSON returned from Telestream", e);
+            }
+        });
+
+        String uploadId = idAndLocation.getLeft();
+        String uploadLocation = idAndLocation.getRight();
+
+        LOGGER.info("[Upload " + uploadId + "] upload session started, location " + uploadLocation);
+
+        // Upload in chunks
+        long totalSize = source.size();
+        long startByte = 0;
+        while (totalSize > UPLOAD_CHUNK_SIZE) {
+            ByteSource chunk = source.slice(startByte, UPLOAD_CHUNK_SIZE);
+
+            HttpPut request = new HttpPut(uploadLocation);
+            request.setHeader("Content-Range", "bytes " + startByte + "-" + (startByte + UPLOAD_CHUNK_SIZE - 1) + "/" + totalSize);
+            request.setHeader("Content-Transfer-Encoding", "binary");
+            request.setEntity(new InputStreamEntity(chunk.openStream(), UPLOAD_CHUNK_SIZE, ContentType.APPLICATION_OCTET_STREAM));
+
+            LOGGER.info("[Upload " + uploadId + "] Uploading chunk " + startByte + "-" + (startByte + UPLOAD_CHUNK_SIZE - 1) + "/" + totalSize);
+            httpClient.execute(request, response -> {
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_NO_CONTENT) {
+                    throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
+                }
+
+                // Chunk uploaded OK
+                return null;
+            });
+
+            startByte += UPLOAD_CHUNK_SIZE;
+            totalSize -= UPLOAD_CHUNK_SIZE;
+        }
+
+        // Upload the last chunk
+        ByteSource chunk = (startByte == 0) ? source : source.slice(startByte, totalSize - startByte);
+
+        HttpPut request = new HttpPut(uploadLocation);
+        request.setHeader("Content-Range", "bytes " + startByte + "-" + (totalSize - 1) + "/" + totalSize);
+        request.setHeader("Content-Transfer-Encoding", "binary");
+        request.setEntity(new InputStreamEntity(chunk.openStream(), totalSize - startByte, ContentType.APPLICATION_OCTET_STREAM));
+
+        LOGGER.info("[Upload " + uploadId + "] Uploading final chunk " + startByte + "-" + (totalSize - 1) + "/" + totalSize);
+        return httpClient.execute(request, response -> {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
             }
 
             try {
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("[Upload " + uploadId + "] Response received for final chunk upload: " + responseContents);
+                }
 
-                return TelestreamConversionMedia.fromJSON(json);
+                JSONObject json = new JSONObject(responseContents);
+                TelestreamConversionMedia media = TelestreamConversionMedia.fromJSON(json);
+
+                LOGGER.info("[" + media.getId() + "] Upload complete for " + uploadId);
+
+                return media;
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -100,13 +205,22 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
     @Override
     public ConversionMedia getMediaById(String id) throws IOException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[" + id + "] Requesting media information");
+        }
+
         return get("/videos/" + id + ".json", response -> {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
             }
 
             try {
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("[" + id + "] Response received for retrieval of media information: " + responseContents);
+                }
+
+                JSONObject json = new JSONObject(responseContents);
 
                 return TelestreamConversionMedia.fromJSON(json);
             } catch (JSONException e) {
@@ -117,6 +231,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
     @Override
     public ConversionStatus convert(ConversionMedia media, Format format) throws IOException {
+        LOGGER.info("[" + media.getId() + "] Creating encoding to " + format);
         return post("/encodings.json", new HashMap<String, String>() {{
             put("video_id", media.getId());
             put("profile_name", format.getProfileName());
@@ -127,9 +242,17 @@ public class TelestreamConversionService implements ConversionService, Initializ
             }
 
             try {
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("[" + media.getId() + "] Response received for encoding creation: " + responseContents);
+                }
 
-                return TelestreamConversionStatus.fromJSON(json);
+                JSONObject json = new JSONObject(responseContents);
+                TelestreamConversionStatus status = TelestreamConversionStatus.fromJSON(json);
+
+                LOGGER.info("[" + media.getId() + "] encoding created " + status.getId() + ", status " + status.getStatus());
+
+                return status;
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
             }
@@ -138,6 +261,10 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
     @Override
     public ConversionStatus getStatus(String id) throws IOException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Requesting encoding status for " + id);
+        }
+
         return get("/encodings/" + id + ".json", new HashMap<String, String>() {{
             put("screenshots", "true");
         }}, response -> {
@@ -146,8 +273,12 @@ public class TelestreamConversionService implements ConversionService, Initializ
             }
 
             try {
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("[" + id + "] Response received for encoding status: " + responseContents);
+                }
 
+                JSONObject json = new JSONObject(responseContents);
                 return TelestreamConversionStatus.fromJSON(json);
             } catch (JSONException e) {
                 throw new ConversionException("Invalid JSON returned from Telestream", e);
@@ -157,10 +288,13 @@ public class TelestreamConversionService implements ConversionService, Initializ
 
     @Override
     public void delete(ConversionMedia media) throws IOException {
+        LOGGER.info("[" + media.getId() + "] Deleting media");
         delete("/videos/" + media.getId() + ".json", response -> {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
             }
+
+            LOGGER.info("[" + media.getId() + "] Deleted");
 
             EntityUtils.consumeQuietly(response.getEntity());
             return null;
@@ -320,38 +454,6 @@ public class TelestreamConversionService implements ConversionService, Initializ
         return httpClient.execute(post, handler);
     }
 
-    private <T> T postMultipart(String url, String fileParam, ByteSource source, Map<String, String> params, ResponseHandler<T> handler) throws IOException {
-        Map<String, String> allParams = new HashMap<>();
-        allParams.putAll(params);
-        allParams.put("access_key", accessKey);
-        allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", DateTime.now().withZone(DateTimeZone.UTC).toString(ISO8601_STRICT));
-
-        // Get the canonical querystring
-        String canonicalQueryString = getCanonicalQueryString(allParams);
-
-        String signingString = StringUtils.join(Arrays.asList(
-            "POST",
-            API_URL,
-            url,
-            canonicalQueryString
-        ), "\n");
-
-        String signature = sign(accessSecret, signingString);
-
-        HttpPost post = new HttpPost("https://" + API_URL + "/" + API_VERSION + url);
-
-        MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-
-        entity.addBinaryBody(fileParam, source.openStream());
-        allParams.forEach(entity::addTextBody);
-        entity.addTextBody("signature", signature.replace("+", "%2B"));
-
-        post.setEntity(entity.build());
-
-        return httpClient.execute(post, handler);
-    }
-
     private <T> T delete(String url, ResponseHandler<T> handler) throws IOException {
         Map<String, String> allParams = new HashMap<>();
         allParams.put("access_key", accessKey);
@@ -380,7 +482,7 @@ public class TelestreamConversionService implements ConversionService, Initializ
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "HmacSHA256");
             sha256HMAC.init(secretKey);
 
-            return com.sun.org.apache.xerces.internal.impl.dv.util.Base64.encode(sha256HMAC.doFinal(data.getBytes()));
+            return Base64.getEncoder().encodeToString(sha256HMAC.doFinal(data.getBytes()));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -389,36 +491,6 @@ public class TelestreamConversionService implements ConversionService, Initializ
     @Override
     public void destroy() throws Exception {
         httpClient.close();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        httpClient = HttpClientBuilder.create()
-            .setDefaultConnectionConfig(
-                ConnectionConfig.custom()
-                    .setBufferSize(8192)
-                    .setCharset(StandardCharsets.UTF_8)
-                    .build()
-            )
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setConnectTimeout(30000) // 30 seconds
-                    .setSocketTimeout(30000) // 30 seconds
-                    .setExpectContinueEnabled(true)
-                    .setCircularRedirectsAllowed(true)
-                    .setRedirectsEnabled(true)
-                    .setMaxRedirects(10)
-                    .build()
-            )
-            .setDefaultSocketConfig(
-                SocketConfig.custom()
-                    .setTcpNoDelay(true)
-                    .build()
-            )
-            .setMaxConnPerRoute(5)
-            .setRetryHandler(new DefaultHttpRequestRetryHandler(1, false)) // Retry each request once
-            .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
-            .build();
     }
 
 }
