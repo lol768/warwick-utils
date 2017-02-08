@@ -39,7 +39,7 @@ public class MyWarwickSpringConfig {
      * @throws IOException when properties cannot be loaded from context
      */
     @Bean
-    public uk.ac.warwick.util.mywarwick.model.Configuration configuration() throws IOException {
+    public uk.ac.warwick.util.mywarwick.model.Configuration myWarwickServiceConfiguration() throws IOException {
         return new uk.ac.warwick.util.mywarwick.model.PropertiesConfiguration(propertiesBean);
     }
 }
