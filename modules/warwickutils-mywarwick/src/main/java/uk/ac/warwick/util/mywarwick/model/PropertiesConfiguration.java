@@ -3,12 +3,10 @@ package uk.ac.warwick.util.mywarwick.model;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Singleton
-public class PropertiesConfiguration implements Configuration { //this implementation is for Spring applications
+public class PropertiesConfiguration implements Configuration { // this implementation is for Spring applications
 
 
     private Properties applicationProperties;
