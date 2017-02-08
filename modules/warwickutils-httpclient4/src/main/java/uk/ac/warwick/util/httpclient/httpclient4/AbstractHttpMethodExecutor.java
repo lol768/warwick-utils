@@ -5,11 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -318,10 +314,11 @@ public abstract class AbstractHttpMethodExecutor implements HttpMethodExecutor {
         assertExecuted();
         
         HttpUriRequest finalRequest = (HttpUriRequest) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
-        if (finalRequest instanceof HttpRequestBase) {
-            return Uri.fromJavaUri(request.getURI()).resolve(Uri.parse(finalRequest.getRequestLine().getUri()));
-        } else if (finalRequest != null) {
-            return Uri.fromJavaUri(request.getURI()).resolve(Uri.fromJavaUri(finalRequest.getURI()));
+        HttpHost currentHost = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+        if (finalRequest != null && finalRequest.getURI().isAbsolute()) {
+            return Uri.fromJavaUri(finalRequest.getURI());
+        } else if (finalRequest != null && currentHost != null) {
+            return Uri.parse(currentHost.toURI()).resolve(Uri.fromJavaUri(finalRequest.getURI()));
         } else {
             throw new IllegalStateException("Couldn't find target in context");
         }

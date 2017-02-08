@@ -1,8 +1,5 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.protocol.HttpContext;
-
 import uk.ac.warwick.util.web.Uri;
 
 public final class SimpleHttpMethodExecutor extends AbstractHttpMethodExecutor {
