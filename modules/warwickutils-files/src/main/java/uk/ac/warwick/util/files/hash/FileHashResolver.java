@@ -26,6 +26,11 @@ public interface FileHashResolver {
 
     // Name of the hash store where we store HTML
     String STORE_NAME_HTML = "html";
+
+    /**
+     * Returns true if and only if the hash exists in its backing store.
+     */
+    boolean exists(HashString hashString);
     
     /**
      * Lookup a {@link HashFileReference} by its hash, returning an empty one

@@ -3,6 +3,7 @@ package uk.ac.warwick.util.files.hash.impl;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
+import org.jclouds.blobstore.domain.BlobMetadata;
 import org.springframework.beans.factory.InitializingBean;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
 import uk.ac.warwick.util.files.HashFileReference;
@@ -39,6 +40,15 @@ public class BlobStoreBackedHashResolver implements FileHashResolver, Initializi
         this.flags = flags;
     }
 
+    public boolean exists(HashString hashString) {
+        if (!belongsToUs(hashString)) {
+            throw new IllegalArgumentException("HashString name does not match resolver name");
+        }
+
+        // New hash? Store it in the database.
+        return blobStore.blobExists(containerName, hashString.getHash());
+    }
+
     @Override
     public HashFileReference lookupByHash(HashFileStore store, HashString hashString, boolean storeNewHash) {
         if (!belongsToUs(hashString)) {
@@ -48,8 +58,8 @@ public class BlobStoreBackedHashResolver implements FileHashResolver, Initializi
         // New hash? Store it in the database.
         HashString safeHashString = new HashString(hashString.getStoreName(), hashString.getHash());
         if (storeNewHash && dao.getHashByIdWithoutFlush(safeHashString.toString()) == null && !flags.isInMaintenanceMode()) {
-            Blob blob = blobStore.getBlob(containerName, hashString.getHash());
-            dao.hashCreated(safeHashString, blob == null ? 0L : blob.getMetadata().getSize());
+            BlobMetadata metadata = blobStore.blobMetadata(containerName, hashString.getHash());
+            dao.hashCreated(safeHashString, metadata == null ? 0L : metadata.getSize());
         }
 
         return new BlobBackedHashFileReference(store, blobStore, containerName, hashString);

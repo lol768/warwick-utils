@@ -45,6 +45,22 @@ public final class FileSystemBackedHashResolver implements FileHashResolver {
         this.flags = f;
     }
 
+    @Override
+    public boolean exists(HashString hashString) {
+        if (!belongsToUs(hashString)) {
+            throw new IllegalArgumentException("HashString name does not match resolver name");
+        }
+
+        // Remove all illegal characters from the hash, and lowercase it. Our
+        // hasher implementation actually returns a hex string, so this isn't
+        // strictly necessary.
+        String fileHash = hashString.getHash().replaceAll("[^A-Za-z0-9_\\-\\.]", "_").toLowerCase();
+        String path = partition(fileHash);
+
+        return new File(storeLocation, FilenameUtils.separatorsToSystem(path)).exists();
+    }
+
+    @Override
     public HashFileReference lookupByHash(HashFileStore store, HashString fileHash, boolean storeNewHash) {
         File file = resolve(fileHash, storeNewHash);
         return new FileBackedHashFileReference(store, file, fileHash);

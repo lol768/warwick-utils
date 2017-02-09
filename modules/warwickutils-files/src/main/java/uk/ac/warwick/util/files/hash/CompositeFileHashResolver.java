@@ -22,6 +22,19 @@ public final class CompositeFileHashResolver implements FileHashResolver {
         this.defaultResolver = this.resolvers.get(FileHashResolver.STORE_NAME_DEFAULT);
     }
 
+    @Override
+    public boolean exists(HashString fileHash) {
+        if (fileHash.isDefaultStore()) {
+            return defaultResolver.exists(fileHash);
+        } else {
+            FileHashResolver fileHashResolver = resolvers.get(fileHash.getStoreName());
+            if (fileHashResolver == null) {
+                throw new IllegalArgumentException("No hash resolver recognised hash " + fileHash.toString());
+            }
+            return fileHashResolver.exists(fileHash);
+        }
+    }
+
     public HashString generateHash(InputStream is) throws IOException {
         // Don't currently care who generates a hash so just use the default one
         return defaultResolver.generateHash(is);
