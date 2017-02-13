@@ -28,6 +28,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -486,6 +487,34 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    // TeleStream-specific API calls
+    public Object getServiceStatus() throws IOException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Requesting a list of all encodings");
+        }
+
+        // Get a list of all encodings
+        return get("/encodings.json", new HashMap<String, String>() {{
+            put("status", "processing");
+        }}, response -> {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new ConversionException("Invalid status code " + response.getStatusLine().getStatusCode() + " returned from Telestream: " + EntityUtils.toString(response.getEntity()));
+            }
+
+            try {
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Response received for list of all encodings: " + responseContents);
+                }
+
+                JSONArray json = new JSONArray(responseContents);
+                return TelestreamConversionServiceStatus.fromJSON(json);
+            } catch (JSONException e) {
+                throw new ConversionException("Invalid JSON returned from Telestream", e);
+            }
+        });
     }
 
     @Override

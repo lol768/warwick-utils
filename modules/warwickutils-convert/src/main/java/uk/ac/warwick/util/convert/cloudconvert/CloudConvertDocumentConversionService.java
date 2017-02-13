@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.SocketConfig;
@@ -27,6 +28,8 @@ import org.apache.tika.mime.MimeTypes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import uk.ac.warwick.util.convert.DocumentConversionResult;
 import uk.ac.warwick.util.convert.DocumentConversionService;
@@ -41,6 +44,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CloudConvertDocumentConversionService implements DocumentConversionService, DisposableBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudConvertDocumentConversionService.class);
 
     private static final Map<String, String> PRESETS = new HashMap<String, String>() {{
         put("doc", "l13YvUeMsA");
@@ -188,6 +193,30 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
                 return object.getObjectMetadata().getContentLength();
             }
         };
+    }
+
+    // Specific to CloudConvert - get the number of credits remaining for this month
+    public int getRemainingCredits() throws IOException {
+        HttpGet request = new HttpGet("https://" + API_HOST + "/user");
+        request.setHeader("Authorization", "Bearer " + apiKey);
+
+        return httpClient.execute(request, response -> {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new IllegalStateException("Unexpected response code " + response.getStatusLine().getStatusCode() + " returned from CloudConvert: " + EntityUtils.toString(response.getEntity()));
+            }
+
+            try {
+                String responseContents = EntityUtils.toString(response.getEntity());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Response received for request to get user information: " + responseContents);
+                }
+
+                JSONObject json = new JSONObject(responseContents);
+                return json.getInt("minutes");
+            } catch (JSONException e) {
+                throw new IllegalStateException("Invalid JSON returned from CloudConvert", e);
+            }
+        });
     }
 
     @Override
