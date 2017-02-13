@@ -440,15 +440,4 @@ public class ZencoderConversionService implements ConversionService, DisposableB
         httpClient.close();
     }
 
-    public static void main(String[] args) throws Exception {
-        ZencoderConversionService service = new ZencoderConversionService(
-            "7913d31844f5bd357b7ea109f00a365c",
-            "AKIAI2IWTE7FDZGVCEEA",
-            "7E7AEaZRWfntsukqN6nvc0ByZ1wvh4jj8l9tXuIe",
-            "uk.ac.warwick.sitebuilder.convert"
-        );
-
-        System.out.println(service.getRemainingMinutes());
-    }
-
 }
