@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.convert;
 
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 
 import java.util.List;
 
@@ -13,8 +12,6 @@ public interface ConversionStatus {
 
     String getId();
 
-    String getVideoId();
-
     Status getStatus();
 
     List<String> getFiles();
@@ -25,15 +22,6 @@ public interface ConversionStatus {
 
     DateTime getUpdated();
 
-    DateTime getStartedEncoding();
-
-    Duration getEncodingTime();
-
     Integer getProgress();
 
-    Integer getWidth();
-
-    Integer getHeight();
-
-    Duration getDuration();
 }

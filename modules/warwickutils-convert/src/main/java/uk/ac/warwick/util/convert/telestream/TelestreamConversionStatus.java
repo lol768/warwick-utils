@@ -78,7 +78,6 @@ class TelestreamConversionStatus implements ConversionStatus {
         status.height = json.isNull("height") ? null : json.getInt("height");
         status.duration = json.isNull("duration") ? null : Duration.millis(json.getLong("duration"));
 
-
         return status;
     }
 
