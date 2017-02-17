@@ -69,7 +69,9 @@ import java.util.Formatter;
  * Now internally the log.debug message isn't even called and the string is
  * never expanded/formatted unless the debug level is enabled.
  *
+ * @deprecated Just use SLF4J. To be removed at some point in the future
  */
+@Deprecated
 @SuppressWarnings("deprecation")
 public class Logger {
 
