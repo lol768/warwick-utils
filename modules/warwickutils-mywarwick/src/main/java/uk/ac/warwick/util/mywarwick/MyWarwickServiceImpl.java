@@ -18,6 +18,7 @@ import uk.ac.warwick.util.mywarwick.model.request.Activity;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Named
 @Singleton
-public class MyWarwickServiceImpl implements MyWarwickService, DisposableBean {
+public class MyWarwickServiceImpl implements MyWarwickService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MyWarwickServiceImpl.class);
     private final Set<Instance> instances;
@@ -155,7 +156,7 @@ public class MyWarwickServiceImpl implements MyWarwickService, DisposableBean {
         return httpclient;
     }
 
-    @Override
+    @PreDestroy
     public void destroy() throws Exception {
         httpclient.destroy();
     }
