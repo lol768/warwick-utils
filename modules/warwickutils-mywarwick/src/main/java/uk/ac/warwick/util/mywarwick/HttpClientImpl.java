@@ -5,18 +5,13 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.config.ConnectionConfig;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
-import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.springframework.beans.factory.DisposableBean;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.net.ProxySelector;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
@@ -53,7 +48,7 @@ public class HttpClientImpl implements HttpClient {
         httpClient.start();
     }
 
-    @Override
+    @PreDestroy
     public void destroy() throws Exception {
         httpClient.close();
     }
