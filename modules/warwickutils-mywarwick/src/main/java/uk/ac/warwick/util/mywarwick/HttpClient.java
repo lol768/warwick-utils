@@ -15,5 +15,5 @@ public interface HttpClient extends Provider<HttpAsyncClient> {
     Future<HttpResponse> execute(HttpUriRequest request, FutureCallback<HttpResponse> callback);
 
     @PreDestroy
-    void destroy();
+    void destroy() throws Exception;
 }
