@@ -70,11 +70,10 @@ public class BlobBackedHashFileReferenceTest {
 
         m.assertIsSatisfied();
 
-        // Slicing the byte source means that the blob is fe-fetched with new params
+        // Slicing the byte source means that the blob is re-fetched with new params
         final ByteSource slicedByteSource = ref.asByteSource().slice(10, 20);
 
         final Blob slicedBlob = m.mock(Blob.class, "slicedBlob");
-        final MutableBlobMetadata slicedBlobMetadata = m.mock(MutableBlobMetadata.class, "slicedBlobMetadata");
         final Payload slicedBlobPayload = m.mock(Payload.class, "slicedBlobPayload");
 
         m.checking(new Expectations() {{
