@@ -32,7 +32,7 @@ public abstract class AbstractBlobBackedFileData implements FileData {
         this.blobStore = blobStore;
         this.containerName = containerName;
         this.blobName = blobName;
-        this.byteSource = new BlobBackedByteSource(GetOptions.NONE);
+        this.byteSource = new BlobBackedByteSource();
     }
 
     @Override
@@ -88,19 +88,22 @@ public abstract class AbstractBlobBackedFileData implements FileData {
         private final long length;
 
         private transient Blob blob;
+        private transient long totalLength;
         private transient boolean payloadUsed;
 
-        private BlobBackedByteSource(GetOptions options) {
-            this(-1, -1);
+        private BlobBackedByteSource() {
+            this(-1, -1, -1);
         }
 
-        private BlobBackedByteSource(long offset, long length) {
+        private BlobBackedByteSource(long offset, long length, long totalLength) {
             this.offset = offset;
             this.length = length;
+            this.totalLength = totalLength;
         }
 
         protected void invalidate() {
             blob = null;
+            totalLength = -1;
             payloadUsed = false;
         }
 
@@ -114,6 +117,17 @@ public abstract class AbstractBlobBackedFileData implements FileData {
 
             // The payload from getting the blob isn't repeatable by default, so we need to get a new blob every time
             blob = blobStore.getBlob(containerName, blobName, options);
+
+            if (totalLength < 0) {
+                if (blob == null) {
+                    totalLength = -1;
+                } else if (offset < 0 || length <= 0) {
+                    totalLength = blob.getMetadata().getSize();
+                } else {
+                    totalLength = blobStore.blobMetadata(containerName, blobName).getSize();
+                }
+            }
+
             payloadUsed = false;
         }
 
@@ -135,7 +149,11 @@ public abstract class AbstractBlobBackedFileData implements FileData {
                 actualOffset = this.offset + offset;
             }
 
-            return new BlobBackedByteSource(actualOffset, length);
+            if (totalLength < 0) {
+                refresh();
+            }
+
+            return new BlobBackedByteSource(actualOffset, length, totalLength);
         }
 
         @Override
@@ -147,7 +165,17 @@ public abstract class AbstractBlobBackedFileData implements FileData {
 
         @Override
         public synchronized long size() {
-            if (length > 0) return length;
+            if (length > 0) {
+                if (totalLength < 0) {
+                    refresh();
+                }
+
+                if ((offset + length) > totalLength) {
+                    return totalLength - offset;
+                } else {
+                    return length;
+                }
+            }
 
             if (blob == null) refresh();
 
