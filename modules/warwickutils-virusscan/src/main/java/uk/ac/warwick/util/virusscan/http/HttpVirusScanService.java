@@ -3,6 +3,8 @@ package uk.ac.warwick.util.virusscan.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteSource;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -168,6 +170,15 @@ public class HttpVirusScanService implements VirusScanService {
         public void setError(String error) {
             this.error = Optional.of(error);
         }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("status", status)
+                .append("virus", virus)
+                .append("error", error)
+                .toString();
+        }
     }
 
     private static class HttpVirusScanServiceStatus implements VirusScanServiceStatus {
@@ -189,6 +200,14 @@ public class HttpVirusScanService implements VirusScanService {
         @Override
         public String getStatusMessage() {
             return statusMessage;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("available", available)
+                .append("statusMessage", statusMessage)
+                .toString();
         }
     }
 
