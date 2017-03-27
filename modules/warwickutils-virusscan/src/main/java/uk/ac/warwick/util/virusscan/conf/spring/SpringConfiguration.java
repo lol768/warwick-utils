@@ -11,7 +11,7 @@ import javax.inject.Singleton;
 @Singleton
 public class SpringConfiguration implements Configuration {
 
-    private @Value("${" + API_HOST_PROPERTY + ":'" + DEFAULT_API_HOST + "'}") String apiHost;
+    private @Value("${" + API_HOST_PROPERTY + ":" + DEFAULT_API_HOST + "}") String apiHost;
 
     private @Value("${" + API_KEY_PROPERTY + "}") String apiKey;
 

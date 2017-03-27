@@ -6,6 +6,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 
 /**
  * A service to send email.
@@ -17,4 +18,5 @@ public interface WarwickMailSender {
     MimeMessage createMimeMessage();
     Future<Boolean> send(MimeMessage message) throws MailException;
     Future<Boolean> send(SimpleMailMessage message) throws MailException;
+    Future<Boolean> send(MimeMessagePreparator preparator) throws MailException;
 }

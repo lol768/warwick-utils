@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import uk.ac.warwick.util.concurrency.TaskExecutionService;
 import uk.ac.warwick.util.core.StringUtils;
 import static org.springframework.util.StringUtils.arrayToCommaDelimitedString;
@@ -56,6 +58,16 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
 
     public Future<Boolean> send(SimpleMailMessage message) throws MailException {
         // if we wanted to block and wait, we could do a .get() on the future
+        return sendAndReturnFuture(message);
+    }
+
+    public Future<Boolean> send(MimeMessagePreparator preparator) throws MailException {
+        MimeMessage message = createMimeMessage();
+        try {
+            preparator.prepare(message);
+        } catch (Exception ex) {
+            throw new MailPreparationException(ex);
+        }
         return sendAndReturnFuture(message);
     }
 
