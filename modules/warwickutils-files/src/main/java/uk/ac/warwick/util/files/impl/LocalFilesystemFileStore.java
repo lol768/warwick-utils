@@ -16,91 +16,14 @@ import java.util.stream.Stream;
 /**
  * File store which can ask a FileReferenceCreationStrategy
  */
-public final class LocalFilesystemFileStore implements LocalFileStore, HashFileStore, InitializingBean {
-
-    private final Map<String, FileHashResolver> hashResolvers;
-
-    private final FileReferenceCreationStrategy storageStrategy;
+public final class LocalFilesystemFileStore extends AbstractFileStore implements InitializingBean {
     
     public LocalFilesystemFileStore(Map<String,FileHashResolver> resolvers, FileReferenceCreationStrategy strategy) {
-        this.hashResolvers = resolvers;
-        this.storageStrategy = strategy;
+        super(resolvers, strategy);
     }
 
     @Override
-    public FileReference store(Storeable storeable, String requestedStoreName, ByteSource in) throws IOException {
-        FileReferenceCreationStrategy.Target target = storageStrategy.select(in);
-
-        switch (target) {
-            case local:
-                return storeLocalReference(storeable, in);
-            case hash:
-                return storeHashReference(in, requestedStoreName);
-            default:
-                throw new IllegalStateException("Unhandled strategy; " + target);
-        }
-    }
-
-    private FileHashResolver getHashResolver(String hashStoreName) {
-        String key = hashStoreName;
-        if (key == null) {
-            key = FileHashResolver.STORE_NAME_DEFAULT;
-        }
-        return hashResolvers.get(key);
-    }
-
-    private FileHashResolver getHashResolver(HashString hashString) {
-        if (hashString.isDefaultStore()) {
-            return getHashResolver(FileHashResolver.STORE_NAME_DEFAULT);
-        }
-        return getHashResolver(hashString.getStoreName());
-    }
-
-    private HashFileReference storeHashReference(File tmpFile, String requestedHashStore) throws IOException {
-        // If there is an existing hash reference, return that; otherwise, store the physical file
-        FileHashResolver hashResolver = getHashResolver(requestedHashStore);
-        FileInputStream is = new FileInputStream(tmpFile);
-
-        HashString hash;
-        try {
-            hash = hashResolver.generateHash(is);
-        } finally {
-            is.close();
-        }
-
-        HashFileReference existing = hashResolver.lookupByHash(this, hash, true);
-        if (existing.isExists()) {
-            return existing;
-        }
-
-        is = new FileInputStream(tmpFile);
-        try {
-            return doStore(is, hash, existing);
-        } finally {
-            is.close();
-        }
-    }
-
-    @Override
-    public HashFileReference createHashReference(ByteSource in, String requestedStoreName) throws IOException {
-        return storeHashReference(in, requestedStoreName);
-    }
-
-    @Override
-    public HashFileReference storeHashReference(ByteSource in, String requestedStoreName) throws IOException {
-        FileHashResolver hashResolver = getHashResolver(requestedStoreName);
-        
-        HashString hash = hashResolver.generateHash(in.openBufferedStream());
-        
-        HashFileReference existing = hashResolver.lookupByHash(this, hash, true);
-        if (existing.isExists()) {
-            return existing;
-        }
-        
-        return doStore(in.openStream(), hash, existing);
-    }
-    
-    private HashFileReference doStore(InputStream is, HashString hash, HashFileReference target) throws IOException {
+    protected HashFileReference doStore(ByteSource in, HashString hash, HashFileReference target) throws IOException {
         if (!target.isFileBacked()) {
             throw new UnsupportedOperationException("Storage to non-file backed data not implemented");
         }
@@ -113,12 +36,9 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
         if ((!outputFile.getParentFile().exists() || !outputFile.getParentFile().isDirectory()) && !outputFile.getParentFile().mkdirs()) {
             throw new IllegalStateException("Could not create parent directory for " + outputFile);
         }
-        
-        FileOutputStream os = new FileOutputStream(outputFile);
-        try {
-            FileCopyUtils.copy(is, os);
-        } finally {
-            os.close();
+
+        try (FileOutputStream os = new FileOutputStream(outputFile)) {
+            in.copyTo(os);
         }
         
         return target;
@@ -152,44 +72,6 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
             return Stream.empty();
         } else {
             return Stream.of(fileNames);
-        }
-    }
-
-    private HashFileReference getByFileHash(HashString fileHash) {
-        return getHashResolver(fileHash).lookupByHash(this, fileHash, false);
-    }
-
-    @Override
-    public FileReference get(Storeable storeable) throws FileNotFoundException {
-        if (storeable.getHash() != null && !storeable.getHash().isEmpty()) {
-            return getByFileHash(storeable.getHash());
-        } else {
-            FileReference ref;
-            LocalFileReference localRef = null;
-            if (storeable.getStrategy().isSupportsLocalReferences() || storeable.getStrategy().getMissingContentStrategy() == MissingContentStrategy.Local) {
-                localRef = getForPath(storeable.getStrategy(), storeable.getPath());
-            }
-            
-            if (localRef != null && localRef.isExists()) { 
-                ref = localRef; 
-            } else {
-                switch (storeable.getStrategy().getMissingContentStrategy()) {
-                    case Local:
-                        ref = localRef;
-                        break;
-                    case Hash:
-                        ref = new EmptyHashBackedFileReference(this, storeable.getStrategy().getDefaultHashStore());
-                        break;
-                    case Exception:
-                        throw new FileNotFoundException("Couldn't find a file reference for " + storeable);
-                    default:
-                        throw new IllegalArgumentException(
-                            "Unsupported missing content strategy: " + storeable.getStrategy().getMissingContentStrategy()
-                        );
-                }
-            }
-            
-            return ref;
         }
     }
 
@@ -233,13 +115,6 @@ public final class LocalFilesystemFileStore implements LocalFileStore, HashFileS
         
         FileCopyUtils.copy(in, new FileOutputStream(target));
         return new FileBackedLocalFileReference(this, target, storeable.getPath(), storeable.getStrategy());
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        // The map of hash resolvers must at least have an entry under the default key.
-        if (!hashResolvers.containsKey(FileHashResolver.STORE_NAME_DEFAULT)) {
-            throw new IllegalArgumentException("No default hash resolver provided");
-        }
     }
 
 }
