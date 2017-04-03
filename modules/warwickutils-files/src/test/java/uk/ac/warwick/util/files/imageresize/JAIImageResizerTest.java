@@ -31,7 +31,7 @@ public final class JAIImageResizerTest {
      * it would complete but extremely slowly due to single-byte reading and String appends.
      * Patched JAI codec is nice and fast.
      */
-    @Test
+    @Test(timeout=5000)
     public void decodingZtxtChunks() throws Exception {
         JAIImageResizer resizer = new JAIImageResizer();
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/bad-zTXt-chunk.png"));
