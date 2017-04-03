@@ -78,7 +78,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                                 );
                             }
                         } catch (IOException e) {
-                            LOGGER.error("An IOException was thrown during communicating with mywarwick:\n" +
+                            LOGGER.error("An IOException was thrown communicating with mywarwick:\n" +
                                 e.getMessage() +
                                 "\npath: " + path +
                                 "\ninstance: " + instance+
