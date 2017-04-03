@@ -63,7 +63,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                     @Override
                     public void completed(HttpResponse httpResponse) {
-                        if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed with mywarwick api( "+ path +" )");
+                        if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
                         try {
                             String responseString = EntityUtils.toString(httpResponse.getEntity());
                             response = mapper.readValue(responseString, Response.class);
@@ -71,8 +71,6 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             if (response.getErrors().size() != 0) {
                                 LOGGER.error("Request completed but it contains an error:" +
                                     "\npath: " + path +
-                                    "\ninstance: " + instance +
-                                    "\nrequest json body: " + reqJsonBody +
                                     "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
                                     "\nResponse:\n" + response.toString()
                                 );
@@ -80,9 +78,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         } catch (IOException e) {
                             LOGGER.error("An IOException was thrown communicating with mywarwick:\n" +
                                 e.getMessage() +
-                                "\npath: " + path +
-                                "\ninstance: " + instance+
-                                "\nrequest json body: " + reqJsonBody);
+                                "\npath: " + path);
                             response.setError(new Error("", e.getMessage()));
                             completableFuture.complete(response);
                         }
