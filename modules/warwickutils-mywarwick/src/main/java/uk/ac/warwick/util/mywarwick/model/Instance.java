@@ -89,4 +89,15 @@ public class Instance {
                 .append(getApiPassword())
                 .toHashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Instance{" +
+                "baseUrl='" + baseUrl + '\'' +
+                ", providerId='" + providerId + '\'' +
+                ", apiUser='" + apiUser + '\'' +
+                ", activityPath='" + activityPath + '\'' +
+                ", notificationPath='" + notificationPath + '\'' +
+                '}';
+    }
 }

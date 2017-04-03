@@ -50,10 +50,11 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<>();
             final String path = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
+            final String reqJsonBody = makeJsonBody(activity);
             httpclient.execute(
                 makeRequest(
                     path,
-                    makeJsonBody(activity),
+                    reqJsonBody,
                     instance.getApiUser(),
                     instance.getApiPassword(),
                     instance.getProviderId()),
@@ -69,7 +70,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             completableFuture.complete(response);
                             if (response.getErrors().size() != 0) {
                                 LOGGER.error("Request completed but it contains an error:" +
-                                    "\nPath: " + path +
+                                    "\npath: " + path +
+                                    "\ninstance: " + instance +
+                                    "\nrequest json body: " + reqJsonBody +
                                     "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
                                     "\nResponse:\n" + response.toString()
                                 );
@@ -77,7 +80,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         } catch (IOException e) {
                             LOGGER.error("An IOException was thrown during communicating with mywarwick:\n" +
                                 e.getMessage() +
-                                "\nPath: " + path);
+                                "\npath: " + path +
+                                "\ninstance: " + instance+
+                                "\nrequest json body: " + reqJsonBody);
                             response.setError(new Error("", e.getMessage()));
                             completableFuture.complete(response);
                         }
@@ -85,7 +90,10 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                     @Override
                     public void failed(Exception e) {
-                        LOGGER.error("Request to mywarwick API (" + path + ") has failed with errors: " + e.getMessage(), e);
+                        LOGGER.error("Request to mywarwick API has failed with errors: " + e.getMessage() +
+                                "\npath: " + path +
+                                "\ninstance: " + instance +
+                                "\nrequest json body: " + reqJsonBody, e);
                         response.setError(new Error("", e.getMessage()));
                         completableFuture.complete(response);
                     }
