@@ -2,6 +2,7 @@ package uk.ac.warwick.util.mywarwick.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Instance {
     private String baseUrl;
@@ -88,5 +89,16 @@ public class Instance {
                 .append(getApiUser())
                 .append(getApiPassword())
                 .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("baseUrl", baseUrl)
+                .append("providerId", providerId)
+                .append("apiUser", apiUser)
+                .append("activityPath", activityPath)
+                .append("notificationPath", notificationPath)
+                .toString();
     }
 }
