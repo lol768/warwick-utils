@@ -5,8 +5,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
@@ -35,10 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.convert.ConversionException;
-import uk.ac.warwick.util.convert.ConversionMedia;
-import uk.ac.warwick.util.convert.ConversionService;
-import uk.ac.warwick.util.convert.ConversionStatus;
+import uk.ac.warwick.util.convert.*;
 import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.web.Uri;
 
@@ -329,30 +324,14 @@ public class TelestreamConversionService implements ConversionService, Disposabl
     }
 
     private void handleS3Object(String objectKey, Consumer<InputStream> consumer) throws IOException {
-        ByteSource source = getS3Object(objectKey);
+        ByteSource source = getS3ByteSource(objectKey);
         try (InputStream is = source.openBufferedStream()) {
             consumer.accept(is);
         }
     }
 
-    private ByteSource getS3Object(String objectKey) {
-        final S3Object object = s3.getObject(new GetObjectRequest(bucketName, objectKey));
-        return new ByteSource() {
-            @Override
-            public InputStream openStream() throws IOException {
-                return object.getObjectContent();
-            }
-
-            @Override
-            public boolean isEmpty() throws IOException {
-                return object == null;
-            }
-
-            @Override
-            public long size() throws IOException {
-                return object.getObjectMetadata().getContentLength();
-            }
-        };
+    private S3ByteSource getS3ByteSource(String objectKey) {
+        return new S3ByteSource(s3, bucketName, objectKey);
     }
 
     @Override
@@ -379,7 +358,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
             throw new ConversionException("Can only get encoded file once encoding is successful");
         }
 
-        return getS3Object(status.getFiles().iterator().next());
+        return getS3ByteSource(status.getFiles().iterator().next());
     }
 
     @Override
@@ -388,7 +367,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
             throw new ConversionException("Conversion not successful or no screenshots generated");
         }
 
-        return getS3Object(status.getScreenshots().iterator().next());
+        return getS3ByteSource(status.getScreenshots().iterator().next());
     }
 
     private <T> T get(String url, ResponseHandler<T> handler) throws IOException {

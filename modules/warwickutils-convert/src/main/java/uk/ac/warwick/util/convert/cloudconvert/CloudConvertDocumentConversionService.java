@@ -3,8 +3,6 @@ package uk.ac.warwick.util.convert.cloudconvert;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
@@ -33,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import uk.ac.warwick.util.convert.DocumentConversionResult;
 import uk.ac.warwick.util.convert.DocumentConversionService;
+import uk.ac.warwick.util.convert.S3ByteSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -176,23 +175,7 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
 
     @Override
     public ByteSource getConvertedFile(DocumentConversionResult result, String key) {
-        final S3Object object = s3.getObject(new GetObjectRequest(bucketName, result.getConversionId() + "/" + key));
-        return new ByteSource() {
-            @Override
-            public InputStream openStream() throws IOException {
-                return object.getObjectContent();
-            }
-
-            @Override
-            public boolean isEmpty() throws IOException {
-                return object == null;
-            }
-
-            @Override
-            public long size() throws IOException {
-                return object.getObjectMetadata().getContentLength();
-            }
-        };
+        return new S3ByteSource(s3, bucketName, result.getConversionId() + "/" + key);
     }
 
     // Specific to CloudConvert - get the number of credits remaining for this month

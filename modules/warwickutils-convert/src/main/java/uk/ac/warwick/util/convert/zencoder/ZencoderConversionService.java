@@ -27,10 +27,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import uk.ac.warwick.util.convert.ConversionException;
-import uk.ac.warwick.util.convert.ConversionMedia;
-import uk.ac.warwick.util.convert.ConversionService;
-import uk.ac.warwick.util.convert.ConversionStatus;
+import uk.ac.warwick.util.convert.*;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
@@ -342,30 +339,14 @@ public class ZencoderConversionService implements ConversionService, DisposableB
     }
 
     private void handleS3Object(String objectKey, Consumer<InputStream> consumer) throws IOException {
-        ByteSource source = getS3Object(objectKey);
+        ByteSource source = getS3ByteSource(objectKey);
         try (InputStream is = source.openBufferedStream()) {
             consumer.accept(is);
         }
     }
 
-    private ByteSource getS3Object(String objectKey) {
-        return new ByteSource() {
-            @Override
-            public InputStream openStream() throws IOException {
-                return s3.getObject(bucketName, objectKey).getObjectContent();
-            }
-
-            @Override
-            public boolean isEmpty() throws IOException {
-                boolean exists = s3.doesObjectExist(bucketName, objectKey);
-                return !exists || this.size() > 0;
-            }
-
-            @Override
-            public long size() throws IOException {
-                return s3.getObjectMetadata(bucketName, objectKey).getContentLength();
-            }
-        };
+    private S3ByteSource getS3ByteSource(String objectKey) {
+        return new S3ByteSource(s3, bucketName, objectKey);
     }
 
     @Override
@@ -392,7 +373,7 @@ public class ZencoderConversionService implements ConversionService, DisposableB
             throw new ConversionException("Can only get encoded file once encoding is successful");
         }
 
-        return getS3Object(status.getFiles().iterator().next());
+        return getS3ByteSource(status.getFiles().iterator().next());
     }
 
     @Override
@@ -401,7 +382,7 @@ public class ZencoderConversionService implements ConversionService, DisposableB
             throw new ConversionException("Conversion not successful or no screenshots generated");
         }
 
-        return getS3Object(status.getScreenshots().iterator().next());
+        return getS3ByteSource(status.getScreenshots().iterator().next());
     }
 
     // Specific to Zencoder - get the number of encoding minutes remaining for this month
