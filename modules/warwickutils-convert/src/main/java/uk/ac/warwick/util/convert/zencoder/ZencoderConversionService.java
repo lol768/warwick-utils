@@ -5,11 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
 import com.google.common.io.ByteSource;
-import com.google.common.io.Files;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.EntityBuilder;
@@ -36,7 +33,6 @@ import uk.ac.warwick.util.convert.ConversionService;
 import uk.ac.warwick.util.convert.ConversionStatus;
 import uk.ac.warwick.util.web.Uri;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
@@ -353,21 +349,21 @@ public class ZencoderConversionService implements ConversionService, DisposableB
     }
 
     private ByteSource getS3Object(String objectKey) {
-        final S3Object object = s3.getObject(new GetObjectRequest(bucketName, objectKey));
         return new ByteSource() {
             @Override
             public InputStream openStream() throws IOException {
-                return object.getObjectContent();
+                return s3.getObject(bucketName, objectKey).getObjectContent();
             }
 
             @Override
             public boolean isEmpty() throws IOException {
-                return object == null;
+                boolean exists = s3.doesObjectExist(bucketName, objectKey);
+                return !exists || this.size() > 0;
             }
 
             @Override
             public long size() throws IOException {
-                return object.getObjectMetadata().getContentLength();
+                return s3.getObjectMetadata(bucketName, objectKey).getContentLength();
             }
         };
     }
