@@ -33,6 +33,7 @@ import uk.ac.warwick.util.web.Uri;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -189,6 +190,8 @@ public class ZencoderConversionService implements ConversionService, DisposableB
             return ZencoderConversionMedia.fromJobJSON(getJob(id));
         } catch (JSONException e) {
             throw new ConversionException("Invalid JSON returned from Zencoder", e);
+        } catch (SocketTimeoutException e) {
+            return ZencoderConversionMedia.fromTimeout(id);
         }
     }
 
