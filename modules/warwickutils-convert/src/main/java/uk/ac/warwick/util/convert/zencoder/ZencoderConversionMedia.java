@@ -32,6 +32,13 @@ class ZencoderConversionMedia implements ConversionMedia {
 
     private Duration duration;
 
+    public static ZencoderConversionMedia fromTimeout(String id) {
+        ZencoderConversionMedia media = new ZencoderConversionMedia();
+        media.id = Integer.parseInt(id);
+        media.status = Status.processing;
+        return media;
+    }
+
     public static ZencoderConversionMedia fromJobJSON(JSONObject json) throws JSONException {
         ZencoderConversionMedia media = new ZencoderConversionMedia();
 
