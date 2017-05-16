@@ -6,6 +6,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 import com.google.common.io.ByteSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -52,6 +55,8 @@ public class ZencoderConversionService implements ConversionService, DisposableB
 
     private final AmazonS3 s3;
 
+    private final TransferManager transferManager;
+
     private final String bucketName;
 
     public ZencoderConversionService(String zcApiKey, String awsAccessKey, String awsSecretKey, String awsBucketName) {
@@ -59,6 +64,10 @@ public class ZencoderConversionService implements ConversionService, DisposableB
 
         this.s3 = new AmazonS3Client(new BasicAWSCredentials(awsAccessKey, awsSecretKey));
         this.bucketName = awsBucketName;
+
+        this.transferManager = TransferManagerBuilder.standard()
+                .withS3Client(s3)
+                .build();
 
         this.httpClient = HttpClientBuilder.create()
             .setDefaultConnectionConfig(
@@ -99,7 +108,13 @@ public class ZencoderConversionService implements ConversionService, DisposableB
         metadata.setContentDisposition(uploadId);
 
         LOGGER.info("[Upload " + uploadId + "] Uploading " + source + " to Amazon S3: s3://" + bucketName + "/" + key);
-        s3.putObject(bucketName, key, source.openStream(), metadata);
+        Upload upload = transferManager.upload(bucketName, key, source.openStream(), metadata);
+
+        try {
+            upload.waitForCompletion();
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e);
+        }
 
         HttpPost request = new HttpPost("https://" + API_HOST + "/api/" + API_VERSION + "/jobs");
         request.setHeader("Zencoder-Api-Key", apiKey);
