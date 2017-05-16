@@ -433,6 +433,7 @@ public class ZencoderConversionService implements ConversionService, DisposableB
     @Override
     public void destroy() throws Exception {
         httpClient.close();
+        transferManager.shutdownNow();
     }
 
 }
