@@ -159,7 +159,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 	}
 
 	public void setMaxSize(int maxSize) {
-		LOGGER.error("Can't change Ehcache size at runtime - use the Ehcache configuration XML");
+		LOGGER.info("EhCacheStore.setMaxSize called, which does nothing. Use the Ehcache configuration XML.");
 	}
 
 	public boolean clear() {
