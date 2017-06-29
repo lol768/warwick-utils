@@ -12,10 +12,10 @@ public class ActivityTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private final String expectedRequesJsonString = "{\"type\":\"faketype\",\"title\":\"faketitle\",\"text\":\"faketext\",\"url\":\"fakeurl\",\"tags\":[{\"name\":\"fakename\",\"value\":\"fakevalue\",\"display_value\":\"fakedv\"}],\"recipients\":{\"users\":[\"u1234567\"],\"groups\":[\"ch-students\"]}}";
+    private final String expectedRequestJsonString = "{\"type\":\"faketype\",\"title\":\"faketitle\",\"text\":\"faketext\",\"url\":\"fakeurl\",\"tags\":[{\"name\":\"fakename\",\"value\":\"fakevalue\",\"display_value\":\"fakedv\"}],\"recipients\":{\"users\":[\"u1234567\"],\"groups\":[\"ch-students\"]},\"send_email\":null}";
 
     @Test
-    public void sohuldMakecreateCorrectJsonAgainAPIspec() throws JsonProcessingException {
+    public void shouldMakeCorrectJsonAgainAPISpec() throws JsonProcessingException {
         Set<String> userIds = new HashSet<>();
         Set<String> groups = new HashSet<>();
 
@@ -29,7 +29,7 @@ public class ActivityTest {
         tag.setValue("fakevalue");
         tag.setName("fakename");
         activity.setTags(tag);
-        assertEquals(expectedRequesJsonString, objectMapper.writeValueAsString(activity));
+        assertEquals(expectedRequestJsonString, objectMapper.writeValueAsString(activity));
 
     }
 }
