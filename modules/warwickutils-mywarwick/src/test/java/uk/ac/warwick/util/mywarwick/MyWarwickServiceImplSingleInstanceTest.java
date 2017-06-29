@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.mywarwick;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -70,6 +71,25 @@ public class MyWarwickServiceImplSingleInstanceTest {
     }
 
     @Test
+    public void requestShouldSerializeSendEmailCorrectly() throws IOException {
+        Activity nullSendEmail = activity;
+        JsonNode nullSendEmailJson = new ObjectMapper().readTree(myWarwickService.makeJsonBody(nullSendEmail));
+        assertTrue(nullSendEmailJson.path("send_email").isNull());
+
+        Activity falseSendEmail = new Activity("id", "title", "url", "text", "fake-type");
+        falseSendEmail.setSendEmail(false);
+        JsonNode falseSendEmailJson = new ObjectMapper().readTree(myWarwickService.makeJsonBody(falseSendEmail));
+        assertTrue(falseSendEmailJson.path("send_email").isBoolean());
+        assertFalse(falseSendEmailJson.path("send_email").asBoolean());
+
+        Activity trueSendEmail = new Activity("id", "title", "url", "text", "fake-type");
+        trueSendEmail.setSendEmail(true);
+        JsonNode trueSendEmailJson = new ObjectMapper().readTree(myWarwickService.makeJsonBody(trueSendEmail));
+        assertTrue(trueSendEmailJson.path("send_email").isBoolean());
+        assertTrue(trueSendEmailJson.path("send_email").asBoolean());
+    }
+
+    @Test
     public void requestShouldHaveCorrectJsonBody() throws IOException {
         String expected = "{\"type\":\"fake-type\",\"title\":\"title\",\"url\":\"url\",\"tags\":[]\"recipients\":{\"users\":[\"id\"]},\"text\":\"text\"}";
         assertEquals(
@@ -94,16 +114,6 @@ public class MyWarwickServiceImplSingleInstanceTest {
                 myWarwickService
                         .makeRequest("", myWarwickService.makeJsonBody(activity), instance.getApiUser(), instance.getApiPassword(),"")
                         .getFirstHeader("Authorization").getValue()
-        );
-    }
-
-    @Test
-    public void requestShouldHaveCorrectContentType() {
-        assertEquals(
-                "application/json",
-                myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), instance.getApiUser(), instance.getApiPassword(),"")
-                        .getFirstHeader("content-type").getValue()
         );
     }
 

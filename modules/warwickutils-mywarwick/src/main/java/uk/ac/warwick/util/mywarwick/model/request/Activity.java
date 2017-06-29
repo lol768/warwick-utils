@@ -2,6 +2,7 @@ package uk.ac.warwick.util.mywarwick.model.request;
 
 // activity and notification share the same data model, they are only different
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -15,6 +16,7 @@ public class Activity {
     private String url;
     private Set<Tag> tags;
     private Recipients recipients;
+    private Boolean sendEmail;
 
     public Activity(String userId, String title, String url, String text, String type) {
         this.recipients = new Recipients(userId);
@@ -54,6 +56,7 @@ public class Activity {
                 .append(getUrl(), activity.getUrl())
                 .append(getRecipients(), activity.getRecipients())
                 .append(getText(), activity.getText())
+                .append(getSendEmail(), activity.getSendEmail())
                 .isEquals();
     }
 
@@ -65,6 +68,7 @@ public class Activity {
                 .append(getUrl())
                 .append(getRecipients())
                 .append(getText())
+                .append(getSendEmail())
                 .toHashCode();
     }
 
@@ -119,5 +123,14 @@ public class Activity {
 
     public void setTags(Tag tag) {
         getTags().add(tag);
+    }
+
+    @JsonProperty("send_email")
+    public Boolean getSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(Boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 }
