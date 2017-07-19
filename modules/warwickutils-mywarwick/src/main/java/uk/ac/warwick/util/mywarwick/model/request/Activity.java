@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.HashSet;
 import java.util.Set;
 
 public class Activity implements ValidActivity {
@@ -111,13 +113,13 @@ public class Activity implements ValidActivity {
         this.text = text;
     }
 
-    public Tags getTags() {
-        if (tags == null) tags = new Tags();
+    public Set<Tag> getTags() {
+        if (tags == null) tags = new HashSet<>();
         return tags;
     }
 
     public void setTags(@NotNull Set<Tag> tags) {
-        this.tags = new Tags(tags);
+        this.tags = tags;
     }
 
     public void setTags(@NotNull Tag tag) {
