@@ -3,6 +3,7 @@ package uk.ac.warwick.util.mywarwick.model.request;
 // activity and notification share the same data model, they are only different
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.Set;
@@ -16,7 +17,7 @@ public class Activity implements ValidActivity {
     private Recipients recipients;
     private Boolean sendEmail;
 
-    public Activity(String userId, String title, String url, String text, String type) {
+    public Activity(@NotNull String userId, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
         this.recipients = new Recipients(userId);
         this.title = title;
         this.text = text;
@@ -24,7 +25,7 @@ public class Activity implements ValidActivity {
         this.type = type;
     }
 
-    public Activity(Set<String> userIds, String title, String url, String text, String type) {
+    public Activity(@NotNull Set<String> userIds, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
         this.recipients = new Recipients(userIds);
         this.title = title;
         this.text = text;
@@ -32,7 +33,7 @@ public class Activity implements ValidActivity {
         this.type = type;
     }
 
-    public Activity(Set<String> userIds, Set<String> groups, String title, String url, String text, String type) {
+    public Activity(@NotNull Set<String> userIds, @NotNull Set<String> groups, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
         this.recipients = new Recipients(userIds, groups);
         this.title = title;
         this.text = text;
@@ -74,7 +75,7 @@ public class Activity implements ValidActivity {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(@NotNull String type) {
         this.type = type;
     }
 
@@ -82,7 +83,7 @@ public class Activity implements ValidActivity {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@NotNull String title) {
         this.title = title;
     }
 
@@ -90,7 +91,7 @@ public class Activity implements ValidActivity {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(@NotNull String url) {
         this.url = url;
     }
 
@@ -98,7 +99,7 @@ public class Activity implements ValidActivity {
         return recipients;
     }
 
-    public void setRecipients(Recipients recipients) {
+    public void setRecipients(@NotNull Recipients recipients) {
         this.recipients = recipients;
     }
 
@@ -106,7 +107,7 @@ public class Activity implements ValidActivity {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(@NotNull String text) {
         this.text = text;
     }
 
@@ -115,11 +116,11 @@ public class Activity implements ValidActivity {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(@NotNull Set<Tag> tags) {
         this.tags = new Tags(tags);
     }
 
-    public void setTags(Tag tag) {
+    public void setTags(@NotNull Tag tag) {
         getTags().add(tag);
     }
 

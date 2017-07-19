@@ -11,7 +11,7 @@ import java.util.Set;
 public class Tags implements ValidTags{
     private Set<Tag> tags;
 
-    public Tags(Set<Tag> tags) {
+    public Tags(@NotNull Set<Tag> tags) {
         this.tags = tags;
     }
 

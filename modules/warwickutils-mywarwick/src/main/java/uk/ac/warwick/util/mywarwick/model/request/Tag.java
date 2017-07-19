@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.mywarwick.model.request;
 
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -20,7 +21,7 @@ public class Tag implements ValidTag {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
@@ -29,7 +30,7 @@ public class Tag implements ValidTag {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(@NotNull String value) {
         this.value = value;
     }
 
