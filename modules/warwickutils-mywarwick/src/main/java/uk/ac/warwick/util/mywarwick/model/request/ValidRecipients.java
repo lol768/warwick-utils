@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.mywarwick.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Set;
 
 public interface ValidRecipients {
@@ -7,6 +9,7 @@ public interface ValidRecipients {
     Set<String> getUsers();
     Set<String> getGroups();
 
+    @JsonIgnore
     default boolean isValid() {
         Set<String> users = getUsers();
         Set<String> groups = getGroups();
