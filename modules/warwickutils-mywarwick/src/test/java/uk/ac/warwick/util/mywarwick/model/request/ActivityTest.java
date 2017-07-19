@@ -32,4 +32,49 @@ public class ActivityTest {
         assertEquals(expectedRequestJsonString, objectMapper.writeValueAsString(activity));
 
     }
+
+    @Test
+    public void shouldIdentifyInvalidTag() {
+        assertFalse(new Tag().isValid());
+        Tag tag = new Tag();
+        tag.setName("");
+        tag.setValue("");
+        assertFalse(tag.isValid());
+    }
+
+    @Test
+    public void shouldIdentifyValidTag() {
+        Tag tag = new Tag();
+        tag.setName("ok");
+        tag.setValue("computer");
+        assertTrue(tag.isValid());
+    }
+
+    @Test
+    public void shouldIdentifyInvalidRecipients() {
+        Recipients recipients = new Recipients();
+        assertFalse(recipients.isValid());
+
+        recipients.setUsers(new HashSet<>());
+        assertFalse(recipients.isValid());
+    }
+
+    @Test
+    public void shouldIdentifyValidRecipients() {
+        Recipients recipients = new Recipients();
+        Set<String> users = new HashSet<>();
+        users.add("user1");
+        recipients.setUsers(users);
+        assertTrue(recipients.isValid());
+
+        Set<String> group = new HashSet<>();
+        group.add("in-its");
+        recipients.setGroups(group);
+        assertTrue(recipients.isValid());
+    }
+
+    @Test
+    public void shoulIdentifyValidActivity() {
+
+    }
 }

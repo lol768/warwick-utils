@@ -15,7 +15,7 @@ public class Activity implements ValidActivity {
     private String title;
     private String text;
     private String url;
-    private Tags tags;
+    private Set<Tag> tags;
     private Recipients recipients;
     private Boolean sendEmail;
 
