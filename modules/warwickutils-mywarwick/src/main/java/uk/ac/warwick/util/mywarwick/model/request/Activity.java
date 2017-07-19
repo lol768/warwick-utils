@@ -5,16 +5,14 @@ package uk.ac.warwick.util.mywarwick.model.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.util.HashSet;
 import java.util.Set;
 
-public class Activity {
+public class Activity implements ValidActivity {
     private String type;
     private String title;
     private String text;
     private String url;
-    private Set<Tag> tags;
+    private Tags tags;
     private Recipients recipients;
     private Boolean sendEmail;
 
@@ -112,13 +110,13 @@ public class Activity {
         this.text = text;
     }
 
-    public Set<Tag> getTags() {
-        if (tags == null) tags = new HashSet<>();
+    public Tags getTags() {
+        if (tags == null) tags = new Tags();
         return tags;
     }
 
     public void setTags(Set<Tag> tags) {
-        this.tags = tags;
+        this.tags = new Tags(tags);
     }
 
     public void setTags(Tag tag) {
