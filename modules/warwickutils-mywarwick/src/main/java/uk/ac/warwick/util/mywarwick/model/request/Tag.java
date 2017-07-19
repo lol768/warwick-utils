@@ -33,7 +33,6 @@ public class Tag implements ValidTag {
         this.value = value;
     }
 
-    @Override
     public String getDisplay_value() {
         return display_value;
     }
