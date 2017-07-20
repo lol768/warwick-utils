@@ -7,8 +7,11 @@ import java.util.Set;
 public interface ValidActivity {
 
     String getType();
+
     String getTitle();
+
     Set<Tag> getTags();
+
     Recipients getRecipients();
 
     @JsonIgnore

@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.mywarwick.model.request;
 
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Recipients implements ValidRecipients{
+public class Recipients implements ValidRecipients {
     private Set<String> users;
     private Set<String> groups;
 

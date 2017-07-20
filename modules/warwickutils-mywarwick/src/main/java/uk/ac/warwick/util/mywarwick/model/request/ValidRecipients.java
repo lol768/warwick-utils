@@ -7,6 +7,7 @@ import java.util.Set;
 public interface ValidRecipients {
 
     Set<String> getUsers();
+
     Set<String> getGroups();
 
     @JsonIgnore
