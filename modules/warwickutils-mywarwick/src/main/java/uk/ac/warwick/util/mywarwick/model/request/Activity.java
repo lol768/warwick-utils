@@ -3,10 +3,9 @@ package uk.ac.warwick.util.mywarwick.model.request;
 // activity and notification share the same data model, they are only different
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
