@@ -54,7 +54,6 @@ public class ActivityTest {
     public void shouldIdentifyInvalidRecipients() {
         Recipients recipients = new Recipients();
         assertFalse(recipients.isValid());
-
         recipients.setUsers(new HashSet<>());
         assertFalse(recipients.isValid());
     }
@@ -74,7 +73,47 @@ public class ActivityTest {
     }
 
     @Test
-    public void shoulIdentifyValidActivity() {
+    public void shouldIdentifyValidActivity() {
+        Activity activity0 = new Activity("userId","title", "url","text","type");
+        assertTrue(activity0.isValid());
 
+        Activity activity1 = new Activity("userId","title", null,null,"type");
+        assertTrue(activity1.isValid());
+
+        Set<String> userIds = new HashSet<>();
+        userIds.add("user1");
+        Activity activity2 = new Activity(userIds, "title",null, null, "type");
+        assertTrue(activity2.isValid());
+
+        Set<String> groupIds = new HashSet<>();
+        userIds.add("user1");
+        Activity activity3 = new Activity(userIds, groupIds, "title",null, null, "type");
+        assertTrue(activity3.isValid());
+
+        Activity activity4 = new Activity();
+        activity4.setRecipients(new Recipients("userA"));
+        activity4.setTitle("title");
+        activity4.setType("type");
+        assertTrue(activity4.isValid());
+    }
+
+    @Test
+    public void shouldIdentifyInvalidActivity() {
+        Activity activity0 = new Activity();
+        assertFalse(activity0.isValid());
+
+        Activity activity1 = new Activity("userId","title", null,null,"type");
+        Set<Tag> tags = new HashSet<>();
+        Tag tag = new Tag();
+        tag.setName("");
+        tag.setValue("");
+        tags.add(tag);
+        activity1.setTags(tags);
+        assertFalse(activity1.isValid());
+
+        Activity activity2 = new Activity("userId","title", null,null,"type");
+        Recipients invalidRecipients = new Recipients();
+        activity2.setRecipients(invalidRecipients);
+        assertFalse(activity2.isValid());
     }
 }

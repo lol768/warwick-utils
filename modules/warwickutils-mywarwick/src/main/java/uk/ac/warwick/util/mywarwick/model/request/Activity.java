@@ -19,7 +19,12 @@ public class Activity implements ValidActivity {
     private Recipients recipients;
     private Boolean sendEmail;
 
-    public Activity(@NotNull String userId, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
+    public Activity() {
+        this.recipients = new Recipients();
+        this.tags = new HashSet<>();
+    }
+
+    public Activity(@NotNull String userId, @NotNull String title, String url, String text, @NotNull String type) {
         this.recipients = new Recipients(userId);
         this.title = title;
         this.text = text;
@@ -27,7 +32,7 @@ public class Activity implements ValidActivity {
         this.type = type;
     }
 
-    public Activity(@NotNull Set<String> userIds, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
+    public Activity(@NotNull Set<String> userIds, @NotNull String title, String url, String text, @NotNull String type) {
         this.recipients = new Recipients(userIds);
         this.title = title;
         this.text = text;
@@ -35,7 +40,7 @@ public class Activity implements ValidActivity {
         this.type = type;
     }
 
-    public Activity(@NotNull Set<String> userIds, @NotNull Set<String> groups, @NotNull String title, @NotNull String url, @NotNull String text, @NotNull String type) {
+    public Activity(@NotNull Set<String> userIds, @NotNull Set<String> groups, @NotNull String title, String url, String text, @NotNull String type) {
         this.recipients = new Recipients(userIds, groups);
         this.title = title;
         this.text = text;
