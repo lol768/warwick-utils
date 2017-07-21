@@ -155,12 +155,12 @@ public class Activity implements ValidActivity {
         return this.userLookupInterface;
     }
 
-    public Activity setGroupService(GroupService groupService) {
+    public Activity setGroupService(@NotNull GroupService groupService) {
         this.groupService = groupService;
         return this;
     }
 
-    public Activity setUserLookupInterface(UserLookupInterface userLookupInterface) {
+    public Activity setUserLookupInterface(@NotNull UserLookupInterface userLookupInterface) {
         this.userLookupInterface = userLookupInterface;
         return this;
     }
