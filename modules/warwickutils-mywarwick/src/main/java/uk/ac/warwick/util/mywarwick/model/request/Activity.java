@@ -13,6 +13,11 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * it's better to use ActivityFactor for creating new Activity
+ * rather than doing it directly
+ * that way you have UserLookUp and GroupService to validate recipients for you
+ */
 public class Activity implements ValidActivity {
     private String type;
     private String title;
