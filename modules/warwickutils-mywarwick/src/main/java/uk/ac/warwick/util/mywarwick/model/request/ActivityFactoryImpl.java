@@ -18,7 +18,7 @@ public class ActivityFactoryImpl implements ActivityFactory {
     private final GroupService groupService;
 
     @Inject
-    private ActivityFactoryImpl(UserLookupInterface userLookupInterface, GroupService groupService) {
+    ActivityFactoryImpl(UserLookupInterface userLookupInterface, GroupService groupService) {
         super();
         this.userLookupInterface = userLookupInterface;
         this.groupService = groupService;
