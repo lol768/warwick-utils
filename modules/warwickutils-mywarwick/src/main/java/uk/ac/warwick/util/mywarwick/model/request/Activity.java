@@ -2,9 +2,12 @@ package uk.ac.warwick.util.mywarwick.model.request;
 
 // activity and notification share the same data model, they are only different
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.warwick.userlookup.GroupService;
+import uk.ac.warwick.userlookup.UserLookupInterface;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -18,6 +21,8 @@ public class Activity implements ValidActivity {
     private Set<Tag> tags;
     private Recipients recipients;
     private Boolean sendEmail;
+    private GroupService groupService;
+    private UserLookupInterface userLookupInterface;
 
     public Activity() {
         this.recipients = new Recipients();
@@ -138,5 +143,25 @@ public class Activity implements ValidActivity {
 
     public void setSendEmail(Boolean sendEmail) {
         this.sendEmail = sendEmail;
+    }
+
+    @Override @JsonIgnore
+    public GroupService getGroupService() {
+        return this.groupService;
+    }
+
+    @Override @JsonIgnore
+    public UserLookupInterface getUserLookupInterface() {
+        return this.userLookupInterface;
+    }
+
+    public Activity setGroupService(GroupService groupService) {
+        this.groupService = groupService;
+        return this;
+    }
+
+    public Activity setUserLookupInterface(UserLookupInterface userLookupInterface) {
+        this.userLookupInterface = userLookupInterface;
+        return this;
     }
 }

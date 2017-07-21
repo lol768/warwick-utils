@@ -15,25 +15,19 @@ public interface ValidActivity {
 
     Set<Tag> getTags();
 
+    GroupService getGroupService();
+
+    UserLookupInterface getUserLookupInterface();
+
     ValidRecipients getRecipients();
 
     @JsonIgnore
     default boolean isValid() {
         return ((getTags() == null || getTags().stream().allMatch(ValidTag::isValid)) &&
                 (getRecipients().isValid()) &&
+                (getGroupService() == null || getRecipients().isValid(getGroupService())) &&
+                (getUserLookupInterface() == null || getRecipients().isValid(getUserLookupInterface())) &&
                 (getType() != null && !getType().isEmpty()) &&
                 (getTitle() != null && !getTitle().isEmpty()));
-    }
-
-    default boolean isValid(@NotNull UserLookupInterface userLookupInterface) {
-        return isValid() && getRecipients().isValid(userLookupInterface);
-    }
-
-    default boolean isValid(@NotNull GroupService groupService) {
-        return isValid() && getRecipients().isValid(groupService);
-    }
-
-    default boolean isValid(@NotNull UserLookupInterface userLookupInterface, @NotNull GroupService groupService) {
-        return isValid() && isValid(userLookupInterface) && isValid(groupService);
     }
 }
