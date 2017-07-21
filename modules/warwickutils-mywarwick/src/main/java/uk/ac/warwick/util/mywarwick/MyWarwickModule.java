@@ -6,6 +6,8 @@ import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.TypesafeConfiguration;
+import uk.ac.warwick.util.mywarwick.model.request.ActivityFactory;
+import uk.ac.warwick.util.mywarwick.model.request.ActivityFactoryImpl;
 
 /**
  * this is a Guice module for Play Application.
@@ -23,6 +25,7 @@ public class MyWarwickModule extends AbstractModule {
         bind(MyWarwickService.class).to(MyWarwickServiceImpl.class);
         bind(Configuration.class).to(TypesafeConfiguration.class);
         bind(HttpClient.class).to(HttpClientImpl.class);
+        bind(ActivityFactory.class).to(ActivityFactoryImpl.class);
     }
 
     /**

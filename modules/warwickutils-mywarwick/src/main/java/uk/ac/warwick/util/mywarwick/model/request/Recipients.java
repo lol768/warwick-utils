@@ -1,12 +1,15 @@
 package uk.ac.warwick.util.mywarwick.model.request;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class Recipients {
+public class Recipients implements ValidRecipients {
     private Set<String> users;
     private Set<String> groups;
 
@@ -15,20 +18,36 @@ public class Recipients {
         this.groups = new HashSet<>();
     }
 
-    public Recipients(Set<String> users) {
+    public Recipients(@NotNull Set<String> users) {
         this.users = users;
         this.groups = new HashSet<>();
     }
 
 
-    public Recipients(String user) {
+    public Recipients(@NotNull String user) {
         this();
         this.users.add(user);
     }
 
 
-    public Recipients(Set<String> users, Set<String> groups) {
+    public Recipients(@NotNull Set<String> users, @NotNull Set<String> groups) {
         this.users = users;
+        this.groups = groups;
+    }
+
+    public Set<String> getUsers() {
+        return users;
+    }
+
+    public void setUsers(@NotNull Set<String> users) {
+        this.users = users;
+    }
+
+    public Set<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(@NotNull Set<String> groups) {
         this.groups = groups;
     }
 
@@ -54,19 +73,11 @@ public class Recipients {
                 .toHashCode();
     }
 
-    public Set<String> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<String> users) {
-        this.users = users;
-    }
-
-    public Set<String> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<String> groups) {
-        this.groups = groups;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("users", users)
+                .append("groups", groups)
+                .toString();
     }
 }
