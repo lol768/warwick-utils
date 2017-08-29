@@ -13,7 +13,7 @@
  */
 package uk.ac.warwick.util.content;
 
-import org.w3c.dom.Document;
+import org.jsoup.nodes.Document;
 
 /**
  * Interface for HTML serializers, which turn a Document into a String.

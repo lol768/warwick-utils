@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.content;
 
-import org.w3c.dom.Document;
+import org.jsoup.nodes.Document;
 
 public interface HtmlParser {
     Document parseDOM(String source) throws HtmlParsingException;
