@@ -11,6 +11,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import uk.ac.warwick.util.core.StringUtils;
 
 public final class FreeMarkerRenderingUtils {
 	
@@ -63,11 +64,11 @@ public final class FreeMarkerRenderingUtils {
     }
     
     private static Configuration generateConfig(){
-        Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration(Configuration.VERSION_2_3_21);
         configuration.setObjectWrapper(new DateTimeFreemarkerObjectWrapper());
 
-        configuration.setDefaultEncoding("ISO-8859-1");
-        configuration.setOutputEncoding("ISO-8859-1");
+        configuration.setDefaultEncoding(StringUtils.DEFAULT_ENCODING);
+        configuration.setOutputEncoding(StringUtils.DEFAULT_ENCODING);
 
         // Register default template loaders.
         TemplateLoader templateLoader = new ClassTemplateLoader(FreeMarkerRenderingUtils.class, "/freemarker");

@@ -18,95 +18,14 @@
  */
 package uk.ac.warwick.util.content;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import org.cyberneko.html.HTMLElements;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.jsoup.nodes.Document;
 
 /**
  * This parser does not try to escape entities in text content as it expects the parser
  * to have retained the original entity references rather than its resolved form in text nodes.
  */
 public class DefaultHtmlSerializer implements HtmlSerializer {
-
-  /** {@inheritDoc} */
-  public String serialize(Document doc) {
-    try {
-      StringWriter sw = HtmlSerialization.createWriter(doc);
-      if (doc.getDoctype() != null) {
-        HtmlSerialization.outputDocType(doc.getDoctype(), sw);
-      }
-      this.serialize(doc, sw);
-      return sw.toString();
-    } catch (IOException ioe) {
-      return null;
+    public String serialize(Document doc) {
+        return doc.html();
     }
-  }
-
-  public void serialize(Node n, Writer output) throws IOException {
-    serialize(n, output, false);
-  }
-
-  private void serialize(Node n, Writer output, boolean xmlMode)
-      throws IOException {
-    if (n == null) return;
-    switch (n.getNodeType()) {
-      case Node.CDATA_SECTION_NODE: {
-        break;
-      }
-      case Node.COMMENT_NODE: {
-        writeComment(n, output);
-        break;
-      }
-      case Node.DOCUMENT_NODE: {
-        NodeList children = ((Document)n).getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-          serialize(children.item(i), output, xmlMode);
-        }
-        break;
-      }
-      case Node.ELEMENT_NODE: {
-        Element elem = (Element) n;
-        NodeList children = elem.getChildNodes();
-
-        HTMLElements.Element htmlElement =
-            HTMLElements.getElement(elem.getNodeName());
-
-        HtmlSerialization.printStartElement(elem, output, xmlMode && htmlElement.isEmpty());
-
-        // Special HTML elements - <script> in particular - will typically
-        // only have CDATA.  If they do have elements, that'd be data pipelining
-        // or templating kicking in, and we should use XML-format output.
-        boolean childXmlMode = xmlMode || htmlElement.isSpecial();
-        for (int i = 0; i < children.getLength(); i++) {
-          serialize(children.item(i), output, childXmlMode);
-        }
-        if (!htmlElement.isEmpty()) {
-          output.append("</").append(elem.getNodeName()).append('>');
-        }
-        break;
-      }
-      case Node.ENTITY_REFERENCE_NODE: {
-        output.append("&").append(n.getNodeName()).append(";");
-        break;
-      }
-      case Node.TEXT_NODE: {
-        writeText(n, output);
-        break;
-      }
-    }
-  }
-
-  protected void writeText(Node n, Appendable output) throws IOException {
-    output.append(n.getTextContent());
-  }
-
-  protected void writeComment(Node n, Appendable output) throws IOException {
-    output.append("<!--").append(n.getNodeValue()).append("-->");
-  }
 }

@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
+import org.jsoup.nodes.Document;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
@@ -34,8 +34,7 @@ import com.google.common.collect.Maps;
  * consistent view of those contents as an HTML parse tree.
  */
 public class MutableContent {
-    public static final String MUTABLE_CONTENT_LISTENER = "MutableContentListener";
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MutableContent.class);
 
     // String representation of contentBytes taking into account the correct
@@ -54,13 +53,6 @@ public class MutableContent {
     private final HtmlParser contentParser;
 
     private Map<String, Object> pipelinedData;
-
-    public static void notifyEdit(Document doc) {
-        MutableContent mc = (MutableContent) doc.getUserData(MUTABLE_CONTENT_LISTENER);
-        if (mc != null) {
-            mc.documentChanged();
-        }
-    }
 
     /**
      * Construct with decoded string content
@@ -90,7 +82,7 @@ public class MutableContent {
     public String getContent() {
         if (content == null) {
             if (document != null) {
-                content = HtmlSerialization.serialize(document);
+                content = new DefaultHtmlSerializer().serialize(document);
             } else if (contentBytes != null) {
                 Charset useEncoding = contentEncoding != null ? contentEncoding : Charsets.UTF_8;
                 content = useEncoding.decode(ByteBuffer.wrap(contentBytes)).toString();
@@ -130,7 +122,8 @@ public class MutableContent {
             if (content != null) {
                 setContentBytesState(getBytes(content), contentEncoding);
             } else if (document != null) {
-                setContentBytesState(getBytes(HtmlSerialization.serialize(document)), contentEncoding);
+                // TODO settings
+                setContentBytesState(getBytes(new DefaultHtmlSerializer().serialize(document)), contentEncoding);
             }
         }
         return contentBytes;
@@ -223,7 +216,6 @@ public class MutableContent {
         }
         try {
             document = contentParser.parseDOM(getContent());
-            document.setUserData(MUTABLE_CONTENT_LISTENER, this, null);
         } catch (HtmlParsingException e) {
             LOGGER.warn(e.getMessage(), e);
             

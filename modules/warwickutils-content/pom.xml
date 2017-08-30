@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20170731</version>
+		<version>20170829</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -128,11 +128,6 @@
 			<groupId>uk.ac.warwick.tagsoup-html5</groupId>
 			<artifactId>tagsoup-html5</artifactId>
 			<version>20150421</version>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sourceforge.nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
 		</dependency>
 
 		<dependency>
