@@ -54,7 +54,7 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
         String url = address;
         YouTubeMediaUrlHandler handler = new YouTubeMediaUrlHandler();
         assertTrue("should recognise url", handler.recognises(url));
-        assertEquals("http://www.youtube.com/embed/"+videoId + "?wmode=transparent&rel=0", handler.getFlashUrl(url));
+        assertEquals("https://www.youtube.com/embed/"+videoId + "?wmode=transparent&rel=0", handler.getEmbedUrl(url));
     }
     
     private void checkAddressDoesntWork(String videoId, String address) throws MalformedURLException {
@@ -62,7 +62,7 @@ public class YouTubeMediaUrlHandlerTest extends TestCase {
         YouTubeMediaUrlHandler handler = new YouTubeMediaUrlHandler();
         assertFalse("should NOT recognise url", handler.recognises(url));
         try {
-            handler.getFlashUrl(url);
+            handler.getEmbedUrl(url);
         } catch (IllegalArgumentException e) {
             //fine.
             return;

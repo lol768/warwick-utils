@@ -3,25 +3,21 @@ package uk.ac.warwick.util.content.texttransformers.media;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class MetacafeMediaUrlHandler extends AbstractFlashPlayerMediaUrlHandler {
+public final class MetacafeMediaUrlHandler extends AbstractEmbeddedFrameMediaUrlHandler {
     
-    private static final Pattern PATTERN = Pattern.compile("http://(?:www\\.)?metacafe\\.com/watch/(\\d+)/([^/]+)/?", Pattern.CASE_INSENSITIVE);
-    
-    private static final ThreadLocal<String> VIDEO_ID = new ThreadLocal<String>();
-    private static final ThreadLocal<String> TITLE = new ThreadLocal<String>();
-    
+    private static final Pattern PATTERN = Pattern.compile("https?://(?:www\\.)?metacafe\\.com/watch/(\\d+)/([^/]+)/?", Pattern.CASE_INSENSITIVE);
+
     public boolean recognises(final String url) {
-    	Matcher matcher = PATTERN.matcher(url.toString());
-    	boolean gotMatch = matcher.matches();
-    	if (gotMatch) {
-    		VIDEO_ID.set( matcher.group(1) );
-    		TITLE.set( matcher.group(2) );
-    	}
-        return gotMatch;
+    	Matcher matcher = PATTERN.matcher(url);
+    	return matcher.matches();
     }
 
     @Override
-    public String getFlashUrl(final String url) {
-        return "http://www.metacafe.com/fplayer/" + VIDEO_ID.get() + "/" + TITLE.get() + ".swf";
+    public String getEmbedUrl(String url) {
+        Matcher matcher = PATTERN.matcher(url);
+        if (!matcher.matches()) throw new IllegalStateException();
+
+        return "https://www.metacafe.com/embed/" + matcher.group(1) + "/" + matcher.group(2) + "/";
     }
+
 }

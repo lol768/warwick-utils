@@ -16,22 +16,13 @@ public class ListOfUrlsForHandlingTest extends TestCase {
     public void testNothingDies() throws IOException {      
         Map<String, MediaUrlHandler> handlers = new HashMap<String, MediaUrlHandler>();
         handlers.put("audio", new AudioMediaUrlHandler("",""));
-        handlers.put("google", new GoogleMediaUrlHandler());
         handlers.put("youtube", new YouTubeMediaUrlHandler());
         handlers.put("quicktime", new QuickTimeMediaUrlHandler(""));
         handlers.put("avi", new AviMediaUrlHandler(""));
         handlers.put("flv", new FlvMediaUrlHandler("", ""));
         handlers.put("flash", new StandardFlashMediaUrlHandler());
-        handlers.put("revver", new RevverMediaUrlHandler());
         handlers.put("metacafe", new MetacafeMediaUrlHandler());
-        handlers.put("jumpcut", new JumpcutMediaUrlHandler());
-        handlers.put("guba", new GubaMediaUrlHandler());
-        handlers.put("ifilm", new IFilmMediaUrlHandler());
-        handlers.put("selfcasttv", new SelfcastTVMediaUrlHandler());
-        handlers.put("grouper", new GrouperMediaUrlHandler());
-        handlers.put("eyespot", new EyespotMediaUrlHandler());
         handlers.put("vimeo", new VimeoMediaUrlHandler());
-        handlers.put("myspace", new MySpaceMediaUrlHandler());
         handlers.put("prezi", new PreziMediaUrlHandler());
                 
         MediaUrlTransformer transformer = new MediaUrlTransformer(handlers, "");
