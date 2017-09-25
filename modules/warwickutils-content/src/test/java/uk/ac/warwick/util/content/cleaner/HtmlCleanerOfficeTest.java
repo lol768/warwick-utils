@@ -31,19 +31,11 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     }
 
     @Test
-    public void sbtwo3709() throws Exception {
-        String input = readResourceToString("/htmlClean/sbtwo-3709.html");
-        String expected = readResourceToString("/htmlClean/sbtwo-3709-expected.html");
-        
-        verify(expected, input);
-    }
-    
-    @Test
     public void sbtwo3564MsoStyles() throws Exception {
         String input = readResourceToString("/htmlClean/sbtwo-3564-2.html");
         String expected = readResourceToString("/htmlClean/sbtwo-3564-2-expected.html");
         
-        verify(expected, input);
+        verify(expected.trim(), input);
     }
     
     @Test
@@ -142,7 +134,7 @@ public final class HtmlCleanerOfficeTest extends AbstractHtmlCleanerTest {
     
     private void verify(String expected, String input) {
         String output = cleaner.clean(input, new MutableContent(null, null)).trim();
-        assertEquals(expected.replace("\r", ""), output.replace("\r", ""));
+        assertEquals(expected.replace("\r\n", "\n"), output.replace("\r\n", "\n"));
     }
 
 //    private void verifyNoLineBreaks(String expected, String input) {

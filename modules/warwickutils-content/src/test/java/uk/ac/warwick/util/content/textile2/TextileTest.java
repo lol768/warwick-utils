@@ -1007,7 +1007,7 @@ public class TextileTest extends TestCase {
 		compare(source, expected, false, false, true, null, null, false);
 
 		source = "This is excellent news :) I'm also hoping that WGA will let me register soon...";
-		expected = "<p>This is excellent news :) I&rsquo;m also hoping that <span class=\"caps\">WGA</span> will let me register soon&hellip;</p>";
+		expected = "<p>This is excellent news :) I’m also hoping that <span class=\"caps\">WGA</span> will let me register soon…</p>";
 		compare(source, expected, false, false, true, null, null, false);
 	}
 
