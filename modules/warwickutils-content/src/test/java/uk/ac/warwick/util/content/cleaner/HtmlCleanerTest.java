@@ -682,7 +682,7 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
 
     @Test
     public void unicodeCharactersRemain() {
-        String input = "<p>지구상의지구상의지구상의지구상의지구상의</p>";
+        String input = "<p>지구상의지구상의지구상의지구상의지구상의£</p>";
         verify(input, input);
     }
 
