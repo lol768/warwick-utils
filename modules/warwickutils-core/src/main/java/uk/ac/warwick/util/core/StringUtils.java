@@ -22,7 +22,7 @@ public final class StringUtils {
 
 	private static final Pattern LEADING_SPACE_PATTERN = Pattern.compile("^\\s+", Pattern.DOTALL);
 
-	public static final String DEFAULT_ENCODING = "ISO-8859-1";
+	public static final String DEFAULT_ENCODING = "UTF-8";
 	public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
 
     private static final int HIGH_CHAR = 127;
