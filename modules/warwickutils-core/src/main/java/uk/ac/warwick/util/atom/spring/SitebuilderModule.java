@@ -52,7 +52,7 @@ public interface SitebuilderModule extends Module {
                 public void setAsText(String text) throws IllegalArgumentException {
                     String value = StringUtils.hasText(text) ? text.trim() : "";
                     
-                    setValue(StringUtils.htmlEscapeHighCharacters(value));
+                    setValue(value);
                 }
                 
                 @Override

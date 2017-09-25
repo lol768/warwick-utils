@@ -17,7 +17,6 @@ import uk.ac.warwick.html5.HTML5Schema;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.collections.Triple;
 import uk.ac.warwick.util.content.MutableContent;
-import uk.ac.warwick.util.content.texttransformers.NewWindowLinkTextTransformer;
 import uk.ac.warwick.util.core.ObjectProvider;
 
 import com.google.common.collect.Lists;
@@ -175,7 +174,7 @@ public final class HtmlCleaner implements Cleaner {
         for (Pair<String, String> replacement : straightReplacements) {
             text = text.replace(replacement.getLeft(), replacement.getRight());
         }
-        
+
         for (Triple<Pattern,String,String> replacement : regexReplacements) {        	
         	if (text.toLowerCase().indexOf(replacement.getMiddle()) == -1) {
         		continue;

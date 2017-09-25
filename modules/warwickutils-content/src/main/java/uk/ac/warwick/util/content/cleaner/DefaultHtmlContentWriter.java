@@ -141,23 +141,7 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
      * HTML entities, as the Spring htmlEscape method doesn't see it necessary.
      */
     public String htmlEscapeAll(final String html) {
-        String escaped = HtmlUtils.htmlEscape(html);
-        StringBuffer result = new StringBuffer(escaped.length() * 2);
-        for (int i = 0; i < escaped.length(); i++) {
-            char character = escaped.charAt(i);
-            if (character > MAX_ASCII_VALUE) {
-                if (Character.isHighSurrogate(character)) {
-                    int astralPoint = Character.toCodePoint(character, escaped.charAt(i+1));
-                    result.append("&#" + astralPoint + ";");
-                    i++;
-                } else {
-                    result.append("&#" + (int) character + ";");
-                }
-            } else {
-                result.append(character);
-            }
-        }
-        return result.toString();
+        return HtmlUtils.htmlEscape(html);
     }
 
 	public void setDelegate(HtmlContentWriter contentWriter) {

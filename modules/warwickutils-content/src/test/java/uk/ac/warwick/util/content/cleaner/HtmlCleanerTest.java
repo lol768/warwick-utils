@@ -90,16 +90,6 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
         verify(expected, input);
     }
 
-    /**
-     * Check that high unicode values, stored as HTML entities (&#3333;) remain
-     * that way and are not changed to be single characters.
-     */
-    @Test
-    public void highByteCharsRemainEntities() {
-        String input = "<p>Characters &#20013;&#22269;&#25253;&#36947;&#128694;</p>";
-        verify(input, input);
-    }
-
     @Test
     public void preformattedBlocks() {
         String[] tagsToTest = new String[] { "pre", "script" };
@@ -689,7 +679,13 @@ public final class HtmlCleanerTest extends AbstractHtmlCleanerTest {
 
         verify(input, input);
     }
-    
+
+    @Test
+    public void unicodeCharactersRemain() {
+        String input = "<p>지구상의지구상의지구상의지구상의지구상의</p>";
+        verify(input, input);
+    }
+
     private void verifyNoLineBreaks(String input) {
     	verifyNoLineBreaks(input,input);
     }
