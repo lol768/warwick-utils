@@ -19,8 +19,6 @@ import uk.ac.warwick.util.core.HtmlUtils;
 public class DefaultHtmlContentWriter implements HtmlContentWriter {
 
     public static final String[] MCE_TAGS = new String[] {"href","src","style","coords","shape"};
-    
-    private static final int MAX_ASCII_VALUE = 127;
 
     private final TagAndAttributeFilter filter;
 
@@ -136,10 +134,6 @@ public class DefaultHtmlContentWriter implements HtmlContentWriter {
         return false;
     }
 
-    /**
-     * This method does extra escaping to turn high-byte characters (back) into
-     * HTML entities, as the Spring htmlEscape method doesn't see it necessary.
-     */
     public String htmlEscapeAll(final String html) {
         return HtmlUtils.htmlEscape(html);
     }
