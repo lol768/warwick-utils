@@ -13,21 +13,21 @@
  */
 package uk.ac.warwick.util.content;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.warwick.util.core.StringUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.jsoup.nodes.Document;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 /**
  * Object that maintains a String representation of arbitrary contents and a
@@ -58,7 +58,7 @@ public class MutableContent {
      * Construct with decoded string content
      */
     public MutableContent(HtmlParser contentParser, String content) {
-        this(contentParser, content, Charsets.ISO_8859_1);
+        this(contentParser, content, StringUtils.DEFAULT_CHARSET);
     }
     
     public MutableContent(HtmlParser contentParser, String content, Charset contentEncoding) {
