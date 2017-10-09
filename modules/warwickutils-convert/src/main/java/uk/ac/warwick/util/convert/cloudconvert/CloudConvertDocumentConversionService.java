@@ -36,6 +36,7 @@ import uk.ac.warwick.util.convert.S3ByteSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -144,33 +145,40 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
                 .build()
         );
 
-        return httpClient.execute(request, response -> {
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                return CloudConvertDocumentConversionResult.error(conversionId, "Unexpected response code from convert endpoint: " + response.getStatusLine() + "\n" + EntityUtils.toString(response.getEntity()));
-            }
-
-            try {
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                JSONObject output = json.getJSONObject("output");
-
-                if (output.has("files")) {
-                    JSONArray files = output.getJSONArray("files");
-
-                    ImmutableList.Builder<String> keys = ImmutableList.builder();
-                    for (int i = 0; i < files.length(); i++) {
-                        keys.add(files.getString(i));
-                    }
-
-                    return CloudConvertDocumentConversionResult.success(conversionId, keys.build());
-                } else {
-                    String key = output.getString("filename");
-
-                    return CloudConvertDocumentConversionResult.success(conversionId, Collections.singletonList(key));
+        try {
+            return httpClient.execute(request, response -> {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNPROCESSABLE_ENTITY) {
+                    return CloudConvertDocumentConversionResult.error(conversionId, "The document was corrupted or otherwise incompatible with the document conversion service. Please check your document and try again.");
                 }
-            } catch (JSONException e) {
-                return CloudConvertDocumentConversionResult.error(conversionId, "Invalid JSON received from convert endpoint: " + e.getMessage());
-            }
-        });
+                else if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                    return CloudConvertDocumentConversionResult.error(conversionId, "Unexpected response code from the document conversion service: " + response.getStatusLine() + "\n" + EntityUtils.toString(response.getEntity()));
+                }
+
+                try {
+                    JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                    JSONObject output = json.getJSONObject("output");
+
+                    if (output.has("files")) {
+                        JSONArray files = output.getJSONArray("files");
+
+                        ImmutableList.Builder<String> keys = ImmutableList.builder();
+                        for (int i = 0; i < files.length(); i++) {
+                            keys.add(files.getString(i));
+                        }
+
+                        return CloudConvertDocumentConversionResult.success(conversionId, keys.build());
+                    } else {
+                        String key = output.getString("filename");
+
+                        return CloudConvertDocumentConversionResult.success(conversionId, Collections.singletonList(key));
+                    }
+                } catch (JSONException e) {
+                    return CloudConvertDocumentConversionResult.error(conversionId, "Invalid JSON received from the document conversion service: " + e.getMessage());
+                }
+            });
+        } catch (SocketTimeoutException e) {
+            return CloudConvertDocumentConversionResult.error(conversionId, "Timeout from the conversion service.");
+        }
     }
 
     @Override
@@ -197,7 +205,7 @@ public class CloudConvertDocumentConversionService implements DocumentConversion
                 JSONObject json = new JSONObject(responseContents);
                 return json.getInt("minutes");
             } catch (JSONException e) {
-                throw new IllegalStateException("Invalid JSON returned from CloudConvert", e);
+                throw new IllegalStateException("Invalid JSON returned from CloudConvert.", e);
             }
         });
     }
