@@ -40,8 +40,8 @@ public class TypesafeConfigurationTest {
     @Test
     public void shouldLoadAndFormatTypeSafeConfigsIntoConfigs() {
         Set<Instance> expected = new HashSet<>();
-        expected.add(new Instance("1", "2", "3", "4", "true"));
-        expected.add(new Instance("5", "6", "7", "8", "false"));
+        expected.add(new Instance("1", "2", "3", "4", "false"));
+        expected.add(new Instance("5", "6", "7", "8", "true"));
         assertEquals(expected, typesafeConfigs.getInstances());
     }
 }

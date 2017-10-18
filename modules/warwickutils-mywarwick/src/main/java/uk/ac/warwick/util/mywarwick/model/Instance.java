@@ -86,6 +86,7 @@ public class Instance {
                 .append(getProviderId(), instance.getProviderId())
                 .append(getApiUser(), instance.getApiUser())
                 .append(getApiPassword(), instance.getApiPassword())
+                .append(getLogErrors(), instance.getLogErrors())
                 .isEquals();
     }
 
@@ -96,6 +97,7 @@ public class Instance {
                 .append(getProviderId())
                 .append(getApiUser())
                 .append(getApiPassword())
+                .append(getLogErrors())
                 .toHashCode();
     }
 

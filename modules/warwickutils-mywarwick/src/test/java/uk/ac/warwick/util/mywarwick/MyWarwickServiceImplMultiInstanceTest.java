@@ -9,28 +9,30 @@ import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplMultiInstanceTest {
-    Instance instance1 = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking", "true");
-    Instance instance2 = new Instance("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging", "false");
-    Activity activity = new Activity("id", "title", "url", "text", "fake-type");
-    Set<Instance> instanceList = new HashSet<>();
+    private String instance1BaseUrl = "https://fake.com";
+    private String instance2BaseUrl = "https://ekaf.com";
+    private Instance instance1 = new Instance(instance1BaseUrl, "fakeProviderId", "shylock-mywarwick-api-user", "blinking", "true");
+    private Instance instance2 = new Instance(instance2BaseUrl, "fakerProviderId", "moonwalker-api-user", "hanging", "false");
+    private Activity activity = new Activity("id", "title", "url", "text", "fake-type");
+    private Set<Instance> instanceList = new HashSet<>();
 
     @Mock
+    private
     HttpClient httpClient;
 
     @Mock
+    private
     Configuration configuration;
 
-    MyWarwickServiceImpl myWarwickService;
+    private MyWarwickServiceImpl myWarwickService;
 
     @Before
     public void setUp() {
@@ -44,14 +46,30 @@ public class MyWarwickServiceImplMultiInstanceTest {
         when(httpClient.isRunning()).thenReturn(true);
     }
 
+    private Instance getInstance1FromService() {
+        return myWarwickService.getInstances().stream().filter(i -> i.getBaseUrl().equals(instance1BaseUrl)).findFirst().orElseGet(null);
+    }
+
+    private Instance getInstance2FromService() {
+        return myWarwickService.getInstances().stream().filter(i -> i.getBaseUrl().equals(instance2BaseUrl)).findFirst().orElseGet(null);
+    }
+
+    private Instance getInstance1FromConfig() {
+        return configuration.getInstances().stream().filter(i -> i.getBaseUrl().equals(instance1BaseUrl)).findFirst().orElseGet(null);
+    }
+
+    private Instance getInstance2FromConfig() {
+        return configuration.getInstances().stream().filter(i -> i.getBaseUrl().equals(instance2BaseUrl)).findFirst().orElseGet(null);
+    }
+
     @Test
     public void activityPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getActivityPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/activities", getInstance1FromService().getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig1() {
-        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(0).getNotificationPath());
+        assertEquals("https://fake.com/api/streams/fakeProviderId/notifications", getInstance1FromService().getNotificationPath());
     }
 
 
@@ -60,7 +78,7 @@ public class MyWarwickServiceImplMultiInstanceTest {
         assertEquals(
                 "Basic c2h5bG9jay1teXdhcndpY2stYXBpLXVzZXI6Ymxpbmtpbmc=",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiUser(), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), getInstance1FromConfig().getApiUser(), getInstance1FromConfig().getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -70,19 +88,19 @@ public class MyWarwickServiceImplMultiInstanceTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiUser(), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), getInstance1FromConfig().getApiUser(), getInstance1FromConfig().getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
     }
 
     @Test
     public void activityPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(1).getActivityPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/activities", getInstance2FromService().getActivityPath());
     }
 
     @Test
     public void notificationPathShouldBeCorrectForConfig2() {
-        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", myWarwickService.getInstances().stream().collect(Collectors.toList()).get(1).getNotificationPath());
+        assertEquals("https://ekaf.com/api/streams/fakerProviderId/notifications", getInstance2FromService().getNotificationPath());
     }
 
     @Test
@@ -90,7 +108,7 @@ public class MyWarwickServiceImplMultiInstanceTest {
         assertEquals(
                 "Basic bW9vbndhbGtlci1hcGktdXNlcjpoYW5naW5n",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configuration.getInstances().stream().collect(Collectors.toList()).get(1).getApiUser(), configuration.getInstances().stream().collect(Collectors.toList()).get(1).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), getInstance2FromConfig().getApiUser(), getInstance2FromConfig().getApiPassword(), "")
                         .getFirstHeader("Authorization").getValue()
         );
     }
@@ -100,21 +118,19 @@ public class MyWarwickServiceImplMultiInstanceTest {
         assertEquals(
                 "application/json",
                 myWarwickService
-                        .makeRequest("", myWarwickService.makeJsonBody(activity), configuration.getInstances().stream().collect(Collectors.toList()).get(1).getApiUser(), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiPassword(), "")
+                        .makeRequest("", myWarwickService.makeJsonBody(activity), getInstance2FromConfig().getApiUser(), getInstance2FromConfig().getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
     }
 
     @Test
     public void logErrorsShouldBeCorrectForConfig1() {
-        assertEquals(true, new ArrayList<>(myWarwickService.getInstances()).get(0).getLogErrors());
+        assertEquals(true, getInstance1FromService().getLogErrors());
     }
 
     @Test
     public void logErrorsShouldBeCorrectForConfig2() {
-        assertEquals(false, new ArrayList<>(myWarwickService.getInstances()).get(1).getLogErrors());
+        assertEquals(false, getInstance2FromService().getLogErrors());
     }
-
-
 
 }
