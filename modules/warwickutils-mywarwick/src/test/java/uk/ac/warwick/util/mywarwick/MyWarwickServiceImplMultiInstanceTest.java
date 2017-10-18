@@ -9,6 +9,7 @@ import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickServiceImplMultiInstanceTest {
-    Instance instance1 = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
-    Instance instance2 = new Instance("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging");
+    Instance instance1 = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking", "true");
+    Instance instance2 = new Instance("https://ekaf.com", "fakerProviderId", "moonwalker-api-user", "hanging", "false");
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
     Set<Instance> instanceList = new HashSet<>();
 
@@ -102,6 +103,16 @@ public class MyWarwickServiceImplMultiInstanceTest {
                         .makeRequest("", myWarwickService.makeJsonBody(activity), configuration.getInstances().stream().collect(Collectors.toList()).get(1).getApiUser(), configuration.getInstances().stream().collect(Collectors.toList()).get(0).getApiPassword(), "")
                         .getFirstHeader("content-type").getValue()
         );
+    }
+
+    @Test
+    public void logErrorsShouldBeCorrectForConfig1() {
+        assertEquals(true, new ArrayList<>(myWarwickService.getInstances()).get(0).getLogErrors());
+    }
+
+    @Test
+    public void logErrorsShouldBeCorrectForConfig2() {
+        assertEquals(false, new ArrayList<>(myWarwickService.getInstances()).get(1).getLogErrors());
     }
 
 

@@ -9,6 +9,7 @@ public class Instance {
     private String providerId;
     private String apiUser;
     private String apiPassword;
+    private boolean logErrors = true;
     private String activityPath;
     private String notificationPath;
 
@@ -16,11 +17,14 @@ public class Instance {
         super();
     }
 
-    public Instance(String baseUrl, String providerId, String apiUser, String apiPassword) {
+    public Instance(String baseUrl, String providerId, String apiUser, String apiPassword, String logErrors) {
         this.baseUrl = baseUrl;
         this.providerId = providerId;
         this.apiUser = apiUser;
         this.apiPassword = apiPassword;
+        if (logErrors != null) {
+            this.logErrors = Boolean.valueOf(logErrors);
+        }
     }
 
     public String getBaseUrl() {
@@ -37,6 +41,10 @@ public class Instance {
 
     public String getApiPassword() {
         return apiPassword;
+    }
+
+    public boolean getLogErrors() {
+        return logErrors;
     }
 
     public String getActivityPath() {
@@ -99,6 +107,7 @@ public class Instance {
                 .append("apiUser", apiUser)
                 .append("activityPath", activityPath)
                 .append("notificationPath", notificationPath)
+                .append("logErrors", logErrors)
                 .toString();
     }
 }

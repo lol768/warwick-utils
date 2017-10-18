@@ -29,7 +29,7 @@ public class MyWarwickServiceImplSingleInstanceTest {
     @Mock
     Configuration configuration;
 
-    Instance instance = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking");
+    Instance instance = new Instance("https://fake.com", "fakeProviderId", "shylock-mywarwick-api-user", "blinking", "true");
     Activity activity = new Activity("id", "title", "url", "text", "fake-type");
 
     @Mock

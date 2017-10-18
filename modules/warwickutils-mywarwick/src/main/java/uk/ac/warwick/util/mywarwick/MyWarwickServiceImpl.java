@@ -69,14 +69,14 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                                 response = mapper.readValue(responseString, Response.class);
                                 completableFuture.complete(response);
                                 if (response.getErrors().size() != 0) {
-                                    LOGGER.error("Request completed but it contains an error:" +
+                                    logError(instance, "Request completed but it contains an error:" +
                                             "\nbaseUrl:" + instance.getBaseUrl() +
                                             "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
                                             "\nResponse:\n" + response.toString()
                                     );
                                 }
                             } catch (IOException e) {
-                                LOGGER.error("An IOException was thrown communicating with mywarwick:\n" +
+                                logError(instance, "An IOException was thrown communicating with mywarwick:\n" +
                                         e.getMessage() +
                                         "\nbaseUrl: " + instance.getBaseUrl());
                                 response.setError(new Error("", e.getMessage()));
@@ -86,7 +86,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                         @Override
                         public void failed(Exception e) {
-                            LOGGER.error("Request to mywarwick API has failed with errors:" +
+                            logError(instance, "Request to mywarwick API has failed with errors:" +
                                     "\npath: " + path +
                                     "\ninstance: " + instance +
                                     "\nrequest json " + reqJson +
@@ -148,6 +148,22 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 providerId + ":" + this.getClass().getCanonicalName());
         request.setEntity(new StringEntity(json, StandardCharsets.UTF_8));
         return request;
+    }
+
+    void logError(Instance instance, String message) {
+        if (instance.getLogErrors()) {
+            LOGGER.error(message);
+        } else {
+            LOGGER.warn(message);
+        }
+    }
+
+    void logError(Instance instance, String message, Exception e) {
+        if (instance.getLogErrors()) {
+            LOGGER.error(message, e);
+        } else {
+            LOGGER.warn(message, e);
+        }
     }
 
     public Set<Instance> getInstances() {

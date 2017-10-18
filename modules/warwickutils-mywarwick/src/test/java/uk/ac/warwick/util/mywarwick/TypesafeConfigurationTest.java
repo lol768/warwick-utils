@@ -24,6 +24,7 @@ public class TypesafeConfigurationTest {
                 "    providerId=\"2\"\n" +
                 "    userName=\"3\"\n" +
                 "    password=\"4\"\n" +
+                "    logErrors=\"false\"\n" +
                 "  }\n" +
                 "  {\n" +
                 "    baseUrl=\"5\"\n" +
@@ -39,8 +40,8 @@ public class TypesafeConfigurationTest {
     @Test
     public void shouldLoadAndFormatTypeSafeConfigsIntoConfigs() {
         Set<Instance> expected = new HashSet<>();
-        expected.add(new Instance("1", "2", "3", "4"));
-        expected.add(new Instance("5", "6", "7", "8"));
+        expected.add(new Instance("1", "2", "3", "4", "true"));
+        expected.add(new Instance("5", "6", "7", "8", "false"));
         assertEquals(expected, typesafeConfigs.getInstances());
     }
 }

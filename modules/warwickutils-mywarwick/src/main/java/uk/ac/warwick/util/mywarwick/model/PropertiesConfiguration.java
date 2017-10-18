@@ -23,6 +23,7 @@ public class PropertiesConfiguration implements Configuration { // this implemen
         HashMap<Integer, String> configProviderIds = new HashMap<>();
         HashMap<Integer, String> configUserNames = new HashMap<>();
         HashMap<Integer, String> configPasswords = new HashMap<>();
+        HashMap<Integer, String> configLogErrors = new HashMap<>();
         applicationProperties
                 .entrySet()
                 .stream()
@@ -34,6 +35,7 @@ public class PropertiesConfiguration implements Configuration { // this implemen
                     if (key.contains("providerId")) configProviderIds.put(propertyIndex, element.getValue().toString());
                     if (key.contains("userName")) configUserNames.put(propertyIndex, element.getValue().toString());
                     if (key.contains("password")) configPasswords.put(propertyIndex, element.getValue().toString());
+                    if (key.contains("logErrors")) configLogErrors.put(propertyIndex, element.getValue().toString());
                 });
 
         instanceSet = configBaseUrls.entrySet().stream().map(baseUrl -> {
@@ -42,7 +44,8 @@ public class PropertiesConfiguration implements Configuration { // this implemen
                     baseUrl.getValue(),
                     configProviderIds.get(index),
                     configUserNames.get(index),
-                    configPasswords.get(index));
+                    configPasswords.get(index),
+                    configLogErrors.get(index));
         }).collect(Collectors.toSet());
     }
 
