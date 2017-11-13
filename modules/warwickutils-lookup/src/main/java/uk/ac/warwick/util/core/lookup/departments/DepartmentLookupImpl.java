@@ -19,6 +19,9 @@ import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory<String, LinkedHashMap<String, Department>>, DepartmentNameLookup {
@@ -120,7 +123,13 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
         d.setShortName(json.getString("shortName"));
         d.setType(json.getString("type"));
         d.setCurrent(json.getBoolean("inUse"));
-        d.setLastModified(new Date(json.getLong("lastModified")));
+
+        try {
+            d.setLastModified(new Date(json.getLong("lastModified")));
+        } catch (JSONException e) {
+            d.setLastModified(Date.from(LocalDateTime.parse(json.getString("lastModified"), DateTimeFormatter.ofPattern("MMM d, yyyy h:mm:ss a")).atZone(ZoneId.of("Europe/London")).toInstant()));
+        }
+
         d.setFaculty(facultyLookup.getFaculty(json.getString("faculty")));
         return d;
     }
