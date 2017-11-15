@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.mywarwick.model;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,12 +26,21 @@ public class TypesafeConfiguration implements Configuration {
         instanceSet = config
                 .getConfigList("mywarwick.instances")
                 .stream()
-                .map(e -> new Instance(
-                        e.getString("baseUrl"),
-                        e.getString("providerId"),
-                        e.getString("userName"),
-                        e.getString("password")
-                ))
+                .map(e -> {
+                    String logErrors = null;
+                    try {
+                        logErrors = e.getString("logErrors");
+                    } catch (ConfigException.Missing error) {
+                        // Just leave null to get the default
+                    }
+                    return new Instance(
+                            e.getString("baseUrl"),
+                            e.getString("providerId"),
+                            e.getString("userName"),
+                            e.getString("password"),
+                            logErrors
+                    );
+                })
                 .collect(Collectors.toSet());
     }
 

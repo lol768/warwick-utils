@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.mywarwick.model.request;
 
-import uk.ac.warwick.userlookup.GroupService;
 import uk.ac.warwick.userlookup.UserLookupInterface;
 
 import javax.inject.Inject;
@@ -15,13 +14,10 @@ public class ActivityFactoryImpl implements ActivityFactory {
 
     private final UserLookupInterface userLookupInterface;
 
-    private final GroupService groupService;
-
     @Inject
-    ActivityFactoryImpl(UserLookupInterface userLookupInterface, GroupService groupService) {
+    ActivityFactoryImpl(UserLookupInterface userLookupInterface) {
         super();
         this.userLookupInterface = userLookupInterface;
-        this.groupService = groupService;
     }
 
     public Activity newActivity() {
@@ -42,7 +38,7 @@ public class ActivityFactoryImpl implements ActivityFactory {
 
     private Activity assignService(Activity activity) {
         return activity
-                .setGroupService(this.groupService)
-                .setUserLookupInterface(this.userLookupInterface);
+            .setGroupService(this.userLookupInterface.getGroupService())
+            .setUserLookupInterface(this.userLookupInterface);
     }
 }

@@ -77,7 +77,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
         {
             DateTime dateTime = new DateTime(2009, DateTimeConstants.FEBRUARY, 13, 23, 31, 30, 0);
             assertEquals("Europe/London", dateTime.getZone().getID());
-            assertEquals("Friday, 13 February 2009 23:31:30 o'clock GMT", formatter.print(dateTime));
+            assertEquals("Friday, 13 February 2009 23:31:30 o'clock +00:00", formatter.print(dateTime));
             assertEquals(1234567890000l, dateTime.getMillis());
             
             Date date = new Date(dateTime.getMillis());
@@ -85,7 +85,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
             
             DateTime dateTime2 = new DateTime(date);
             assertEquals("Europe/London", dateTime2.getZone().getID());
-            assertEquals("Friday, 13 February 2009 23:31:30 o'clock GMT", formatter.print(dateTime2));
+            assertEquals("Friday, 13 February 2009 23:31:30 o'clock +00:00", formatter.print(dateTime2));
             assertEquals(1234567890000l, dateTime2.getMillis());
         }
         
@@ -93,7 +93,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
         {
             DateTime dateTime = new DateTime(2009, DateTimeConstants.JULY, 13, 23, 31, 30, 0);
             assertEquals("Europe/London", dateTime.getZone().getID());
-            assertEquals("Monday, 13 July 2009 23:31:30 o'clock BST", formatter.print(dateTime));
+            assertEquals("Monday, 13 July 2009 23:31:30 o'clock +01:00", formatter.print(dateTime));
             assertEquals(1247524290000L, dateTime.getMillis());
             
             Date date = new Date(dateTime.getMillis());
@@ -101,7 +101,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
             
             DateTime dateTime2 = new DateTime(date);
             assertEquals("Europe/London", dateTime2.getZone().getID());
-            assertEquals("Monday, 13 July 2009 23:31:30 o'clock BST", formatter.print(dateTime2));
+            assertEquals("Monday, 13 July 2009 23:31:30 o'clock +01:00", formatter.print(dateTime2));
             assertEquals(1247524290000L, dateTime2.getMillis());
         }
     }

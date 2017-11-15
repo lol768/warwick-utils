@@ -18,6 +18,9 @@ import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FacultyLookupImpl implements FacultyLookup, CacheEntryFactory<String, LinkedHashMap<String, Faculty>> {
@@ -73,7 +76,13 @@ public class FacultyLookupImpl implements FacultyLookup, CacheEntryFactory<Strin
         f.setCode(json.getString("code"));
         f.setName(json.getString("name"));
         f.setCurrent(json.getBoolean("inUse"));
-        f.setLastModified(new Date(json.getLong("lastModified")));
+
+        try {
+            f.setLastModified(new Date(json.getLong("lastModified")));
+        } catch (JSONException e) {
+            f.setLastModified(Date.from(LocalDateTime.parse(json.getString("lastModified"), DateTimeFormatter.ofPattern("MMM d, yyyy h:mm:ss a")).atZone(ZoneId.of("Europe/London")).toInstant()));
+        }
+
         return f;
     }
 

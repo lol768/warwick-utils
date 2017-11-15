@@ -24,14 +24,15 @@ public class PropertiesConfigurationTest {
         properties.setProperty("mywarwick.instances.1.providerId", "6");
         properties.setProperty("mywarwick.instances.1.userName", "7");
         properties.setProperty("mywarwick.instances.1.password", "8");
+        properties.setProperty("mywarwick.instances.1.logErrors", "false");
         propertiesConfiguration = new PropertiesConfiguration(properties);
     }
 
     @Test
     public void shouldReadPropertiesFileAndFormatToConfiguration() {
         Set<Instance> expected = new HashSet<>();
-        expected.add(new Instance("1", "2", "3", "4"));
-        expected.add(new Instance("5", "6", "7", "8"));
+        expected.add(new Instance("1", "2", "3", "4", "true"));
+        expected.add(new Instance("5", "6", "7", "8", "false"));
         assertEquals(expected, propertiesConfiguration.getInstances());
     }
 
