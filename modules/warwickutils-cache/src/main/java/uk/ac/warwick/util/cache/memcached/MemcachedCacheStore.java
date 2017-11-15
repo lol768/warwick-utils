@@ -29,7 +29,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
      * The classpath location that this class will check in for a custom memcached
      * configuration file.
      */
-    public static final String CUSTOM_CONFIG_URL = "memcached.properties";
+    public static final String CUSTOM_CONFIG_URL = "/memcached.properties";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MemcachedCacheStore.class);
 
