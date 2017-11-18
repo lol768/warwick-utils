@@ -382,12 +382,17 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>warwickutils-mywarwick</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>warwickutils-queue</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>warwickutils-mywarwick</artifactId>
+				<artifactId>warwickutils-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -716,8 +721,9 @@
 		<module>modules/warwickutils-httpclient4</module>
 		<module>modules/warwickutils-lookup</module>
 		<module>modules/warwickutils-mail</module>
-		<module>modules/warwickutils-queue</module>
 		<module>modules/warwickutils-mywarwick</module>
+		<module>modules/warwickutils-queue</module>
+		<module>modules/warwickutils-service</module>
 		<module>modules/warwickutils-web</module>
 		<module>modules/warwickutils-virusscan</module>
 

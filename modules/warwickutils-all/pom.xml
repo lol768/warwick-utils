@@ -141,6 +141,10 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>warwickutils-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>warwickutils-web</artifactId>
 		</dependency>
 		<dependency>
