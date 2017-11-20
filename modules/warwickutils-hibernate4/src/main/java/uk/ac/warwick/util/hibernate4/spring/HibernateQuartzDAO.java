@@ -26,14 +26,17 @@ public class HibernateQuartzDAO implements QuartzDAO {
     @SuppressWarnings("unchecked")
     public Collection<QuartzTrigger> getPendingTriggers(String schedulerName) {
         return getSession()
-            .createSQLQuery("select sched_name as schedulerName, " +
-                "trigger_name as triggerName, " +
-                "job_name as jobName, " +
-                "start_time as startTimeInMillis, " +
-                "trigger_state as state " +
-                "from qrtz_triggers " +
-                "where trigger_state = 'WAITING' " +
-                "and sched_name = :scheduler")
+            .createSQLQuery("select t.sched_name as schedulerName, " +
+                "t.trigger_name as triggerName, " +
+                "t.job_name as jobName, " +
+                "t.start_time as startTimeInMillis, " +
+                "t.trigger_state as state " +
+                "from qrtz_triggers t " +
+                "join qrtz_simple_triggers st on t.sched_name = st.sched_name and t.trigger_name = st.trigger_name " +
+                "where t.trigger_state = 'WAITING' " +
+                "and t.start_time < :now " +
+                "and t.sched_name = :scheduler " +
+                "and st.repeat_count = 0")
             .addScalar("schedulerName")
             .addScalar("triggerName")
             .addScalar("jobName")
@@ -41,6 +44,7 @@ public class HibernateQuartzDAO implements QuartzDAO {
             .addScalar("state")
             .setResultTransformer(Transformers.aliasToBean(QuartzTrigger.class))
             .setString("scheduler", schedulerName)
+            .setLong("now", System.currentTimeMillis())
             .list();
     }
 
