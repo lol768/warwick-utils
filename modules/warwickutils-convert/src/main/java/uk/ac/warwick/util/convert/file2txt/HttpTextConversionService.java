@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
@@ -135,12 +136,7 @@ public class HttpTextConversionService implements TextConversionService {
         request.setHeader("Authorization", "API-Key " + apiKey);
         request.setHeader("User-Agent", "WarwickUtils HttpTextConversionService");
         request.setHeader("Accept", to.getMimeType());
-        request.setEntity(
-            EntityBuilder.create()
-                .setContentType(from)
-                .setStream(in.openStream())
-                .build()
-        );
+        request.setEntity(new InputStreamEntity(in.openStream(), in.size(), from));
 
         File tempFile = httpClient.execute(request, response -> {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
