@@ -78,7 +78,7 @@ public abstract class AbstractQuartzJobQueueHealthcheck extends ServiceHealthche
         }
 
         final String message;
-        if (age.isZero() && totalTriggerCount == 0) {
+        if (errorTriggerCount == 0 && age.isZero() && totalTriggerCount == 0) {
             message = "No outstanding jobs in queue";
         } else {
             message =

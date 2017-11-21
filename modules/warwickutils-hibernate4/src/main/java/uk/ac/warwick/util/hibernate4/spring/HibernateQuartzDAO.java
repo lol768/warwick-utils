@@ -71,8 +71,8 @@ public class HibernateQuartzDAO implements QuartzDAO {
     public int countTriggerErrors(String schedulerName) {
         return ((Number) getSession()
             .createSQLQuery("select count(*) " +
-                "from qrtz_triggers where " +
-                "trigger_state in ('ERROR', 'BLOCKED', 'PAUSED_BLOCKED') " +
+                "from qrtz_triggers " +
+                "where trigger_state = 'ERROR' " +
                 "and sched_name = :scheduler")
             .setString("scheduler", schedulerName)
             .uniqueResult()).intValue();

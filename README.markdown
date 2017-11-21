@@ -33,7 +33,7 @@ If you get a message like this:
 It probably means that the artifact already exists on Nexus, and Nexus doesn't support overwriting of artifacts
 with the same version. The easiest way to fix this is to add an hour/minute component to your versioning:
 
-    $ mvn versions:set -DnewVersion=`date +%Y%m%d-%H%M`
+    $ mvn versions:set -DnewVersion=$(date +%Y%m%d-%H%M)
     $ mvn versions:commit
 
 You should then be able to deploy.    
