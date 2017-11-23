@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.core.scheduling;
 
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+
 import java.time.Instant;
 
 public class QuartzTrigger {
@@ -48,7 +50,7 @@ public class QuartzTrigger {
     }
 
     public long getAge() {
-        return Instant.now().toEpochMilli() - startTimeInMillis;
+        return Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli() - startTimeInMillis;
     }
 
     public boolean isError() {

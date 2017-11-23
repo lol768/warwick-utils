@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.core.scheduling;
 
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+
 import java.time.Instant;
 
 public class QuartzScheduler {
@@ -41,11 +43,11 @@ public class QuartzScheduler {
     }
 
     public long getAge() {
-        return Instant.now().toEpochMilli() - checkinTimeInMillis;
+        return Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli() - checkinTimeInMillis;
     }
 
     public boolean isStale() {
-        return Instant.ofEpochMilli(checkinTimeInMillis).plusMillis(checkinIntervalInMillis).plusSeconds(10).isBefore(Instant.now());
+        return Instant.ofEpochMilli(checkinTimeInMillis).plusMillis(checkinIntervalInMillis).plusSeconds(10).isBefore(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION));
     }
 
     @Override

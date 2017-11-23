@@ -2,15 +2,19 @@ package uk.ac.warwick.util.core.jodatime;
 
 import org.threeten.extra.Days;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Utility functions to work with JSR310 JavaTime objects.
@@ -18,6 +22,8 @@ import java.time.temporal.Temporal;
  * @author Mat
  */
 public final class DateTimeUtils {
+
+    public static Clock CLOCK_IMPLEMENTATION = Clock.systemDefaultZone();
 	
 	private static final int DAYS_PER_WEEK = 7;
 	
@@ -72,6 +78,19 @@ public final class DateTimeUtils {
     public static boolean isBetween(final ChronoZonedDateTime<?> dt, final ChronoZonedDateTime<?> earliest, final ChronoZonedDateTime<?> latest) {
         return (dt.isEqual(earliest) || dt.isEqual(latest) ||
                 (dt.isAfter(earliest) && dt.isBefore(latest)));
+    }
+
+    /**
+     * NOT threadsafe. Used for testing.
+     * Does an action with a mockdatetime.
+     */
+    public static void useMockDateTime(final Instant dt, final Runnable fn) {
+        try {
+            CLOCK_IMPLEMENTATION = Clock.fixed(dt, ZoneId.systemDefault());
+            fn.run();
+        } finally {
+            CLOCK_IMPLEMENTATION = Clock.systemDefaultZone();
+        }
     }
 
 }

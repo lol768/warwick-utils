@@ -13,6 +13,7 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 
 import java.time.Instant;
 
@@ -41,7 +42,7 @@ public class MemcachedCacheStoreServerDownTest {
 
     @Before
     public void setUpCache() throws Exception {
-        cache  = new BasicCache<String, String, Object>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+        cache  = new BasicCache<>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
             public String create(String key) throws CacheEntryUpdateException {
                 cacheCallCount++;
                 return key.substring(6);
@@ -64,10 +65,16 @@ public class MemcachedCacheStoreServerDownTest {
 
     @Test
     public void getResult() throws Exception {
-        Cache.Result<String> result = cache.getResult("token:12345");
-        assertEquals(Instant.now().toEpochMilli(), result.getLastUpdated());
-        assertEquals("12345", result.getValue());
-        assertFalse(result.isUpdating());
+        DateTimeUtils.useMockDateTime(Instant.now(), () -> {
+            try {
+                Cache.Result<String> result = cache.getResult("token:12345");
+                assertEquals(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli(), result.getLastUpdated());
+                assertEquals("12345", result.getValue());
+                assertFalse(result.isUpdating());
+            } catch (Exception e) {
+                throw new AssertionError(e);
+            }
+        });
     }
 
     @Test

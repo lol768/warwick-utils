@@ -6,7 +6,6 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.Files;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.ConnectionConfig;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.convert.ConversionException;
 import uk.ac.warwick.util.convert.TextConversionService;
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
@@ -93,7 +93,7 @@ public class HttpTextConversionService implements TextConversionService {
 
     @Override
     public synchronized boolean canConvert(ContentType from, ContentType to) {
-        if (lastRefreshedAvailable == null || Duration.between(lastRefreshedAvailable, Instant.now()).compareTo(TTL_AVAILABLE_CONVERSIONS) > 0) {
+        if (lastRefreshedAvailable == null || Duration.between(lastRefreshedAvailable, Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION)).compareTo(TTL_AVAILABLE_CONVERSIONS) > 0) {
             try {
                 HttpGet request = new HttpGet(endpoint.toJavaUri());
                 httpClient.execute(request, response -> {

@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache;
 
 import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,7 +18,7 @@ public abstract class TTLCacheExpiryStrategy<K extends Serializable,V extends Se
         }
 
         final long expires = entry.getTimestamp() + ttl.getRight().toMillis(ttl.getLeft().longValue());
-        final long now = Instant.now().toEpochMilli();
+        final long now = Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli();
         return expires <= now;
     }
 

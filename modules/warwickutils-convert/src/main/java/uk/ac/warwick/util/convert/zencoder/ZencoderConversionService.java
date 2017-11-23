@@ -34,6 +34,7 @@ import uk.ac.warwick.util.convert.ConversionMedia;
 import uk.ac.warwick.util.convert.ConversionService;
 import uk.ac.warwick.util.convert.ConversionStatus;
 import uk.ac.warwick.util.convert.S3ByteSource;
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
@@ -339,7 +340,7 @@ public class ZencoderConversionService implements ConversionService, DisposableB
     private Uri generateS3PrivateUrl(String objectKey) {
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, objectKey);
         request.setMethod(HttpMethod.GET);
-        request.setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)));
+        request.setExpiration(Date.from(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).plus(1, ChronoUnit.HOURS)));
 
         return Uri.fromJavaUrl(s3.generatePresignedUrl(request));
     }

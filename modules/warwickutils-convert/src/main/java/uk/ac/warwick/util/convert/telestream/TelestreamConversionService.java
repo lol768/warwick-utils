@@ -35,6 +35,7 @@ import uk.ac.warwick.util.convert.ConversionService;
 import uk.ac.warwick.util.convert.ConversionStatus;
 import uk.ac.warwick.util.convert.S3ByteSource;
 import uk.ac.warwick.util.core.StringUtils;
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 
 import javax.crypto.Mac;
@@ -313,7 +314,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
     private Uri generateS3PrivateUrl(String objectKey) {
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, objectKey);
         request.setMethod(HttpMethod.GET);
-        request.setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)));
+        request.setExpiration(Date.from(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).plus(1, ChronoUnit.HOURS)));
 
         return Uri.fromJavaUrl(s3.generatePresignedUrl(request));
     }
@@ -392,7 +393,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         allParams.putAll(params);
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now(DateTimeUtils.CLOCK_IMPLEMENTATION).atZone(ZoneId.of("Z"))));
         String canonicalQueryString = getCanonicalQueryString(allParams);
 
 
@@ -429,7 +430,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         allParams.putAll(params);
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now(DateTimeUtils.CLOCK_IMPLEMENTATION).atZone(ZoneId.of("Z"))));
 
         // Get the canonical querystring
         String canonicalQueryString = getCanonicalQueryString(allParams);
@@ -451,7 +452,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         Map<String, String> allParams = new HashMap<>();
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now(DateTimeUtils.CLOCK_IMPLEMENTATION).atZone(ZoneId.of("Z"))));
 
         // Get the canonical querystring
         String canonicalQueryString = getCanonicalQueryString(allParams);

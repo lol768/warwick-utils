@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.cache;
 
+import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -14,7 +16,7 @@ public class CacheEntry<K extends Serializable, V extends Serializable> implemen
 	private static final long serialVersionUID = -4384852442875029950L;
 	private final K key;
 	private final V value;
-	private final long created = Instant.now().toEpochMilli();
+	private final long created = Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli();
     private transient volatile boolean updating;
 	
 	@SuppressWarnings("unchecked")
