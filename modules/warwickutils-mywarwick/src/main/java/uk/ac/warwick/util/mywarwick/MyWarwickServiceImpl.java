@@ -145,7 +145,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 "application/json");
         request.addHeader(
                 "User-Agent",
-                providerId + ":" + this.getClass().getCanonicalName());
+                "MyWarwickService/" + providerId);
         request.setEntity(new StringEntity(json, StandardCharsets.UTF_8));
         return request;
     }
