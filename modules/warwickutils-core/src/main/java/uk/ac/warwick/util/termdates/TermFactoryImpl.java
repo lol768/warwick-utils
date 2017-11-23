@@ -1,35 +1,31 @@
 package uk.ac.warwick.util.termdates;
 
+import com.google.common.collect.Lists;
+import org.threeten.extra.LocalDateRange;
+import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.core.StringUtils;
+import uk.ac.warwick.util.termdates.Term.TermType;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Interval;
-import org.joda.time.MutableDateTime;
-import org.joda.time.base.BaseDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.core.StringUtils;
-import uk.ac.warwick.util.termdates.Term.TermType;
-
-import com.google.common.collect.Lists;
-
 public final class TermFactoryImpl implements TermFactory {
     
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("ddMMyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");
     
     private LinkedList<Term> termDates;
     
     public TermFactoryImpl() throws IOException {
         String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("termdates.txt")));
-        this.termDates = new LinkedList<Term>();
+        this.termDates = new LinkedList<>();
         
         for (StringTokenizer st = new StringTokenizer(source, "\n"); st.hasMoreTokens();) {
             String line = st.nextToken().trim();
@@ -38,28 +34,33 @@ public final class TermFactoryImpl implements TermFactory {
             String endDateString = data[1];
             String termTypeString = data[2];
             
-            DateTime startDate = DATE_FORMATTER.parseDateTime(startDateString).withDayOfWeek(DateTimeConstants.MONDAY);
-            DateTime endDate = DATE_FORMATTER.parseDateTime(endDateString).withDayOfWeek(DateTimeConstants.SUNDAY);
+            LocalDate startDate = LocalDate.parse(startDateString, DATE_FORMATTER).with(DayOfWeek.MONDAY);
+            LocalDate endDate = LocalDate.parse(endDateString, DATE_FORMATTER).with(DayOfWeek.SUNDAY);
 
             TermType type;
-            
-            if (termTypeString.equals("a")) {
-                type = TermType.autumn;
-            } else if (termTypeString.equals("sp")) {
-                type = TermType.spring;
-            } else if (termTypeString.equals("su")) {
-                type = TermType.summer;
-            } else {
-                throw new IllegalArgumentException("Invalid term string");
+
+            switch (termTypeString) {
+                case "a":
+                    type = TermType.autumn;
+                    break;
+                case "sp":
+                    type = TermType.spring;
+                    break;
+                case "su":
+                    type = TermType.summer;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid term string");
             }
             
-            termDates.add(new TermImpl(this, startDate,endDate,type));
+            termDates.add(new TermImpl(this, startDate, endDate, type));
         }
     }
 
-    public Term getTermFromDate(final BaseDateTime date) throws TermNotFoundException {
-        for (Term term : termDates) {
-            if (date.equals(term.getEndDate()) || date.isBefore(term.getEndDate())) {
+    public Term getTermFromDate(final Temporal temporal) throws TermNotFoundException {
+        LocalDate date = LocalDate.from(temporal);
+        for (Term term: termDates) {
+            if (date.isEqual(term.getEndDate()) || date.isBefore(term.getEndDate())) {
                 return term;
             }
         }
@@ -83,9 +84,9 @@ public final class TermFactoryImpl implements TermFactory {
         return getTermFromDate(term.getEndDate().plusDays(1));
     }
     
-    public Interval getAcademicWeek(BaseDateTime date, int weekNumber) throws TermNotFoundException {
-        List<Pair<Integer, Interval>> weeks = getAcademicWeeksForYear(date);
-        for (Pair<Integer, Interval> week : weeks) {
+    public LocalDateRange getAcademicWeek(Temporal date, int weekNumber) throws TermNotFoundException {
+        List<Pair<Integer, LocalDateRange>> weeks = getAcademicWeeksForYear(date);
+        for (Pair<Integer, LocalDateRange> week : weeks) {
             if (week.getLeft() == weekNumber) {
                 return week.getRight();
             }
@@ -94,8 +95,8 @@ public final class TermFactoryImpl implements TermFactory {
         throw new TermNotFoundException("Couldn't find interval for academic week");
     }
     
-    public List<Pair<Integer, Interval>> getAcademicWeeksForYear(BaseDateTime date) throws TermNotFoundException {
-        List<Pair<Integer, Interval>> weeks = Lists.newArrayList();
+    public List<Pair<Integer, LocalDateRange>> getAcademicWeeksForYear(Temporal date) throws TermNotFoundException {
+        List<Pair<Integer, LocalDateRange>> weeks = Lists.newArrayList();
         
         // Roll back to autumn term
         Term autumnTerm = getTermFromDate(date);
@@ -108,17 +109,17 @@ public final class TermFactoryImpl implements TermFactory {
             nextYearAutumnTerm = getNextTerm(nextYearAutumnTerm);
         } while (nextYearAutumnTerm.getTermType() != TermType.autumn);
         
-        MutableDateTime dt = autumnTerm.getStartDate().withMillisOfDay(0).withDayOfWeek(DateTimeConstants.MONDAY).toMutableDateTime();
+        LocalDate dt = autumnTerm.getStartDate().with(DayOfWeek.MONDAY);
         int weekNumber = autumnTerm.getAcademicWeekNumber(dt);
         while (weekNumber > 0 && dt.isBefore(nextYearAutumnTerm.getStartDate())) {
-            DateTime start = dt.toDateTime();
-            dt.addWeeks(1);
-            DateTime end = dt.toDateTime();
+            LocalDate start = dt;
+            dt = dt.plusWeeks(1);
+            LocalDate end = dt;
 
             weekNumber = autumnTerm.getAcademicWeekNumber(start);
 
             if (weekNumber > 0) {
-                weeks.add(Pair.of(weekNumber, new Interval(start, end)));
+                weeks.add(Pair.of(weekNumber, LocalDateRange.of(start, end)));
             }
         }
         

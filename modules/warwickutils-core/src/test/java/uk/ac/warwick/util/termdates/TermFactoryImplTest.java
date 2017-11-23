@@ -1,16 +1,15 @@
 package uk.ac.warwick.util.termdates;
 
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Interval;
-import org.joda.time.PeriodType;
-import org.joda.time.Weeks;
 import org.junit.Test;
+import org.threeten.extra.LocalDateRange;
+import org.threeten.extra.Weeks;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
 import uk.ac.warwick.util.termdates.Term.TermType;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -24,8 +23,8 @@ public final class TermFactoryImplTest {
         List<Term> dates = bean.getTermDates();
 
         Term thirdTerm = dates.get(2);
-        DateTime thirdTermStart = thirdTerm.getStartDate();
-        DateTime april23rd = new DateTime().withDate(2007, DateTimeConstants.APRIL, 23);
+        LocalDate thirdTermStart = thirdTerm.getStartDate();
+        LocalDate april23rd = LocalDate.of(2007, Month.APRIL, 23);
 
         assertTrue(DateTimeUtils.isSameDay(thirdTermStart, april23rd));
 
@@ -37,7 +36,7 @@ public final class TermFactoryImplTest {
         for (Term term : new TermFactoryImpl().getTermDates()) {
             assertTrue("Term ends before it finishes (term starting "+term.getStartDate()+")", term.getStartDate().isBefore(term.getEndDate()));
             // This usually evaluates to 9.
-            int weeks = new Interval(term.getStartDate(), term.getEndDate()).toPeriod(PeriodType.weeks()).getWeeks();
+            int weeks = Weeks.between(term.getStartDate(), term.getEndDate()).getAmount();
             assertTrue( "Term has a weird length",  weeks >= 9 && weeks <= 10 );
         }
     }
@@ -46,7 +45,7 @@ public final class TermFactoryImplTest {
     public void enoughDates() throws Exception {
         final int futureTerms = 6;
         TermFactoryImpl factory = new TermFactoryImpl();
-        DateTime d = new DateTime().withMonthOfYear(7);
+        LocalDate d = LocalDate.now().withMonth(7);
         int i=0;
         try {
             Term term = factory.getTermFromDate(d);
@@ -61,7 +60,7 @@ public final class TermFactoryImplTest {
     @Test
     public void getAcademicWeeksForYear() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
-        List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2007, DateTimeConstants.APRIL, 23));
+        List<Pair<Integer, LocalDateRange>> weeks = factory.getAcademicWeeksForYear(LocalDate.of(2007, Month.APRIL, 23));
         assertEquals(52, weeks.size());
         
         /*
@@ -70,52 +69,52 @@ public final class TermFactoryImplTest {
          * 230407;300607;su
          */
         
-        Pair<Integer, Interval> week1 = weeks.get(0);
+        Pair<Integer, LocalDateRange> week1 = weeks.get(0);
         assertEquals(1, week1.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 
-                new DateMidnight(2006, DateTimeConstants.OCTOBER, 9)
+            LocalDateRange.of(
+                LocalDate.of(2006, Month.OCTOBER, 2),
+                LocalDate.of(2006, Month.OCTOBER, 9)
             ), 
             week1.getRight()
         );
         
-        Pair<Integer, Interval> week10 = weeks.get(9);
+        Pair<Integer, LocalDateRange> week10 = weeks.get(9);
         assertEquals(10, week10.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2006, DateTimeConstants.DECEMBER, 4), 
-                new DateMidnight(2006, DateTimeConstants.DECEMBER, 11)
+            LocalDateRange.of(
+                LocalDate.of(2006, Month.DECEMBER, 4),
+                LocalDate.of(2006, Month.DECEMBER, 11)
             ), 
             week10.getRight()
         );
         
-        Pair<Integer, Interval> week20 = weeks.get(19);
+        Pair<Integer, LocalDateRange> week20 = weeks.get(19);
         assertEquals(20, week20.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.FEBRUARY, 12), 
-                new DateMidnight(2007, DateTimeConstants.FEBRUARY, 19)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.FEBRUARY, 12),
+                LocalDate.of(2007, Month.FEBRUARY, 19)
             ), 
             week20.getRight()
         );
         
-        Pair<Integer, Interval> week30 = weeks.get(29);
+        Pair<Integer, LocalDateRange> week30 = weeks.get(29);
         assertEquals(30, week30.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.APRIL, 23), 
-                new DateMidnight(2007, DateTimeConstants.APRIL, 30)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.APRIL, 23),
+                LocalDate.of(2007, Month.APRIL, 30)
             ), 
             week30.getRight()
         );
         
-        Pair<Integer, Interval> week52 = weeks.get(51);
+        Pair<Integer, LocalDateRange> week52 = weeks.get(51);
         assertEquals(52, week52.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.SEPTEMBER, 24), 
-                new DateMidnight(2007, DateTimeConstants.OCTOBER, 1)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.SEPTEMBER, 24),
+                LocalDate.of(2007, Month.OCTOBER, 1)
             ), 
             week52.getRight()
         );
@@ -126,7 +125,7 @@ public final class TermFactoryImplTest {
         // 2014/15 is special, it has 53 weeks
 
         TermFactoryImpl factory = new TermFactoryImpl();
-        List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2014, DateTimeConstants.NOVEMBER, 1));
+        List<Pair<Integer, LocalDateRange>> weeks = factory.getAcademicWeeksForYear(LocalDate.of(2014, Month.NOVEMBER, 1));
         assertEquals(53, weeks.size());
 
         /*
@@ -135,22 +134,22 @@ public final class TermFactoryImplTest {
          * 200415;270615;su
          */
 
-        Pair<Integer, Interval> week1 = weeks.get(0);
+        Pair<Integer, LocalDateRange> week1 = weeks.get(0);
         assertEquals(1, week1.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2014, DateTimeConstants.SEPTEMBER, 29),
-                new DateMidnight(2014, DateTimeConstants.OCTOBER, 6)
+            LocalDateRange.of(
+                LocalDate.of(2014, Month.SEPTEMBER, 29),
+                LocalDate.of(2014, Month.OCTOBER, 6)
             ),
             week1.getRight()
         );
 
-        Pair<Integer, Interval> week53 = weeks.get(52);
+        Pair<Integer, LocalDateRange> week53 = weeks.get(52);
         assertEquals(53, week53.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2015, DateTimeConstants.SEPTEMBER, 28),
-                new DateMidnight(2015, DateTimeConstants.OCTOBER, 5)
+            LocalDateRange.of(
+                LocalDate.of(2015, Month.SEPTEMBER, 28),
+                LocalDate.of(2015, Month.OCTOBER, 5)
             ),
             week53.getRight()
         );
@@ -159,7 +158,7 @@ public final class TermFactoryImplTest {
     @Test
     public void getAcademicWeeksForYear2015() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
-        List<Pair<Integer, Interval>> weeks = factory.getAcademicWeeksForYear(new DateTime().withDate(2015, DateTimeConstants.NOVEMBER, 1));
+        List<Pair<Integer, LocalDateRange>> weeks = factory.getAcademicWeeksForYear(LocalDate.of(2015, Month.NOVEMBER, 1));
         assertEquals(52, weeks.size());
 
         /*
@@ -168,22 +167,22 @@ public final class TermFactoryImplTest {
          * 250416;020716;su
          */
 
-        Pair<Integer, Interval> week1 = weeks.get(0);
+        Pair<Integer, LocalDateRange> week1 = weeks.get(0);
         assertEquals(1, week1.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2015, DateTimeConstants.OCTOBER, 5),
-                new DateMidnight(2015, DateTimeConstants.OCTOBER, 12)
+            LocalDateRange.of(
+                LocalDate.of(2015, Month.OCTOBER, 5),
+                LocalDate.of(2015, Month.OCTOBER, 12)
             ),
             week1.getRight()
         );
 
-        Pair<Integer, Interval> week52 = weeks.get(51);
+        Pair<Integer, LocalDateRange> week52 = weeks.get(51);
         assertEquals(52, week52.getLeft().intValue());
         assertEquals(
-            new Interval(
-                new DateMidnight(2016, DateTimeConstants.SEPTEMBER, 26),
-                new DateMidnight(2016, DateTimeConstants.OCTOBER, 3)
+            LocalDateRange.of(
+                LocalDate.of(2016, Month.SEPTEMBER, 26),
+                LocalDate.of(2016, Month.OCTOBER, 3)
             ),
             week52.getRight()
         );
@@ -193,54 +192,54 @@ public final class TermFactoryImplTest {
     public void getAcademicWeek() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
         
-        Interval week1 = new Interval(
-            new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 
-            new DateMidnight(2006, DateTimeConstants.OCTOBER, 9)
+        LocalDateRange week1 = LocalDateRange.of(
+            LocalDate.of(2006, Month.OCTOBER, 2),
+            LocalDate.of(2006, Month.OCTOBER, 9)
         );
         assertEquals(
-            week1, factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 1)
+            week1, factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2), 1)
         );
         assertEquals(
-            week1, factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2).plusMonths(5), 1)
+            week1, factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2).plusMonths(5), 1)
         );
         
         try {
-            factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2).plusYears(100), 1);
+            factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2).plusYears(100), 1);
             fail("Should have exceptioned");
         } catch (TermNotFoundException e) {
             // expected
         }
         
         assertEquals(
-            new Interval(
-                new DateMidnight(2006, DateTimeConstants.DECEMBER, 4), 
-                new DateMidnight(2006, DateTimeConstants.DECEMBER, 11)
+            LocalDateRange.of(
+                LocalDate.of(2006, Month.DECEMBER, 4),
+                LocalDate.of(2006, Month.DECEMBER, 11)
             ), 
-            factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 10)
+            factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2), 10)
         );
         
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.FEBRUARY, 12), 
-                new DateMidnight(2007, DateTimeConstants.FEBRUARY, 19)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.FEBRUARY, 12),
+                LocalDate.of(2007, Month.FEBRUARY, 19)
             ), 
-            factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 20)
+            factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2), 20)
         );
         
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.APRIL, 23), 
-                new DateMidnight(2007, DateTimeConstants.APRIL, 30)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.APRIL, 23),
+                LocalDate.of(2007, Month.APRIL, 30)
             ), 
-            factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 30)
+            factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2), 30)
         );
         
         assertEquals(
-            new Interval(
-                new DateMidnight(2007, DateTimeConstants.SEPTEMBER, 24), 
-                new DateMidnight(2007, DateTimeConstants.OCTOBER, 1)
+            LocalDateRange.of(
+                LocalDate.of(2007, Month.SEPTEMBER, 24),
+                LocalDate.of(2007, Month.OCTOBER, 1)
             ), 
-            factory.getAcademicWeek(new DateMidnight(2006, DateTimeConstants.OCTOBER, 2), 52)
+            factory.getAcademicWeek(LocalDate.of(2006, Month.OCTOBER, 2), 52)
         );
     }
     
@@ -248,24 +247,24 @@ public final class TermFactoryImplTest {
     public void sbtwo3948() throws Exception {
         TermFactoryImpl factory = new TermFactoryImpl();
         
-        DateTime monday = new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime();
+        LocalDate monday = LocalDate.of(2011, Month.APRIL, 25);
         
         // This should be week 1 of the Summer term
         Term term = factory.getTermFromDate(monday);
 
 //        This term started on Wednesday 27th April, and finished on Saturday 2nd July
 //        We now assume Monday - Sunday, so the term is Monday 25th April - Sunday 3rd July.
-        assertEquals(new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime(), term.getStartDate());
-        assertEquals(new DateMidnight(2011, DateTimeConstants.JULY, 3).toDateTime(), term.getEndDate());
+        assertEquals(LocalDate.of(2011, Month.APRIL, 25), term.getStartDate());
+        assertEquals(LocalDate.of(2011, Month.JULY, 3), term.getEndDate());
         assertEquals(TermType.summer, term.getTermType());
         
         assertEquals(1, term.getWeekNumber(monday));
         assertEquals(30, term.getAcademicWeekNumber(monday));
         assertEquals(21, term.getCumulativeWeekNumber(monday));
         
-        assertEquals(1, term.getWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
-        assertEquals(30, term.getAcademicWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
-        assertEquals(21, term.getCumulativeWeekNumber(monday.withDayOfWeek(DateTimeConstants.SATURDAY)));
+        assertEquals(1, term.getWeekNumber(monday.with(DayOfWeek.SATURDAY)));
+        assertEquals(30, term.getAcademicWeekNumber(monday.with(DayOfWeek.SATURDAY)));
+        assertEquals(21, term.getCumulativeWeekNumber(monday.with(DayOfWeek.SATURDAY)));
         
         assertEquals(2, term.getWeekNumber(monday.plusWeeks(1)));
         assertEquals(31, term.getAcademicWeekNumber(monday.plusWeeks(1)));
@@ -299,12 +298,12 @@ public final class TermFactoryImplTest {
 
 			assertTrue(term.getStartDate().isBefore(term.getEndDate()));
 
-			DateTime actualEndDate = term.getEndDate();
+			LocalDate actualEndDate = term.getEndDate();
 			while (actualEndDate.getDayOfWeek() != term.getStartDate().getDayOfWeek()) {
 				actualEndDate = actualEndDate.plusDays(1);
 			}
 
-			assertEquals(10, Weeks.weeksBetween(term.getStartDate(), actualEndDate).getWeeks());
+			assertEquals(10, Weeks.between(term.getStartDate(), actualEndDate).getAmount());
 
 			lastTerm = term;
 		}
@@ -314,7 +313,7 @@ public final class TermFactoryImplTest {
 	public void tab2625() throws Exception {
 		TermFactoryImpl factory = new TermFactoryImpl();
 
-		DateTime monday = new DateMidnight(2011, DateTimeConstants.APRIL, 25).toDateTime();
+		LocalDate monday = LocalDate.of(2011, Month.APRIL, 25);
 		Term term = factory.getTermFromDate(monday);
 
 		// The end date should be inclusive

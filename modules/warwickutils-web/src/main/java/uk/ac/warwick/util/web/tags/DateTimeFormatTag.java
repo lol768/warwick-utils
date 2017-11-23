@@ -1,25 +1,22 @@
 package uk.ac.warwick.util.web.tags;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.joda.time.DateTime;
-import org.joda.time.ReadableInstant;
-import org.joda.time.format.DateTimeFormat;
-import org.springframework.util.StringUtils;
-
 import freemarker.ext.beans.StringModel;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+import java.util.List;
 
 /**
- * Simple tag to reproduce a subset of behaviour of {@link FormatDateTag} so we
- * can format JodaTime's {@link DateTime} objects in JSPs.
+ * Simple tag to reproduce a subset of behaviour of {@see FormatDateTag} so we
+ * can format JSR310's {@link Temporal} objects in JSPs.
  * 
  * @author Mat
  */
@@ -27,7 +24,7 @@ public final class DateTimeFormatTag extends TagSupport implements TemplateMetho
 
     private static final long serialVersionUID = 4876809538088164519L;
 
-    private ReadableInstant value;
+    private Temporal value;
 
     private String pattern;
 
@@ -57,11 +54,11 @@ public final class DateTimeFormatTag extends TagSupport implements TemplateMetho
     	String p = ((SimpleScalar)arguments.get(0)).getAsString();
     	
     	if (!StringModel.class.isAssignableFrom(arguments.get(1).getClass()) 
-    		|| !ReadableInstant.class.isAssignableFrom(((StringModel)arguments.get(1)).getWrappedObject().getClass())) {
-    		throw new TemplateModelException(new IllegalArgumentException("Invalid argument - second argument should be a DateTime"));
+    		|| !Temporal.class.isAssignableFrom(((StringModel)arguments.get(1)).getWrappedObject().getClass())) {
+    		throw new TemplateModelException(new IllegalArgumentException("Invalid argument - second argument should be a Temporal"));
     	}
-    	
-    	ReadableInstant v = (ReadableInstant)((StringModel)arguments.get(1)).getWrappedObject();
+
+        Temporal v = (Temporal)((StringModel)arguments.get(1)).getWrappedObject();
     	
 		return getFormattedDate(p, v);
 	}
@@ -70,15 +67,15 @@ public final class DateTimeFormatTag extends TagSupport implements TemplateMetho
     	return getFormattedDate(pattern, value);
     }
     
-    public String getFormattedDate(String p, ReadableInstant v) {
+    public String getFormattedDate(String p, Temporal v) {
     	if (!StringUtils.hasText(p) || v == null) {
     		throw new IllegalArgumentException();
     	}
     	
-    	return DateTimeFormat.forPattern(p).print(v);
+    	return DateTimeFormatter.ofPattern(p).format(v);
     }
 
-    public void setValue(DateTime value) {
+    public void setValue(Temporal value) {
         this.value = value;
     }
 

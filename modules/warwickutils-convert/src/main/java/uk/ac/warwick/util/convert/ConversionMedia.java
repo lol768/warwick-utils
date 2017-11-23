@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.convert;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 
 public interface ConversionMedia {
 
@@ -13,9 +13,9 @@ public interface ConversionMedia {
 
     String getOriginalFilename();
 
-    DateTime getCreated();
+    ZonedDateTime getCreated();
 
-    DateTime getUpdated();
+    ZonedDateTime getUpdated();
 
     Status getStatus();
 

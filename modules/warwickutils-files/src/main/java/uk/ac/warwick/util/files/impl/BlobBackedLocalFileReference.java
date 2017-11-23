@@ -4,7 +4,6 @@ import com.google.common.io.ByteSource;
 import org.apache.commons.io.FilenameUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.options.CopyOptions;
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.LocalFileReference;
@@ -12,6 +11,7 @@ import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * A type of reference that backs on to a single blob, and doesn't offer
@@ -99,7 +99,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
     }
 
     @Override
-    public DateTime getLastModified() {
+    public Instant getLastModified() {
         return data.getLastModified();
     }
 
@@ -132,7 +132,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
             return thisReference;
         }
 
-        DateTime getLastModified() {
+        Instant getLastModified() {
             return byteSource.getLastModified();
         }
 

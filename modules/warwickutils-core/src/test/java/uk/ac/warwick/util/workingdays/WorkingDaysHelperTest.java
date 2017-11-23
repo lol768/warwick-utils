@@ -1,16 +1,13 @@
 package uk.ac.warwick.util.workingdays;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Iterator;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public final class WorkingDaysHelperTest {
 
@@ -19,11 +16,11 @@ public final class WorkingDaysHelperTest {
 		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
 		Set<LocalDate> holidayDates = bean.getHolidayDates();
 
-		DateTime xmas = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 25);
-		assertTrue(holidayDates.contains(xmas.toLocalDate()));
+		LocalDate xmas = LocalDate.of(2012, Month.DECEMBER, 25);
+		assertTrue(holidayDates.contains(xmas));
 
-		DateTime mayDay = new DateTime().withDate(2013, DateTimeConstants.MAY, 06);
-		assertTrue(holidayDates.contains(mayDay.toLocalDate()));
+		LocalDate mayDay = LocalDate.of(2013, Month.MAY, 6);
+		assertTrue(holidayDates.contains(mayDay));
 	}
 
 
@@ -31,33 +28,33 @@ public final class WorkingDaysHelperTest {
 	public void testRange() throws Exception {
 		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
 
-		DateTime start = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 01);
-		DateTime end = new DateTime().withDate(2013, DateTimeConstants.JANUARY, 31);
-		assertEquals(37, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+		LocalDate start = LocalDate.of(2012, Month.DECEMBER, 1);
+		LocalDate end = LocalDate.of(2013, Month.JANUARY, 31);
+		assertEquals(37, bean.getNumWorkingDays(start, end));
 
-		start = new DateTime().withDate(2013, DateTimeConstants.MAY, 01);
-		end = new DateTime().withDate(2013, DateTimeConstants.MAY, 31);
-		assertEquals(21, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+		start = LocalDate.of(2013, Month.MAY, 1);
+		end = LocalDate.of(2013, Month.MAY, 31);
+		assertEquals(21, bean.getNumWorkingDays(start, end));
 	}
 	
 	@Test
 	public void testNegativeRange() throws Exception {
 	    WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
 
-        DateTime end = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 01);
-        DateTime start = new DateTime().withDate(2013, DateTimeConstants.JANUARY, 31);
-        assertEquals(-37, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+        LocalDate end = LocalDate.of(2012, Month.DECEMBER, 1);
+        LocalDate start = LocalDate.of(2013, Month.JANUARY, 31);
+        assertEquals(-37, bean.getNumWorkingDays(start, end));
 
-        end = new DateTime().withDate(2013, DateTimeConstants.MAY, 01);
-        start = new DateTime().withDate(2013, DateTimeConstants.MAY, 31);
-        assertEquals(-21, bean.getNumWorkingDays(start.toLocalDate(), end.toLocalDate()));
+        end = LocalDate.of(2013, Month.MAY, 1);
+        start = LocalDate.of(2013, Month.MAY, 31);
+        assertEquals(-21, bean.getNumWorkingDays(start, end));
 	}
 
 	@Test
 	public void addWorkingDays() throws Exception {
 		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
-		DateTime start = new DateTime().withDate(2012, DateTimeConstants.DECEMBER, 10);
-		assertEquals(new DateTime().withDate(2013, DateTimeConstants.JANUARY, 16).toLocalDate(), bean.datePlusWorkingDays(start.toLocalDate(), 20));
+		LocalDate start = LocalDate.of(2012, Month.DECEMBER, 10);
+		assertEquals(LocalDate.of(2013, Month.JANUARY, 16), bean.datePlusWorkingDays(start, 20));
 	}
 
 	@Test
@@ -67,18 +64,17 @@ public final class WorkingDaysHelperTest {
 		WorkingDaysHelperImpl bean = new WorkingDaysHelperImpl();
 		Set<LocalDate> holidayDates = bean.getHolidayDates();
 
-		DateTime nextYear = new DateTime().plusMonths(4);
-		LocalDate nextYearLocal = nextYear.toLocalDate();
+		LocalDate nextYear = LocalDate.now().plusMonths(4);
 		LocalDate newestFound = null;
 
 		Iterator<LocalDate> i = holidayDates.iterator();
 		boolean result = false;
 		while (!result && i.hasNext()){
-			LocalDate next = (LocalDate) i.next();
+			LocalDate next = i.next();
 			if (newestFound == null || newestFound.isBefore(next)){
 				newestFound = next;
 			}
-			result = next.isAfter(nextYearLocal);
+			result = next.isAfter(nextYear);
 		}
 
 		if (!result)

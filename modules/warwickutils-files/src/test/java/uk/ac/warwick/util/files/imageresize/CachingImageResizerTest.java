@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
@@ -14,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.Assert.*;
 
@@ -34,16 +35,16 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     @Test
     public void renderResized() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         ImageResizer dummyResizer = new ImageResizer() {
             // whatever the input, write the bytes from tallThinSample.jpg into the output stream
-            public void renderResized(FileReference sourceFile, DateTime lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public void renderResized(FileReference sourceFile, Instant lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
                 out.write(input);
             }
 
-            public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 return FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg")).length;
             }
         };
@@ -63,11 +64,11 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
             assertEquals(input[i], result[i]);
         }        
         
-        assertTrue(cache.contains(sourceFile, lastModified.minusHours(1), 10, 10));
+        assertTrue(cache.contains(sourceFile, lastModified.minus(1, ChronoUnit.HOURS), 10, 10));
         
         // this time, serve out of the cache
         bos = new ByteArrayOutputStream(input.length);
-        resizer.renderResized(sourceFile, lastModified.minusHours(1), bos, 10, 10, FileType.jpg);
+        resizer.renderResized(sourceFile, lastModified.minus(1, ChronoUnit.HOURS), bos, 10, 10, FileType.jpg);
         
         result = bos.toByteArray();
         assertEquals(input.length, result.length);
@@ -78,16 +79,16 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     @Test
     public void getResizedImageLength() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         ImageResizer dummyResizer = new ImageResizer() {
             // whatever the input, write the bytes from tallThinSample.jpg into the output stream
-            public void renderResized(FileReference sourceFile, DateTime lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public void renderResized(FileReference sourceFile, Instant lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
                 out.write(input);
             }
 
-            public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 return FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg")).length;
             }
         };
@@ -102,10 +103,10 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     @Test
     public void scaledImageCacheContains() throws IOException, InterruptedException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         FileReference nosuch = file("/ab/cd/ef.data"); 
-        assertFalse(cache.contains(nosuch, lastModified.minusHours(1), 10   , 10));
+        assertFalse(cache.contains(nosuch, lastModified.minus(1, ChronoUnit.HOURS), 10   , 10));
         
         FileReference doesExist = file("/ab/cd/ef.data");
         // create a fake cache entry for this file
@@ -113,13 +114,13 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
         doesExistCacheEntry.getParentFile().mkdirs();
         doesExistCacheEntry.createNewFile();
         
-        assertTrue(cache.contains(doesExist, lastModified.minusHours(1),10,10));
-        assertFalse(cache.contains(doesExist, lastModified.minusHours(1), 20, 20));
+        assertTrue(cache.contains(doesExist, lastModified.minus(1, ChronoUnit.HOURS),10,10));
+        assertFalse(cache.contains(doesExist, lastModified.minus(1, ChronoUnit.HOURS), 20, 20));
     }
     
     @Test
     public void scaledImageCacheStaleEntry() throws InterruptedException, IOException {
-        final DateTime lastModified = new DateTime().plusHours(1);
+        final Instant lastModified = Instant.now().plus(1, ChronoUnit.HOURS);
         
         // create a fake cache entry for this file
         File doesExistCacheEntry = new File (cacheRoot,"/ab/cd/ef.data@10x10");
@@ -144,7 +145,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     @Test
     public void serveFromCache() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
                 
         //get a real live jpeg file, and copy it into the cache
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
@@ -166,16 +167,16 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     @Test
     public void cacheAndServe() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         ImageResizer dummyResizer = new ImageResizer() {
             // whatever the input, write the bytes from tallThinSample.jpg into the output stream
-            public void renderResized(FileReference sourceFile, DateTime lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public void renderResized(FileReference sourceFile, Instant lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
                 out.write(input);
             }
 
-            public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 return FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg")).length;
             }
         };
@@ -191,21 +192,21 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
             assertEquals(input[i], result[i]);
         }        
         
-        assertTrue(cache.contains(sourceFile, lastModified.minusHours(1), 10, 10));
+        assertTrue(cache.contains(sourceFile, lastModified.minus(1, ChronoUnit.HOURS), 10, 10));
     }
     
     @Test
     public void getFileSize() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         ImageResizer dummyResizer = new ImageResizer() {
             // whatever the input, write the bytes from tallThinSample.jpg into the output stream
-            public void renderResized(FileReference sourceFile, DateTime lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public void renderResized(FileReference sourceFile, Instant lastModified, OutputStream out, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
                 out.write(input);
             }
 
-            public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+            public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
                 return FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg")).length;
             }
         };

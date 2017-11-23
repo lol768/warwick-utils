@@ -2,15 +2,19 @@ package uk.ac.warwick.util.files.impl;
 
 import com.google.common.io.ByteSource;
 import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
 import org.springframework.util.FileCopyUtils;
-import uk.ac.warwick.util.files.*;
+import uk.ac.warwick.util.files.FileData;
+import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.LocalFileReference;
+import uk.ac.warwick.util.files.LocalFileStore;
+import uk.ac.warwick.util.files.Storeable;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * A type of reference that backs on to a single file, and doesn't offer
@@ -35,7 +39,7 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
 
     /**
      * @param store FileStore required for certain operations. In some cases this can be null.
-     * @param f
+     * @param f the physical file
      * @param thepath The URL path to identify the file by.
      */
     public FileBackedLocalFileReference(LocalFileStore store, File f, String thepath, StorageStrategy theStorageStrategy) {
@@ -105,7 +109,7 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
     }
 
     @Override
-    public DateTime getLastModified() {
+    public Instant getLastModified() {
         return data.getLastModified();
     }
 
@@ -126,8 +130,8 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
 
     class Data extends AbstractFileBackedFileData {
 
-        DateTime getLastModified() {
-            return new DateTime(getFile().lastModified());
+        Instant getLastModified() {
+            return Instant.ofEpochMilli(getFile().lastModified());
         }
 
         @Override

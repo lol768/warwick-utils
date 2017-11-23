@@ -1,18 +1,19 @@
 package uk.ac.warwick.util.termdates;
 
-import static org.junit.Assert.*;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
-
 import uk.ac.warwick.util.termdates.Term.TermType;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
+import static org.junit.Assert.*;
 
 public class TermImplTest {
     
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("ddMMyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");
 
     @Test
     public void getWeekNumberIsNotDependantOnMilliseconds() throws Exception {
@@ -20,12 +21,12 @@ public class TermImplTest {
          * Bump the term start time a few milliseconds into the future, to
          * test that the method isn't dependent on small changes in time.
          */
-        DateTime start = DATE_FORMATTER.parseDateTime("230407").plusMillis(50);
-        DateTime end = DATE_FORMATTER.parseDateTime("300607");
+        LocalDate start = LocalDate.parse("230407", DATE_FORMATTER);
+        LocalDate end = LocalDate.parse("300607", DATE_FORMATTER);
         
-        DateTime firstMonday = new DateTime().withDate(2007,DateTimeConstants.APRIL,23);
-        DateTime secondMonday = new DateTime().withDate(2007,DateTimeConstants.APRIL,30);
-        DateTime happyMondays = new DateTime().withDate(2007,DateTimeConstants.MAY,14);
+        LocalDate firstMonday = LocalDate.of(2007, Month.APRIL, 23);
+        LocalDate secondMonday = LocalDate.of(2007, Month.APRIL, 30);
+        LocalDate happyMondays = LocalDate.of(2007, Month.MAY, 14);
         
         TermImpl term = new TermImpl(null, start, end, TermType.summer);
         
@@ -34,11 +35,8 @@ public class TermImplTest {
         assertEquals(4, term.getWeekNumber(happyMondays));
         
         //put this one ahead and see if it still works, just for fun
-        firstMonday = firstMonday.plusMillis(200);
-        secondMonday = secondMonday.plusMillis(200);
-        
-        assertEquals(1, term.getWeekNumber(firstMonday));
-        assertEquals(2, term.getWeekNumber(secondMonday));
+        assertEquals(1, term.getWeekNumber(firstMonday.atStartOfDay().plus(200, ChronoUnit.MILLIS)));
+        assertEquals(2, term.getWeekNumber(secondMonday.atStartOfDay().plus(200, ChronoUnit.MILLIS)));
     }
     
     @Test
@@ -46,17 +44,17 @@ public class TermImplTest {
         TermFactoryImpl factory = new TermFactoryImpl();
         
         // Check for 2009/10
-        DateTime week1start = new DateTime(2009, DateTimeConstants.OCTOBER, 5, 0, 0, 0, 0);
-        DateTime week1 = new DateTime(2009, DateTimeConstants.OCTOBER, 7, 16, 39, 10, 0);
-        DateTime week7 = new DateTime(2009, DateTimeConstants.NOVEMBER, 17, 16, 39, 10, 0);
-        DateTime week11 = new DateTime(2009, DateTimeConstants.DECEMBER, 14, 16, 39, 10, 0);
-        DateTime week12 = new DateTime(2009, DateTimeConstants.DECEMBER, 22, 16, 39, 10, 0);
-        DateTime week14 = new DateTime(2010, DateTimeConstants.JANUARY, 4, 16, 39, 10, 0);
-        DateTime week23 = new DateTime(2010, DateTimeConstants.MARCH, 10, 16, 39, 10, 0);
-        DateTime week28 = new DateTime(2010, DateTimeConstants.APRIL, 15, 16, 39, 10, 0);
-        DateTime week39 = new DateTime(2010, DateTimeConstants.JUNE, 30, 16, 39, 10, 0);
-        DateTime week52 = new DateTime(2010, DateTimeConstants.OCTOBER, 1, 16, 39, 10, 0);
-        DateTime week52end = new DateTime(2010, DateTimeConstants.OCTOBER, 4, 0, 0, 0, 0).minusMillis(1);
+        LocalDateTime week1start = LocalDateTime.of(2009, Month.OCTOBER, 5, 0, 0, 0, 0);
+        LocalDateTime week1 = LocalDateTime.of(2009, Month.OCTOBER, 7, 16, 39, 10, 0);
+        LocalDateTime week7 = LocalDateTime.of(2009, Month.NOVEMBER, 17, 16, 39, 10, 0);
+        LocalDateTime week11 = LocalDateTime.of(2009, Month.DECEMBER, 14, 16, 39, 10, 0);
+        LocalDateTime week12 = LocalDateTime.of(2009, Month.DECEMBER, 22, 16, 39, 10, 0);
+        LocalDateTime week14 = LocalDateTime.of(2010, Month.JANUARY, 4, 16, 39, 10, 0);
+        LocalDateTime week23 = LocalDateTime.of(2010, Month.MARCH, 10, 16, 39, 10, 0);
+        LocalDateTime week28 = LocalDateTime.of(2010, Month.APRIL, 15, 16, 39, 10, 0);
+        LocalDateTime week39 = LocalDateTime.of(2010, Month.JUNE, 30, 16, 39, 10, 0);
+        LocalDateTime week52 = LocalDateTime.of(2010, Month.OCTOBER, 1, 16, 39, 10, 0);
+        LocalDateTime week52end = LocalDateTime.of(2010, Month.OCTOBER, 4, 0, 0, 0, 0).minus(1, ChronoUnit.MILLIS);
         
         assertEquals(1, factory.getTermFromDate(week1start).getWeekNumber(week1start));
         assertEquals(1, factory.getTermFromDate(week1start).getAcademicWeekNumber(week1start));
@@ -103,7 +101,7 @@ public class TermImplTest {
         assertEquals(Term.WEEK_NUMBER_BEFORE_START, factory.getTermFromDate(week52end).getCumulativeWeekNumber(week52end));
         
         // 2008/2009 had a week 53
-        DateTime week53 = week1start.minusMillis(1); 
+        LocalDateTime week53 = week1start.minus(1, ChronoUnit.MILLIS);
         assertEquals(Term.WEEK_NUMBER_BEFORE_START, factory.getTermFromDate(week53).getWeekNumber(week53));
         assertEquals(53, factory.getTermFromDate(week53).getAcademicWeekNumber(week53));
         assertEquals(Term.WEEK_NUMBER_BEFORE_START, factory.getTermFromDate(week53).getCumulativeWeekNumber(week53));

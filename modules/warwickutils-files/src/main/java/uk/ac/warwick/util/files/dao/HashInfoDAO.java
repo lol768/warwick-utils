@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.files.dao;
 
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import uk.ac.warwick.util.files.HashInfo;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.hibernate.BatchResults;
+
+import java.time.temporal.Temporal;
+import java.util.List;
 
 /**
  * This DAO is for manipulating and querying the
@@ -25,7 +24,7 @@ public interface HashInfoDAO {
      * this will return hashes that are actually in use,
      * which could cause them to be deleted.
      */
-    Iterable<String> findUnreferencedHashes(DateTime createdBefore);
+    Iterable<String> findUnreferencedHashes(Temporal createdBefore);
 
     /**
      * Check all the places where hashes are referenced and return whether the
@@ -37,19 +36,19 @@ public interface HashInfoDAO {
     /**
      * Get hashes created since a certain date (inclusive), ordered by Created Date
      */
-    List<HashInfo> getHashesCreatedSince(DateTime createdSince, int returnCount);
+    List<HashInfo> getHashesCreatedSince(Temporal createdSince, int returnCount);
     
     /**
      * Get hashes created before a certain date (exclusive), ordered by Created Date
      */
-    List<HashInfo> getHashesCreatedBefore(DateTime createdBefore);
+    List<HashInfo> getHashesCreatedBefore(Temporal createdBefore);
     
-    BatchResults<HashInfo> scrollHashesCreatedBefore(DateTime createdBefore);
+    BatchResults<HashInfo> scrollHashesCreatedBefore(Temporal createdBefore);
     
     /**
      * Get hashes created on a certain date, ordered by hash, starting from a particular hash
      */
-    List<HashInfo> getHashesCreatedOn(DateTime createdOn, int returnCount, String startingHash);
+    List<HashInfo> getHashesCreatedOn(Temporal createdOn, int returnCount, String startingHash);
     
     /**
      * When a hash is currently unused and is being

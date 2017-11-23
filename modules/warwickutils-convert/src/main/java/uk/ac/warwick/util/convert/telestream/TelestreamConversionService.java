@@ -22,10 +22,6 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.util.EntityUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.convert.*;
+import uk.ac.warwick.util.convert.ConversionException;
+import uk.ac.warwick.util.convert.ConversionMedia;
+import uk.ac.warwick.util.convert.ConversionService;
+import uk.ac.warwick.util.convert.ConversionStatus;
+import uk.ac.warwick.util.convert.S3ByteSource;
 import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.web.Uri;
 
@@ -45,7 +45,20 @@ import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -59,7 +72,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
 
     private static final long UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024; // 5mb
 
-    private static final DateTimeFormatter ISO8601_STRICT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+    private static final DateTimeFormatter ISO8601_STRICT = DateTimeFormatter.ISO_DATE_TIME;
 
     private final CloseableHttpClient httpClient;
 
@@ -300,7 +313,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
     private Uri generateS3PrivateUrl(String objectKey) {
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, objectKey);
         request.setMethod(HttpMethod.GET);
-        request.setExpiration(DateTime.now().plusHours(1).toDate());
+        request.setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)));
 
         return Uri.fromJavaUrl(s3.generatePresignedUrl(request));
     }
@@ -379,7 +392,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         allParams.putAll(params);
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", DateTime.now().withZone(DateTimeZone.UTC).toString(ISO8601_STRICT));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
         String canonicalQueryString = getCanonicalQueryString(allParams);
 
 
@@ -416,7 +429,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         allParams.putAll(params);
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", DateTime.now().withZone(DateTimeZone.UTC).toString(ISO8601_STRICT));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
 
         // Get the canonical querystring
         String canonicalQueryString = getCanonicalQueryString(allParams);
@@ -438,7 +451,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
         Map<String, String> allParams = new HashMap<>();
         allParams.put("access_key", accessKey);
         allParams.put("factory_id", factoryId);
-        allParams.put("timestamp", DateTime.now().withZone(DateTimeZone.UTC).toString(ISO8601_STRICT));
+        allParams.put("timestamp", ISO8601_STRICT.format(LocalDateTime.now().atZone(ZoneId.of("Z"))));
 
         // Get the canonical querystring
         String canonicalQueryString = getCanonicalQueryString(allParams);
@@ -469,7 +482,7 @@ public class TelestreamConversionService implements ConversionService, Disposabl
     }
 
     // TeleStream-specific API calls
-    public Object getServiceStatus() throws IOException {
+    public TelestreamConversionServiceStatus getServiceStatus() throws IOException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Requesting a list of all encodings");
         }

@@ -1,18 +1,16 @@
 package uk.ac.warwick.util.termdates;
 
-import java.util.List;
-
-import org.joda.time.Interval;
-import org.joda.time.base.BaseDateTime;
-
+import org.threeten.extra.LocalDateRange;
 import uk.ac.warwick.util.collections.Pair;
 
+import java.time.temporal.Temporal;
+import java.util.List;
+
 public interface TermFactory {
-    
-    Term getTermFromDate(BaseDateTime date) throws TermNotFoundException;
+    Term getTermFromDate(Temporal date) throws TermNotFoundException;
     Term getPreviousTerm(Term term) throws TermNotFoundException;
     Term getNextTerm(Term term) throws TermNotFoundException;
-    
-    Interval getAcademicWeek(BaseDateTime date, int weekNumber) throws TermNotFoundException;
-    List<Pair<Integer, Interval>> getAcademicWeeksForYear(BaseDateTime date) throws TermNotFoundException;
+
+    LocalDateRange getAcademicWeek(Temporal date, int weekNumber) throws TermNotFoundException;
+    List<Pair<Integer, LocalDateRange>> getAcademicWeeksForYear(Temporal date) throws TermNotFoundException;
 }

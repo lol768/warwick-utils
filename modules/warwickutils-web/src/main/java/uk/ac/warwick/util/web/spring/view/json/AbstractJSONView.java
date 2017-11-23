@@ -1,22 +1,11 @@
 package uk.ac.warwick.util.web.spring.view.json;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.joda.time.DateTime;
+import com.google.common.collect.Lists;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.StringUtils;
@@ -24,7 +13,15 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.View;
 
-import com.google.common.collect.Lists;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.List;
+import java.util.Map;
 
 @Configurable
 abstract class AbstractJSONView<T> implements View {
@@ -146,10 +143,6 @@ abstract class AbstractJSONView<T> implements View {
     public final String getContentType() {
         // Needs to be application/json in order to use proper json parsing in prototype
         return "application/json";
-    }
-
-    protected static long toJSON(DateTime dt) {
-        return dt == null ? 0 : dt.getMillis();
     }
 
     public final void setJsonpRequestValidator(JSONPRequestValidator jsonpRequestValidator) {

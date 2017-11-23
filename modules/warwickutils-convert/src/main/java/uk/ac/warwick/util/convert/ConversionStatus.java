@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.convert;
 
-import org.joda.time.DateTime;
-
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface ConversionStatus {
@@ -18,9 +17,9 @@ public interface ConversionStatus {
 
     List<String> getScreenshots();
 
-    DateTime getCreated();
+    ZonedDateTime getCreated();
 
-    DateTime getUpdated();
+    ZonedDateTime getUpdated();
 
     Integer getProgress();
 

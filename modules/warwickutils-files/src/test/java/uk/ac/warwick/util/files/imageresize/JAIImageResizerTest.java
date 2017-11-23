@@ -1,28 +1,24 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
-
-import org.joda.time.DateTime;
+import com.sun.media.jai.codec.ByteArraySeekableStream;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
-
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
 import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
-import com.sun.media.jai.codec.ByteArraySeekableStream;
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.Instant;
+
+import static org.junit.Assert.*;
 
 public final class JAIImageResizerTest {
 
@@ -110,7 +106,7 @@ public final class JAIImageResizerTest {
      */
     @Test
     public void fileReferenceInput() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         JAIImageResizer resizer = new JAIImageResizer();
 
@@ -177,7 +173,7 @@ public final class JAIImageResizerTest {
     @Test
     @Ignore("Brittle")
     public void badImage() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
         
         JAIImageResizer resizer = new JAIImageResizer();
 

@@ -1,10 +1,10 @@
 package uk.ac.warwick.util.files;
 
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * A file reference backed by local file system data.
@@ -24,7 +24,7 @@ public interface LocalFileReference extends FileReference {
      * For a binary file this is equivalent to the page URL, but like the URL
      * is a virtual resource and may not exist as a path on disk.
      * <p>
-     * If for some reason you need the real path, {@link FileData#getRealPath()} is
+     * If for some reason you need the real path, {@link FileData#getFileLocation()} is
      * what you want. Avoid it unless you do really need it, though.
      */
     String getPath();
@@ -37,7 +37,7 @@ public interface LocalFileReference extends FileReference {
      * used to delegate to the {@link FileData} but this is unsafe as a way of
      * determining the last modified date of hash references. See SBTWO-3630
      */
-    DateTime getLastModified();
+    Instant getLastModified();
     
     /**
      * Copy this file reference to the specified local path.
