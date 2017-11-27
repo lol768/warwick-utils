@@ -38,7 +38,7 @@ public final class QueryStringEscapingTest extends TestCase {
 		Pair<Integer, String> status = ex.execute(HttpMethodExecutor.RESPONSE_AS_STRING);
 		assertEquals(200, status.getLeft().intValue());
 		
-		assertEquals("https://www2.warwick.ac.uk/insite/?dept=IN", ex.getRedirectUrl());
+		assertEquals("https://warwick.ac.uk/insite/?dept=IN", ex.getRedirectUrl());
 		
 		assertNotNull(status.getRight());
 	}
@@ -55,7 +55,7 @@ public final class QueryStringEscapingTest extends TestCase {
 		Pair<Integer, String> status = ex.execute(HttpMethodExecutor.RESPONSE_AS_STRING);
 		assertEquals("Should be able to access " + url, 200, status.getLeft().intValue());
 		
-		assertEquals("https://www2.warwick.ac.uk/insite/", ex.getRedirectUrl());
+		assertEquals("https://warwick.ac.uk/insite/", ex.getRedirectUrl());
         
         assertNotNull(status.getRight());
 	}
