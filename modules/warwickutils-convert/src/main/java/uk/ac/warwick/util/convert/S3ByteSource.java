@@ -3,11 +3,11 @@ package uk.ac.warwick.util.convert;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.google.common.io.ByteSource;
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.core.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Date;
 
 public class S3ByteSource extends ByteSource {
@@ -75,10 +75,10 @@ public class S3ByteSource extends ByteSource {
         return s3.getObjectMetadata(bucket, key).getLastModified();
     }
 
-    public synchronized DateTime getLastModified() throws IOException {
+    public synchronized Instant getLastModified() throws IOException {
         checkExists();
 
-        return new DateTime(getS3LastModified());
+        return getS3LastModified().toInstant();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.files;
 
 import com.google.common.io.ByteSource;
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.core.spring.FileUtils;
 import uk.ac.warwick.util.files.Storeable.StorageStrategy;
 import uk.ac.warwick.util.files.hash.HashString;
@@ -9,6 +8,7 @@ import uk.ac.warwick.util.files.impl.AbstractFileReference;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
 
 public class MockFileStore implements FileStore {
 
@@ -41,7 +41,7 @@ public class MockFileStore implements FileStore {
         }
 
         @Override
-        public DateTime getLastModified() {
+        public Instant getLastModified() {
             return null;
         }
 

@@ -1,11 +1,11 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.files.FileReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 
 /**
  * Image resizer that uses a cache to reduce calls
@@ -39,7 +39,7 @@ public final class CachingImageResizer implements FileExposingImageResizer {
         this(delegateResizer, new FileSystemScaledImageCache(cacheDirectory, cacheSeparator));
     }
     
-    public void renderResized(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
+    public void renderResized(final FileReference sourceFile, final Instant entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
         if (cache.contains(sourceFile, entityLastModified, maxWidth, maxHeight)){
             // there's the vague possibility that a cache file is deleted between checking cache.contains, and actually
             // serving it. But it doesn't seem worth the overhead of synchronizing to prevent this
@@ -49,7 +49,7 @@ public final class CachingImageResizer implements FileExposingImageResizer {
         }
     }
     
-    public File getResized(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
+    public File getResized(final FileReference sourceFile, final Instant entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
         if (cache instanceof FileExposingScaledImageCache) {
             if (!cache.contains(sourceFile, entityLastModified, maxWidth, maxHeight)){
                 cache.createInCache(sourceFile, entityLastModified, maxWidth, maxHeight, fileType, delegate);
@@ -61,7 +61,7 @@ public final class CachingImageResizer implements FileExposingImageResizer {
         }
     }
     
-    public long getResizedImageLength(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) {
+    public long getResizedImageLength(final FileReference sourceFile, final Instant entityLastModified, final int maxWidth, final int maxHeight, final FileType fileType) {
         return cache.getFileSize(sourceFile, entityLastModified, maxWidth, maxHeight, fileType, delegate);
     }
 

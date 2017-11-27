@@ -1,14 +1,13 @@
 package uk.ac.warwick.util.files;
 
-import org.joda.time.DateTime;
-
 import uk.ac.warwick.util.files.hash.HashString;
 
+import java.time.LocalDateTime;
 
 public final class HashInfoImpl implements HashInfo {
 
     private String hash;
-    private DateTime createdDate;
+    private LocalDateTime createdDate;
     private Long fileSize;
     
     @SuppressWarnings("unused")
@@ -16,7 +15,7 @@ public final class HashInfoImpl implements HashInfo {
         //for Hibernate's delectation
     }
     
-    public HashInfoImpl(final HashString h, final DateTime theCreatedDate, Long theFileSize ) {
+    public HashInfoImpl(final HashString h, final LocalDateTime theCreatedDate, Long theFileSize ) {
         this.hash = h.toString();
         this.createdDate = theCreatedDate;
         this.fileSize = theFileSize;
@@ -26,7 +25,7 @@ public final class HashInfoImpl implements HashInfo {
         return this.hash;
     }
 
-    public DateTime getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 

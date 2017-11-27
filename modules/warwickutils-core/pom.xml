@@ -84,8 +84,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
+			<groupId>org.threeten</groupId>
+			<artifactId>threeten-extra</artifactId>
 		</dependency>
 
 		<dependency>

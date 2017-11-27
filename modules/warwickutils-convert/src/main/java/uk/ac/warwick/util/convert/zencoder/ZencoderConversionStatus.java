@@ -5,21 +5,20 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.warwick.util.convert.ConversionStatus;
 import uk.ac.warwick.util.web.Uri;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 class ZencoderConversionStatus implements ConversionStatus {
 
-    private static final DateTimeFormatter DATETIME_FORMAT = ISODateTimeFormat.dateTimeNoMillis();
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
 
     private int id;
 
@@ -29,9 +28,9 @@ class ZencoderConversionStatus implements ConversionStatus {
 
     private List<String> screenshots;
 
-    private DateTime created;
+    private ZonedDateTime created;
 
-    private DateTime updated;
+    private ZonedDateTime updated;
 
     private Integer progress;
 
@@ -70,8 +69,8 @@ class ZencoderConversionStatus implements ConversionStatus {
         ZencoderConversionStatus status = new ZencoderConversionStatus();
 
         status.id = json.getInt("id");
-        status.created = DATETIME_FORMAT.parseDateTime(json.getString("created_at"));
-        status.updated = DATETIME_FORMAT.parseDateTime(json.getString("updated_at"));
+        status.created = ZonedDateTime.parse(json.getString("created_at"), DATETIME_FORMAT);
+        status.updated = ZonedDateTime.parse(json.getString("updated_at"), DATETIME_FORMAT);
         status.progress = 100;
 
         switch (json.getString("state")) {
@@ -121,11 +120,11 @@ class ZencoderConversionStatus implements ConversionStatus {
         return screenshots;
     }
 
-    public DateTime getCreated() {
+    public ZonedDateTime getCreated() {
         return created;
     }
 
-    public DateTime getUpdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 

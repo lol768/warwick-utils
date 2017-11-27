@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.files;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 /**
  * This is literally just to represent the file_hash table in
@@ -10,7 +10,7 @@ public interface HashInfo {
 
     String getHash();
     
-    DateTime getCreatedDate();
+    LocalDateTime getCreatedDate();
     
     Long getFileSize();
 

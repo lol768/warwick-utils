@@ -1,24 +1,26 @@
 package uk.ac.warwick.util.content.freemarker;
 
-import static org.junit.Assert.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import static org.junit.Assert.*;
 
 public final class DateTimeFreemarkerObjectWrapperTest {
     
@@ -38,7 +40,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
     }
     
     @Test 
-    public void jodaTimeWrapping() throws Exception {
+    public void jsr310JavaTimeWrapping() throws Exception {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
         Locale.setDefault(Locale.UK);
         
@@ -46,24 +48,24 @@ public final class DateTimeFreemarkerObjectWrapperTest {
         configuration.setClassForTemplateLoading(getClass(), "");
         configuration.setObjectWrapper(new DateTimeFreemarkerObjectWrapper());
 
-        Template template = configuration.getTemplate("joda-test.ftl");
+        Template template = configuration.getTemplate("datetime-test.ftl");
         
         Map<String, Object> rootMap = new HashMap<String, Object>();
         rootMap.put("greeting", "hello");
         
         StringWriter out = new StringWriter();
-        rootMap.put("d", new Date(1234567890000l));
+        rootMap.put("d", new Date(1234567890000L));
         template.process(rootMap, out);
         assertEquals("start;13 February 2009 23:31:30 GMT;end", out.toString());
         
         out = new StringWriter();
-        rootMap.put("d", new DateTime(1234567890000l));
+        rootMap.put("d", Instant.ofEpochMilli(1234567890000L));
         template.process(rootMap, out);
         assertEquals("start;13 February 2009 23:31:30 GMT;end", out.toString());
         
         out = new StringWriter();
-        DateTime dateTime = new DateTime(2009, DateTimeConstants.JULY, 1, 1, 2, 3, 4);
-        assertEquals("Europe/London", dateTime.getZone().getID());
+        ZonedDateTime dateTime = LocalDateTime.of(2009, Month.JULY, 1, 1, 2, 3, 4).atZone(ZoneId.of("Europe/London"));
+        assertEquals("Europe/London", dateTime.getZone().getId());
         rootMap.put("d", dateTime);
         template.process(rootMap, out);
         
@@ -71,38 +73,28 @@ public final class DateTimeFreemarkerObjectWrapperTest {
     }
     
     @Test
-    public void jodaToDateConversion() throws Exception {
-        DateTimeFormatter formatter = DateTimeFormat.forStyle("FF").withLocale(Locale.UK);
+    public void jsr310ToDateConversion() throws Exception {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL);
         
         {
-            DateTime dateTime = new DateTime(2009, DateTimeConstants.FEBRUARY, 13, 23, 31, 30, 0);
-            assertEquals("Europe/London", dateTime.getZone().getID());
-            assertEquals("Friday, 13 February 2009 23:31:30 o'clock +00:00", formatter.print(dateTime));
-            assertEquals(1234567890000l, dateTime.getMillis());
+            ZonedDateTime dateTime = LocalDateTime.of(2009, Month.FEBRUARY, 13, 23, 31, 30, 0).atZone(ZoneId.of("Europe/London"));
+            assertEquals("Europe/London", dateTime.getZone().getId());
+            assertEquals("Friday, 13 February 2009 23:31:30 o'clock GMT", formatter.format(dateTime));
+            assertEquals(1234567890000L, dateTime.toInstant().toEpochMilli());
             
-            Date date = new Date(dateTime.getMillis());
-            assertEquals(1234567890000l, date.getTime());
-            
-            DateTime dateTime2 = new DateTime(date);
-            assertEquals("Europe/London", dateTime2.getZone().getID());
-            assertEquals("Friday, 13 February 2009 23:31:30 o'clock +00:00", formatter.print(dateTime2));
-            assertEquals(1234567890000l, dateTime2.getMillis());
+            Date date = Date.from(dateTime.toInstant());
+            assertEquals(1234567890000L, date.getTime());
         }
         
         // now let's try a BST one
         {
-            DateTime dateTime = new DateTime(2009, DateTimeConstants.JULY, 13, 23, 31, 30, 0);
-            assertEquals("Europe/London", dateTime.getZone().getID());
-            assertEquals("Monday, 13 July 2009 23:31:30 o'clock +01:00", formatter.print(dateTime));
-            assertEquals(1247524290000L, dateTime.getMillis());
+            ZonedDateTime dateTime = LocalDateTime.of(2009, Month.JULY, 13, 23, 31, 30, 0).atZone(ZoneId.of("Europe/London"));
+            assertEquals("Europe/London", dateTime.getZone().getId());
+            assertEquals("Monday, 13 July 2009 23:31:30 o'clock BST", formatter.format(dateTime));
+            assertEquals(1247524290000L, dateTime.toInstant().toEpochMilli());
             
-            Date date = new Date(dateTime.getMillis());
+            Date date = Date.from(dateTime.toInstant());
             assertEquals(1247524290000L, date.getTime());
-            
-            DateTime dateTime2 = new DateTime(date);
-            assertEquals("Europe/London", dateTime2.getZone().getID());
-            assertEquals("Monday, 13 July 2009 23:31:30 o'clock +01:00", formatter.print(dateTime2));
-            assertEquals(1247524290000L, dateTime2.getMillis());
         }
     }
 }

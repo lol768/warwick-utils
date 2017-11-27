@@ -4,12 +4,12 @@ import com.google.common.io.ByteSource;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.options.GetOptions;
-import org.joda.time.DateTime;
 import uk.ac.warwick.util.files.FileData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Instant;
 
 /**
  * FileData that is stored on externally in an object store. This doesn't make any
@@ -186,13 +186,13 @@ public abstract class AbstractBlobBackedFileData implements FileData {
             }
         }
 
-        public synchronized DateTime getLastModified() {
+        public synchronized Instant getLastModified() {
             if (blob == null) refresh();
 
             if (blob == null) {
                 return null;
             } else {
-                return new DateTime(blob.getMetadata().getLastModified().getTime());
+                return blob.getMetadata().getLastModified().toInstant();
             }
         }
 

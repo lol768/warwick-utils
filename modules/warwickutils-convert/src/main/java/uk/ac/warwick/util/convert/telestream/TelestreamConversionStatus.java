@@ -5,20 +5,19 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.warwick.util.convert.ConversionStatus;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 class TelestreamConversionStatus implements ConversionStatus {
 
-    private static final DateTimeFormatter TS_DATETIME_FORMAT = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss Z");
+    private static final DateTimeFormatter TS_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss Z");
 
     private String id;
 
@@ -30,11 +29,11 @@ class TelestreamConversionStatus implements ConversionStatus {
 
     private List<String> screenshots;
 
-    private DateTime created;
+    private ZonedDateTime created;
 
-    private DateTime updated;
+    private ZonedDateTime updated;
 
-    private DateTime startedEncoding;
+    private ZonedDateTime startedEncoding;
 
     private Duration encodingTime;
 
@@ -69,14 +68,14 @@ class TelestreamConversionStatus implements ConversionStatus {
 
         status.screenshots = screenshots.build();
 
-        status.created = TS_DATETIME_FORMAT.parseDateTime(json.getString("created_at"));
-        status.updated = TS_DATETIME_FORMAT.parseDateTime(json.getString("updated_at"));
-        status.startedEncoding = json.isNull("started_encoding_at") ? null : TS_DATETIME_FORMAT.parseDateTime(json.getString("started_encoding_at"));
-        status.encodingTime = json.isNull("encoding_time") ? null : Duration.standardSeconds(json.getLong("encoding_time"));
+        status.created = ZonedDateTime.parse(json.getString("created_at"), TS_DATETIME_FORMAT);
+        status.updated = ZonedDateTime.parse(json.getString("updated_at"), TS_DATETIME_FORMAT);
+        status.startedEncoding = json.isNull("started_encoding_at") ? null : ZonedDateTime.parse(json.getString("started_encoding_at"), TS_DATETIME_FORMAT);
+        status.encodingTime = json.isNull("encoding_time") ? null : Duration.ofSeconds(json.getLong("encoding_time"));
         status.progress = json.isNull("encoding_progress") ? null : json.getInt("encoding_progress");
         status.width = json.isNull("width") ? null : json.getInt("width");
         status.height = json.isNull("height") ? null : json.getInt("height");
-        status.duration = json.isNull("duration") ? null : Duration.millis(json.getLong("duration"));
+        status.duration = json.isNull("duration") ? null : Duration.ofMillis(json.getLong("duration"));
 
         return status;
     }
@@ -101,15 +100,15 @@ class TelestreamConversionStatus implements ConversionStatus {
         return screenshots;
     }
 
-    public DateTime getCreated() {
+    public ZonedDateTime getCreated() {
         return created;
     }
 
-    public DateTime getUpdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 
-    public DateTime getStartedEncoding() {
+    public ZonedDateTime getStartedEncoding() {
         return startedEncoding;
     }
 

@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.termdates;
 
-import org.joda.time.DateTime;
-import org.joda.time.base.BaseDateTime;
+import java.time.LocalDate;
+import java.time.temporal.Temporal;
 
 /**
  * Utility object used to represent a Term at the University, usually 10 weeks
@@ -23,9 +23,9 @@ public interface Term {
         autumn, spring, summer
     }
 
-    DateTime getStartDate();
+    LocalDate getStartDate();
 
-    DateTime getEndDate();
+    LocalDate getEndDate();
 
     TermType getTermType();
     
@@ -38,12 +38,12 @@ public interface Term {
      *         Will return -1 for before the start of term and -2 for after the
      *         end of term.
      */
-    int getWeekNumber(BaseDateTime dateTime);
+    int getWeekNumber(Temporal dateTime);
     
     /**
      * Gets the cumulative week number - week 1 of term 2 is 11, not 1, and week 1 of term 3 is 21.
      */
-    int getCumulativeWeekNumber(BaseDateTime dateTime);
+    int getCumulativeWeekNumber(Temporal dateTime);
 
     /**
      * Get the academic week number - starts at 1 for the first week of the
@@ -55,6 +55,6 @@ public interface Term {
      *         weeks before the start of the academic year, and -2 for weeks
      *         after the end of the academic year.
      */
-    int getAcademicWeekNumber(BaseDateTime dateTime);
+    int getAcademicWeekNumber(Temporal dateTime);
 
 }

@@ -1,20 +1,19 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Period;
-
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+
+import java.time.Duration;
+import java.util.List;
 
 public final class CachePolicy {
     
-    public static final Period IMAGE_CACHE_PERIOD = Period.hours(2);
+    public static final Duration IMAGE_CACHE_PERIOD = Duration.ofHours(2);
     
     public static final CachePolicy PUBLIC_IMAGES = CachePolicy.publicCaching(IMAGE_CACHE_PERIOD);
     
-    // We have to express this in days because otherwise Joda-Time won't run conversions on it (because of variable-length years)
-    public static final Period SITE_ASSET_CACHE_PERIOD = Period.days(365);
+    // We have to express this in days because you can't have longer Duration periods (because they're variable length)
+    public static final Duration SITE_ASSET_CACHE_PERIOD = Duration.ofDays(365);
     
     public static final CachePolicy SITE_ASSET = CachePolicy.publicCaching(SITE_ASSET_CACHE_PERIOD);
     
@@ -37,11 +36,11 @@ public final class CachePolicy {
     
     private final Privacy privacy;
     
-    private final Period expiresPeriod;
+    private final Duration expiresPeriod;
     
     private final boolean noCache;
     
-    private CachePolicy(Privacy privacyPolicy, Period expiry, boolean isNoCache) {
+    private CachePolicy(Privacy privacyPolicy, Duration expiry, boolean isNoCache) {
         this.privacy = privacyPolicy;
         this.expiresPeriod = expiry;
         this.noCache = isNoCache;
@@ -51,7 +50,7 @@ public final class CachePolicy {
         return privacy;
     }
 
-    public Period getExpiresPeriod() {
+    public Duration getExpiresPeriod() {
         return expiresPeriod;
     }
 
@@ -63,11 +62,11 @@ public final class CachePolicy {
         return publicCaching(null);
     }
     
-    private static CachePolicy publicCaching(Period expires) {
+    private static CachePolicy publicCaching(Duration expires) {
         return publicCaching(expires, false);
     }
     
-    private static CachePolicy publicCaching(Period expires, boolean noCache) {
+    private static CachePolicy publicCaching(Duration expires, boolean noCache) {
         return new CachePolicy(Privacy.Public, expires, noCache);
     }
     
@@ -75,11 +74,11 @@ public final class CachePolicy {
         return privateCaching(null);
     }
     
-    private static CachePolicy privateCaching(Period expires) {
+    private static CachePolicy privateCaching(Duration expires) {
         return privateCaching(expires, false);
     }
     
-    private static CachePolicy privateCaching(Period expires, boolean noCache) {
+    private static CachePolicy privateCaching(Duration expires, boolean noCache) {
         return new CachePolicy(Privacy.Private, expires, noCache);
     }
     
@@ -100,7 +99,7 @@ public final class CachePolicy {
         }
         
         if (expiresPeriod != null) {
-            components.add("max-age=" + expiresPeriod.toStandardSeconds().getSeconds());
+            components.add("max-age=" + expiresPeriod.getSeconds());
             components.add("stale-while-revalidate=60");
         } else if (privacy != null) {
             components.add("max-age=0");

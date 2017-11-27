@@ -1,40 +1,39 @@
 package uk.ac.warwick.util.files.impl;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.*;
+import com.google.common.io.CharSink;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Description;
 import org.jclouds.ContextBuilder;
-import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.TransientApiMetadata;
-import org.jclouds.blobstore.domain.Blob;
-import org.jclouds.blobstore.domain.MutableBlobMetadata;
-import org.jclouds.blobstore.options.GetOptions;
-import org.jclouds.io.Payload;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Action;
 import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
-import uk.ac.warwick.util.files.*;
+import uk.ac.warwick.util.files.HashFileReference;
+import uk.ac.warwick.util.files.HashInfoImpl;
+import uk.ac.warwick.util.files.LocalFileReference;
+import uk.ac.warwick.util.files.StaticFileReferenceCreationStrategy;
+import uk.ac.warwick.util.files.Storeable;
 import uk.ac.warwick.util.files.dao.HashInfoDAO;
 import uk.ac.warwick.util.files.hash.FileHashResolver;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.hash.impl.BlobStoreBackedHashResolver;
 import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -77,7 +76,7 @@ public class BlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4F
                 public Object invoke(Invocation invocation) throws Throwable {
                     String hash = invocation.getParameter(0).toString();
 
-                    return new HashInfoImpl(new HashString(hash), DateTime.now(), 0L);
+                    return new HashInfoImpl(new HashString(hash), LocalDateTime.now(), 0L);
                 }
             });
         }});

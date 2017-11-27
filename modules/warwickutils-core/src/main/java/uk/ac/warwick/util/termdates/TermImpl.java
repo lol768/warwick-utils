@@ -1,34 +1,33 @@
 package uk.ac.warwick.util.termdates;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.MutableDateTime;
-import org.joda.time.base.BaseDateTime;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.Temporal;
 
 public final class TermImpl implements Term {
     
     private final TermFactory termFactory;
 
-    private final DateTime startDate;
+    private final LocalDate startDate;
 
-    private final DateTime endDate;
+    private final LocalDate endDate;
 
     private final TermType termType;
 
-    public TermImpl(final TermFactory factory, final DateTime start, final DateTime end, final TermType type) {
+    public TermImpl(final TermFactory factory, final LocalDate start, final LocalDate end, final TermType type) {
         this.termFactory = factory;
         this.startDate = start;
         this.endDate = end;
         this.termType = type;
     }
 
-    public DateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
     
-    public DateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
     
@@ -54,8 +53,9 @@ public final class TermImpl implements Term {
         return result;
     }
 
-    public int getWeekNumber(final BaseDateTime dt) {
-        DateTime startOfFirstWeek = startDate.withDayOfWeek(DateTimeConstants.MONDAY);
+    public int getWeekNumber(final Temporal temporal) {
+        LocalDate dt = LocalDate.from(temporal);
+        LocalDate startOfFirstWeek = startDate.with(DayOfWeek.MONDAY);
         
         boolean firstDayOfTerm = DateTimeUtils.isSameDay(dt, startOfFirstWeek);
 
@@ -65,10 +65,10 @@ public final class TermImpl implements Term {
 
         int result = WEEK_NUMBER_AFTER_END;
 
-        MutableDateTime theWeek = startOfFirstWeek.toMutableDateTime();
+        LocalDate theWeek = startOfFirstWeek;
 
         for (int week = 1; week <= NUMBER_OF_WEEKS_IN_TERM; week++) {
-            theWeek.addWeeks(1);
+            theWeek = theWeek.plusWeeks(1);
             if (dt.isBefore(theWeek) && !DateTimeUtils.isSameDay(dt, theWeek)) {
                 result = week;
                 break;
@@ -78,7 +78,7 @@ public final class TermImpl implements Term {
         return result;
     }
     
-    public int getCumulativeWeekNumber(final BaseDateTime dt) {
+    public int getCumulativeWeekNumber(final Temporal dt) {
         int weekNumber = getWeekNumber(dt);
         if (weekNumber > 0) {
             switch (termType) {
@@ -98,12 +98,14 @@ public final class TermImpl implements Term {
         return weekNumber;
     }
     
-    public int getAcademicWeekNumber(BaseDateTime dt) {
+    public int getAcademicWeekNumber(Temporal temporal) {
+        LocalDate dt = LocalDate.from(temporal);
+
         // Get the start and end dates for this academic year. Roll back to the
         // autumn term and get the start date, then go to the NEXT autumn term
         // and get the start date less a day.
-        MutableDateTime start = null;
-        DateTime end = null;
+        LocalDate start = null;
+        LocalDate end = null;
         int result = 0;
         
         try {
@@ -131,7 +133,7 @@ public final class TermImpl implements Term {
         result = WEEK_NUMBER_AFTER_END;
         
         for (int week = 1; week <= MAX_NUMBER_OF_WEEKS_IN_ACADEMIC_YEAR; week++) {
-            start.addWeeks(1);
+            start = start.plusWeeks(1);
             if (dt.isBefore(start) && !DateTimeUtils.isSameDay(dt, start)) {
                 result = week;
                 break;
@@ -141,26 +143,22 @@ public final class TermImpl implements Term {
         return result;
     }
 
-    private MutableDateTime getAutumnTermStartDate(Term t, BaseDateTime dt) throws TermNotFoundException {
-        MutableDateTime start;
+    private LocalDate getAutumnTermStartDate(Term t, Temporal dt) throws TermNotFoundException {
         Term autumnTerm = t;
-        while (autumnTerm.getStartDate().isAfter(dt) || autumnTerm.getTermType() != TermType.autumn) {
+        while (autumnTerm.getStartDate().isAfter(LocalDate.from(dt)) || autumnTerm.getTermType() != TermType.autumn) {
             autumnTerm = termFactory.getPreviousTerm(autumnTerm);
         }
         
-        start = autumnTerm.getStartDate().toMutableDateTime();
-        return start;
+        return autumnTerm.getStartDate();
     }
 
-    private DateTime getBeforeNextAutumnTermDate(Term t) throws TermNotFoundException {
-        DateTime end;
+    private LocalDate getBeforeNextAutumnTermDate(Term t) throws TermNotFoundException {
         Term nextAutumnTerm = t;
         while (nextAutumnTerm.getStartDate().equals(startDate) || nextAutumnTerm.getTermType() != TermType.autumn) {
             nextAutumnTerm = termFactory.getNextTerm(nextAutumnTerm);
         }
         
-        end = nextAutumnTerm.getStartDate().minusWeeks(1).withDayOfWeek(DateTimeConstants.SUNDAY);
-        return end;
+        return nextAutumnTerm.getStartDate().minusWeeks(1).with(DayOfWeek.SUNDAY);
     }
 
 }

@@ -3,13 +3,19 @@ package uk.ac.warwick.util.cache.memcached;
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.warwick.util.cache.*;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.cache.BasicCache;
+import uk.ac.warwick.util.cache.Cache;
+import uk.ac.warwick.util.cache.CacheEntry;
+import uk.ac.warwick.util.cache.CacheEntryUpdateException;
+import uk.ac.warwick.util.cache.Caches;
+import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.core.DateTimeUtils;
+
+import java.time.Instant;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +42,7 @@ public class MemcachedCacheStoreServerDownTest {
 
     @Before
     public void setUpCache() throws Exception {
-        cache  = new BasicCache<String, String, Object>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+        cache  = new BasicCache<>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
             public String create(String key) throws CacheEntryUpdateException {
                 cacheCallCount++;
                 return key.substring(6);
@@ -59,17 +65,14 @@ public class MemcachedCacheStoreServerDownTest {
 
     @Test
     public void getResult() throws Exception {
-        DateTimeUtils.useMockDateTime(DateTime.now(), new DateTimeUtils.Callback() {
-            @Override
-            public void doSomething() {
-                try {
-                    Cache.Result<String> result = cache.getResult("token:12345");
-                    assertEquals(DateTime.now().getMillis(), result.getLastUpdated());
-                    assertEquals("12345", result.getValue());
-                    assertFalse(result.isUpdating());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+        DateTimeUtils.useMockDateTime(Instant.now(), () -> {
+            try {
+                Cache.Result<String> result = cache.getResult("token:12345");
+                assertEquals(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli(), result.getLastUpdated());
+                assertEquals("12345", result.getValue());
+                assertFalse(result.isUpdating());
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         });
     }

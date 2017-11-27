@@ -1,31 +1,29 @@
 package uk.ac.warwick.util.workingdays;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import uk.ac.warwick.util.core.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-import uk.ac.warwick.util.core.StringUtils;
 
 public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("ddMMyy");
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");
 
-	private Set<LocalDate> holidayDates = new HashSet<LocalDate>();
+	private Set<LocalDate> holidayDates = new HashSet<>();
 
 	public WorkingDaysHelperImpl() throws IOException {
 		String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("workingdays.txt")));
 
 		for (StringTokenizer st = new StringTokenizer(source, "\n"); st.hasMoreTokens();) {
 			String line = st.nextToken().trim();
-			DateTime holiday = DATE_FORMATTER.parseDateTime(line);
-			holidayDates.add(holiday.toLocalDate());
+			LocalDate holiday = LocalDate.parse(line, DATE_FORMATTER);
+			holidayDates.add(holiday);
 		}
 	}
 
@@ -35,7 +33,7 @@ public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 		LocalDate result = start;
 		while(daysAdded < numWorkingDays){
 			result = result.plusDays(1);
-			if(result.getDayOfWeek() <= DateTimeConstants.FRIDAY && !holidayDates.contains(result)){
+			if(result.getDayOfWeek().compareTo(DayOfWeek.FRIDAY) <= 0 && !holidayDates.contains(result)){
 				daysAdded++;
 			}
 		}
@@ -63,7 +61,7 @@ public class WorkingDaysHelperImpl implements WorkingDaysHelper {
 
 		while(temp.isBefore(end) || temp.isEqual(end)){
 			// if is weekend or holiday ignore
-			if (temp.getDayOfWeek() <= DateTimeConstants.FRIDAY && !holidayDates.contains(temp)){
+			if (temp.getDayOfWeek().compareTo(DayOfWeek.FRIDAY) <= 0 && !holidayDates.contains(temp)){
 				numDays++;
 			}
 			temp = temp.plusDays(1);

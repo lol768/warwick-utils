@@ -1,31 +1,5 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import java.awt.RenderingHints;
-import java.awt.image.renderable.ParameterBlock;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.joda.time.DateTime;
-import org.springframework.util.FileCopyUtils;
-
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.collections.Pair;
-
 import com.google.common.collect.Maps;
 import com.sun.media.jai.codec.ByteArraySeekableStream;
 import com.sun.media.jai.codec.FileCacheSeekableStream;
@@ -35,6 +9,29 @@ import com.sun.media.jai.codec.ImageEncoder;
 import com.sun.media.jai.codec.JPEGEncodeParam;
 import com.sun.media.jai.codec.PNGEncodeParam;
 import com.sun.media.jai.codec.SeekableStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.files.FileReference;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+import java.awt.*;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.Instant;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 public final class JAIImageResizer implements ImageResizer {
     public static final float DEFAULT_SAMPLING_QUALITY = 0.8f;
@@ -75,8 +72,8 @@ public final class JAIImageResizer implements ImageResizer {
         renderResizedStream(out, maxWidth, maxHeight, start, sourceBASS, fileType, dimensions.getLeft(), dimensions.getRight());
     }
     
-    public void renderResized(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight,
-            final FileType fileType) throws IOException {
+    public void renderResized(final FileReference sourceFile, final Instant entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight,
+                              final FileType fileType) throws IOException {
         Pair<Integer, Integer> dimensions = getDimensions(sourceFile.asByteSource().openStream());
         if (isOversized(dimensions.getLeft(), dimensions.getRight())) {
             LOGGER.warn("Refusing to resize image of dimensions " + dimensions.getLeft() + "x" + dimensions.getRight() + ": " + sourceFile);
@@ -181,7 +178,7 @@ public final class JAIImageResizer implements ImageResizer {
         }
     }
     
-    public long getResizedImageLength(FileReference sourceFile, DateTime lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+    public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
         // This outputStream will ignore the written output other than recording the number of bytes written.
         CountingOutputStream os = new CountingOutputStream();
         renderResized(sourceFile, lastModified, os, maxWidth, maxHeight, fileType);

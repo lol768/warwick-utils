@@ -1,20 +1,22 @@
 package uk.ac.warwick.util.cache.ehcache;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import net.sf.ehcache.ObjectExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.warwick.util.cache.CacheEntry;
+import uk.ac.warwick.util.cache.CacheEntryFactory;
+import uk.ac.warwick.util.cache.CacheStatistics;
+import uk.ac.warwick.util.cache.CacheStore;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
-import org.joda.time.DateTime;
-import uk.ac.warwick.util.cache.*;
+import java.io.File;
+import java.io.Serializable;
+import java.net.URL;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cache implementation which uses EhCache, of course.
@@ -98,7 +100,7 @@ public final class EhCacheStore<K extends Serializable,V extends Serializable> i
 				// This shouldn't be run in production. The Caches factory method will avoid
 				// creating an EhCacheStore if neither property is available.
 				LOGGER.error("Either ehcache.disk.store.dir or warwick.ehcache.disk.store.dir should be set - using java.io.tmpdir for disk cache instead");
-				System.setProperty("warwick.ehcache.disk.store.dir", System.getProperty("java.io.tmpdir") + File.separatorChar + new DateTime().getMillis());
+				System.setProperty("warwick.ehcache.disk.store.dir", System.getProperty("java.io.tmpdir") + File.separatorChar + Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).toEpochMilli());
 			}
 		}
 		

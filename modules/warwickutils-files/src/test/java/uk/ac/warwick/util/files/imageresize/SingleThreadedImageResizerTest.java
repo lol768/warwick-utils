@@ -2,7 +2,6 @@ package uk.ac.warwick.util.files.imageresize;
 
 import com.google.common.io.ByteSource;
 import com.sun.media.jai.codec.ByteArraySeekableStream;
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.files.FileData;
@@ -18,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void resizeTallThinImage() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
@@ -47,7 +47,7 @@ public final class SingleThreadedImageResizerTest {
      */
     @Test
     public void resizeTallThinImageByHeight() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
@@ -64,7 +64,7 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void resizeShortWideImage() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         // shortWide.jpg is 200 x 150px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/shortWideSample.jpg"));
@@ -80,7 +80,7 @@ public final class SingleThreadedImageResizerTest {
      */
     @Test
     public void fileReferenceInput() throws Exception {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
         FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
@@ -92,7 +92,7 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void dontResizeLargerThanOriginal() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
@@ -108,7 +108,7 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void PNGResizing() throws IOException {
-        final DateTime lastModified = new DateTime();
+        final Instant lastModified = Instant.now();
 
         // award.png is 220x233px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/award.png"));

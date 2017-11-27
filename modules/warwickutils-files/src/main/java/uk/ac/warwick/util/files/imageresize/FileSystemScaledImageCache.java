@@ -1,6 +1,5 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -12,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 
 /**
  * Entries are stored as {cache root}/{original filename}@{width}x{height}
@@ -39,7 +39,7 @@ public class FileSystemScaledImageCache implements FileExposingScaledImageCache 
      *      is true for this file/resolution combination)
      * It will die with an IOException if it doesn't
      */
-    public void serveFromCache(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight) throws IOException {
+    public void serveFromCache(final FileReference sourceFile, final Instant entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight) throws IOException {
         FileInputStream fis = new FileInputStream(getCacheFile(sourceFile, maxWidth, maxHeight));
         try {
             FileCopyUtils.copy(fis, out);
@@ -48,7 +48,7 @@ public class FileSystemScaledImageCache implements FileExposingScaledImageCache 
         }
     }
 
-    public long getFileSize(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) {
+    public long getFileSize(final FileReference sourceFile, final Instant entityLastModified, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) {
         if (!contains(sourceFile, entityLastModified, maxWidth, maxHeight)) {
             try {
                 createInCache(sourceFile, entityLastModified, maxWidth, maxHeight, fileType, resizer);
@@ -64,7 +64,7 @@ public class FileSystemScaledImageCache implements FileExposingScaledImageCache 
     // would be better if we served the bytes back to the client and wrote them into the cache file at the same time
     // but risky if the client disconnected halfway through
     //
-    public void cacheAndServe(final FileReference sourceFile, final DateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) throws IOException {
+    public void cacheAndServe(final FileReference sourceFile, final Instant entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) throws IOException {
         try {
             createInCache(sourceFile, entityLastModified, maxWidth, maxHeight, fileType, resizer);
             serveFromCache(sourceFile, entityLastModified, out, maxWidth, maxHeight);
@@ -76,7 +76,7 @@ public class FileSystemScaledImageCache implements FileExposingScaledImageCache 
 
     }
 
-    public void createInCache(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) throws IOException {
+    public void createInCache(final FileReference sourceFile, final Instant entityLastModified, final int maxWidth, final int maxHeight, final ImageResizer.FileType fileType, final ImageResizer resizer) throws IOException {
         File newCacheEntry = getCacheFile(sourceFile, maxWidth, maxHeight);
 
         File parentDir = newCacheEntry.getParentFile();
@@ -87,11 +87,11 @@ public class FileSystemScaledImageCache implements FileExposingScaledImageCache 
         fos.close();
     }
 
-    public boolean contains(final FileReference sourceFile, final DateTime entityLastModified, final int maxWidth, final int maxHeight) {
+    public boolean contains(final FileReference sourceFile, final Instant entityLastModified, final int maxWidth, final int maxHeight) {
         File candidate = getCacheFile(sourceFile, maxWidth, maxHeight);
         if (candidate.exists() && candidate.canRead()) {
             LOGGER.debug("Cache file " + candidate.getAbsolutePath() + "exists and is readable");
-            if (entityLastModified.isBefore(candidate.lastModified())) {
+            if (entityLastModified.isBefore(Instant.ofEpochMilli(candidate.lastModified()))) {
                 LOGGER.debug("Cache file is not stale; returning cache hit" );
                 return true;
             }

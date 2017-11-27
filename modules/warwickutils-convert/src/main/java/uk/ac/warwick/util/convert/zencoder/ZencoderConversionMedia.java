@@ -4,25 +4,25 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.warwick.util.convert.ConversionMedia;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 class ZencoderConversionMedia implements ConversionMedia {
 
-    private static final DateTimeFormatter DATETIME_FORMAT = ISODateTimeFormat.dateTimeNoMillis();
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
 
     private int id;
 
     private String s3Url;
 
-    private DateTime created;
+    private ZonedDateTime created;
 
-    private DateTime updated;
+    private ZonedDateTime updated;
 
     private Status status;
 
@@ -43,8 +43,8 @@ class ZencoderConversionMedia implements ConversionMedia {
         ZencoderConversionMedia media = new ZencoderConversionMedia();
 
         media.id = json.getInt("id");
-        media.created = DATETIME_FORMAT.parseDateTime(json.getString("created_at"));
-        media.updated = DATETIME_FORMAT.parseDateTime(json.getString("updated_at"));
+        media.created = ZonedDateTime.parse(json.getString("created_at"), DATETIME_FORMAT);
+        media.updated = ZonedDateTime.parse(json.getString("updated_at"), DATETIME_FORMAT);
 
         JSONObject input = json.getJSONObject("input_media_file");
 
@@ -69,7 +69,7 @@ class ZencoderConversionMedia implements ConversionMedia {
         }
         media.width = input.isNull("width") ? null : input.getInt("width");
         media.height = input.isNull("height") ? null : input.getInt("height");
-        media.duration = input.isNull("duration_in_ms") ? null : Duration.millis(input.getLong("duration_in_ms"));
+        media.duration = input.isNull("duration_in_ms") ? null : Duration.ofMillis(input.getLong("duration_in_ms"));
 
         return media;
     }
@@ -82,11 +82,11 @@ class ZencoderConversionMedia implements ConversionMedia {
         return s3Url;
     }
 
-    public DateTime getCreated() {
+    public ZonedDateTime getCreated() {
         return created;
     }
 
-    public DateTime getUpdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 

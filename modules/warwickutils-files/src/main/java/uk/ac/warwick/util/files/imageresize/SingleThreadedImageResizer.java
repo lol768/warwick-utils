@@ -1,17 +1,15 @@
 package uk.ac.warwick.util.files.imageresize;
 
+import uk.ac.warwick.util.concurrency.TaskExecutionService;
+import uk.ac.warwick.util.files.FileReference;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
-
-import org.joda.time.DateTime;
-
-import uk.ac.warwick.util.files.FileData;
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.concurrency.TaskExecutionService;
 
 public final class SingleThreadedImageResizer implements ImageResizer {
     
@@ -25,7 +23,7 @@ public final class SingleThreadedImageResizer implements ImageResizer {
         this.delegate = resizer;
     }
 
-    public long getResizedImageLength(final FileReference sourceFile, final DateTime lastModified, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
+    public long getResizedImageLength(final FileReference sourceFile, final Instant lastModified, final int maxWidth, final int maxHeight, final FileType fileType) throws IOException {
         String key = generateCacheKey(sourceFile, maxWidth, maxHeight);
         
         try {
@@ -51,7 +49,7 @@ public final class SingleThreadedImageResizer implements ImageResizer {
         }
     }
 
-    public void renderResized(final FileReference sourceFile, final DateTime lastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType)
+    public void renderResized(final FileReference sourceFile, final Instant lastModified, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType)
             throws IOException {
         // OutputStream will change between requests so we can't cache this
         try {

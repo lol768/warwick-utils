@@ -23,14 +23,18 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.util.EntityUtils;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import uk.ac.warwick.util.convert.*;
+import uk.ac.warwick.util.convert.ConversionException;
+import uk.ac.warwick.util.convert.ConversionMedia;
+import uk.ac.warwick.util.convert.ConversionService;
+import uk.ac.warwick.util.convert.ConversionStatus;
+import uk.ac.warwick.util.convert.S3ByteSource;
+import uk.ac.warwick.util.core.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
@@ -38,6 +42,9 @@ import java.io.InputStream;
 import java.net.ProxySelector;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -333,7 +340,7 @@ public class ZencoderConversionService implements ConversionService, DisposableB
     private Uri generateS3PrivateUrl(String objectKey) {
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, objectKey);
         request.setMethod(HttpMethod.GET);
-        request.setExpiration(DateTime.now().plusHours(1).toDate());
+        request.setExpiration(Date.from(Instant.now(DateTimeUtils.CLOCK_IMPLEMENTATION).plus(1, ChronoUnit.HOURS)));
 
         return Uri.fromJavaUrl(s3.generatePresignedUrl(request));
     }
