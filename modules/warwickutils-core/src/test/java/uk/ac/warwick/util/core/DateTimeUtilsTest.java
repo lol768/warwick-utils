@@ -1,6 +1,7 @@
-package uk.ac.warwick.util.core.jodatime;
+package uk.ac.warwick.util.core;
 
 import org.junit.Test;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

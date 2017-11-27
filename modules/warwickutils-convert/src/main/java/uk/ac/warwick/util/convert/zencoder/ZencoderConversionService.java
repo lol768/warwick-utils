@@ -34,7 +34,7 @@ import uk.ac.warwick.util.convert.ConversionMedia;
 import uk.ac.warwick.util.convert.ConversionService;
 import uk.ac.warwick.util.convert.ConversionStatus;
 import uk.ac.warwick.util.convert.S3ByteSource;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;

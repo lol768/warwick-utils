@@ -48,7 +48,7 @@ public final class DateTimeFreemarkerObjectWrapperTest {
         configuration.setClassForTemplateLoading(getClass(), "");
         configuration.setObjectWrapper(new DateTimeFreemarkerObjectWrapper());
 
-        Template template = configuration.getTemplate("joda-test.ftl");
+        Template template = configuration.getTemplate("datetime-test.ftl");
         
         Map<String, Object> rootMap = new HashMap<String, Object>();
         rootMap.put("greeting", "hello");

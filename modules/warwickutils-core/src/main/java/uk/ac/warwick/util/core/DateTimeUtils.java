@@ -1,20 +1,16 @@
-package uk.ac.warwick.util.core.jodatime;
+package uk.ac.warwick.util.core;
 
 import org.threeten.extra.Days;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Utility functions to work with JSR310 JavaTime objects.

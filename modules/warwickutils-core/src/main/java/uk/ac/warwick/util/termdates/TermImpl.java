@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.termdates;
 
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

@@ -12,7 +12,7 @@ public final class CachePolicy {
     
     public static final CachePolicy PUBLIC_IMAGES = CachePolicy.publicCaching(IMAGE_CACHE_PERIOD);
     
-    // We have to express this in days because otherwise Joda-Time won't run conversions on it (because of variable-length years)
+    // We have to express this in days because you can't have longer Duration periods (because they're variable length)
     public static final Duration SITE_ASSET_CACHE_PERIOD = Duration.ofDays(365);
     
     public static final CachePolicy SITE_ASSET = CachePolicy.publicCaching(SITE_ASSET_CACHE_PERIOD);

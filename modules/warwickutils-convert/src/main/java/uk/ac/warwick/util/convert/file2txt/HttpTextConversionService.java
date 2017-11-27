@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.convert.ConversionException;
 import uk.ac.warwick.util.convert.TextConversionService;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 

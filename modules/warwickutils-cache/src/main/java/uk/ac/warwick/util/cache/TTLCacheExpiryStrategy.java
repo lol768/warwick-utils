@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.cache;
 
 import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.io.Serializable;
 import java.time.Instant;

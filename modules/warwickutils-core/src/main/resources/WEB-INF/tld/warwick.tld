@@ -131,7 +131,7 @@
 
 	<tag>
 		<description>
-			Formats Joda DateTimes to the specified format
+			Formats JavaTime Temporals to the specified format
 	    </description>
 		<name>formatDate</name>
 		<tag-class>uk.ac.warwick.util.web.tags.DateTimeFormatTag</tag-class>

@@ -13,7 +13,7 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.time.Instant;
 

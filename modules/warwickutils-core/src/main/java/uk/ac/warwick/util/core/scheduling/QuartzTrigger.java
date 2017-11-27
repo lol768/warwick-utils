@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.core.scheduling;
 
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.time.Instant;
 

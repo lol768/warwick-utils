@@ -10,7 +10,7 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.CacheEntryFactory;
 import uk.ac.warwick.util.cache.CacheStatistics;
 import uk.ac.warwick.util.cache.CacheStore;
-import uk.ac.warwick.util.core.jodatime.DateTimeUtils;
+import uk.ac.warwick.util.core.DateTimeUtils;
 
 import java.io.File;
 import java.io.Serializable;
