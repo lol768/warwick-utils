@@ -1,5 +1,8 @@
-package uk.ac.warwick.util.termdates;
+package uk.ac.warwick.util.termdates.legacy;
 
+/**
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ */
 public class TermNotFoundException extends Exception {
 
     private static final long serialVersionUID = -2486925863691049004L;
