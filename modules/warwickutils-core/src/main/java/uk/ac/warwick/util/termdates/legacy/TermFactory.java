@@ -7,7 +7,7 @@ import java.time.temporal.Temporal;
 import java.util.List;
 
 /**
- * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
 public interface TermFactory {
     Term getTermFromDate(Temporal date) throws TermNotFoundException;

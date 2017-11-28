@@ -8,7 +8,7 @@ import java.time.temporal.Temporal;
  * with a start date and an end date.
  * 
  * @author Mat Mannion
- * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
 public interface Term {
 

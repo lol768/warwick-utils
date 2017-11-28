@@ -1,7 +1,7 @@
 package uk.ac.warwick.util.termdates.legacy;
 
 /**
- * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
 public class TermNotFoundException extends Exception {
 

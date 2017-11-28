@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
 public final class TermFactoryImpl implements TermFactory {
     

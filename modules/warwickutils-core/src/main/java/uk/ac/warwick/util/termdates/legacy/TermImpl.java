@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.temporal.Temporal;
 
 /**
- * @deprecated Use {@link uk.ac.warwick.util.termdates.service.TermDatesService}
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
 public final class TermImpl implements Term {
     
