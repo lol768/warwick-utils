@@ -5,10 +5,19 @@ import java.time.LocalDate;
 public class Vacation extends AcademicYearPeriod {
 
     private Vacation(PeriodType type, LocalDate firstDay, LocalDate lastDay) {
-        super(type, firstDay, lastDay);
+        this(null, type, firstDay, lastDay);
+    }
+
+    private Vacation(AcademicYear year, PeriodType type, LocalDate firstDay, LocalDate lastDay) {
+        super(year, type, firstDay, lastDay);
         if (!type.isValid(Vacation.class)) {
             throw new IllegalArgumentException(type + " isn't valid for Vacations");
         }
+    }
+
+    @Override
+    Vacation withYear(AcademicYear year) {
+        return new Vacation(year, getType(), getFirstDay(), getLastDay());
     }
 
     static Vacation between(PeriodType type, Term before, Term after) {

@@ -46,7 +46,7 @@ public class AcademicYear implements Comparable<AcademicYear> {
         verify(startYear >= 1000 && startYear < 9999, "Invalid start year: " + startYear);
 
         this.startYear = startYear;
-        this.periods = periods.stream().collect(toMap(AcademicYearPeriod::getType, identity()));
+        this.periods = periods.stream().map(period -> period.withYear(this)).collect(toMap(AcademicYearPeriod::getType, identity()));
         this.weeks = buildWeeks();
     }
 

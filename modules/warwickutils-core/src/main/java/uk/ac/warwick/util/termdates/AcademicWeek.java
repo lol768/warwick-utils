@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class AcademicWeek implements Comparable<AcademicWeek> {
 
-    private final AcademicYear academicYear;
+    private final AcademicYear year;
 
     private final AcademicYearPeriod period;
 
@@ -18,8 +18,8 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
 
     private final LocalDateRange dateRange;
 
-    private AcademicWeek(AcademicYear academicYear, AcademicYearPeriod period, int weekNumber, LocalDateRange dateRange) {
-        this.academicYear = academicYear;
+    private AcademicWeek(AcademicYear year, AcademicYearPeriod period, int weekNumber, LocalDateRange dateRange) {
+        this.year = year;
         this.period = period;
         this.weekNumber = weekNumber;
         this.dateRange = dateRange;
@@ -29,8 +29,8 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
         return new AcademicWeek(academicYear, period, weekNumber, dateRange);
     }
 
-    public AcademicYear getAcademicYear() {
-        return academicYear;
+    public AcademicYear getYear() {
+        return year;
     }
 
     public AcademicYearPeriod getPeriod() {
@@ -78,7 +78,7 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
 
     @Override
     public int compareTo(AcademicWeek o) {
-        int result = this.academicYear.compareTo(o.academicYear);
+        int result = this.year.compareTo(o.year);
         if (result != 0) return result;
 
         result = this.period.compareTo(o.period);
@@ -97,7 +97,7 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
 
         return new EqualsBuilder()
             .append(weekNumber, that.weekNumber)
-            .append(academicYear, that.academicYear)
+            .append(year, that.year)
             .append(period, that.period)
             .isEquals();
     }
@@ -105,7 +105,7 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(academicYear)
+            .append(year)
             .append(period)
             .append(weekNumber)
             .toHashCode();
@@ -114,7 +114,7 @@ public class AcademicWeek implements Comparable<AcademicWeek> {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("academicYear", academicYear)
+            .append("year", year)
             .append("period", period)
             .append("weekNumber", weekNumber)
             .append("dateRange", dateRange)
