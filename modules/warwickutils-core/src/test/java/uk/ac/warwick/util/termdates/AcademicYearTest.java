@@ -21,8 +21,28 @@ public class AcademicYearTest {
             assertEquals(startYear, year.getStartYear());
             assertEquals(startYear, year.getValue());
             assertTrue(year.getLabel().startsWith(Integer.toString(startYear).substring(2) + "/"));
+
             assertEquals("Should have all 7 periods", 7, year.getPeriods().size());
             assertTrue("Always start with a vacation", year.getPeriods().iterator().next().isVacation());
+
+            // Periods should go up consecutively
+            AcademicYearPeriod lastPeriod = null;
+            for (AcademicYearPeriod period : year.getPeriods()) {
+                assertEquals(year, period.getYear());
+                assertEquals(period, period.getFirstWeek().getPeriod());
+                assertEquals(year, period.getFirstWeek().getYear());
+                assertEquals(period, period.getLastWeek().getPeriod());
+                assertEquals(year, period.getLastWeek().getYear());
+
+                if (lastPeriod != null) {
+                    assertTrue(lastPeriod.compareTo(period) < 0);
+                    assertTrue(period.compareTo(lastPeriod) > 0);
+                    assertEquals("Week should follow on from previous", lastPeriod.getLastWeek().getWeekNumber() + 1, period.getFirstWeek().getWeekNumber());
+                }
+
+                lastPeriod = period;
+            }
+
             assertTrue("Should have at least 52 weeks", year.getAcademicWeeks().size() >= 52);
             assertTrue("Should have at most 53 weeks", year.getAcademicWeeks().size() <= 53);
             assertTrue("First week number should be negative", year.getAcademicWeeks().iterator().next().getWeekNumber() < 0);
@@ -58,7 +78,7 @@ public class AcademicYearTest {
 
         AcademicWeek week = year.getAcademicWeek(LocalDate.of(2007, Month.APRIL, 23));
         assertEquals(period, week.getPeriod());
-        assertEquals(year, week.getAcademicYear());
+        assertEquals(year, week.getYear());
         assertEquals(30, week.getWeekNumber());
         assertEquals(1, week.getTermWeekNumber());
         assertEquals(21, week.getCumulativeWeekNumber());
