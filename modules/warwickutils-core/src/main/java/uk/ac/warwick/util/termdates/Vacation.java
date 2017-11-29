@@ -2,7 +2,7 @@ package uk.ac.warwick.util.termdates;
 
 import java.time.LocalDate;
 
-class Vacation extends AcademicYearPeriod {
+public class Vacation extends AcademicYearPeriod {
 
     private Vacation(PeriodType type, LocalDate firstDay, LocalDate lastDay) {
         super(type, firstDay, lastDay);
