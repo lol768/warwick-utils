@@ -38,7 +38,7 @@ public class ServiceCheckController implements Lifecycle {
     @RequestMapping(value = "/service/gtg", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity<String> gtg() {
-        if (isRunning()) {
+        if (!isRunning()) {
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         } else {
             return new ResponseEntity<>("\"OK\"", HttpStatus.OK);
@@ -48,7 +48,7 @@ public class ServiceCheckController implements Lifecycle {
     @RequestMapping(value = "/service/healthcheck", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Map<String, Object>> healthcheck() throws Exception {
-        if (isRunning()) {
+        if (!isRunning()) {
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         } else {
             ImmutableMap.Builder<String, Object> json = ImmutableMap.builder();
@@ -67,7 +67,7 @@ public class ServiceCheckController implements Lifecycle {
     @RequestMapping(value = "/service/metrics", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Map<String, Object>> metrics() throws Exception {
-        if (isRunning()) {
+        if (!isRunning()) {
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         } else {
             ImmutableMap.Builder<String, Object> json = ImmutableMap.builder();
