@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static java.util.stream.Collectors.*;
+
 class TermDatesService {
 
     static final TermDatesService INSTANCE;
@@ -22,6 +24,8 @@ class TermDatesService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");
 
     private final Map<Integer, AcademicYear> academicYears;
+
+    private final Map<Integer, ExtendedAcademicYear> extendedAcademicYears;
 
     private TermDatesService() {
         try {
@@ -76,6 +80,17 @@ class TermDatesService {
             }
 
             this.academicYears = academicYears.build();
+
+            ImmutableMap.Builder<Integer, ExtendedAcademicYear> extendedAcademicYears = ImmutableMap.builder();
+            AcademicYear previousYear = null;
+            for (AcademicYear year : this.academicYears.values().stream().sorted().collect(toList())) {
+                if (previousYear != null) {
+                    extendedAcademicYears.put(previousYear.getStartYear(), ExtendedAcademicYear.wrap(previousYear, year));
+                }
+
+                previousYear = year;
+            }
+            this.extendedAcademicYears = extendedAcademicYears.build();
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't instantiate a TermDatesService", e);
         }
@@ -83,6 +98,10 @@ class TermDatesService {
 
     AcademicYear getAcademicYear(int startYear) {
         return academicYears.getOrDefault(startYear, AcademicYear.placeholder(startYear));
+    }
+
+    ExtendedAcademicYear getExtendedAcademicYear(int startYear) {
+        return extendedAcademicYears.getOrDefault(startYear, ExtendedAcademicYear.placeholder(startYear));
     }
 
     private static void validate(List<Term> terms) {

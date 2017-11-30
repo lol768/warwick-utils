@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.*;
 
 public class AcademicYear implements Comparable<AcademicYear>, Serializable {
 
-    private static final Pattern SITS_PATTERN = Pattern.compile("(\\d{2})/(\\d{2})");
+    static final Pattern SITS_PATTERN = Pattern.compile("(\\d{2})/(\\d{2})");
 
     /**
      * We're only dealing with current years, not DOBs or anything, so can afford
@@ -34,7 +34,7 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
      *
      * Anyway, this will only break near the year 2090.
      */
-    private static final int CENTURY_BREAK = 90;
+    static final int CENTURY_BREAK = 90;
 
     private final int startYear;
 
@@ -42,16 +42,16 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
 
     private final Map<Integer, AcademicWeek> weeks;
 
-    private AcademicYear(int startYear, List<AcademicYearPeriod> periods) {
+    protected AcademicYear(int startYear, List<AcademicYearPeriod> periods) {
         // Ensure yy/yy formatting is valid
         verify(startYear >= 1000 && startYear < 9999, "Invalid start year: " + startYear);
 
         this.startYear = startYear;
         this.periods = periods.stream().map(period -> period.withYear(this)).collect(toMap(AcademicYearPeriod::getType, identity()));
-        this.weeks = buildWeeks();
+        this.weeks = buildWeeks(this, this.periods);
     }
 
-    private Map<Integer, AcademicWeek> buildWeeks() {
+    private static Map<Integer, AcademicWeek> buildWeeks(AcademicYear year, Map<AcademicYearPeriod.PeriodType, AcademicYearPeriod> periods) {
         if (periods.isEmpty()) return emptyMap();
 
         ImmutableMap.Builder<Integer, AcademicWeek> weeks = ImmutableMap.builder();
@@ -74,7 +74,7 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
             }
 
             while (end.isBefore(period.getLastDay())) {
-                weeks.put(weekNumber, AcademicWeek.of(this, period, weekNumber, LocalDateRange.of(start, end)));
+                weeks.put(weekNumber, AcademicWeek.of(year, period, weekNumber, LocalDateRange.of(start, end)));
                 start = end;
                 end = start.plusWeeks(1);
                 weekNumber++;
@@ -82,7 +82,7 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
 
             // The last period
             end = period.getLastDay().plusDays(1);
-            weeks.put(weekNumber, AcademicWeek.of(this, period, weekNumber, LocalDateRange.of(start, end)));
+            weeks.put(weekNumber, AcademicWeek.of(year, period, weekNumber, LocalDateRange.of(start, end)));
             weekNumber++;
         }
 
@@ -106,6 +106,10 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
 
     static AcademicYear placeholder(int startYear) {
         return new AcademicYear(startYear, emptyList());
+    }
+
+    public boolean isPlaceholder() {
+        return periods.isEmpty();
     }
 
     public static AcademicYear starting(int startYear) {
@@ -244,11 +248,11 @@ public class AcademicYear implements Comparable<AcademicYear>, Serializable {
         return String.format("%s/%s", Integer.toString(startYear).substring(2), Integer.toString(startYear + 1).substring(2));
     }
 
-    private static void verify(boolean condition) {
+    protected static void verify(boolean condition) {
         if (!condition) throw new IllegalArgumentException();
     }
 
-    private static void verify(boolean condition, String message) {
+    protected static void verify(boolean condition, String message) {
         if (!condition) throw new IllegalArgumentException(message);
     }
 
