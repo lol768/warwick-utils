@@ -1,4 +1,4 @@
-package uk.ac.warwick.util.termdates;
+package uk.ac.warwick.util.termdates.legacy;
 
 import uk.ac.warwick.util.core.DateTimeUtils;
 
@@ -6,6 +6,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.Temporal;
 
+/**
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
+ */
 public final class TermImpl implements Term {
     
     private final TermFactory termFactory;

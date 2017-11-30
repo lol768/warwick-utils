@@ -1,11 +1,11 @@
-package uk.ac.warwick.util.termdates;
+package uk.ac.warwick.util.termdates.legacy;
 
 import org.junit.Test;
 import org.threeten.extra.LocalDateRange;
 import org.threeten.extra.Weeks;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.DateTimeUtils;
-import uk.ac.warwick.util.termdates.Term.TermType;
+import uk.ac.warwick.util.termdates.legacy.Term.TermType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
-package uk.ac.warwick.util.termdates;
+package uk.ac.warwick.util.termdates.legacy;
 
 import org.junit.Test;
-import uk.ac.warwick.util.termdates.Term.TermType;
+import uk.ac.warwick.util.termdates.legacy.Term.TermType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

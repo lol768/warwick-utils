@@ -1,10 +1,10 @@
-package uk.ac.warwick.util.termdates;
+package uk.ac.warwick.util.termdates.legacy;
 
 import com.google.common.collect.Lists;
 import org.threeten.extra.LocalDateRange;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
-import uk.ac.warwick.util.termdates.Term.TermType;
+import uk.ac.warwick.util.termdates.legacy.Term.TermType;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
+ */
 public final class TermFactoryImpl implements TermFactory {
     
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");
@@ -24,7 +27,7 @@ public final class TermFactoryImpl implements TermFactory {
     private LinkedList<Term> termDates;
     
     public TermFactoryImpl() throws IOException {
-        String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("termdates.txt")));
+        String source = StringUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream("/uk/ac/warwick/util/termdates/termdates.txt")));
         this.termDates = new LinkedList<>();
         
         for (StringTokenizer st = new StringTokenizer(source, "\n"); st.hasMoreTokens();) {
