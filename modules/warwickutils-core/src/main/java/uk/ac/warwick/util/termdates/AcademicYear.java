@@ -58,6 +58,12 @@ public class AcademicYear implements Comparable<AcademicYear> {
         LocalDate firstDayOfAcademicYear = firstDayOfAutumnTerm.with(Month.AUGUST).withDayOfMonth(1);
 
         int offset = (int) ChronoUnit.WEEKS.between(firstDayOfAcademicYear, firstDayOfAutumnTerm);
+
+        // Off-by-one error if the first day is a Monday (so there is an extra full week being counted in error)
+        if (firstDayOfAcademicYear.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
+            offset -= 1;
+        }
+
         int weekNumber = -offset;
         for (AcademicYearPeriod period : getSortedValues(periods)) {
             LocalDate start = period.getFirstDay();

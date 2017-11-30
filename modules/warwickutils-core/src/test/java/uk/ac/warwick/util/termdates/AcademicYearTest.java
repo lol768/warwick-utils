@@ -12,6 +12,42 @@ import static org.junit.Assert.*;
 public class AcademicYearTest {
 
     @Test
+    public void sanityCheck2011() throws Exception {
+        AcademicYear year = AcademicYear.starting(2011);
+
+        AcademicWeek firstWeek = year.getAcademicWeek(LocalDate.of(2011, Month.AUGUST, 1));
+
+        assertEquals(-8, firstWeek.getWeekNumber());
+        assertEquals("Starts on a Monday", LocalDate.of(2011, Month.AUGUST, 1), firstWeek.getDateRange().getStart());
+        assertEquals(LocalDate.of(2011, Month.AUGUST, 7), firstWeek.getDateRange().getEndInclusive());
+
+        Vacation preTermVacation = (Vacation) year.getPeriod(AcademicYearPeriod.PeriodType.preTermVacation);
+        assertEquals(-8, preTermVacation.getFirstWeek().getWeekNumber());
+        assertEquals("Starts on a Monday", LocalDate.of(2011, Month.AUGUST, 1), preTermVacation.getFirstWeek().getDateRange().getStart());
+
+        AcademicWeek week0 = preTermVacation.getLastWeek();
+        assertEquals(0, week0.getWeekNumber());
+    }
+
+    @Test
+    public void sanityCheck2017() throws Exception {
+        AcademicYear year = AcademicYear.starting(2017);
+
+        AcademicWeek firstWeek = year.getAcademicWeek(LocalDate.of(2017, Month.AUGUST, 1));
+
+        assertEquals(-8, firstWeek.getWeekNumber());
+        assertEquals("Starts on a Tuesday", LocalDate.of(2017, Month.AUGUST, 1), firstWeek.getDateRange().getStart());
+        assertEquals(LocalDate.of(2017, Month.AUGUST, 6), firstWeek.getDateRange().getEndInclusive());
+
+        Vacation preTermVacation = (Vacation) year.getPeriod(AcademicYearPeriod.PeriodType.preTermVacation);
+        assertEquals(-8, preTermVacation.getFirstWeek().getWeekNumber());
+        assertEquals("Starts on a Tuesday", LocalDate.of(2017, Month.AUGUST, 1), preTermVacation.getFirstWeek().getDateRange().getStart());
+
+        AcademicWeek week0 = preTermVacation.getLastWeek();
+        assertEquals(0, week0.getWeekNumber());
+    }
+
+    @Test
     public void sanityCheckData() throws Exception {
         for (int startYear = 2006; startYear <= 2025; startYear++) {
             AcademicYear year = AcademicYear.starting(startYear);
@@ -28,6 +64,20 @@ public class AcademicYearTest {
             // Periods should go up consecutively
             AcademicYearPeriod lastPeriod = null;
             for (AcademicYearPeriod period : year.getPeriods()) {
+                switch (period.getType()) {
+                    case preTermVacation:
+                        assertTrue("Pre-term vacation always starts in week -8 or -9", period.getFirstWeek().getWeekNumber() <= -8);
+                        assertEquals("Pre-term vacation always ends with week 0", 0, period.getLastWeek().getWeekNumber());
+                        break;
+                    case autumnTerm:
+                        assertEquals("Autumn term always starts with week 1", 1, period.getFirstWeek().getWeekNumber());
+                        assertEquals("Autumn term always ends with week 10", 10, period.getLastWeek().getWeekNumber());
+                        break;
+                    case christmasVacation:
+                        assertEquals("Christmas vacation always starts with week 11", 11, period.getFirstWeek().getWeekNumber());
+                        break;
+                }
+
                 assertEquals(year, period.getYear());
                 assertEquals(period, period.getFirstWeek().getPeriod());
                 assertEquals(year, period.getFirstWeek().getYear());
