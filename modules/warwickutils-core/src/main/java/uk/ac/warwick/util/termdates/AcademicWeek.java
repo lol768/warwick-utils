@@ -6,9 +6,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.threeten.extra.LocalDateRange;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class AcademicWeek implements Comparable<AcademicWeek> {
+public class AcademicWeek implements Comparable<AcademicWeek>, Serializable {
 
     private final AcademicYear year;
 

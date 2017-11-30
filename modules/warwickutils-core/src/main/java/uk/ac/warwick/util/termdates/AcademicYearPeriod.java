@@ -5,12 +5,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.stream.Collectors.*;
 
-public abstract class AcademicYearPeriod implements Comparable<AcademicYearPeriod> {
+public abstract class AcademicYearPeriod implements Comparable<AcademicYearPeriod>, Serializable {
 
     public enum PeriodType {
         preTermVacation("Pre-term vacation", Vacation.class),

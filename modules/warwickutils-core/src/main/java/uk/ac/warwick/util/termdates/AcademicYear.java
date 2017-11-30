@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.threeten.extra.LocalDateRange;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -22,7 +23,7 @@ import static java.util.Collections.*;
 import static java.util.function.Function.*;
 import static java.util.stream.Collectors.*;
 
-public class AcademicYear implements Comparable<AcademicYear> {
+public class AcademicYear implements Comparable<AcademicYear>, Serializable {
 
     private static final Pattern SITS_PATTERN = Pattern.compile("(\\d{2})/(\\d{2})");
 

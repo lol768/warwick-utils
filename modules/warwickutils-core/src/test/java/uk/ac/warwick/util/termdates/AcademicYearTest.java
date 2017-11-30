@@ -1,5 +1,7 @@
 package uk.ac.warwick.util.termdates;
 
+import net.spy.memcached.CachedData;
+import net.spy.memcached.transcoders.SerializingTranscoder;
 import org.junit.Test;
 import org.threeten.extra.LocalDateRange;
 
@@ -297,6 +299,15 @@ public class AcademicYearTest {
 
         // The end date should be inclusive
         assertEquals(term, year.getPeriod(term.getLastDay()));
+    }
+
+    @Test
+    public void serializable() throws Exception {
+        SerializingTranscoder transcoder = new SerializingTranscoder();
+        AcademicYear year = AcademicYear.starting(2017);
+        CachedData encoded = transcoder.encode(year);
+        assertNotNull(encoded);
+        assertEquals(year, transcoder.decode(encoded));
     }
 
 }
