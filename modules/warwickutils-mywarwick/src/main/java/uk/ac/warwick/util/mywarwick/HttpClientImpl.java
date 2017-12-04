@@ -32,13 +32,13 @@ public class HttpClientImpl implements HttpClient {
                 )
                 .setDefaultRequestConfig(
                     RequestConfig.custom()
-                        .setConnectTimeout(5000) // 5 seconds
-                        .setSocketTimeout(5000) // 5 seconds
+                        .setConnectTimeout(8000) // 8 seconds
+                        .setSocketTimeout(8000) // 8 seconds
                         .setExpectContinueEnabled(true)
                         .setRedirectsEnabled(false)
                         .build()
                 )
-                .setMaxConnPerRoute(5) // Only allow 5 connections per host
+                .setMaxConnPerRoute(50) // Only allow 50 connections per host
                 .build();
 
         start();
