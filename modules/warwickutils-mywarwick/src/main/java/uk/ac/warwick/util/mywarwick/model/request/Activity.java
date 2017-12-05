@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * It's better to use ActivityFactor for creating new Activity
+ * It's better to use ActivityFactory for creating new Activity
  * instances rather than doing it directly: this way you have
- * UserLookUp and GroupService to validate recipients for you.
+ * UserLookup and GroupService to validate recipients for you.
  */
 public class Activity implements ValidActivity {
     private String type;
