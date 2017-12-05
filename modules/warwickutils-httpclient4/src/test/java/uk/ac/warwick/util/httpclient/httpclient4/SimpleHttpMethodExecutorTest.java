@@ -1,25 +1,24 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 
 import java.net.SocketTimeoutException;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 public class SimpleHttpMethodExecutorTest extends AbstractJUnit4JettyTest {
 
     @BeforeClass
     public static void letsGetItStarted() throws Exception {
         startServer(ImmutableMap.<String, String>builder()
-                .put("/website", OKServlet.class.getName())
-                .put("/longop", SlowServlet.class.getName())
+                .put("/website", JettyServer.OKServlet.class.getName())
+                .put("/longop", JettyServer.SlowServlet.class.getName())
                 .build());
     }
 
@@ -39,7 +38,7 @@ public class SimpleHttpMethodExecutorTest extends AbstractJUnit4JettyTest {
 
     @Test(expected = SocketTimeoutException.class)
     public void timeout() throws Exception {
-        startServer(ImmutableMap.of("/longop", SlowServlet.class.getName()));
+        startServer(ImmutableMap.of("/longop", JettyServer.SlowServlet.class.getName()));
 
         HttpMethodExecutor ex = new SimpleHttpMethodExecutor(Method.get);
         ex.setUrl(serverAddress+"/longop");

@@ -1,12 +1,12 @@
 package uk.ac.warwick.util.virusscan.http;
 
-import com.google.common.io.ByteSink;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
 import uk.ac.warwick.util.virusscan.VirusScanResult;
 import uk.ac.warwick.util.virusscan.VirusScanServiceStatus;
 import uk.ac.warwick.util.virusscan.conf.Configuration;
@@ -48,7 +48,7 @@ public class HttpVirusScanServiceTest extends AbstractJUnit4JettyTest {
 
     @Before
     public void setup() throws Exception {
-        configuration.setApiHost(super.serverAddress);
+        configuration.setApiHost(serverAddress);
         configuration.setApiKey(EXPECTED_API_KEY); // Can be overridden for other tests to mimic behaviour
     }
 

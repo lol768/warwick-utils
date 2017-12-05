@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.web.Uri;
@@ -26,7 +27,7 @@ public final class GoWarwickDepartmentWebsiteLookupTest extends AbstractJUnit4Je
     @BeforeClass
     public static void startServers() throws Exception {
         startServer(new HashMap<String, String>() {{
-            put("/404", NotFoundServlet.class.getName());
+            put("/404", JettyServer.NotFoundServlet.class.getName());
             put("/found", RedirectFoundServlet.class.getName());
             put("/not-found", RedirectNotFoundServlet.class.getName());
             put("/invalid-json", InvalidJSONServlet.class.getName());

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
 import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.content.texttransformers.embed.OEmbedProvider.Format;
@@ -34,8 +35,8 @@ public class OEmbedTest extends AbstractJUnit4JettyTest {
     @BeforeClass
     public static void startServers() throws Exception {
         startServer(new HashMap<String, String>() {{
-            put("/notfound.json", NotFoundServlet.class.getName());
-            put("/unavailable.json", ServiceUnavailableServlet.class.getName());
+            put("/notfound.json", JettyServer.NotFoundServlet.class.getName());
+            put("/unavailable.json", JettyServer.ServiceUnavailableServlet.class.getName());
             
             put("/youtube.json", YoutubeJSONOEmbedServlet.class.getName());
             put("/flickr.xml", FlickrXMLOEmbedServlet.class.getName());

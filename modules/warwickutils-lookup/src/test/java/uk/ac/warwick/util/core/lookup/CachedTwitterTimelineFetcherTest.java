@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.web.Uri;
@@ -31,8 +32,8 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
     @BeforeClass
     public static void startServers() throws Exception {
         startServer(new HashMap<String, String>() {{
-            put("/notfound.json", NotFoundServlet.class.getName());
-            put("/twitter-down.json", ServiceUnavailableServlet.class.getName());
+            put("/notfound.json", JettyServer.NotFoundServlet.class.getName());
+            put("/twitter-down.json", JettyServer.ServiceUnavailableServlet.class.getName());
             
             put("/user_timeline.json", TwitterJSONServlet.class.getName());
             put("/oauth2token", OAuthTokenServlet.class.getName());
@@ -78,15 +79,15 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
         fetcher.setHttpRequestDecorator(authRequestDecorator(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET));
         fetcher.afterPropertiesSet();
         
-        int buffer = NotFoundServlet.executionCount;
+        int buffer = JettyServer.NotFoundServlet.executionCount;
         int oauthBuffer = OAuthTokenServlet.executionCount;
         
         assertEquals(HttpStatus.SC_NOT_FOUND, fetcher.get("notfound", 20, true, false).getStatusCode());
-        assertEquals(1, NotFoundServlet.executionCount - buffer);
+        assertEquals(1, JettyServer.NotFoundServlet.executionCount - buffer);
         
         // Test caching; shouldn't have hit the servlet again
         assertEquals(HttpStatus.SC_NOT_FOUND, fetcher.get("notfound", 20, true, false).getStatusCode());
-        assertEquals(1, NotFoundServlet.executionCount - buffer);
+        assertEquals(1, JettyServer.NotFoundServlet.executionCount - buffer);
         
         // Assert that we only went for an OAuth token once
         assertEquals(1, OAuthTokenServlet.executionCount - oauthBuffer);
@@ -98,15 +99,15 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
         fetcher.setHttpRequestDecorator(authRequestDecorator(TEST_CONSUMER_KEY, TEST_CONSUMER_SECRET));
         fetcher.afterPropertiesSet();
         
-        int buffer = ServiceUnavailableServlet.executionCount;
+        int buffer = JettyServer.ServiceUnavailableServlet.executionCount;
         int oauthBuffer = OAuthTokenServlet.executionCount;
         
         assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, fetcher.get("twitter-down", 20, true, false).getStatusCode());
-        assertEquals(1, ServiceUnavailableServlet.executionCount - buffer);
+        assertEquals(1, JettyServer.ServiceUnavailableServlet.executionCount - buffer);
         
         // Test caching - this shouldn't be cached, so we should see it get hit again
         assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, fetcher.get("twitter-down", 20, true, false).getStatusCode());
-        assertEquals(2, ServiceUnavailableServlet.executionCount - buffer);
+        assertEquals(2, JettyServer.ServiceUnavailableServlet.executionCount - buffer);
         
         // Assert that we only went for an OAuth token once
         assertEquals(1, OAuthTokenServlet.executionCount - oauthBuffer);
