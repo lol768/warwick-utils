@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 import play.api.Configuration;
+import uk.ac.warwick.sso.client.core.OnCampusService;
 import uk.ac.warwick.userlookup.*;
 import uk.ac.warwick.userlookup.webgroups.GroupInfo;
 import uk.ac.warwick.userlookup.webgroups.GroupNotFoundException;

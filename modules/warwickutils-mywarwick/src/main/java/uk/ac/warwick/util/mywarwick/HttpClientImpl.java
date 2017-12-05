@@ -8,8 +8,10 @@ import org.apache.http.config.ConnectionConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.nio.client.HttpAsyncClient;
+import uk.ac.warwick.util.mywarwick.model.Configuration;
 
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +23,8 @@ public class HttpClientImpl implements HttpClient {
 
     private final CloseableHttpAsyncClient httpClient;
 
-    public HttpClientImpl() {
+    @Inject
+    public HttpClientImpl(Configuration config) {
         this.httpClient =
             HttpAsyncClients.custom()
                 .setDefaultConnectionConfig(
@@ -38,7 +41,8 @@ public class HttpClientImpl implements HttpClient {
                         .setRedirectsEnabled(false)
                         .build()
                 )
-                .setMaxConnPerRoute(50) // Only allow 50 connections per host
+                .setMaxConnPerRoute(config.getHttpMaxConnPerRoute())
+                .setMaxConnTotal(config.getHttpMaxConn())
                 .build();
 
         start();

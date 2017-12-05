@@ -36,4 +36,9 @@ public class PropertiesConfigurationTest {
         assertEquals(expected, propertiesConfiguration.getInstances());
     }
 
+    @Test
+    public void defaults() {
+        assertEquals(200, propertiesConfiguration.getHttpMaxConn());
+    }
+
 }

@@ -2,12 +2,14 @@ package uk.ac.warwick.util.mywarwick.model;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/** this implementation is for Spring applications **/
 @Singleton
-public class PropertiesConfiguration implements Configuration { // this implementation is for Spring applications
-
+public class PropertiesConfiguration implements Configuration {
+    private final Properties defaults;
 
     private Properties applicationProperties;
 
@@ -16,6 +18,16 @@ public class PropertiesConfiguration implements Configuration { // this implemen
     @Inject
     public PropertiesConfiguration(Properties applicationProperties) {
         this.applicationProperties = applicationProperties;
+        this.defaults = Configuration.loadDefaults();
+    }
+
+
+
+    private String getOrDefault(String key) {
+        return applicationProperties.getProperty(
+                key,
+                defaults.getProperty(key)
+        );
     }
 
     private void initMyWarwickConfigs() {
@@ -56,5 +68,15 @@ public class PropertiesConfiguration implements Configuration { // this implemen
             initMyWarwickConfigs();
         }
         return instanceSet;
+    }
+
+    @Override
+    public int getHttpMaxConn() {
+        return Integer.parseInt(getOrDefault("mywarwick.http.maxConn"));
+    }
+
+    @Override
+    public int getHttpMaxConnPerRoute() {
+        return Integer.parseInt(getOrDefault("mywarwick.http.maxConnPerRoute"));
     }
 }

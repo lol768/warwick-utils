@@ -2,11 +2,14 @@ package uk.ac.warwick.util.mywarwick.model;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +22,9 @@ public class TypesafeConfiguration implements Configuration {
 
     @Inject
     public TypesafeConfiguration(@Named("myWarwickConfig") com.typesafe.config.Config typeSafeConfig) {
-       this.config = typeSafeConfig;
+        Properties props = Configuration.loadDefaults();
+        Config defaults = ConfigFactory.parseProperties(props);
+        this.config = typeSafeConfig.withFallback(defaults);
     }
 
     private void initConfigList() {
@@ -51,6 +56,16 @@ public class TypesafeConfiguration implements Configuration {
             initConfigList();
         }
         return instanceSet;
+    }
+
+    @Override
+    public int getHttpMaxConn() {
+        return config.getInt("mywarwick.http.maxConn");
+    }
+
+    @Override
+    public int getHttpMaxConnPerRoute() {
+        return config.getInt("mywarwick.http.maxConnPerRoute");
     }
 
 }

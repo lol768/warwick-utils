@@ -44,4 +44,9 @@ public class TypesafeConfigurationTest {
         expected.add(new Instance("5", "6", "7", "8", "true"));
         assertEquals(expected, typesafeConfigs.getInstances());
     }
+
+    @Test
+    public void defaultValues() {
+        assertEquals(200, typesafeConfigs.getHttpMaxConn());
+    }
 }

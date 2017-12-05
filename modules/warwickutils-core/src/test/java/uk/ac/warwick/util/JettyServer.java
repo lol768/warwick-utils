@@ -79,6 +79,15 @@ public class JettyServer {
         }
     }
 
+    // Runnable but declares `throws`
+    public interface MyRunnable {
+        void run() throws Exception;
+    }
+
+    public void running(Map<String, String> pathToClassMap, MyRunnable fn) throws Exception {
+        running(pathToClassMap, () -> { fn.run(); return null; });
+    }
+
     @SuppressWarnings("serial")
     public static abstract class StatusCodeSettingServlet extends HttpServlet {
 
@@ -195,7 +204,7 @@ public class JettyServer {
             } catch (InterruptedException e) {
                 throw new IllegalStateException("Stop interrupting me", e);
             }
-            return HttpServletResponse.SC_GATEWAY_TIMEOUT;
+            return HttpServletResponse.SC_OK;
         }
     }
 }

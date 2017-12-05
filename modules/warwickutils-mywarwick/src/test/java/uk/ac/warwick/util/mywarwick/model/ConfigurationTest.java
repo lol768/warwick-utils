@@ -20,18 +20,28 @@ public class ConfigurationTest {
 
 }
 
-class ConfigurationWithEmptyInstances implements Configuration{
+abstract class TestConfiguration implements Configuration{
+    @Override
+    public int getHttpMaxConn() {
+        return 0;
+    }
 
     @Override
+    public int getHttpMaxConnPerRoute() {
+        return 0;
+    }
+}
+
+class ConfigurationWithEmptyInstances extends TestConfiguration {
+
     public Set<Instance> getInstances() {
         return new HashSet<>();
     }
 
 }
 
-class ConfigurationWithNullInstances implements Configuration{
+class ConfigurationWithNullInstances extends TestConfiguration {
 
-    @Override
     public Set<Instance> getInstances() {
         return null;
     }
