@@ -73,7 +73,7 @@ public final class JSONArrayViewTest {
         view.render(model, request, response);
 
         assertEquals(
-            new JSONObject("{\"errors\":[\"error\"],\"data\":[\"a\",\"b\"]}").toString(),
+            new JSONObject("{\"data\":[\"a\",\"b\"],\"errors\":[\"error\"]}").toString(),
             new JSONObject(response.getContentAsString()).toString()
         );
     }
