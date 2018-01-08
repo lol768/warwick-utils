@@ -49,32 +49,24 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private CompletableFuture<List<Response>> send(Activity activity, boolean isNotification) {
         List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<>();
-            final String path = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
+            final String reqPath = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
             final String reqJson = makeJsonBody(activity);
             httpclient.execute(
                     makeRequest(
-                            path,
+                            reqPath,
                             reqJson,
                             instance.getApiUser(),
                             instance.getApiPassword(),
                             instance.getProviderId()),
                     new FutureCallback<HttpResponse>() {
-                        Response response = new Response();
-
                         @Override
                         public void completed(HttpResponse httpResponse) {
-                            handleCompletedHttpResponse(httpResponse, response, completableFuture, instance);
+                            handleCompletedHttpResponse(httpResponse, completableFuture, instance);
                         }
 
                         @Override
                         public void failed(Exception e) {
-                            logError(instance, "Request to mywarwick API has failed with errors:" +
-                                    "\npath: " + path +
-                                    "\ninstance: " + instance +
-                                    "\nrequest json " + reqJson +
-                                    "\nerror message:" + e.getMessage(), e);
-                            response.setError(new Error("", e.getMessage()));
-                            completableFuture.complete(response);
+                            handleFailedHttpResponse(e, instance, reqJson, reqPath, completableFuture);
                         }
 
                         @Override
@@ -98,13 +90,11 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     public void handleCompletedHttpResponse(
             HttpResponse httpResponseFromMyWarwick,
-            Response response,
             CompletableFuture<Response> completableFuture,
             Instance instance) {
         if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
         try {
-            String responseString = EntityUtils.toString(httpResponseFromMyWarwick.getEntity());
-            response = mapper.readValue(responseString, Response.class);
+            Response response = parseHttpResponseToResponseObject(httpResponseFromMyWarwick);
             completableFuture.complete(response);
             if (response.getErrors().size() != 0) {
                 logError(instance, "Request completed but it contains error(s):" +
@@ -121,12 +111,34 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 );
             }
         } catch (IOException e) {
+            Response errorResponse = new Response();
             logError(instance, "An IOException was thrown communicating with mywarwick:\n" +
                     e.getMessage() +
                     "\nbaseUrl: " + instance.getBaseUrl());
-            response.setError(new Error("", e.getMessage()));
-            completableFuture.complete(response);
+            errorResponse.setError(new Error("", e.getMessage()));
+            completableFuture.complete(errorResponse);
         }
+    }
+
+    public void handleFailedHttpResponse(
+            Exception e,
+            Instance instance,
+            String reqJson,
+            String reqPath,
+            CompletableFuture<Response> completableFuture) {
+        logError(instance, "Request to mywarwick API has failed with errors:" +
+                "\npath: " + reqPath +
+                "\ninstance: " + instance +
+                "\nrequest json " + reqJson +
+                "\nerror message:" + e.getMessage(), e);
+        Response failedResponse = new Response();
+        failedResponse.setError(new Error("", e.getMessage()));
+        completableFuture.complete(failedResponse);
+    }
+
+    public Response parseHttpResponseToResponseObject(HttpResponse httpResponse) throws IOException {
+        String responseString = EntityUtils.toString(httpResponse.getEntity());
+        return mapper.readValue(responseString, Response.class);
     }
 
     @Override
