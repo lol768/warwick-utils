@@ -7,7 +7,6 @@ public class Warning extends Error {
     }
 
     public Warning(String id, String message) {
-        this.id = id;
-        this.message = message;
+        super(id, message);
     }
 }
