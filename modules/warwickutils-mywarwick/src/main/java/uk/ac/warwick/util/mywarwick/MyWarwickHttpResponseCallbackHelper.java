@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.mywarwick;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -14,6 +15,7 @@ public interface MyWarwickHttpResponseCallbackHelper {
     }
 
     static Response parseJsonStringToResponseObject(String jsonString, ObjectMapper mapper) throws IOException {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(jsonString, Response.class);
     }
 }
