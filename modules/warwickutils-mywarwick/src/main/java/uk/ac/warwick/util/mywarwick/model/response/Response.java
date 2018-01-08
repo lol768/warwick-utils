@@ -12,10 +12,11 @@ public class Response {
     String status;
     Data data;
     List<Error> errors;
-    List<Warning> Warnings;
+    List<Warning> warnings;
 
     public Response() {
         this.errors = new ArrayList<>();
+        this.warnings = new ArrayList<>();
     }
 
     public Response(Boolean success, String status, Data data, List<Error> errors) {
@@ -59,6 +60,14 @@ public class Response {
 
     public List<Error> getErrors() {
         return errors;
+    }
+
+    public List<Warning> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(List<Warning> warnings) {
+        this.warnings = warnings;
     }
 
     public void setErrors(List<Error> errors) {
