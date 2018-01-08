@@ -1,8 +1,10 @@
 package uk.ac.warwick.util.mywarwick.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Error {
     String id;
     String message;
