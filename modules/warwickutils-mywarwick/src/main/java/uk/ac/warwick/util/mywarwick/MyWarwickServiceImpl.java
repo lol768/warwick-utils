@@ -69,7 +69,14 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                                 response = mapper.readValue(responseString, Response.class);
                                 completableFuture.complete(response);
                                 if (response.getErrors().size() != 0) {
-                                    logError(instance, "Request completed but it contains an error:" +
+                                    logError(instance, "Request completed but it contains error(s):" +
+                                            "\nbaseUrl:" + instance.getBaseUrl() +
+                                            "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
+                                            "\nResponse:\n" + response.toString()
+                                    );
+                                }
+                                if (response.getWarnings().size() != 0) {
+                                    LOGGER.warn("Request completed but it contains warning(s):" +
                                             "\nbaseUrl:" + instance.getBaseUrl() +
                                             "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
                                             "\nResponse:\n" + response.toString()
@@ -90,7 +97,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                                     "\npath: " + path +
                                     "\ninstance: " + instance +
                                     "\nrequest json " + reqJson +
-                                    "\nerror message:" +  e.getMessage(), e);
+                                    "\nerror message:" + e.getMessage(), e);
                             response.setError(new Error("", e.getMessage()));
                             completableFuture.complete(response);
                         }
