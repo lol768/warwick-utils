@@ -63,32 +63,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
                         @Override
                         public void completed(HttpResponse httpResponse) {
-                            if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
-                            try {
-                                String responseString = EntityUtils.toString(httpResponse.getEntity());
-                                response = mapper.readValue(responseString, Response.class);
-                                completableFuture.complete(response);
-                                if (response.getErrors().size() != 0) {
-                                    logError(instance, "Request completed but it contains error(s):" +
-                                            "\nbaseUrl:" + instance.getBaseUrl() +
-                                            "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
-                                            "\nResponse:\n" + response.toString()
-                                    );
-                                }
-                                if (response.getWarnings().size() != 0) {
-                                    LOGGER.warn("Request completed but it contains warning(s):" +
-                                            "\nbaseUrl:" + instance.getBaseUrl() +
-                                            "\nHTTP Status Code: " + httpResponse.getStatusLine().getStatusCode() +
-                                            "\nResponse:\n" + response.toString()
-                                    );
-                                }
-                            } catch (IOException e) {
-                                logError(instance, "An IOException was thrown communicating with mywarwick:\n" +
-                                        e.getMessage() +
-                                        "\nbaseUrl: " + instance.getBaseUrl());
-                                response.setError(new Error("", e.getMessage()));
-                                completableFuture.complete(response);
-                            }
+                            handleCompletedHttpResponse(httpResponse, response, completableFuture, instance);
                         }
 
                         @Override
@@ -119,6 +94,39 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList())
                 );
+    }
+
+    public void handleCompletedHttpResponse(
+            HttpResponse httpResponseFromMyWarwick,
+            Response response,
+            CompletableFuture<Response> completableFuture,
+            Instance instance) {
+        if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
+        try {
+            String responseString = EntityUtils.toString(httpResponseFromMyWarwick.getEntity());
+            response = mapper.readValue(responseString, Response.class);
+            completableFuture.complete(response);
+            if (response.getErrors().size() != 0) {
+                logError(instance, "Request completed but it contains error(s):" +
+                        "\nbaseUrl:" + instance.getBaseUrl() +
+                        "\nHTTP Status Code: " + httpResponseFromMyWarwick.getStatusLine().getStatusCode() +
+                        "\nResponse:\n" + response.toString()
+                );
+            }
+            if (response.getWarnings().size() != 0) {
+                LOGGER.warn("Request completed but it contains warning(s):" +
+                        "\nbaseUrl:" + instance.getBaseUrl() +
+                        "\nHTTP Status Code: " + httpResponseFromMyWarwick.getStatusLine().getStatusCode() +
+                        "\nResponse:\n" + response.toString()
+                );
+            }
+        } catch (IOException e) {
+            logError(instance, "An IOException was thrown communicating with mywarwick:\n" +
+                    e.getMessage() +
+                    "\nbaseUrl: " + instance.getBaseUrl());
+            response.setError(new Error("", e.getMessage()));
+            completableFuture.complete(response);
+        }
     }
 
     @Override
