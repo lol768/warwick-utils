@@ -57,26 +57,15 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             reqJson,
                             instance.getApiUser(),
                             instance.getApiPassword(),
-                            instance.getProviderId()),
-                    new FutureCallback<HttpResponse>() {
-                        @Override
-                        public void completed(HttpResponse httpResponse) {
-                            handleCompletedHttpResponse(httpResponse, completableFuture, instance);
-                        }
-
-                        @Override
-                        public void failed(Exception e) {
-                            handleFailedHttpResponse(e, instance, reqJson, reqPath, completableFuture);
-                        }
-
-                        @Override
-                        public void cancelled() {
-                            String message = "Request to mywarwick has been cancelled";
-                            if (LOGGER.isDebugEnabled()) LOGGER.debug(message);
-                            response.setError(new Error("", message));
-                            completableFuture.complete(response);
-                        }
-                    });
+                            instance.getProviderId()
+                    ),
+                    MyWarwickHttpResponseCallback.newInstance(
+                            reqPath,
+                            reqJson,
+                            instance,
+                            LOGGER,
+                            completableFuture)
+            );
             return completableFuture;
         }).collect(Collectors.toList());
 
@@ -86,59 +75,6 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList())
                 );
-    }
-
-    public void handleCompletedHttpResponse(
-            HttpResponse httpResponseFromMyWarwick,
-            CompletableFuture<Response> completableFuture,
-            Instance instance) {
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("Request completed");
-        try {
-            Response response = parseHttpResponseToResponseObject(httpResponseFromMyWarwick);
-            completableFuture.complete(response);
-            if (response.getErrors().size() != 0) {
-                logError(instance, "Request completed but it contains error(s):" +
-                        "\nbaseUrl:" + instance.getBaseUrl() +
-                        "\nHTTP Status Code: " + httpResponseFromMyWarwick.getStatusLine().getStatusCode() +
-                        "\nResponse:\n" + response.toString()
-                );
-            }
-            if (response.getWarnings().size() != 0) {
-                LOGGER.warn("Request completed but it contains warning(s):" +
-                        "\nbaseUrl:" + instance.getBaseUrl() +
-                        "\nHTTP Status Code: " + httpResponseFromMyWarwick.getStatusLine().getStatusCode() +
-                        "\nResponse:\n" + response.toString()
-                );
-            }
-        } catch (IOException e) {
-            Response errorResponse = new Response();
-            logError(instance, "An IOException was thrown communicating with mywarwick:\n" +
-                    e.getMessage() +
-                    "\nbaseUrl: " + instance.getBaseUrl());
-            errorResponse.setError(new Error("", e.getMessage()));
-            completableFuture.complete(errorResponse);
-        }
-    }
-
-    public void handleFailedHttpResponse(
-            Exception e,
-            Instance instance,
-            String reqJson,
-            String reqPath,
-            CompletableFuture<Response> completableFuture) {
-        logError(instance, "Request to mywarwick API has failed with errors:" +
-                "\npath: " + reqPath +
-                "\ninstance: " + instance +
-                "\nrequest json " + reqJson +
-                "\nerror message:" + e.getMessage(), e);
-        Response failedResponse = new Response();
-        failedResponse.setError(new Error("", e.getMessage()));
-        completableFuture.complete(failedResponse);
-    }
-
-    public Response parseHttpResponseToResponseObject(HttpResponse httpResponse) throws IOException {
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
-        return mapper.readValue(responseString, Response.class);
     }
 
     @Override
@@ -175,22 +111,6 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                 "MyWarwickService/" + providerId);
         request.setEntity(new StringEntity(json, StandardCharsets.UTF_8));
         return request;
-    }
-
-    void logError(Instance instance, String message) {
-        if (instance.getLogErrors()) {
-            LOGGER.error(message);
-        } else {
-            LOGGER.warn(message);
-        }
-    }
-
-    void logError(Instance instance, String message, Exception e) {
-        if (instance.getLogErrors()) {
-            LOGGER.error(message, e);
-        } else {
-            LOGGER.warn(message, e);
-        }
     }
 
     public Set<Instance> getInstances() {
