@@ -22,13 +22,15 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
     private final ObjectMapper mapper;
     private final CompletableFuture<Response> completableFuture;
     private Response response;
+    private MyWarwickHttpResponseCallbackHelper myWarwickHttpResponseCallbackHelper;
 
     public MyWarwickHttpResponseCallback(
             @NotNull String reqPath,
             @NotNull String reqJson,
             @NotNull Instance myWarwickInstance,
             @NotNull Logger logger,
-            @NotNull CompletableFuture<Response> completableFuture
+            @NotNull CompletableFuture<Response> completableFuture,
+            @NotNull MyWarwickHttpResponseCallbackHelper myWarwickHttpResponseCallbackHelper
     ) {
         super();
         this.reqPath = reqPath;
@@ -38,13 +40,14 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
         this.completableFuture = completableFuture;
         this.mapper = new ObjectMapper();
         this.response = new Response();
+        this.myWarwickHttpResponseCallbackHelper = myWarwickHttpResponseCallbackHelper;
     }
 
     @Override
     public void completed(HttpResponse httpResponse) {
         if (logger.isDebugEnabled()) logger.debug("Request completed");
         try {
-            response = parseHttpResponseToResponseObject(httpResponse);
+            response = myWarwickHttpResponseCallbackHelper.parseHttpResponseToResponseObject(httpResponse, mapper);
             completableFuture.complete(response);
             if (response.getErrors().size() != 0) {
                 logError(myWarwickInstance, "Request completed but it contains error(s):" +
@@ -86,12 +89,6 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
         if (logger.isDebugEnabled()) logger.debug(message);
         response.setError(new Error("", message));
         completableFuture.complete(response);
-    }
-
-
-    public Response parseHttpResponseToResponseObject(HttpResponse httpResponse) throws IOException {
-        String responseString = EntityUtils.toString(httpResponse.getEntity());
-        return mapper.readValue(responseString, Response.class);
     }
 
     void logError(Instance instance, String message) {
