@@ -30,6 +30,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
     private final Set<Instance> instances;
     private final HttpClient httpclient;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final MyWarwickHttpResponseCallbackHelper callbackHelper = new DefaultMyWarwickHttpResponseCallbackHelper();
 
     @Inject
     public MyWarwickServiceImpl(HttpClient httpclient, Configuration configuration) {
@@ -59,7 +60,9 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             reqJson,
                             instance,
                             LOGGER,
-                            completableFuture)
+                            completableFuture,
+                            callbackHelper
+                    )
             );
             return completableFuture;
         }).collect(Collectors.toList());
