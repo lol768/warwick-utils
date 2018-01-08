@@ -21,6 +21,8 @@ public class MyWarwickHttpResponseCallbackHelperTest {
     final String successJsonResponse = "{\"success\":true,\"status\":\"ok\",\"data\":{\"id\":\"9e71b33b-debd-40e5-8e6c-989c9de8c547\"}}";
     final String successWithWarningResponse = "{\"success\":true,\"status\":\"ok\",\"data\":{\"id\":\"fb97dfd7-df8e-4fcd-ab23-241e59c8358c\"},\"warnings\":[{\"id\":\"InvalidUsercodeAudience\",\"message\":\"The request contains one or more invalid usercode: List()\"}]}";
     final String responseWithUnknownProperty = "{\"success\":true,\"status\":\"ok\",\"data\":{\"id\":\"fb97dfd7-df8e-4fcd-ab23-241e59c8358c\"},\"cat\":{\"colour\":\"black\"},\"warnings\":[{\"id\":\"InvalidUsercodeAudience\",\"message\":\"The request contains one or more invalid usercode: List()\"}]}";
+    final String responseWithUnknownPropertyUnderKnownProperty = "{\"success\":true,\"status\":\"ok\",\"data\":{\"id\":\"fb97dfd7-df8e-4fcd-ab23-241e59c8358c\"},\"cat\":{\"colour\":\"black\"},\"warnings\":[{\"id\":\"InvalidUsercodeAudience\",\"message\":\"The request contains one or more invalid usercode: List()\",\"why\":\"this is a peach\"}]}";
+    final String responseWithEvenMoreRandomUnknownProperties = "{\"success\":true,\"status\":\"ok\",\"data\":{\"id\":\"fb97dfd7-df8e-4fcd-ab23-241e59c8358c\",\"oh\":\"dear\"},\"cat\":{\"colour\":\"black\"},\"warnings\":[{\"id\":\"InvalidUsercodeAudience\",\"message\":\"The request contains one or more invalid usercode: List()\",\"why\":\"this is a peach\"}]}";
 
     @Test
     public void shouldMapSuccessResponseToObjectCorrectly() throws IOException {
@@ -58,5 +60,7 @@ public class MyWarwickHttpResponseCallbackHelperTest {
         response.setWarnings(Collections.singletonList(new Warning("InvalidUsercodeAudience", "The request contains one or more invalid usercode: List()")));
         response.setData(new Data("fb97dfd7-df8e-4fcd-ab23-241e59c8358c"));
         assertTrue(EqualsBuilder.reflectionEquals(MyWarwickHttpResponseCallbackHelper.parseJsonStringToResponseObject(responseWithUnknownProperty, objectMapper), response));
+        assertTrue(EqualsBuilder.reflectionEquals(MyWarwickHttpResponseCallbackHelper.parseJsonStringToResponseObject(responseWithUnknownPropertyUnderKnownProperty, objectMapper), response));
+        assertTrue(EqualsBuilder.reflectionEquals(MyWarwickHttpResponseCallbackHelper.parseJsonStringToResponseObject(responseWithEvenMoreRandomUnknownProperties, objectMapper), response));
     }
 }
