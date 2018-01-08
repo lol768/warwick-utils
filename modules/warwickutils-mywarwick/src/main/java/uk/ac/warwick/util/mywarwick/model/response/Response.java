@@ -12,7 +12,7 @@ public class Response {
     String status;
     Data data;
     List<Error> errors;
-
+    List<Warning> Warnings;
 
     public Response() {
         this.errors = new ArrayList<>();
