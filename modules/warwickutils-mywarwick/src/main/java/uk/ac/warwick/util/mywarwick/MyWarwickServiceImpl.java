@@ -59,7 +59,7 @@ public class MyWarwickServiceImpl implements MyWarwickService {
                             instance.getApiPassword(),
                             instance.getProviderId()
                     ),
-                    MyWarwickHttpResponseCallback.newInstance(
+                    new MyWarwickHttpResponseCallback(
                             reqPath,
                             reqJson,
                             instance,

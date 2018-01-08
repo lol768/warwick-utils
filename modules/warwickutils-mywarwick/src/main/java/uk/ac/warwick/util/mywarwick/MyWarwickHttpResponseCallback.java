@@ -9,24 +9,26 @@ import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class MyWarwickHttpResponseCallback implements FutureCallback<HttpResponse> {
 
-    final String reqPath;
-    final String reqJson;
-    final Instance myWarwickInstance;
-    final Logger logger;
-    final ObjectMapper mapper = new ObjectMapper();
-    final CompletableFuture<Response> completableFuture;
+    private final String reqPath;
+    private final String reqJson;
+    private final Instance myWarwickInstance;
+    private final Logger logger;
+    private final ObjectMapper mapper;
+    private final CompletableFuture<Response> completableFuture;
+    private Response response;
 
-    private MyWarwickHttpResponseCallback(
-            String reqPath,
-            String reqJson,
-            Instance myWarwickInstance,
-            Logger logger,
-            CompletableFuture<Response> completableFuture
+    public MyWarwickHttpResponseCallback(
+            @NotNull String reqPath,
+            @NotNull String reqJson,
+            @NotNull Instance myWarwickInstance,
+            @NotNull Logger logger,
+            @NotNull CompletableFuture<Response> completableFuture
     ) {
         super();
         this.reqPath = reqPath;
@@ -34,23 +36,15 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
         this.myWarwickInstance = myWarwickInstance;
         this.logger = logger;
         this.completableFuture = completableFuture;
-    }
-
-    static MyWarwickHttpResponseCallback newInstance(
-            String reqPath,
-            String reqJson,
-            Instance myWarwickInstance,
-            Logger logger,
-            CompletableFuture<Response> completableFuture
-    ) {
-        return new MyWarwickHttpResponseCallback(reqPath, reqJson, myWarwickInstance, logger, completableFuture);
+        this.mapper = new ObjectMapper();
+        this.response = new Response();
     }
 
     @Override
     public void completed(HttpResponse httpResponse) {
         if (logger.isDebugEnabled()) logger.debug("Request completed");
         try {
-            Response response = parseHttpResponseToResponseObject(httpResponse);
+            response = parseHttpResponseToResponseObject(httpResponse);
             completableFuture.complete(response);
             if (response.getErrors().size() != 0) {
                 logError(myWarwickInstance, "Request completed but it contains error(s):" +
@@ -67,12 +61,11 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
                 );
             }
         } catch (IOException e) {
-            Response errorResponse = new Response();
             logError(myWarwickInstance, "An IOException was thrown communicating with mywarwick:\n" +
                     e.getMessage() +
                     "\nbaseUrl: " + myWarwickInstance.getBaseUrl());
-            errorResponse.setError(new Error("", e.getMessage()));
-            completableFuture.complete(errorResponse);
+            response.setError(new Error("", e.getMessage()));
+            completableFuture.complete(response);
         }
     }
 
@@ -83,18 +76,16 @@ public class MyWarwickHttpResponseCallback implements FutureCallback<HttpRespons
                 "\ninstance: " + myWarwickInstance +
                 "\nrequest json " + reqJson +
                 "\nerror message:" + e.getMessage(), e);
-        Response failedResponse = new Response();
-        failedResponse.setError(new Error("", e.getMessage()));
-        completableFuture.complete(failedResponse);
+        response.setError(new Error("", e.getMessage()));
+        completableFuture.complete(response);
     }
 
     @Override
     public void cancelled() {
         String message = "Request to mywarwick has been cancelled";
         if (logger.isDebugEnabled()) logger.debug(message);
-        Response cancelledResponse = new Response();
-        cancelledResponse.setError(new Error("", message));
-        completableFuture.complete(cancelledResponse);
+        response.setError(new Error("", message));
+        completableFuture.complete(response);
     }
 
 
