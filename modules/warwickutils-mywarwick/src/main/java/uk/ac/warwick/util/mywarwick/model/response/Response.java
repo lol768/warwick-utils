@@ -1,21 +1,24 @@
 package uk.ac.warwick.util.mywarwick.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Response {
 
     Boolean success;
     String status;
     Data data;
     List<Error> errors;
-
+    List<Warning> warnings;
 
     public Response() {
         this.errors = new ArrayList<>();
+        this.warnings = new ArrayList<>();
     }
 
     public Response(Boolean success, String status, Data data, List<Error> errors) {
@@ -59,6 +62,14 @@ public class Response {
 
     public List<Error> getErrors() {
         return errors;
+    }
+
+    public List<Warning> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(List<Warning> warnings) {
+        this.warnings = warnings;
     }
 
     public void setErrors(List<Error> errors) {
