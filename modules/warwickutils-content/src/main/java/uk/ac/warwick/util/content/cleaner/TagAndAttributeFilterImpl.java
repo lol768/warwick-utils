@@ -16,7 +16,7 @@ public final class TagAndAttributeFilterImpl implements TagAndAttributeFilter {
 	
     private static final Set<String> disallowedTags = toSet( "u", "font", "placetype", "placename",
             "place", "city", "country-region", "time", "date", "notextile", "stockticker", "personname",
-            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype", "big", "small");
+            "shapetype", "stroke", "formulas", "f", "path", "lock", "shape", "imagedata", "smarttagtype", "big");
     
     private static final Set<String> disallowedNoAttributesTags = toSet( "span", "blockquote" );
 
