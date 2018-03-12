@@ -1,35 +1,36 @@
 package uk.ac.warwick.util.files.imageresize;
 
 import com.google.common.collect.Maps;
-import com.sun.media.jai.codec.ByteArraySeekableStream;
-import com.sun.media.jai.codec.FileCacheSeekableStream;
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.ImageEncoder;
-import com.sun.media.jai.codec.JPEGEncodeParam;
-import com.sun.media.jai.codec.PNGEncodeParam;
+import com.google.common.io.ByteSource;
+import com.sun.imageio.plugins.png.PNGMetadata;
 import com.sun.media.jai.codec.SeekableStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.collections.Pair;
-import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.hash.HashString;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -39,74 +40,47 @@ public final class JAIImageResizer implements ImageResizer {
     public static final int DEFAULT_MAX_HEIGHT = 5000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JAIImageResizer.class);
-    
+
     private Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
-    
+
     private boolean useSubsampleAveraging = true;
     private int maxWidthToResize = DEFAULT_MAX_WIDTH;
     private int maxHeightToResize = DEFAULT_MAX_HEIGHT;
 
-    void renderResized(final byte[] sourceBytes, final OutputStream out, final int maxWidth, final int maxHeight,
-            final FileType fileType) throws IOException {
-        Pair<Integer, Integer> dimensions = getDimensions(new ByteArrayInputStream(sourceBytes));
-        if (isOversized(dimensions.getLeft(), dimensions.getRight())) {
-            FileCopyUtils.copy(sourceBytes, out);
-            return;
-        }
-        
-        long start = System.currentTimeMillis();
-        SeekableStream sourceBASS = new ByteArraySeekableStream(sourceBytes);
-        renderResizedStream(out, maxWidth, maxHeight, start, sourceBASS, fileType, dimensions.getLeft(), dimensions.getRight());
-    }
-
-    public void renderResized(final File sourceFile, final OutputStream out, final int maxWidth, final int maxHeight,
-            final FileType fileType) throws IOException {
-        Pair<Integer, Integer> dimensions = getDimensions(new FileInputStream(sourceFile));
-        if (isOversized(dimensions.getLeft(), dimensions.getRight())) {
-            FileCopyUtils.copy(new FileInputStream(sourceFile), out);
-            return;
-        }
-        
-        long start = System.currentTimeMillis();
-        SeekableStream sourceBASS = new FileSeekableStream(sourceFile);
-        renderResizedStream(out, maxWidth, maxHeight, start, sourceBASS, fileType, dimensions.getLeft(), dimensions.getRight());
-    }
-    
-    public void renderResized(final FileReference sourceFile, final Instant entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight,
+    @Override
+    public void renderResized(final ByteSource source, final HashString hash, final ZonedDateTime entityLastModified, final OutputStream out, final int maxWidth, final int maxHeight,
                               final FileType fileType) throws IOException {
-        Pair<Integer, Integer> dimensions = getDimensions(sourceFile.asByteSource().openStream());
+        Pair<Integer, Integer> dimensions = getDimensions(source.openStream());
         if (isOversized(dimensions.getLeft(), dimensions.getRight())) {
-            LOGGER.warn("Refusing to resize image of dimensions " + dimensions.getLeft() + "x" + dimensions.getRight() + ": " + sourceFile);
-            FileCopyUtils.copy(sourceFile.asByteSource().openBufferedStream(), out);
+            LOGGER.warn("Refusing to resize image of dimensions " + dimensions.getLeft() + "x" + dimensions.getRight() + ": " + source);
+            source.copyTo(out);
             return;
         }
-        
-        long start = System.currentTimeMillis();
-        SeekableStream sourceBASS = new FileCacheSeekableStream(sourceFile.asByteSource().openStream());
-        renderResizedStream(out, maxWidth, maxHeight, start, sourceBASS, fileType, dimensions.getLeft(), dimensions.getRight());
+
+        renderResizedStream(source, out, maxWidth, maxHeight, fileType, dimensions.getLeft(), dimensions.getRight());
     }
 
-    private void renderResizedStream(final OutputStream out, final int maxWidth, final int maxHeight, final long start,
-            final SeekableStream sourceSS, final FileType fileType, float width, float height) throws IOException {
-        try {
-            PlanarImage source = JAI.create("stream", sourceSS).createInstance();
-    
+    private void renderResizedStream(final ByteSource in, final OutputStream out, final int maxWidth, final int maxHeight, final FileType fileType, float width, float height) throws IOException {
+        if (!shouldResizeWidth(width, maxWidth) && !shouldResizeHeight(height, maxHeight)) {
+            // stream the input into the output
+            in.copyTo(out);
+            return;
+        }
+
+        long start = System.currentTimeMillis();
+
+        try (SeekableStream sourceSS = SeekableStream.wrapInputStream(in.openStream(), true)) {
+            final RenderedImage renderedImage = ImageIO.read(sourceSS);
+            final PlanarImage source = PlanarImage.wrapRenderedImage(renderedImage);
+
             // assume no resizing at first
             double scale = 1;
-            
-            if (!shouldResizeWidth(width, maxWidth) && !shouldResizeHeight(height, maxHeight)) {
-                // stream the input into the output
-                // seek back to the start of the stream first
-                sourceSS.seek(0);
-                FileCopyUtils.copy(sourceSS, out);
-                return;
-            }
-    
+
             // if the image is too wide, scale down
             if (shouldResizeWidth(width, maxWidth)) {
                 scale = maxWidth / width;
             }
-    
+
             // if the image is too hight, scale down
             // IF that makes it smaller than maxWidth has done already
             if (shouldResizeHeight(height, maxHeight)) {
@@ -115,74 +89,85 @@ public final class JAIImageResizer implements ImageResizer {
                     scale = heightScale;
                 }
             }
-    
+
             ParameterBlock params = new ParameterBlock();
             params.addSource(source);
             params.add(scale);// x scale factor
             params.add(scale);// y scale factor
             params.add(0.0F);// x translate
             params.add(0.0F);// y translate
-            
+
             Map<RenderingHints.Key, Object> map = Maps.newHashMap();
             map.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             map.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
             map.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             map.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            
+
             RenderingHints hints = new RenderingHints(map);
-    
+
             params.add(interpolation);
-            
+
             String operation = useSubsampleAveraging ? "SubsampleAverage" : "scale";
             PlanarImage planarImage = JAI.create(operation, params, hints).getRendering();
-    
-            ImageEncoder encoder;
-    
+
+            ImageWriter writer;
+            IIOMetadata metadata;
+            ImageWriteParam writeParam;
+
             switch (fileType) {
                 case gif:
                 case jpg:
-                    // now re-encode
-                    JPEGEncodeParam jpegEncodeParam = new JPEGEncodeParam();
-                    jpegEncodeParam.setQuality(DEFAULT_SAMPLING_QUALITY);
-                    // who knows what all this could possibly mean ?
-                    jpegEncodeParam.setHorizontalSubsampling(0, 1);
-                    jpegEncodeParam.setHorizontalSubsampling(1, 2);
-                    jpegEncodeParam.setHorizontalSubsampling(2, 2);
-                    jpegEncodeParam.setVerticalSubsampling(0, 1);
-                    jpegEncodeParam.setVerticalSubsampling(1, 1);
-                    jpegEncodeParam.setVerticalSubsampling(2, 1);
-                    final int restartInterval = 64;
-                    jpegEncodeParam.setRestartInterval(restartInterval);
-    
-                    // done messing with the image. Send the bytes to the
-                    // outputstream.
-                    encoder = ImageCodec.createImageEncoder("JPEG", out, jpegEncodeParam);
-    
+                    /**
+                     * We used to do this with JAI but I'm not sure what the equivalent is.
+                     * jpegEncodeParam.setHorizontalSubsampling(0, 1);
+                     * jpegEncodeParam.setHorizontalSubsampling(1, 2);
+                     * jpegEncodeParam.setHorizontalSubsampling(2, 2);
+                     * jpegEncodeParam.setVerticalSubsampling(0, 1);
+                     * jpegEncodeParam.setVerticalSubsampling(1, 1);
+                     * jpegEncodeParam.setVerticalSubsampling(2, 1);
+                     */
+
+                    JPEGImageWriteParam param = new JPEGImageWriteParam(Locale.getDefault());
+                    param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    param.setCompressionQuality(DEFAULT_SAMPLING_QUALITY);
+                    writeParam = param;
+
+                    metadata = null;
+
+                    writer = ImageIO.getImageWritersByFormatName("JPEG").next();
+                    writer.setOutput(new MemoryCacheImageOutputStream(out));
+
                     break;
                 case png:
-                    PNGEncodeParam.RGB pngEncodeParam = new PNGEncodeParam.RGB();
-                    encoder = ImageCodec.createImageEncoder("PNG", out, pngEncodeParam);
+                    PNGMetadata pngMetadata = new PNGMetadata();
+                    ImageTypeSpecifier imageTypeSpecifier = ImageTypeSpecifier.createFromRenderedImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
+                    pngMetadata.initialize(imageTypeSpecifier, 3);
+                    metadata = pngMetadata;
+                    writer = ImageIO.getImageWritersByFormatName("PNG").next();
+                    writer.setOutput(new MemoryCacheImageOutputStream(out));
+                    writeParam = null;
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognised image");
             }
-    
-            encoder.encode(planarImage);
-    
+
+            IIOImage image = new IIOImage(planarImage, /*thumbnails=*/null, metadata);
+            writer.write(metadata, image, writeParam);
+
             long duration = System.currentTimeMillis() - start;
             LOGGER.debug("MS to Resize image: " + duration);
         } catch (Exception e) {
             LOGGER.error("Exception when resizing image, returning original image", e);
-            sourceSS.seek(0);
-            FileCopyUtils.copy(sourceSS, out);
+            in.copyTo(out);
         }
     }
-    
-    public long getResizedImageLength(FileReference sourceFile, Instant lastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
-        // This outputStream will ignore the written output other than recording the number of bytes written.
-        CountingOutputStream os = new CountingOutputStream();
-        renderResized(sourceFile, lastModified, os, maxWidth, maxHeight, fileType);
-        return os.getBytesWritten();
+
+    @Override
+    public long getResizedImageLength(ByteSource source, final HashString hash, final ZonedDateTime entityLastModified, int maxWidth, int maxHeight, FileType fileType) throws IOException {
+        // Write image to a stream that discards all bytes, so we don't use more memory than necessary.
+        LengthCountingOutputStream stream = new LengthCountingOutputStream();
+        renderResized(source, hash, entityLastModified, stream, maxWidth, maxHeight, fileType);
+        return stream.length();
     }
 
     private boolean shouldResizeWidth(final float width, final float maxWidth) {
@@ -198,29 +183,29 @@ public final class JAIImageResizer implements ImageResizer {
         }
         return false;
     }
-    
+
     public static Pair<Integer, Integer> getDimensions(InputStream input) throws IOException {
         // Optimisation: We don't actually need to read the whole image to get the width and height
         ImageInputStream imageStream = null;
         ImageReader reader = null;
-        
+
         try {
             imageStream = ImageIO.createImageInputStream(input);
-            
+
             // Safe to just call .next() as the NoSuchElementException will return null as desired
             reader = ImageIO.getImageReaders(imageStream).next();
             reader.setInput(imageStream, true, true);
-            
+
             return Pair.of(reader.getWidth(0), reader.getHeight(0));
-        } catch (NoSuchElementException e) { 
+        } catch (NoSuchElementException e) {
             throw new NotAnImageException(e);
         } finally {
             if (reader != null)
                 reader.dispose();
-            
+
             if (imageStream != null)
                 imageStream.close();
-            
+
             input.close();
         }
     }
@@ -230,7 +215,7 @@ public final class JAIImageResizer implements ImageResizer {
         if (width * height > maxWidthToResize * maxHeightToResize) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -249,7 +234,7 @@ public final class JAIImageResizer implements ImageResizer {
     public void setMaxHeightToResize(int maxHeight) {
         this.maxHeightToResize = maxHeight;
     }
-    
+
     static class NotAnImageException extends IOException {
 
         private static final long serialVersionUID = -3845937464714363305L;
