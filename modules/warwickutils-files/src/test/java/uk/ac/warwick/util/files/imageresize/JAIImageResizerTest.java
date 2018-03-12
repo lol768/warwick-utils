@@ -10,13 +10,18 @@ import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
 import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +50,7 @@ public final class JAIImageResizerTest {
         int maxHeight = 165;
         resizer.renderResized(input, output, maxWidth, maxHeight, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(maxWidth, result.getWidth());
         assertTrue(maxHeight > result.getHeight());
     }
@@ -64,7 +69,7 @@ public final class JAIImageResizerTest {
         int maxHeight = 165;
         resizer.renderResized(input, output, maxWidth, maxHeight, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(maxWidth, result.getWidth());
         assertTrue(maxHeight > result.getHeight());
     }    
@@ -83,10 +88,11 @@ public final class JAIImageResizerTest {
         int maxHeight = 155;
         resizer.renderResized(input, output, maxWidth, maxHeight, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         
         // subsample average avoids black line at the bottom
-        assertEquals(154, result.getHeight());
+        assertNotEquals("Image hasn't been resized at all", 165, result.getHeight());
+        assertEquals("Image hasn't been resized to the right height", 154, result.getHeight());
     }
 
     @Test
@@ -97,7 +103,7 @@ public final class JAIImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(input, output, 50, 165, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(50, result.getWidth());
     }
     
@@ -129,7 +135,7 @@ public final class JAIImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(input, output, 150, 200, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(100, result.getWidth());
         assertEquals(165, result.getHeight());
         
@@ -144,7 +150,7 @@ public final class JAIImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(input, output, 110, 116, FileType.png);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         
         // subsample average avoids black line at the bottom
         assertEquals(109, result.getWidth());

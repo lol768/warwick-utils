@@ -11,7 +11,9 @@ import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
 import uk.ac.warwick.util.files.impl.AbstractFileReference;
 import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,7 +38,7 @@ public final class SingleThreadedImageResizerTest {
         int maxHeight = 165;
         resizer.renderResized(ref(input), lastModified, output, maxWidth, maxHeight, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(maxWidth, result.getWidth());
         assertTrue(maxHeight > result.getHeight());
     }
@@ -56,7 +58,7 @@ public final class SingleThreadedImageResizerTest {
         int maxHeight = 155;
         resizer.renderResized(ref(input), lastModified, output, maxWidth, maxHeight, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
 
         // subsample average avoids black line at the bottom
         assertEquals(154, result.getHeight());
@@ -71,7 +73,7 @@ public final class SingleThreadedImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref(input), lastModified, output, 50, 165, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(50, result.getWidth());
     }
 
@@ -99,7 +101,7 @@ public final class SingleThreadedImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref(input), lastModified, output, 150, 200, FileType.jpg);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
         assertEquals(100, result.getWidth());
         assertEquals(165, result.getHeight());
 
@@ -115,7 +117,7 @@ public final class SingleThreadedImageResizerTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref(input), lastModified, output, 110, 116, FileType.png);
 
-        RenderedOp result = JAI.create("stream", new ByteArraySeekableStream(output.toByteArray()));
+        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
 
         // subsample average avoids black line at the bottom
         assertEquals(109, result.getWidth());
