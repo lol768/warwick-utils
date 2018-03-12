@@ -20,25 +20,29 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 import static org.junit.Assert.*;
+import static uk.ac.warwick.util.files.imageresize.ImageReadUtils.read;
 
-public final class SingleThreadedImageResizerTest {
+public class SingleThreadedImageResizerTest {
 
     private final SingleThreadedImageResizer resizer = new SingleThreadedImageResizer(new JAIImageResizer());
 
     @Test
     public void resizeTallThinImage() throws IOException {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int maxWidth = 50;
         int maxHeight = 165;
-        resizer.renderResized(ref(input), lastModified, output, maxWidth, maxHeight, FileType.jpg);
 
-        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
+        FileReference ref = ref(input);
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, maxWidth, maxHeight, FileType.jpg);
+
+        PlanarImage result = read(output);
         assertEquals(maxWidth, result.getWidth());
         assertTrue(maxHeight > result.getHeight());
     }
@@ -49,16 +53,17 @@ public final class SingleThreadedImageResizerTest {
      */
     @Test
     public void resizeTallThinImageByHeight() throws IOException {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int maxWidth = 0;
         int maxHeight = 155;
-        resizer.renderResized(ref(input), lastModified, output, maxWidth, maxHeight, FileType.jpg);
+        FileReference ref = ref(input);
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, maxWidth, maxHeight, FileType.jpg);
 
-        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
+        PlanarImage result = read(output);
 
         // subsample average avoids black line at the bottom
         assertEquals(154, result.getHeight());
@@ -66,14 +71,15 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void resizeShortWideImage() throws IOException {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         // shortWide.jpg is 200 x 150px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/shortWideSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        resizer.renderResized(ref(input), lastModified, output, 50, 165, FileType.jpg);
+        FileReference ref = ref(input);
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 50, 165, FileType.jpg);
 
-        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
+        PlanarImage result = read(output);
         assertEquals(50, result.getWidth());
     }
 
@@ -82,26 +88,28 @@ public final class SingleThreadedImageResizerTest {
      */
     @Test
     public void fileReferenceInput() throws Exception {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
         FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        resizer.renderResized(ref, lastModified, output, 50, 165, FileType.jpg);
 
-        assertEquals(output.size(), resizer.getResizedImageLength(ref, lastModified, 50, 165, FileType.jpg));
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 50, 165, FileType.jpg);
+
+        assertEquals(output.size(), resizer.getResizedImageLength(ref.asByteSource(), ref.getHash(), lastModified, 50, 165, FileType.jpg));
     }
 
     @Test
     public void dontResizeLargerThanOriginal() throws IOException {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         // tallThinSample.jpg is 100 x 165 px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/tallThinSample.jpg"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        resizer.renderResized(ref(input), lastModified, output, 150, 200, FileType.jpg);
+        FileReference ref = ref(input);
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 150, 200, FileType.jpg);
 
-        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
+        PlanarImage result = read(output);
         assertEquals(100, result.getWidth());
         assertEquals(165, result.getHeight());
 
@@ -110,14 +118,15 @@ public final class SingleThreadedImageResizerTest {
 
     @Test
     public void PNGResizing() throws IOException {
-        final Instant lastModified = Instant.now();
+        final ZonedDateTime lastModified = ZonedDateTime.now();
 
         // award.png is 220x233px
         byte[] input = FileCopyUtils.copyToByteArray(this.getClass().getResourceAsStream("/award.png"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        resizer.renderResized(ref(input), lastModified, output, 110, 116, FileType.png);
+        FileReference ref = ref(input);
+        resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 110, 116, FileType.png);
 
-        PlanarImage result = PlanarImage.wrapRenderedImage(ImageIO.read(new ByteArraySeekableStream(output.toByteArray())));
+        PlanarImage result = read(output);
 
         // subsample average avoids black line at the bottom
         assertEquals(109, result.getWidth());
@@ -127,42 +136,34 @@ public final class SingleThreadedImageResizerTest {
     private FileReference ref(final byte[] input) {
         return new AbstractFileReference() {
 
-            @SuppressWarnings("unchecked")
-            public FileData<FileReference> getData() {
+            public FileData getData() {
                 return new FileData() {
-                    @Override
-                    public boolean isExists() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean isFileBacked() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean delete() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public URI getFileLocation() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public FileReference overwrite(ByteSource in) throws IOException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
                     public ByteSource asByteSource() {
                         return ByteSource.wrap(input);
                     }
 
-                    @Override
                     public long length() {
                         return input.length;
+                    }
+
+                    public FileData overwrite(ByteSource in) throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    public URI getFileLocation() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    public boolean isExists() {
+                        return true;
+                    }
+
+                    public boolean isFileBacked() {
+                        return false;
+                    }
+
+                    public boolean delete() {
+                        throw new UnsupportedOperationException();
                     }
                 };
             }
@@ -184,11 +185,6 @@ public final class SingleThreadedImageResizerTest {
             }
 
             public FileReference copyTo(FileReference target) throws IOException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public FileReference overwrite(ByteSource in) throws IOException {
                 throw new UnsupportedOperationException();
             }
 
