@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.mywarwick.model.Configuration;
 import uk.ac.warwick.util.mywarwick.model.Instance;
 import uk.ac.warwick.util.mywarwick.model.request.Activity;
+import uk.ac.warwick.util.mywarwick.model.request.PushNotification;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 
 import javax.annotation.PreDestroy;
@@ -42,11 +43,19 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         httpclient.start();
     }
 
-    private CompletableFuture<List<Response>> send(Activity activity, boolean isNotification) {
+    private CompletableFuture<List<Response>> send(Activity activity, boolean isNotification, boolean isTransient) {
+        final String reqJson = makeJsonBody(activity);
         List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<>();
-            final String reqPath = isNotification ? instance.getNotificationPath() : instance.getActivityPath();
-            final String reqJson = makeJsonBody(activity);
+            final String reqPath;
+            if (isTransient && isNotification) {
+                reqPath = instance.getTransientPushPath();
+            } else if (isNotification) {
+                reqPath = instance.getNotificationPath();
+            } else {
+                reqPath = instance.getActivityPath();
+            }
+
             httpclient.execute(
                     makeRequest(
                             reqPath,
@@ -77,12 +86,17 @@ public class MyWarwickServiceImpl implements MyWarwickService {
 
     @Override
     public CompletableFuture<List<Response>> sendAsActivity(Activity activity) {
-        return send(activity, false);
+        return send(activity, false, false);
     }
 
     @Override
     public CompletableFuture<List<Response>> sendAsNotification(Activity activity) {
-        return send(activity, true);
+        return send(activity, true, false);
+    }
+
+    @Override
+    public CompletableFuture<List<Response>> sendAsTransientPush(PushNotification pushNotification) {
+        return send(pushNotification, true, true);
     }
 
     String makeJsonBody(Activity activity) {
