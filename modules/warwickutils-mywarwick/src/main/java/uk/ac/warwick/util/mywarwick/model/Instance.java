@@ -12,6 +12,7 @@ public class Instance {
     private boolean logErrors = true;
     private String activityPath;
     private String notificationPath;
+    private String transientPushPath;
 
     public Instance(){
         super();
@@ -55,6 +56,11 @@ public class Instance {
     public String getNotificationPath() {
         if (notificationPath == null) notificationPath = baseUrl + "/api/streams/" + providerId + "/notifications";
         return notificationPath;
+    }
+
+    public String getTransientPushPath() {
+        if (transientPushPath == null) transientPushPath = baseUrl + "/api/push/" + providerId;
+        return transientPushPath;
     }
 
     public void setBaseUrl(String baseUrl) {
