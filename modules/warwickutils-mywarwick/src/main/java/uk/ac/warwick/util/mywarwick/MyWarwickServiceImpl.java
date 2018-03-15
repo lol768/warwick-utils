@@ -47,10 +47,15 @@ public class MyWarwickServiceImpl implements MyWarwickService {
         final String reqJson = makeJsonBody(activity);
         List<CompletableFuture<Response>> listOfCompletableFutures = instances.stream().map(instance -> {
             CompletableFuture<Response> completableFuture = new CompletableFuture<>();
-            final String reqPath =
-                    isNotification ?
-                            isTransient ? instance.getTransientPushPath() : instance.getNotificationPath()
-                            : instance.getActivityPath();
+            final String reqPath;
+            if (isTransient && isNotification) {
+                reqPath = instance.getTransientPushPath();
+            } else if (isNotification) {
+                reqPath = instance.getNotificationPath();
+            } else {
+                reqPath = instance.getActivityPath();
+            }
+
             httpclient.execute(
                     makeRequest(
                             reqPath,
