@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20180315</version>
+		<version>20180410</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -127,7 +127,7 @@
 		<dependency>
 			<groupId>uk.ac.warwick.tagsoup-html5</groupId>
 			<artifactId>tagsoup-html5</artifactId>
-			<version>20150421</version>
+			<version>20180410</version>
 		</dependency>
 
 		<dependency>
