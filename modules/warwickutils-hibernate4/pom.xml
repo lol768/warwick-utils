@@ -38,9 +38,11 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Optional, for DateTimeDataType and DurationUserType -->
 		<dependency>
 			<groupId>org.jadira.usertype</groupId>
 			<artifactId>usertype.extended</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
