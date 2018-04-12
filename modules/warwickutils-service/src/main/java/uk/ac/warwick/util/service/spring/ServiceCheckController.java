@@ -3,7 +3,7 @@ package uk.ac.warwick.util.service.spring;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.Lifecycle;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @link https://repo.elab.warwick.ac.uk/projects/SYSAD/repos/puppet3/browse/docs/APPS.md
  */
 @Controller
-public class ServiceCheckController implements Lifecycle {
+public class ServiceCheckController implements SmartLifecycle {
 
     /** Spring should wire in all beans that extend ServiceHealthcheckProvider */
     @Autowired(required = false)
@@ -81,15 +81,35 @@ public class ServiceCheckController implements Lifecycle {
         }
     }
 
+    @Override
     public void start() {
         running = true;
     }
 
+    @Override
     public void stop() {
         running = false;
     }
 
+    @Override
+    public void stop(Runnable callback) {
+        stop();
+        callback.run();
+    }
+
+    @Override
     public boolean isRunning() {
         return running;
+    }
+
+    @Override
+    public boolean isAutoStartup() {
+        return true;
+    }
+
+    @Override
+    public int getPhase() {
+        // Start-up last and shut-down first
+        return Integer.MAX_VALUE;
     }
 }
