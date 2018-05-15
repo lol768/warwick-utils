@@ -32,14 +32,4 @@ public class MemcachedCacheStoreTest extends AbstractMemcachedCacheStoreTest<Str
         assertSize(0);
     }
 
-    @Test
-    public void longTTLs() throws Exception {
-        // UTL-212
-        CacheEntry<String, String> entry = new CacheEntry<>("token:999", "Paul");
-        cacheStore.put(entry, 31, TimeUnit.DAYS);
-
-        assertNotNull("Entry should exist in the cache", cacheStore.get("token:999"));
-        assertEquals(entry.getValue(), cacheStore.get("token:999").getValue());
-    }
-
 }
