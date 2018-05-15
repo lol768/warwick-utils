@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.net.SocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,8 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     private static final int SIZE_INFO_THRESHOLD = 100 * 1024; // 100kb
 
     private static final int SIZE_WARN_THRESHOLD = 2 * 1024 * 1024; // 2mb
+
+    private static final long MEMCACHED_TTL_SECONDS_THRESHOLD = TimeUnit.DAYS.toSeconds(30);
 
     private static final String MD5_ALGORITHM_NAME = "MD5";
 
@@ -173,6 +176,9 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
 
             if (ttlInSeconds > Integer.MAX_VALUE) {
                 ttlSeconds = Integer.MAX_VALUE;
+            } else if (ttlInSeconds > MEMCACHED_TTL_SECONDS_THRESHOLD) {
+                // Unix timestamp
+                ttlSeconds = (int) (Instant.now().getEpochSecond() + ttlInSeconds);
             } else {
                 ttlSeconds = (int) ttlInSeconds;
             }
