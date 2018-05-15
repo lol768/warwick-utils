@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.FileStore;
 import uk.ac.warwick.util.files.LocalFileReference;
 import uk.ac.warwick.util.files.LocalFileStore;
 import uk.ac.warwick.util.files.Storeable;
@@ -129,6 +130,10 @@ public final class FileBackedLocalFileReference extends AbstractFileReference im
     }
 
     class Data extends AbstractFileBackedFileData {
+
+        private Data() {
+            super(fileStore);
+        }
 
         Instant getLastModified() {
             return Instant.ofEpochMilli(getFile().lastModified());

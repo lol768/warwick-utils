@@ -73,6 +73,10 @@ public final class FileBackedHashFileReference extends AbstractFileReference imp
 
     class Data extends AbstractFileBackedFileData {
 
+        private Data() {
+            super(fileStore);
+        }
+
         @Override
         public File getFile() {
             return file;

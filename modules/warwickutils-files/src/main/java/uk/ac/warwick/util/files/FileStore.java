@@ -33,4 +33,6 @@ public interface FileStore {
      */
     FileReference get(Storeable storeable) throws FileNotFoundException;
 
+    FileStoreStatistics getStatistics();
+
 }

@@ -45,7 +45,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
         this.blobStore = blobStore;
         this.containerName = containerName;
         this.path = FilenameUtils.separatorsToUnix(thepath);
-        this.data = new Data(blobStore, containerName, path);
+        this.data = new Data();
         this.storageStrategy = theStorageStrategy;
     }
 
@@ -77,7 +77,7 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
 
     @Override
     public LocalFileReference copyTo(String newPath) throws IOException {
-        blobStore.copyBlob(containerName, path, containerName, newPath, CopyOptions.NONE);
+        fileStore.statistics.timeSafe(() -> blobStore.copyBlob(containerName, path, containerName, newPath, CopyOptions.NONE), fileStore.statistics::referenceWritten);
         return new BlobBackedLocalFileReference(fileStore, blobStore, containerName, newPath, storageStrategy);
     }
 
@@ -120,8 +120,8 @@ public final class BlobBackedLocalFileReference extends AbstractFileReference im
 
     class Data extends AbstractBlobBackedFileData {
 
-        private Data(BlobStore blobStore, String containerName, String blobName) {
-            super(blobStore, containerName, blobName);
+        private Data() {
+            super(fileStore, blobStore, containerName, path);
         }
 
         @Override

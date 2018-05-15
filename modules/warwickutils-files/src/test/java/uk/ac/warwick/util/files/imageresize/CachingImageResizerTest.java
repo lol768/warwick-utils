@@ -47,7 +47,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     private final BlobStoreBackedHashResolver resolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, "resized-images", hasher, dao, () -> false);
     private final FileReferenceCreationStrategy strategy = m.mock(FileReferenceCreationStrategy.class);
     private final Storeable.StorageStrategy storageStrategy = m.mock(Storeable.StorageStrategy.class);
-    private final LocalFileStore fileStore = new BlobStoreFileStore(Collections.singletonMap("resized-images", resolver), strategy, blobStoreContext, CONTAINER_PREFIX);
+    private final BlobStoreFileStore fileStore = new BlobStoreFileStore(Collections.singletonMap("resized-images", resolver), strategy, blobStoreContext, CONTAINER_PREFIX);
 
     private final ZonedDateTime now = ZonedDateTime.now();
 
@@ -173,7 +173,7 @@ public class CachingImageResizerTest extends AbstractJUnit4FileBasedTest {
     
     private FileReference file(String path) throws IOException {
         File f = new File(contentRoot, path);
-        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(fileStore, f, new HashString("abcdef"));
         return ref;
     }
     

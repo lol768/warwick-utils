@@ -96,4 +96,8 @@ public class MockFileStore implements FileStore {
 
     }
 
+    @Override
+    public FileStoreStatistics getStatistics() {
+        return new DefaultFileStoreStatistics(this);
+    }
 }

@@ -1,33 +1,45 @@
 package uk.ac.warwick.util.files.imageresize;
 
 import com.google.common.io.ByteSource;
-import com.sun.media.jai.codec.ByteArraySeekableStream;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
 import uk.ac.warwick.util.files.impl.AbstractFileReference;
 import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
-import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import static org.junit.Assert.*;
-import static uk.ac.warwick.util.files.imageresize.ImageReadUtils.read;
+import static uk.ac.warwick.util.files.imageresize.ImageReadUtils.*;
 
 public class SingleThreadedImageResizerTest {
 
     private final SingleThreadedImageResizer resizer = new SingleThreadedImageResizer(new JAIImageResizer());
+
+    private final Mockery m = new JUnit4Mockery();
+
+    private final HashFileStore fileStore = m.mock(HashFileStore.class);
+
+    @Before
+    public void setup() throws Exception {
+        m.checking(new Expectations() {{
+            allowing(fileStore).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(fileStore)));
+        }});
+    }
 
     @Test
     public void resizeTallThinImage() throws IOException {
@@ -91,7 +103,7 @@ public class SingleThreadedImageResizerTest {
         final ZonedDateTime lastModified = ZonedDateTime.now();
 
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
-        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(fileStore, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 50, 165, FileType.jpg);

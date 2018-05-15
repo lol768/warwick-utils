@@ -77,16 +77,18 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
                 .contentLength(size)
                 .build();
 
-        try {
-            doPut(container, blob, size);
-        } catch (HttpResponseException e) {
-            // PHO-247
-            LOGGER.warn("PUT: HttpResponseException encountered; might be a 401, so checking for fresh tokens and retrying...");
+        statistics.time(() -> {
+            try {
+                doPut(container, blob, size);
+            } catch (HttpResponseException e) {
+                // PHO-247
+                LOGGER.warn("PUT: HttpResponseException encountered; might be a 401, so checking for fresh tokens and retrying...");
 
-            // almost any other request will handle a 401 by refreshing the auth token.
-            blobStore.blobMetadata(container, key);
-            doPut(container, blob, size);
-        }
+                // almost any other request will handle a 401 by refreshing the auth token.
+                blobStore.blobMetadata(container, key);
+                doPut(container, blob, size);
+            }
+        }, statistics::referenceWritten);
 
         return target;
     }
@@ -137,11 +139,13 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
 
     @Override
     public Stream<String> list(Storeable.StorageStrategy storageStrategy, String basePath) {
-        String containerName = containerPrefix + storageStrategy.getRootPath();
+        return statistics.timeSafe(() -> {
+            String containerName = containerPrefix + storageStrategy.getRootPath();
 
-        PageSet<? extends StorageMetadata> firstResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(basePath));
+            PageSet<? extends StorageMetadata> firstResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(basePath));
 
-        return listKeys(containerName, basePath, firstResults.getNextMarker(), firstResults.stream().map(StorageMetadata::getName));
+            return listKeys(containerName, basePath, firstResults.getNextMarker(), firstResults.stream().map(StorageMetadata::getName));
+        }, statistics::traversed);
     }
 
     private Stream<String> listKeys(String containerName, String prefix, String nextMarker, Stream<String> accumulator) {

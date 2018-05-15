@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.dao.HashInfoDAO;
@@ -39,6 +40,10 @@ public final class BlobStoreBackedHashResolverTest {
     @Before public void setup() throws Exception {
         htmlResolver.afterPropertiesSet();
         defaultResolver.afterPropertiesSet();
+
+        m.checking(new Expectations() {{
+            allowing(store).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(store)));
+        }});
     }
 
     @After

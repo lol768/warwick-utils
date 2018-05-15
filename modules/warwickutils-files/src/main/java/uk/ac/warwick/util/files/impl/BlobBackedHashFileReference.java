@@ -38,7 +38,7 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
 
     private void update(HashString theHash) {
         this.hash = theHash;
-        this.data = new Data(blobStore, containerName, theHash.getHash());
+        this.data = new Data();
     }
 
     @Override
@@ -74,8 +74,8 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
 
     class Data extends AbstractBlobBackedFileData {
 
-        private Data(BlobStore blobStore, String containerName, String blobName) {
-            super(blobStore, containerName, blobName);
+        private Data() {
+            super(fileStore, blobStore, containerName, hash.getHash());
         }
 
         @Override

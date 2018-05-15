@@ -2,8 +2,10 @@ package uk.ac.warwick.util.files.impl;
 
 import com.google.common.io.ByteSource;
 import org.springframework.beans.factory.InitializingBean;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.FileReferenceCreationStrategy;
+import uk.ac.warwick.util.files.FileStoreStatistics;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.LocalFileReference;
@@ -22,6 +24,8 @@ public abstract class AbstractFileStore implements LocalFileStore, HashFileStore
     private final Map<String, FileHashResolver> hashResolvers;
 
     private final FileReferenceCreationStrategy storageStrategy;
+
+    protected FileStoreStatistics statistics = new DefaultFileStoreStatistics(this);
 
     public AbstractFileStore(Map<String,FileHashResolver> resolvers, FileReferenceCreationStrategy strategy) {
         this.hashResolvers = resolvers;
@@ -128,4 +132,11 @@ public abstract class AbstractFileStore implements LocalFileStore, HashFileStore
         }
     }
 
+    public FileStoreStatistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(FileStoreStatistics statistics) {
+        this.statistics = statistics;
+    }
 }

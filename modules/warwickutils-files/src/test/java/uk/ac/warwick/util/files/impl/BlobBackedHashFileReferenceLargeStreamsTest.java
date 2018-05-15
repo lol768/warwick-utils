@@ -141,6 +141,8 @@ public class BlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4F
         assertTrue(localRef.isExists());
         assertEquals(file.length(), localRef.length());
 
+        Thread.sleep(1000);
+
         // Use the local file ref to create a hash ref
         HashFileReference hashRef = fileStore.storeHashReference(localRef.asByteSource(), FileHashResolver.STORE_NAME_DEFAULT);
 

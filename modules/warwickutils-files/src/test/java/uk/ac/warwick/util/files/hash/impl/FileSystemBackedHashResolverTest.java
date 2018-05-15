@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.dao.HashInfoDAO;
@@ -42,6 +43,10 @@ public final class FileSystemBackedHashResolverTest extends AbstractJUnit4FileBa
     
     @Before public void setup() {        
         dao = m.mock(HashInfoDAO.class);
+
+        m.checking(new Expectations() {{
+            allowing(store).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(store)));
+        }});
         
         resolver = new FileSystemBackedHashResolver(hasher, FileHashResolver.STORE_NAME_HTML, root, dao, flags);
     }

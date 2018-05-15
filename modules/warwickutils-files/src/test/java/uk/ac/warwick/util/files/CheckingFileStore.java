@@ -43,5 +43,10 @@ class CheckingFileStore implements HashFileStore {
     public FileReference store(Storeable storeable, String storeName, ByteSource in) throws IOException {
         return null;
     }
+
+    @Override
+    public FileStoreStatistics getStatistics() {
+        return new DefaultFileStoreStatistics(this);
+    }
     
 }

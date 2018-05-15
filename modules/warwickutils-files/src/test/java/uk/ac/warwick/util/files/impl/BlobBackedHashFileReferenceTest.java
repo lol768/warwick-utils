@@ -9,7 +9,9 @@ import org.jclouds.io.Payload;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
 import uk.ac.warwick.util.files.HashFileStore;
 import uk.ac.warwick.util.files.hash.HashString;
 
@@ -26,7 +28,16 @@ public class BlobBackedHashFileReferenceTest {
     private final String containerName = "uk.ac.warwick.sbr.files";
     private final HashString hash = new HashString("files", "62139898312baed7981327ab9812f37");
 
-    private final BlobBackedHashFileReference ref = new BlobBackedHashFileReference(fileStore, blobStore, containerName, hash);
+    private BlobBackedHashFileReference ref;
+
+    @Before
+    public void setup() throws Exception {
+        m.checking(new Expectations() {{
+            allowing(fileStore).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(fileStore)));
+        }});
+
+        ref = new BlobBackedHashFileReference(fileStore, blobStore, containerName, hash);
+    }
 
     @Test
     public void lazyBlob() throws Exception {

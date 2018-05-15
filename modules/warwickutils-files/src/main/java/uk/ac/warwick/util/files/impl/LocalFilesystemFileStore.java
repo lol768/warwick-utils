@@ -5,7 +5,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.warwick.util.files.*;
-import uk.ac.warwick.util.files.Storeable.StorageStrategy.MissingContentStrategy;
 import uk.ac.warwick.util.files.hash.FileHashResolver;
 import uk.ac.warwick.util.files.hash.HashString;
 
@@ -37,9 +36,11 @@ public final class LocalFilesystemFileStore extends AbstractFileStore implements
             throw new IllegalStateException("Could not create parent directory for " + outputFile);
         }
 
-        try (FileOutputStream os = new FileOutputStream(outputFile)) {
-            in.copyTo(os);
-        }
+        statistics.time(() -> {
+            try (FileOutputStream os = new FileOutputStream(outputFile)) {
+                in.copyTo(os);
+            }
+        }, statistics::referenceWritten);
         
         return target;
     }
@@ -65,14 +66,16 @@ public final class LocalFilesystemFileStore extends AbstractFileStore implements
 
     @Override
     public Stream<String> list(Storeable.StorageStrategy storageStrategy, String basePath) {
-        File dir = resolve(storageStrategy, basePath);
-        String[] fileNames = dir.list();
-        if (fileNames == null) {
-            // Not a directory
-            return Stream.empty();
-        } else {
-            return Stream.of(fileNames);
-        }
+        return statistics.timeSafe(() -> {
+            File dir = resolve(storageStrategy, basePath);
+            String[] fileNames = dir.list();
+            if (fileNames == null) {
+                // Not a directory
+                return Stream.empty();
+            } else {
+                return Stream.of(fileNames);
+            }
+        }, statistics::traversed);
     }
 
     @Override
@@ -112,8 +115,9 @@ public final class LocalFilesystemFileStore extends AbstractFileStore implements
         if (!target.getParentFile().exists()) {
             Assert.isTrue(target.getParentFile().mkdirs(), "Couldn't create dirs for " + target);
         }
-        
-        FileCopyUtils.copy(in, new FileOutputStream(target));
+
+        statistics.time(() -> FileCopyUtils.copy(in, new FileOutputStream(target)), statistics::referenceWritten);
+
         return new FileBackedLocalFileReference(this, target, storeable.getPath(), storeable.getStrategy());
     }
 

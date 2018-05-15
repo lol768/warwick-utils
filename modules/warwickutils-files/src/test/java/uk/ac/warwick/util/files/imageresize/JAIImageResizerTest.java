@@ -1,29 +1,43 @@
 package uk.ac.warwick.util.files.imageresize;
 
-import static org.junit.Assert.*;
+import com.google.common.io.ByteSource;
+import com.google.common.io.Files;
+import com.sun.media.jai.codec.ByteArraySeekableStream;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.util.FileCopyUtils;
+import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.files.DefaultFileStoreStatistics;
+import uk.ac.warwick.util.files.FileReference;
+import uk.ac.warwick.util.files.HashFileStore;
+import uk.ac.warwick.util.files.hash.HashString;
+import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
+import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
 
+import javax.media.jai.PlanarImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
-import javax.media.jai.PlanarImage;
-
-import com.google.common.io.ByteSource;
-import com.google.common.io.Files;
-import org.junit.Test;
-import org.springframework.util.FileCopyUtils;
-import uk.ac.warwick.util.files.imageresize.ImageResizer.FileType;
-
-import uk.ac.warwick.util.files.FileReference;
-import uk.ac.warwick.util.files.hash.HashString;
-import uk.ac.warwick.util.files.impl.FileBackedHashFileReference;
-import uk.ac.warwick.util.collections.Pair;
-
-import com.sun.media.jai.codec.ByteArraySeekableStream;
+import static org.junit.Assert.*;
 
 public class JAIImageResizerTest {
     ZonedDateTime lastModified = ZonedDateTime.now();
+
+    private final Mockery m = new JUnit4Mockery();
+
+    private final HashFileStore fileStore = m.mock(HashFileStore.class);
+
+    @Before
+    public void setup() throws Exception {
+        m.checking(new Expectations() {{
+            allowing(fileStore).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(fileStore)));
+        }});
+    }
 
     /**
      * SBTWO-3903 a big zTXt chunk in a PNG highlighted a crappy decoder implementation in JAI -
@@ -107,7 +121,7 @@ public class JAIImageResizerTest {
     public void fileReferenceInput() throws Exception {
         JAIImageResizer resizer = new JAIImageResizer();
         File f = new File(this.getClass().getResource("/tallThinSample.jpg").getFile());
-        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(fileStore, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 50, 165, FileType.jpg);
 
@@ -170,7 +184,7 @@ public class JAIImageResizerTest {
         JAIImageResizer resizer = new JAIImageResizer();
 
         File f = new File(this.getClass().getResource("/October.jpg").getFile());
-        FileReference ref = new FileBackedHashFileReference(null, f, new HashString("abcdef"));
+        FileReference ref = new FileBackedHashFileReference(fileStore, f, new HashString("abcdef"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         resizer.renderResized(ref.asByteSource(), ref.getHash(), lastModified, output, 50, 165, FileType.jpg);
 
