@@ -39,6 +39,15 @@ Default ehCache config for uk.ac.warwick.util.cache
            memoryStoreEvictionPolicy="LFU"
             />
 
+    <cache name="UserByUniIdLookupCache"
+           maxElementsInMemory="3000"
+           maxElementsOnDisk="70000"
+           overflowToDisk="true"
+           diskPersistent="true"
+           diskSpoolBufferSizeMB="20"
+           memoryStoreEvictionPolicy="LFU"
+    />
+
     <cache name="WebgroupCache"
            maxElementsInMemory="2000"
            maxElementsOnDisk="100000"
