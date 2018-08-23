@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -80,13 +81,21 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 			this.store.setMaxSize(Integer.parseInt(System.getProperty(CACHE_SIZE_PROPERTY)));
 		}
 	}
-	
+
 	/**
 	 * @param timeoutSeconds The number of seconds for entries to expire. This is ignored
 	 * 		if you subsequently override the ExpiryStrategy.
 	 */
 	public BasicCache(String storeName, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeoutSeconds, CacheStrategy cacheStrategy) {
 		this(Caches.<K,V>newCacheStore(storeName, timeoutSeconds, cacheStrategy), factory, timeoutSeconds);
+	}
+	
+	/**
+	 * @param timeoutSeconds The number of seconds for entries to expire. This is ignored
+	 * 		if you subsequently override the ExpiryStrategy.
+	 */
+	public BasicCache(String storeName, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeoutSeconds, CacheStrategy cacheStrategy, Properties properties) {
+		this(Caches.<K,V>newCacheStore(storeName, timeoutSeconds, cacheStrategy, properties), factory, timeoutSeconds);
 	}
 	
 	public void setMaxSize(final int cacheSize) {

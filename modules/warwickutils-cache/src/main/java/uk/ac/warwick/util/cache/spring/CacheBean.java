@@ -5,6 +5,8 @@ import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryFactory;
 import uk.ac.warwick.util.cache.Caches;
 
+import java.util.Properties;
+
 public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
 
     private String name;
@@ -15,6 +17,8 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
 
     private Caches.CacheStrategy strategy = Caches.CacheStrategy.EhCacheIfAvailable;
 
+    private Properties properties;
+
     @Override
     public Class<Cache> getObjectType() {
         return Cache.class;
@@ -22,7 +26,11 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
 
     @Override
     protected Cache<?, ?> createInstance() throws Exception {
-        return Caches.newCache(name, entryFactory, timeout, strategy);
+        if (properties != null) {
+            return Caches.newCache(name, entryFactory, timeout, strategy, properties);
+        } else {
+            return Caches.newCache(name, entryFactory, timeout, strategy);
+        }
     }
 
     @Override
@@ -60,5 +68,9 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
 
     public void setStrategyAsString(String strategyAsString) {
         this.strategy = Caches.CacheStrategy.valueOf(strategyAsString);
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

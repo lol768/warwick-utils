@@ -60,6 +60,31 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         init();
     }
 
+    private static Properties customProperties() {
+        String location = System.getProperty("warwick.memcached.config");
+
+        InputStream customPropertiesStream;
+        if (location == null || location.equals("")) {
+            customPropertiesStream = MemcachedCacheStore.class.getResourceAsStream(CUSTOM_CONFIG_URL);
+        } else {
+            customPropertiesStream = MemcachedCacheStore.class.getResourceAsStream(location);
+        }
+
+        if (customPropertiesStream != null) {
+            Properties customProperties = new Properties();
+
+            try {
+                customProperties.load(customPropertiesStream);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not load configuration from " + ((location == null || location.equals("")) ? CUSTOM_CONFIG_URL : location));
+            }
+
+            return customProperties;
+        }
+
+        return new Properties();
+    }
+
     /**
      * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from either
      * a default classpath location, or one specified by the system property
@@ -67,6 +92,15 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
      * constructor will use the same MemcachedClient.
      */
     public MemcachedCacheStore(final String name, final int timeout) {
+        this(name, timeout, customProperties());
+    }
+
+    /**
+     * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from the
+     * passed properties. Subsequent MemcachedCacheStores created with this
+     * constructor will use the same MemcachedClient.
+     */
+    public MemcachedCacheStore(final String name, final int timeout, final Properties customProperties) {
         this.cacheName = name;
         this.timeoutInSeconds = timeout;
         if (defaultMemcachedClient == null) {
@@ -78,30 +112,11 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
                 throw new IllegalStateException("Couldn't load default properties for memcached", e);
             }
 
-            String location = System.getProperty("warwick.memcached.config");
+            for (Enumeration en = customProperties.propertyNames(); en.hasMoreElements();) {
+                String key = (String) en.nextElement();
+                String value = customProperties.getProperty(key);
 
-            InputStream customPropertiesStream;
-            if (location == null || location.equals("")) {
-                customPropertiesStream = getClass().getResourceAsStream(CUSTOM_CONFIG_URL);
-            } else {
-                customPropertiesStream = getClass().getResourceAsStream(location);
-            }
-
-            if (customPropertiesStream != null) {
-                Properties customProperties = new Properties();
-
-                try {
-                    customProperties.load(customPropertiesStream);
-                } catch (IOException e) {
-                    throw new IllegalStateException("Could not load configuration from " + ((location == null || location.equals("")) ? CUSTOM_CONFIG_URL : location));
-                }
-
-                for (Enumeration en = customProperties.propertyNames(); en.hasMoreElements();) {
-                    String key = (String) en.nextElement();
-                    String value = customProperties.getProperty(key);
-
-                    properties.setProperty(key, value);
-                }
+                properties.setProperty(key, value);
             }
 
             SerializingTranscoder transcoder = new SerializingTranscoder();
