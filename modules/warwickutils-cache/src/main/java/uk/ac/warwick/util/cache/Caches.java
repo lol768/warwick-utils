@@ -3,6 +3,7 @@ package uk.ac.warwick.util.cache;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +42,20 @@ public final class Caches {
 		return new BasicCache<K, V, Object>(name, wrapFactoryWithoutDataInitialisation(factory), timeout, cacheStrategy);
 	}
 
+    public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
+        return new BasicCache<K, V, Object>(name, wrapFactoryWithoutDataInitialisation(factory), timeout, cacheStrategy, properties);
+    }
+
     public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout) {
         return newDataInitialisatingCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
     }
 
     public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy) {
         return new BasicCache<K, V, T>(name, factory, timeout, cacheStrategy);
+    }
+
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
+        return new BasicCache<K, V, T>(name, factory, timeout, cacheStrategy, properties);
     }
 
     public static <K extends Serializable,V extends Serializable> CacheEntryFactoryWithDataInitialisation<K, V, Object> wrapFactoryWithoutDataInitialisation(final CacheEntryFactory<K,V> factory) {
@@ -74,13 +83,22 @@ public final class Caches {
             }
         };
     }
+
+    /**
+     * Creates a new cache. If Ehcache is available, it is used - reflection is used
+     * to avoid attempting to classload any EhCache classes until we know it's actually
+     * available.
+     */
+    public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy) {
+        return newCacheStore(name, timeoutSeconds, cacheStrategy, null);
+    }
 	
 	/**
 	 * Creates a new cache. If Ehcache is available, it is used - reflection is used
 	 * to avoid attempting to classload any EhCache classes until we know it's actually
 	 * available.
 	 */
-	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy) {
+	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy, Properties properties) {
 		switch (cacheStrategy) {
 		    case EhCacheRequired:
 		        if (isEhCacheAvailable()) {
@@ -98,14 +116,22 @@ public final class Caches {
                 return new HashMapCacheStore<K, V>(name);
             case MemcachedRequired:
                 if (isMemcachedAvailable()) {
-                    return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                    if (properties != null) {
+                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds, properties);
+                    } else {
+                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                    }
                 }
 
                 throw new IllegalStateException("memcached unavailable for " + name);
             case MemcachedIfAvailable:
                 if (isMemcachedAvailable()) {
                     LOGGER.info("memcached detected - using MemcachedCacheStore for " + name + ".");
-                    return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                    if (properties != null) {
+                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds, properties);
+                    } else {
+                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
+                    }
                 }
 
                 LOGGER.info("memcached not found - using built in cache store for " + name + ".");
