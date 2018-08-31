@@ -4,7 +4,7 @@
 	<tlib-version>2.1</tlib-version>
 	<jsp-version>1.2</jsp-version>
 	<short-name>Textile</short-name>
-	<uri>http://go.warwick.ac.uk/elab</uri>
+	<uri>uk.ac.warwick.util.content.tags.textile</uri>
 	<description>Textile2 tag library, rewritten from the original
 		written Textile tag library by Kieran shaw. Uses a Ruby web service
 		(RedCloth) for Textile2 conversion and a stripped down version of
