@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache.memcached;
 
 import net.spy.memcached.*;
+import net.spy.memcached.ops.OperationQueueFactory;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import net.spy.memcached.transcoders.Transcoder;
 import org.slf4j.Logger;
@@ -17,9 +18,7 @@ import java.time.Instant;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Cache implementation that uses the spymemcached library to connect to memcached.
@@ -95,6 +94,22 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         this(name, timeout, customProperties());
     }
 
+    class ConfigurableOperationQueueFactory implements OperationQueueFactory {
+        private int capacity;
+
+        public ConfigurableOperationQueueFactory(int cap) {
+            this.capacity = cap;
+        }
+
+        @Override
+        public BlockingQueue create() {
+            if (capacity > 0) {
+                return new ArrayBlockingQueue<>(capacity);
+            } else {
+                return new LinkedBlockingQueue<>();
+            }
+        }
+    }
     /**
      * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from the
      * passed properties. Subsequent MemcachedCacheStores created with this
@@ -129,6 +144,9 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
                     .setHashAlg(HashAlgorithmRegistry.lookupHashAlgorithm(properties.getProperty("memcached.hashAlgorithm")))
                     .setLocatorType(ConnectionFactoryBuilder.Locator.valueOf(properties.getProperty("memcached.locatorType")))
                     .setMaxReconnectDelay(Long.valueOf(properties.getProperty("memcached.maxReconnectDelay")))
+                    .setOpQueueFactory(new ConfigurableOperationQueueFactory(Integer.parseInt(properties.getProperty("memcached.maxOperationsQueueSize", "0"))))
+                    .setReadOpQueueFactory(new ConfigurableOperationQueueFactory(Integer.parseInt(properties.getProperty("memcached.maxOperationsQueueSize", "0"))))
+                    .setWriteOpQueueFactory(new ConfigurableOperationQueueFactory(Integer.parseInt(properties.getProperty("memcached.maxOperationsQueueSize", "0"))))
                     .setOpQueueMaxBlockTime(Long.valueOf(properties.getProperty("memcached.opQueueMaxBlockTime")))
                     .setOpTimeout(Long.valueOf(properties.getProperty("memcached.opTimeout")))
                     .setProtocol(ConnectionFactoryBuilder.Protocol.valueOf(properties.getProperty("memcached.protocol")))
