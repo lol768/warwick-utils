@@ -8,6 +8,7 @@
 	<tlib-version>1.0</tlib-version>
 	<short-name>Utility tag library for Warwick apps</short-name>
 	<description> Custom tags used by the Warwick apps</description>
+	<uri>uk.ac.warwick.util.web.tags.warwick</uri>
 
 	<function>
 		<description> Escapes text so you can enter it into a Javascript
