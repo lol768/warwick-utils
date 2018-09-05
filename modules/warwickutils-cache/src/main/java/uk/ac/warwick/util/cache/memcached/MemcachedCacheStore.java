@@ -94,10 +94,10 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         this(name, timeout, customProperties());
     }
 
-    class ConfigurableOperationQueueFactory implements OperationQueueFactory {
+    static class ConfigurableOperationQueueFactory implements OperationQueueFactory {
         private int capacity;
 
-        public ConfigurableOperationQueueFactory(int cap) {
+        ConfigurableOperationQueueFactory(int cap) {
             this.capacity = cap;
         }
 
