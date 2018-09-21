@@ -36,7 +36,7 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
 
     private static final String MATCH_SRC_NOQUOTES = "(\\ssrc=)([^\"'\\s>]+)()";
 
-    private static final String MATCH_SRCSET_ALL = "<img[^\\>]*[^\\>\\S]+srcset=['\"]([^\"']+)[\"']";
+    private static final String MATCH_SRCSET_ALL = "srcset=['\"]([^\"']+)[\"']";
 
     private static final String[] PATTERNS = new String[] { MATCH_HREF_QUOTES, MATCH_HREF_QUOTE, MATCH_HREF_NOQUOTES,
             MATCH_SRC_QUOTES, MATCH_SRC_QUOTE, MATCH_SRC_NOQUOTES, MATCH_SRCSET_ALL };
