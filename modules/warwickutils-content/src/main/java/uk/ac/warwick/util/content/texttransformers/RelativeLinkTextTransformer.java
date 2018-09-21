@@ -141,7 +141,6 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
             } else {
                 result = doTransform(result, pattern);
             }
-
         }
 
         return result;
