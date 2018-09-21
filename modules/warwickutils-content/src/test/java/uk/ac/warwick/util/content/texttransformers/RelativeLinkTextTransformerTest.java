@@ -160,6 +160,46 @@ public class RelativeLinkTextTransformerTest {
     	assertEquals(expected3, transformer.apply(new MutableContent(null, input3)).getContent());
     }
 
+	@Test
+	public void rewriteImageTagsUsingSrcset() {
+		String input = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x, ../../servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x\" src=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+		String expected = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x, http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x\" src=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+
+		assertEquals(expected, transformer.apply(new MutableContent(null, input)).getContent());
+	}
+
+	@Test
+	public void handleExtraSpacesWhenUsingSrcset() {
+		String input = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x , ../../servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png  2x \" src=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+		String expected = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x, http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x\" src=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+
+		assertEquals(expected, transformer.apply(new MutableContent(null, input)).getContent());
+	}
+
+	@Test
+	public void noSizeOnFirstSrcsetElement() {
+		String input = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png , ../../servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png  2x \" src=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+		String expected = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png, http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x\" src=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+
+		assertEquals(expected, transformer.apply(new MutableContent(null, input)).getContent());
+	}
+
+	@Test
+	public void rewriteImageTagsUsingSrcsetSingleQuotes() {
+		String input1 = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset='../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x, ../../servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x' src=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+		String expected1 = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" srcset='http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png 1x, http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress-2x.png 2x' src=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+
+		assertEquals(expected1, transformer.apply(new MutableContent(null, input1)).getContent());
+	}
+
+	@Test
+	public void imageWithNoSrcsetAtAll() {
+		String input1 = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" src=\"../../servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+		String expected1 = "<img border=\"0\" alt=\"Progress bar shows assignments which assignments are marked and ready to be marked\" src=\"http://www2.warwick.ac.uk/services/servicessupport/web/tabula/screenshots/cm2-markers-progress.png\" style=\"margin-top: 20px; margin-bottom: 20px; border: 1px solid black;\">";
+
+		assertEquals(expected1, transformer.apply(new MutableContent(null, input1)).getContent());
+	}
+
     /** SBTWO-3804 */
     @Test
     public void dontRewritePre() {

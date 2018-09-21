@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +36,10 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
 
     private static final String MATCH_SRC_NOQUOTES = "(\\ssrc=)([^\"'\\s>]+)()";
 
+    private static final String MATCH_SRCSET_ALL = "<img[^\\>]*[^\\>\\S]+srcset=['\"]([^\"']+)[\"']";
+
     private static final String[] PATTERNS = new String[] { MATCH_HREF_QUOTES, MATCH_HREF_QUOTE, MATCH_HREF_NOQUOTES,
-            MATCH_SRC_QUOTES, MATCH_SRC_QUOTE, MATCH_SRC_NOQUOTES };
+            MATCH_SRC_QUOTES, MATCH_SRC_QUOTE, MATCH_SRC_NOQUOTES, MATCH_SRCSET_ALL };
 
     private final Uri base;
 
@@ -69,7 +72,7 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         }
         
         sb.append(rewriteIgnoreScriptTagContents(text.substring(endIndex)));
-        
+
         mc.setContent(sb.toString());
         return mc;
     }
@@ -108,11 +111,37 @@ public final class RelativeLinkTextTransformer implements TextTransformer {
         return sb.toString();
     }
 
+    private String rewriteSrcsetAttribute(String text, String pattern) {
+        Pattern imagesWithSrcset = Pattern.compile(pattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        Matcher matcher = imagesWithSrcset.matcher(text);
+        String matchedSrcSetContents = "";
+        ArrayList<String> transformedSrcSizes = new ArrayList<>();
+
+        while (matcher.find()) {
+            matchedSrcSetContents = matcher.group(1);
+            String[] srcSizePairs = matchedSrcSetContents.trim().replaceAll(" +", " ").split("\\s*,\\s*");
+
+            for (String srcSizePair: srcSizePairs) {
+                String[] extractSrcSize = srcSizePair.split(" ");
+                String transformedSrc = parseUrl(extractSrcSize[0].trim());
+                String extractedSize = extractSrcSize.length > 1 ? " " + extractSrcSize[1].trim() : "";
+                transformedSrcSizes.add(transformedSrc + extractedSize);
+            }
+        }
+
+        return text.replace(matchedSrcSetContents, String.join(", ", transformedSrcSizes));
+    }
+
     public String doUrlRewriting(final String text) {
         String result = text;
 
         for (String pattern: PATTERNS) {
-            result = doTransform(result, pattern);
+            if (pattern.contains("srcset")) {
+                result = rewriteSrcsetAttribute(result, pattern);
+            } else {
+                result = doTransform(result, pattern);
+            }
+
         }
 
         return result;
