@@ -252,15 +252,15 @@
 		        		vidEl.appendChild(source);
 	        
 				        <#if alternateRenditions?exists>
-				        	<#list alternateRenditions?keys as mime>
-				        		var altSource = document.createElement('source');
-					      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
-					      		altSource.setAttribute('type', '${mime}');
-					      		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
-					      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
-				        	
-				        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
-				        	</#list>
+				        	<#list alternateRenditions?keys as mime>{
+                                var altSource = document.createElement('source');
+                                altSource.setAttribute('src', '${alternateRenditions[mime]}');
+                                altSource.setAttribute('type', '${mime}');
+                                altSource.setAttribute('width', '<@dimension value=width?default(425) />');
+                                altSource.setAttribute('height', '<@dimension value=height?default(350) />');
+
+                                vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
+                            }</#list>
 				        </#if>
 		        
 						var supportsVideo = !!vidEl.canPlayType;
@@ -309,18 +309,18 @@
 						addEvent(img, 'click', closeFn);
 					</#if>
 
-                    var setContainerNegativePos = function(marginLeft, marginTop) {
-                        container.style.marginLeft = "-" + marginLeft + "px";
-                        container.style.marginTop = "-" + marginTop + "px";
+					var setContainerNegativePos = function(marginLeft, marginTop) {
+						container.style.marginLeft = '-' + marginLeft + 'px';
+						container.style.marginTop = '-' + marginTop + 'px';
 					};
 
-                    container.getElementsByTagName("video")[0].onloadeddata = function(event) {
+					container.getElementsByTagName('video')[0].onloadeddata = function(event) {
 						// UTL-219 margin set once to allow video to reach max possible size, then set again to centre
-                        var containerRect = container.getBoundingClientRect();
+						var containerRect = container.getBoundingClientRect();
 						setContainerNegativePos(containerRect.width, containerRect.height);
-                        containerRect = container.getBoundingClientRect();
+						containerRect = container.getBoundingClientRect();
 						setContainerNegativePos(Math.round(containerRect.width / 2), Math.round(containerRect.height / 2));
-						container.style.visibility = "visible";
+						container.style.visibility = 'visible';
 					};
 
 					// Look for the ESC key press and hide the window
