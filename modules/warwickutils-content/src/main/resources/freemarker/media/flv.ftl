@@ -253,14 +253,14 @@
 	        
 				        <#if alternateRenditions?exists>
 				        	<#list alternateRenditions?keys as mime>{
-                                var altSource = document.createElement('source');
-                                altSource.setAttribute('src', '${alternateRenditions[mime]}');
-                                altSource.setAttribute('type', '${mime}');
-                                altSource.setAttribute('width', '<@dimension value=width?default(425) />');
-                                altSource.setAttribute('height', '<@dimension value=height?default(350) />');
+				        		var altSource = document.createElement('source');
+					      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
+					      		altSource.setAttribute('type', '${mime}');
+					      		altSource.setAttribute('width', '<@dimension value=width?default(425) />');
+					      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
 
-                                vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
-                            }</#list>
+				        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
+				        	}</#list>
 				        </#if>
 		        
 						var supportsVideo = !!vidEl.canPlayType;
