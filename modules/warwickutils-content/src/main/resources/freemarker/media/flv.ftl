@@ -231,7 +231,7 @@
 	
 					document.body.appendChild(overlay);
 					document.body.appendChild(container);
-			
+
 					<#if mime_type?default('') == 'video/mp4' || url?ends_with('.mp4') || mime_type?default('') == 'video/x-m4v' || url?ends_with('.m4v') || mime_type?default('') == 'video/webm' || url?ends_with('.webm')>
 						/* Attempt HTML5 Video */ 
 						var vidEl = document.createElement('video');
@@ -252,7 +252,7 @@
 		        		vidEl.appendChild(source);
 	        
 				        <#if alternateRenditions?exists>
-				        	<#list alternateRenditions?keys as mime>{
+				        	<#list alternateRenditions?keys as mime>
 				        		var altSource = document.createElement('source');
 					      		altSource.setAttribute('src', '${alternateRenditions[mime]}');
 					      		altSource.setAttribute('type', '${mime}');
@@ -260,7 +260,7 @@
 					      		altSource.setAttribute('height', '<@dimension value=height?default(350) />');
 				        	
 				        		vidEl.<#if mime == 'video/mp4' || mime == 'video/x-m4v'>insertBefore<#else>appendChild</#if>(altSource<#if mime == 'video/mp4' || mime == 'video/x-m4v'>, vidEl.firstChild</#if>);
-				        	}</#list>
+				        	</#list>
 				        </#if>
 		        
 						var supportsVideo = !!vidEl.canPlayType;
@@ -309,22 +309,20 @@
 						addEvent(img, 'click', closeFn);
 					</#if>
 
-					var marginLeft, marginTop;
-					// id6 - use jQuery
-					if(typeof jQuery != "undefined"){
-						marginLeft = Math.round(jQuery(container).width() / 2);
-						marginTop = Math.round(jQuery(container).height() / 2);
-					} 
-					// id5 - use Prototype
-					else {
-						marginLeft = Math.round(container.getWidth() / 2);
-						marginTop = Math.round(container.getHeight() / 2);
-					}
+                    var setContainerNegativePos = function(marginLeft, marginTop) {
+                        container.style.marginLeft = "-" + marginLeft + "px";
+                        container.style.marginTop = "-" + marginTop + "px";
+					};
 
-					container.style.marginLeft = '-' + marginLeft + 'px';
-					container.style.marginTop = '-' + marginTop + 'px';
-					container.style.visibility = 'visible';
-	
+                    container.getElementsByTagName("video")[0].onloadeddata = function(event) {
+						// UTL-219 margin set once to allow video to reach max possible size, then set again to centre
+                        var containerRect = container.getBoundingClientRect();
+						setContainerNegativePos(containerRect.width, containerRect.height);
+                        containerRect = container.getBoundingClientRect();
+						setContainerNegativePos(Math.round(containerRect.width / 2), Math.round(containerRect.height / 2));
+						container.style.visibility = "visible";
+					};
+
 					// Look for the ESC key press and hide the window
 					var escObserver = function(evt) {
 						if (evt.keyCode == 27 /* KEY_ESC */) {
