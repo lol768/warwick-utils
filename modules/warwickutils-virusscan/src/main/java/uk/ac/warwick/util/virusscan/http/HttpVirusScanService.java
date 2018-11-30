@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 @Named("virusScanService")
 @Singleton
@@ -87,7 +86,7 @@ public class HttpVirusScanService implements VirusScanService {
     }
 
     @Override
-    public Future<VirusScanServiceStatus> status() {
+    public CompletableFuture<VirusScanServiceStatus> status() {
         HttpGet request = prepare(new HttpGet(configuration.getApiHost() + "/service/healthcheck"));
 
         CompletableFuture<VirusScanServiceStatus> result = new CompletableFuture<>();

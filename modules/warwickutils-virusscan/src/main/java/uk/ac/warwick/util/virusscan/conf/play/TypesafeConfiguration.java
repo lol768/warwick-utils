@@ -13,10 +13,6 @@ public class TypesafeConfiguration implements Configuration {
 
     private final Config config;
 
-    private String apiHost;
-
-    private String apiKey;
-
     @Inject
     public TypesafeConfiguration(@Named("virusScanConfig") Config typeSafeConfig) {
        this.config = typeSafeConfig;
@@ -24,19 +20,16 @@ public class TypesafeConfiguration implements Configuration {
 
     @Override
     public String getApiHost() {
-        return apiHost;
+        return config.getString(API_HOST_PROPERTY);
     }
 
     @Override
     public String getApiKey() {
-        return apiKey;
+        return config.getString(API_KEY_PROPERTY);
     }
 
     @PostConstruct
     public void init() {
-        this.apiHost = config.getString(API_HOST_PROPERTY);
-        this.apiKey = config.getString(API_KEY_PROPERTY);
-
         validate();
     }
 
