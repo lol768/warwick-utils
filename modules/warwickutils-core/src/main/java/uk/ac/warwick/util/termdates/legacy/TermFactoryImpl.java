@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
 /**
  * @deprecated Use {@link uk.ac.warwick.util.termdates.AcademicYear}
  */
+@Deprecated
 public final class TermFactoryImpl implements TermFactory {
     
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ddMMyy");

@@ -37,7 +37,7 @@ public class JsonMessageConverterTest {
 
         // Configure a custom ObjectMapper that underscores prop names, to test it works.
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.SnakeCaseStrategy());
         converter.setObjectMapper(mapper);
         
         final Session session = m.mock(Session.class);
