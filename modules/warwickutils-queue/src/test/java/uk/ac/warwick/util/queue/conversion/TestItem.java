@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,8 @@ public class TestItem {
         this.testServiceBean = testServiceBean;
     }
     
-    @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+    @JsonSerialize
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public List<TestItem> getChildren() {
         return children;
     }
