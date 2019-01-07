@@ -77,6 +77,16 @@ class FakeUserLookupService implements UserLookupInterface {
     }
 
     @Override
+    public Map<String, User> getUsersByWarwickUniIds(List<String> list) {
+        return null;
+    }
+
+    @Override
+    public Map<String, User> getUsersByWarwickUniIds(List<String> list, boolean b) {
+        return null;
+    }
+
+    @Override
     public User getUserByWarwickUniId(String s) {
         return null;
     }
@@ -87,12 +97,12 @@ class FakeUserLookupService implements UserLookupInterface {
     }
 
     @Override
-    public List<User> findUsersWithFilter(Map<String, String> map) {
+    public List<User> findUsersWithFilter(Map<String, Object> map) {
         return null;
     }
 
     @Override
-    public List<User> findUsersWithFilter(Map<String, String> map, boolean b) {
+    public List<User> findUsersWithFilter(Map<String, Object> map, boolean b) {
         return null;
     }
 
