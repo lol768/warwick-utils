@@ -1,6 +1,6 @@
 package uk.ac.warwick.util.mail;
 
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
@@ -25,9 +25,9 @@ public final class EmailAddressChecker {
                 try {
                     String domain = email.substring(email.lastIndexOf("@") + 1).trim();
                     Record[] records = new Lookup(domain, Type.MX).run();
-                    // if no MX record, try looking for an A record 
+                    // if no MX record, try looking for an A record
                     // SBTWO-5275, re: standard for SMTP - RFC-2821
-                    if(records==null) {
+                    if (records == null) {
                         records = new Lookup(domain, Type.A).run();
                     }
                    

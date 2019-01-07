@@ -1,0 +1,14 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JAVA-ORGJRUBYJCODINGS-31216:
+    - org.jruby:jruby-core > org.jruby.jcodings:jcodings:
+      reason: Invalid vulndb entry
+    - uk.ac.warwick.util:warwickutils-content > org.jruby:jruby-core > org.jruby.jcodings:jcodings:
+      reason: Invalid vulndb entry
+    - uk.ac.warwick.util:warwickutils-all > uk.ac.warwick.util:warwickutils-content > org.jruby:jruby-core > org.jruby.jcodings:jcodings:
+      reason: Invalid vulndb entry
+    - uk.ac.warwick.util:warwickutils-test > uk.ac.warwick.util:warwickutils-content > org.jruby:jruby-core > org.jruby.jcodings:jcodings:
+      reason: Invalid vulndb entry
+patch: {}

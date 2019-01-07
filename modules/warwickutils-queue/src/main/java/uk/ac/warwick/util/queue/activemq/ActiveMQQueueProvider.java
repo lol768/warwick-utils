@@ -54,6 +54,8 @@ public class ActiveMQQueueProvider implements DisposableBean, QueueProvider, Mas
      * Returns an embedded ActiveMQQueueProvider with persistence disabled - 
      * useful for testing. You should still make sure to call the usual lifecycle
      * methods on this.
+     *
+     * Requires activemq-broker on the classpath
      */
     public static ActiveMQQueueProvider createEmbeddedBroker() {
         return new ActiveMQQueueProvider("vm://embedded?broker.persistent=false&broker.useJmx=false");

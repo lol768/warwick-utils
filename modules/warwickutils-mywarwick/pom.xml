@@ -102,7 +102,6 @@
         <dependency>
             <groupId>uk.ac.warwick.sso</groupId>
             <artifactId>sso-client</artifactId>
-            <version>2.36</version>
         </dependency>
 
         <dependency>
