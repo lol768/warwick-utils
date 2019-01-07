@@ -164,8 +164,8 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
             return null;
         }
 
-        public Enumeration<?> getInitParameterNames() {
-            return new Vector<Object>().elements();
+        public Enumeration<String> getInitParameterNames() {
+            return new Vector<String>().elements();
         }
 
         public ServletContext getServletContext() {
