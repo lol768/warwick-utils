@@ -142,7 +142,7 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
         return statistics.timeSafe(() -> {
             String containerName = containerPrefix + storageStrategy.getRootPath();
 
-            PageSet<? extends StorageMetadata> firstResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(basePath));
+            PageSet<? extends StorageMetadata> firstResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(basePath).recursive());
 
             return listKeys(containerName, basePath, firstResults.getNextMarker(), firstResults.stream().map(StorageMetadata::getName));
         }, statistics::traversed);
@@ -153,7 +153,7 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
             // No more results
             return accumulator;
         } else {
-            PageSet<? extends StorageMetadata> nextResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(prefix).afterMarker(nextMarker));
+            PageSet<? extends StorageMetadata> nextResults = blobStore.list(containerName, ListContainerOptions.Builder.prefix(prefix).afterMarker(nextMarker).recursive());
 
             return Stream.concat(accumulator, listKeys(containerName, prefix, nextResults.getNextMarker(), nextResults.stream().map(StorageMetadata::getName)));
         }
