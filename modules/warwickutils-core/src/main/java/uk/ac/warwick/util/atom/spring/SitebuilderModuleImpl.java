@@ -1,9 +1,9 @@
 package uk.ac.warwick.util.atom.spring;
 
+import com.rometools.rome.feed.CopyFrom;
+import com.rometools.rome.feed.module.ModuleImpl;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-
-import com.sun.syndication.feed.module.ModuleImpl;
 
 public final class SitebuilderModuleImpl extends ModuleImpl implements SitebuilderModule {
     private static final long serialVersionUID = -2113080234679423174L;
@@ -34,7 +34,7 @@ public final class SitebuilderModuleImpl extends ModuleImpl implements Sitebuild
         return SitebuilderModule.class;
     }
     
-    public void copyFrom(Object obj) {
+    public void copyFrom(CopyFrom obj) {
         BeanWrapper other = new BeanWrapperImpl(obj);
         BeanWrapper wrapper = new BeanWrapperImpl(this);
         

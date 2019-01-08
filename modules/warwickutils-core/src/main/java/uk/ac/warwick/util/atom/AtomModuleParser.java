@@ -1,16 +1,16 @@
 package uk.ac.warwick.util.atom;
 
-import java.util.List;
-
-import org.jdom.Attribute;
-import org.jdom.Element;
-
 import com.google.common.collect.Lists;
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.io.ModuleParser;
-import com.sun.syndication.io.impl.DateParser;
-import com.sun.syndication.io.impl.NumberParser;
+import com.rometools.rome.feed.atom.Link;
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.io.ModuleParser;
+import com.rometools.rome.io.impl.DateParser;
+import com.rometools.rome.io.impl.NumberParser;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  * ModuleParser is for grabbing the Sitebuilder elements while reading a feed,
@@ -22,11 +22,10 @@ public final class AtomModuleParser implements ModuleParser {
         return AtomModule.MODULE_URI;
     }
 
-    public Module parse(Element element) {
+    public Module parse(Element element, Locale locale) {
         AtomModule module = new AtomModuleImpl();
         boolean elementsFound = false;
 
-        @SuppressWarnings("unchecked")
         List<Element> linkElements = element.getChildren(AtomModule.ELEMENT_LINK, AtomModule.NAMESPACE);
         if (!linkElements.isEmpty()) {
             elementsFound = true;
@@ -43,13 +42,13 @@ public final class AtomModuleParser implements ModuleParser {
         Element published = element.getChild(AtomModule.ELEMENT_PUBLISHED, AtomModule.NAMESPACE);
         if (published != null) {
             elementsFound = true;
-            module.setPublishedDate(DateParser.parseDate(published.getText()));
+            module.setPublishedDate(DateParser.parseDate(published.getText(), locale));
         }
 
         Element updated = element.getChild(AtomModule.ELEMENT_UPDATED, AtomModule.NAMESPACE);
         if (updated != null) {
             elementsFound = true;
-            module.setUpdatedDate(DateParser.parseDate(updated.getText()));
+            module.setUpdatedDate(DateParser.parseDate(updated.getText(), locale));
         }
 
         return (elementsFound) ? module : null;
@@ -87,7 +86,7 @@ public final class AtomModuleParser implements ModuleParser {
         if (att != null) {
             Long val = NumberParser.parseLong(att);
             if (val != null) {
-                link.setLength(val.longValue());
+                link.setLength(val);
             }
         }
         

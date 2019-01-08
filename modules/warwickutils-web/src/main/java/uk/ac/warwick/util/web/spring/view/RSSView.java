@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sun.syndication.feed.rss.Channel;
+import com.rometools.rome.feed.rss.Channel;
 
 public abstract class RSSView extends AbstractXMLAggregationView<Channel> {
     

@@ -1,24 +1,22 @@
 package uk.ac.warwick.util.web.spring.view;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.rometools.rome.feed.WireFeed;
+import com.rometools.rome.io.WireFeedOutput;
+import org.jdom2.Document;
+import org.jdom2.ProcessingInstruction;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.servlet.View;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jdom.Document;
-import org.jdom.ProcessingInstruction;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.servlet.View;
-
-import com.google.common.collect.Maps;
-import com.sun.syndication.feed.WireFeed;
-import com.sun.syndication.io.WireFeedOutput;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.util.Map;
 
 public abstract class AbstractXMLAggregationView<T extends WireFeed> implements View {
     

@@ -1,17 +1,15 @@
 package uk.ac.warwick.util.atom;
 
-import java.util.List;
-
+import com.rometools.rome.feed.atom.Entry;
+import com.rometools.rome.feed.atom.Feed;
+import com.rometools.rome.io.WireFeedInput;
 import junit.framework.TestCase;
-
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.input.SAXBuilder;
 import org.springframework.core.io.ClassPathResource;
-
-import com.sun.syndication.feed.atom.Entry;
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.io.WireFeedInput;
 import uk.ac.warwick.util.atom.spring.SitebuilderModule;
+
+import java.util.List;
 
 public class SitebuilderModuleParserTest extends TestCase {
     @SuppressWarnings("unchecked")

@@ -1,41 +1,41 @@
-atom_1.0.item.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+atom_1.0.item.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								   uk.ac.warwick.util.atom.spring.SitebuilderModuleParser
 								   
-atom_1.0.item.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+atom_1.0.item.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									  uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator
 									  
-atom_0.3.item.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+atom_0.3.item.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								   uk.ac.warwick.util.atom.spring.SitebuilderModuleParser
 								   
-atom_0.3.item.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+atom_0.3.item.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									  uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator
 
-rss_2.0.item.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+rss_2.0.item.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									 uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator \
 									 uk.ac.warwick.util.atom.AtomModuleGenerator
 
-rss_2.0.item.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+rss_2.0.item.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								  uk.ac.warwick.util.atom.spring.SitebuilderModuleParser \
 								  uk.ac.warwick.util.atom.AtomModuleParser
 
-rss_1.0.item.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+rss_1.0.item.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									 uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator \
 									 uk.ac.warwick.util.atom.AtomModuleGenerator
 
-rss_1.0.item.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+rss_1.0.item.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								  uk.ac.warwick.util.atom.spring.SitebuilderModuleParser \
 								  uk.ac.warwick.util.atom.AtomModuleParser
 								  
 
-rss_2.0.feed.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+rss_2.0.feed.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									 uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator \
 									 uk.ac.warwick.util.atom.AtomModuleGenerator
 
-rss_2.0.feed.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+rss_2.0.feed.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								  uk.ac.warwick.util.atom.AtomModuleParser
 
-rss_1.0.feed.ModuleGenerator.classes=com.sun.syndication.io.impl.DCModuleGenerator \
+rss_1.0.feed.ModuleGenerator.classes=com.rometools.rome.io.impl.DCModuleGenerator \
 									 uk.ac.warwick.util.atom.AtomModuleGenerator
 
-rss_1.0.feed.ModuleParser.classes=com.sun.syndication.io.impl.DCModuleParser \
+rss_1.0.feed.ModuleParser.classes=com.rometools.rome.io.impl.DCModuleParser \
 								  uk.ac.warwick.util.atom.AtomModuleParser

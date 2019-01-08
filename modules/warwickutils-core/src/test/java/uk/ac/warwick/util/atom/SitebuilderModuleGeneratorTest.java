@@ -1,18 +1,18 @@
 package uk.ac.warwick.util.atom;
 
-import static org.junit.Assert.*;
+import com.rometools.rome.feed.atom.Feed;
+import com.rometools.rome.io.WireFeedInput;
+import com.rometools.rome.io.WireFeedOutput;
+import org.jdom2.Document;
+import org.jdom2.input.SAXBuilder;
+import org.junit.Test;
+import uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator;
+import uk.ac.warwick.util.atom.spring.SitebuilderModuleImpl;
 
 import java.io.StringReader;
 
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-import org.junit.Test;
-
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.io.WireFeedInput;
-import com.sun.syndication.io.WireFeedOutput;
-import uk.ac.warwick.util.atom.spring.SitebuilderModuleGenerator;
-import uk.ac.warwick.util.atom.spring.SitebuilderModuleImpl;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class SitebuilderModuleGeneratorTest {
     

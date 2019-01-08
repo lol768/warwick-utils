@@ -12,9 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +33,14 @@ public class RequestThreadFilter extends AbstractHttpFilter {
     private ConcurrentMap<Thread, RequestData> map = new ConcurrentHashMap<Thread, RequestData>();
 
     // Use an object pool to reduce the number of new objects we create on a request
-    private ObjectPool dataPool = new StackObjectPool(new RequestDataFactory(), 100, 50);
+    private ObjectPool<RequestData> dataPool = new GenericObjectPool<>(
+        new RequestDataFactory(),
+        new GenericObjectPoolConfig<RequestData>() {{
+            setMaxIdle(100);
+            setMinIdle(50);
+            setLifo(true);
+        }}
+    );
     
     public void destroy() {}
     public void init(FilterConfig config) throws ServletException {
@@ -117,10 +127,15 @@ public class RequestThreadFilter extends AbstractHttpFilter {
         }
     }
     
-    final static class RequestDataFactory extends BasePoolableObjectFactory {
+    final static class RequestDataFactory extends BasePooledObjectFactory<RequestData> {
         @Override
-        public Object makeObject() throws Exception {
+        public RequestData create() {
             return new RequestData();
+        }
+
+        @Override
+        public PooledObject<RequestData> wrap(RequestData requestData) {
+            return new DefaultPooledObject<>(requestData);
         }
     }
 

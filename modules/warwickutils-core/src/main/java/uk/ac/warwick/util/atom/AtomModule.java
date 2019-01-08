@@ -1,12 +1,11 @@
 package uk.ac.warwick.util.atom;
 
+import com.rometools.rome.feed.atom.Link;
+import com.rometools.rome.feed.module.Module;
+import org.jdom2.Namespace;
+
 import java.util.Date;
 import java.util.List;
-
-import org.jdom.Namespace;
-
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.module.Module;
 
 /**
  * A module for atom: elements in RSS feeds.

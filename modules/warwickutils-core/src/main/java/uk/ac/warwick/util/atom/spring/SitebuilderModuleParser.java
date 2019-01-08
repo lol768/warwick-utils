@@ -1,16 +1,15 @@
 package uk.ac.warwick.util.atom.spring;
 
-import java.beans.PropertyEditor;
-
-import org.jdom.Element;
-import org.jdom.Namespace;
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.io.ModuleParser;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-
 import uk.ac.warwick.util.atom.spring.SitebuilderModule.Property;
 
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.io.ModuleParser;
+import java.beans.PropertyEditor;
+import java.util.Locale;
 
 /**
  * ModuleParser is for grabbing the Sitebuilder elements while reading a 
@@ -24,7 +23,7 @@ public final class SitebuilderModuleParser implements ModuleParser {
         return SitebuilderModule.MODULE_URI;
     }
 
-    public Module parse(Element element) {
+    public Module parse(Element element, Locale locale) {
         SitebuilderModule module = new SitebuilderModuleImpl();
         BeanWrapper wrapper = new BeanWrapperImpl(module);
         boolean elementsFound = false;

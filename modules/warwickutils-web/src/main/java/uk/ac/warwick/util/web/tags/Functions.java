@@ -1,10 +1,9 @@
 package uk.ac.warwick.util.web.tags;
 
-import java.util.Collection;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
+import org.apache.commons.text.StringEscapeUtils;
 import uk.ac.warwick.util.core.StringUtils;
+
+import java.util.Collection;
 
 
 /**

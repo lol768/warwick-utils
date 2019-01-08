@@ -1,10 +1,11 @@
 package uk.ac.warwick.util.atom;
 
+import com.rometools.rome.feed.CopyFrom;
+import com.rometools.rome.feed.atom.Link;
+import com.rometools.rome.feed.module.ModuleImpl;
+
 import java.util.Date;
 import java.util.List;
-
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.module.ModuleImpl;
 
 public final class AtomModuleImpl extends ModuleImpl implements AtomModule {
     private static final long serialVersionUID = -2113080234679423174L;
@@ -22,7 +23,7 @@ public final class AtomModuleImpl extends ModuleImpl implements AtomModule {
         return AtomModule.class;
     }
     
-    public void copyFrom(Object obj) {
+    public void copyFrom(CopyFrom obj) {
         AtomModule module = (AtomModule) obj;
         links = module.getLinks();
         publishedDate = module.getPublishedDate();

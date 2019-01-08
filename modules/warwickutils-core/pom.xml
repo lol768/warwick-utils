@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20181130</version>
+		<version>20190108</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -74,13 +74,16 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Only needed for uk.ac.warwick.util.atom -->
 		<dependency>
-			<groupId>rome</groupId>
+			<groupId>com.rometools</groupId>
 			<artifactId>rome</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>modules</artifactId>
+			<groupId>com.rometools</groupId>
+			<artifactId>rome-modules</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

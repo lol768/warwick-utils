@@ -17,6 +17,7 @@ import org.springframework.web.servlet.View;
 
 import com.google.common.collect.Maps;
 
+@SuppressWarnings("unchecked")
 public final class AlternateAjaxViewTest {
     
     private Mockery m = new JUnit4Mockery();

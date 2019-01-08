@@ -1,20 +1,18 @@
 package uk.ac.warwick.util.atom.spring;
 
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.io.ModuleGenerator;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import uk.ac.warwick.util.atom.spring.SitebuilderModule.Property;
+import uk.ac.warwick.util.core.StringUtils;
+
 import java.beans.PropertyEditor;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-
-import uk.ac.warwick.util.atom.spring.SitebuilderModule.Property;
-
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.io.ModuleGenerator;
-import uk.ac.warwick.util.core.StringUtils;
 
 public final class SitebuilderModuleGenerator implements ModuleGenerator {
 

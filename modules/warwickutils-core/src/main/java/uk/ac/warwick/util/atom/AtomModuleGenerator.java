@@ -1,16 +1,16 @@
 package uk.ac.warwick.util.atom;
 
-import java.util.Set;
-
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.Namespace;
-
 import com.google.common.collect.ImmutableSet;
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.io.ModuleGenerator;
-import com.sun.syndication.io.impl.DateParser;
+import com.rometools.rome.feed.atom.Link;
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.io.ModuleGenerator;
+import com.rometools.rome.io.impl.DateParser;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+
+import java.util.Locale;
+import java.util.Set;
 
 public final class AtomModuleGenerator implements ModuleGenerator {
 
@@ -45,11 +45,11 @@ public final class AtomModuleGenerator implements ModuleGenerator {
         }
         
         if (atomModule.getPublishedDate() != null) {
-            element.addContent(element(AtomModule.ELEMENT_PUBLISHED, DateParser.formatW3CDateTime(atomModule.getPublishedDate())));
+            element.addContent(element(AtomModule.ELEMENT_PUBLISHED, DateParser.formatW3CDateTime(atomModule.getPublishedDate(), Locale.getDefault())));
         }
         
         if (atomModule.getUpdatedDate() != null) {
-            element.addContent(element(AtomModule.ELEMENT_UPDATED, DateParser.formatW3CDateTime(atomModule.getUpdatedDate())));
+            element.addContent(element(AtomModule.ELEMENT_UPDATED, DateParser.formatW3CDateTime(atomModule.getUpdatedDate(), Locale.getDefault())));
         }
     }
 

@@ -11,7 +11,7 @@
 
     <groupId>uk.ac.warwick.util</groupId>
     <artifactId>warwickutils-project</artifactId>
-    <version>20181130</version>
+    <version>20190108</version>
     <packaging>pom</packaging>
 
     <name>Warwick Utils</name>
@@ -443,12 +443,6 @@
             </dependency>
 
             <dependency>
-                <groupId>avalon</groupId>
-                <artifactId>avalon-framework</artifactId>
-                <version>4.1.4</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${org.springframework.version}</version>
@@ -556,14 +550,14 @@
             </dependency>
 
             <dependency>
-                <groupId>rome</groupId>
+                <groupId>com.rometools</groupId>
                 <artifactId>rome</artifactId>
-                <version>1.0</version>
+                <version>1.12.0</version>
             </dependency>
             <dependency>
-                <groupId>rome</groupId>
-                <artifactId>modules</artifactId>
-                <version>0.3.2</version>
+                <groupId>com.rometools</groupId>
+                <artifactId>rome-modules</artifactId>
+                <version>1.12.0</version>
             </dependency>
 
             <dependency>
@@ -581,57 +575,57 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20171018</version>
+                <version>20180813</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.2</version>
+                <version>4.5.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.2</version>
+                <version>4.5.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>4.4.5</version>
+                <version>4.4.10</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore-nio</artifactId>
-                <version>4.4.5</version>
+                <version>4.4.10</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.directory.studio</groupId>
                 <artifactId>org.apache.commons.io</artifactId>
-                <version>2.1</version>
+                <version>2.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.directory.studio</groupId>
                 <artifactId>org.apache.commons.codec</artifactId>
-                <version>1.6</version>
+                <version>1.8</version>
             </dependency>
 
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
-                <version>2.3.21</version>
+                <version>2.3.28</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>1.4.5</version>
+                <artifactId>javax.mail-api</artifactId>
+                <version>1.6.2</version>
             </dependency>
 
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
-                <version>2.9.0</version>
+                <version>2.10.6</version>
             </dependency>
 
             <dependency>
@@ -669,36 +663,41 @@
             <dependency>
                 <groupId>org.threeten</groupId>
                 <artifactId>threeten-extra</artifactId>
-                <version>1.2</version>
+                <version>1.4</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.6</version>
             </dependency>
 
             <dependency>
-                <groupId>commons-pool</groupId>
-                <artifactId>commons-pool</artifactId>
-                <version>1.5.5</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.6.0</version>
             </dependency>
 
             <dependency>
-                <groupId>dom4j</groupId>
+                <groupId>org.dom4j</groupId>
                 <artifactId>dom4j</artifactId>
-                <version>1.6.1</version>
+                <version>2.1.1</version>
             </dependency>
             <dependency>
                 <groupId>jaxen</groupId>
                 <artifactId>jaxen</artifactId>
-                <version>1.1.3-no-jdk1.4</version>
+                <version>1.1.6</version>
             </dependency>
 
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.10.3</version>
+                <version>1.11.3</version>
             </dependency>
 
         </dependencies>

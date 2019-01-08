@@ -1,16 +1,14 @@
 package uk.ac.warwick.util.atom.spring;
 
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorSupport;
-
-import org.jdom.Namespace;
-
+import com.google.common.collect.ImmutableSet;
+import com.rometools.rome.feed.module.Module;
+import org.jdom2.Namespace;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import uk.ac.warwick.util.collections.LazyList.Factory;
 import uk.ac.warwick.util.core.StringUtils;
 
-import com.google.common.collect.ImmutableSet;
-import com.sun.syndication.feed.module.Module;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorSupport;
 
 /**
  * This module represents our extensions to the ATOM feed to

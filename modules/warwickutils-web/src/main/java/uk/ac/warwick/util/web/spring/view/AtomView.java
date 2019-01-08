@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sun.syndication.feed.atom.Feed;
+import com.rometools.rome.feed.atom.Feed;
 
 public abstract class AtomView extends AbstractXMLAggregationView<Feed> {
     
