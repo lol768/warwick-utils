@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.warwick.util.content.JsoupHtmlParser;
 import uk.ac.warwick.util.content.MutableContent;
 import uk.ac.warwick.util.content.cleaner.HtmlCleaner;
 import uk.ac.warwick.util.content.textile2.lite.TextileLite;
@@ -49,6 +50,8 @@ public class TextileString {
 	
 	private HtmlCleaner cleaner = new HtmlCleaner();
 
+	private JsoupHtmlParser parser = new JsoupHtmlParser();
+
 	public TextileString(final String theTextileText) {
 		this.textileText = theTextileText;
 	}
@@ -66,7 +69,7 @@ public class TextileString {
 		String converted;
 		if (isLite()) {
 			TextileLite textile = new TextileLite();
-			converted = textile.apply(new MutableContent(null, textileText)).getContent();
+			converted = textile.apply(new MutableContent(parser, textileText)).getContent();
 		} else {
 			Textile2 textile;
 			
@@ -82,7 +85,7 @@ public class TextileString {
 			}
 						
 			try {
-				converted = textile.apply(new MutableContent(null, textileText)).getContent();
+				converted = textile.apply(new MutableContent(parser, textileText)).getContent();
 			} catch (IllegalStateException e) {
 				LOGGER.error("There was an error performing Textile2 conversion:" + e.getMessage(),e);
 				return null; // this would mean that the content is not
@@ -156,7 +159,7 @@ public class TextileString {
 		cleaner.setAllowJavascriptHandlers(allowJavascriptHandlers);
 		cleaner.setAllowBlockquoteWithNoAttributes(allowBlockquoteWithNoAttributes);
 		
-		return cleaner.clean(origContent, new MutableContent(null, null));
+		return cleaner.clean(origContent, new MutableContent(parser, null));
 	}
 
 	public final String getTextileText() {
