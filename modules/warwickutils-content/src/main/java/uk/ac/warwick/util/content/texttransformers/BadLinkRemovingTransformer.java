@@ -42,6 +42,7 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 			if (!allowAttribute) {
 				el.removeAttr(attributeToCheck);
 				el.attr("data-error", !parseError ? "Stripped " + attributeToCheck + " due to banned scheme" : "Failed to parse URI");
+				mc.documentChanged();
 			}
 		}
 	}

@@ -80,12 +80,10 @@ public class MutableContent {
      * @return Renderable/active content.
      */
     public String getContent() {
-        if (document != null) {
-            content = new DefaultHtmlSerializer().serialize(document);
-            return content;
-        }
         if (content == null) {
-            if (contentBytes != null) {
+            if (document != null) {
+                content = new DefaultHtmlSerializer().serialize(document);
+            } else if (contentBytes != null) {
                 Charset useEncoding = contentEncoding != null ? contentEncoding : Charsets.UTF_8;
                 content = useEncoding.decode(ByteBuffer.wrap(contentBytes)).toString();
             }

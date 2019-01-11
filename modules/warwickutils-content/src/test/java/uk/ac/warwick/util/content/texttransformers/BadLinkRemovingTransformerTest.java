@@ -33,7 +33,6 @@ public class BadLinkRemovingTransformerTest {
     public void testHtmlEntityJsLink() {
         String input = "<html><body><a href=\"javascript&#x3A;alert(1)\">test one</a></body></html>";
         String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
-        System.out.println(result);
         Assert.assertFalse(result.contains("javascript:alert"));
     }
 
@@ -41,7 +40,6 @@ public class BadLinkRemovingTransformerTest {
     public void testHtmlEntityDoubleEncodedJsLink() {
         String input = "<html><body><a href=\"javascript&#x26;&#x23;&#x78;&#x33;&#x41;&#x3B;alert(1)\">test one</a></body></html>";
         String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
-        System.out.println(result);
         Assert.assertFalse(result.contains("javascript:alert"));
         Assert.assertFalse(result.contains("javascript&#x3A;alert"));
     }
@@ -50,7 +48,6 @@ public class BadLinkRemovingTransformerTest {
     public void testMixedCaseJavascriptUrl() {
         String input = "<html><body><a href=\"jAvAsCrIpT:alert(1)\">test one</a></body></html>";
         String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
-        System.out.println(result);
         Assert.assertFalse(result.toLowerCase().contains("javascript:alert"));
     }
 }
