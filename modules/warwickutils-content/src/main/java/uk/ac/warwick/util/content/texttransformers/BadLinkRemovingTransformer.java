@@ -19,14 +19,19 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 	private static String[] BANNED_SRC_PROTOCOLS = {"javascript"};
 
 
-    public MutableContent apply(MutableContent mc) {
-		sanitiseAttributes(mc, "href", BANNED_HREF_PROTOCOLS);
-		sanitiseAttributes(mc, "src", BANNED_SRC_PROTOCOLS);
 
+    public MutableContent apply(MutableContent mc) {
+    	boolean changed;
+		changed = sanitiseAttributes(mc, "href", BANNED_HREF_PROTOCOLS);
+		changed |= sanitiseAttributes(mc, "src", BANNED_SRC_PROTOCOLS);
+		if (changed) {
+			mc.documentChanged();
+		}
 		return mc;
     }
 
-	private void sanitiseAttributes(MutableContent mc, String attributeToCheck, String[] bannedSchemes) {
+	private boolean sanitiseAttributes(MutableContent mc, String attributeToCheck, String[] bannedSchemes) {
+    	boolean changed = false;
 		for (Element el : mc.getDocument().select("[" + attributeToCheck + "]")) {
 			boolean allowAttribute;
 			boolean parseError = false;
@@ -42,8 +47,9 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 			if (!allowAttribute) {
 				el.removeAttr(attributeToCheck);
 				el.attr("data-error", !parseError ? "Stripped " + attributeToCheck + " due to banned scheme" : "Failed to parse URI");
-				mc.documentChanged();
+				changed = true;
 			}
 		}
+		return changed;
 	}
 }
