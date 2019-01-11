@@ -1,6 +1,11 @@
 package uk.ac.warwick.util.content.texttransformers;
 
+import org.jsoup.nodes.Element;
 import uk.ac.warwick.util.content.MutableContent;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Remove any links that have protocols other than we allow
@@ -9,38 +14,35 @@ import uk.ac.warwick.util.content.MutableContent;
  */
 public class BadLinkRemovingTransformer implements TextTransformer {
 	
-	private static String[] BANNED_HREF_PROTOCOLS = {"javascript:"};
+	private static String[] BANNED_HREF_PROTOCOLS = {"javascript"};
 	
-	private static String[] BANNED_SRC_PROTOCOLS = {"javascript:"};
+	private static String[] BANNED_SRC_PROTOCOLS = {"javascript"};
 
-	private static String EXP_ONLY_ALLOW_PROPER_LINKS_REPLACE = " href=\"\"";
 
-	private static String EXP_ONLY_ALLOW_PROPER_SRC_REPLACE = " src=\"\"";
-	
     public MutableContent apply(MutableContent mc) {
-    	//generate regexes
-    	String EXP_ONLY_ALLOW_PROPER_LINKS_MATCH = "(?i) href=\"(";
-    	
-    	for (int i=0;i<BANNED_HREF_PROTOCOLS.length;i++) {
-    		EXP_ONLY_ALLOW_PROPER_LINKS_MATCH += "((" + BANNED_HREF_PROTOCOLS[i] + "))";
-    	}
-    	
-    	EXP_ONLY_ALLOW_PROPER_LINKS_MATCH += ").*?\"";
-    	
-    	String EXP_ONLY_ALLOW_PROPER_SRC_MATCH = "(?i) src=\"(";
-    			
-    	for (int i=0;i<BANNED_SRC_PROTOCOLS.length;i++) {
-    		EXP_ONLY_ALLOW_PROPER_SRC_MATCH += "((" + BANNED_SRC_PROTOCOLS[i] + "))";
-    	}
-    	
-    	EXP_ONLY_ALLOW_PROPER_SRC_MATCH += ").*?\"";
-    	
-    	String content = mc.getContent();
-    	content = content.replaceAll(EXP_ONLY_ALLOW_PROPER_LINKS_MATCH, EXP_ONLY_ALLOW_PROPER_LINKS_REPLACE);
-		
-		content = content.replaceAll(EXP_ONLY_ALLOW_PROPER_SRC_MATCH, EXP_ONLY_ALLOW_PROPER_SRC_REPLACE);
-		
-		mc.setContent(content);
+		sanitiseAttributes(mc, "href", BANNED_HREF_PROTOCOLS);
+		sanitiseAttributes(mc, "src", BANNED_SRC_PROTOCOLS);
+
 		return mc;
     }
+
+	private void sanitiseAttributes(MutableContent mc, String attributeToCheck, String[] bannedSchemes) {
+		for (Element el : mc.getDocument().select("[" + attributeToCheck + "]")) {
+			boolean allowAttribute;
+			boolean parseError = false;
+			try {
+				URI uri = new URI(el.attr(attributeToCheck));
+
+				allowAttribute = (Arrays.stream(bannedSchemes).noneMatch(a -> uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(a)));
+			} catch (URISyntaxException e) {
+				allowAttribute = false;
+				parseError = true;
+			}
+
+			if (!allowAttribute) {
+				el.removeAttr(attributeToCheck);
+				el.attr("data-error", !parseError ? "Stripped " + attributeToCheck + " due to banned scheme" : "Failed to parse URI");
+			}
+		}
+	}
 }
