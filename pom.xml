@@ -11,7 +11,7 @@
 
     <groupId>uk.ac.warwick.util</groupId>
     <artifactId>warwickutils-project</artifactId>
-    <version>20190108</version>
+    <version>20190114</version>
     <packaging>pom</packaging>
 
     <name>Warwick Utils</name>
@@ -617,8 +617,8 @@
             </dependency>
 
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>javax.mail-api</artifactId>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
                 <version>1.6.2</version>
             </dependency>
 
