@@ -28,11 +28,10 @@ public class WarwickTagUrlManglerTest {
 		u.setDepartmentCode("IN");
 		u.setUserId("AUserId");
 		u.setEmail("somewhere@something");
-		u.setToken("token_foo");
 		u.setWarwickId("123WarwickID");
 		
-		String testUrl="http://www.warwick.ac.uk/?yes=<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_token/>|<warwick_idnumber/>|<warwick_deptcode/>";
-		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7Ctoken_foo%7C123WarwickID%7CIN";
+		String testUrl="http://www.warwick.ac.uk/?yes=<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_idnumber/>|<warwick_deptcode/>";
+		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7C123WarwickID%7CIN";
 		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
 	}
 	

@@ -20,7 +20,6 @@ public class WarwickTagUrlMangler {
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_userid/>", user.getUserId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_useremail/>", user.getEmail());
-        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_token/>", user.getOldWarwickSSOToken());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_idnumber/>", user.getWarwickId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_deptcode/>", user.getDepartmentCode());
         return stringToSubstitute;
@@ -50,7 +49,6 @@ public class WarwickTagUrlMangler {
         replaceAndEncode(builder, "<warwick_username/>", user.getFullName());
         replaceAndEncode(builder, "<warwick_userid/>", user.getUserId());
         replaceAndEncode(builder, "<warwick_useremail/>", user.getEmail());
-        replaceAndEncode(builder, "<warwick_token/>", user.getOldWarwickSSOToken());
         replaceAndEncode(builder, "<warwick_idnumber/>", user.getWarwickId());
         replaceAndEncode(builder, "<warwick_deptcode/>", user.getDepartmentCode());
 
