@@ -32,7 +32,7 @@ public class WarwickTagUrlManglerTest {
 		
 		String testUrl="http://www.warwick.ac.uk/?yes=<warwick_username/>|<warwick_userid/>|<warwick_useremail/>|<warwick_token/>|<warwick_idnumber/>|<warwick_deptcode/>";
 		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7C%3Cwarwick_token%2F%3E%7C123WarwickID%7CIN";
-		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
+		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u, false).toString());
 	}
 
 	@SuppressWarnings("deprecation")

@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.httpclient.httpclient4;
 
 import uk.ac.warwick.userlookup.User;
+import uk.ac.warwick.util.web.Uri;
 
 /**
  * An implementation of the HttpMethodExecutor that is suitable for web services -
@@ -19,6 +20,11 @@ public final class WebServiceHttpMethodExecutor extends AbstractWarwickAwareHttp
     
     public WebServiceHttpMethodExecutor(final Method method, final String requestUrl, final String cookieDomain, final User user) {
         super(method, requestUrl, cookieDomain, user);
+    }
+
+    @Override
+    protected boolean shouldAllowWarwickToken(Uri requestUri) {
+        return false;
     }
 
     public void setHttpClientFactoryStrategyAsString(final String theHttpClientFactory) {

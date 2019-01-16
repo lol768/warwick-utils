@@ -44,3 +44,11 @@ Generating distributables without pushing to Nexus
 The dist profile will put JARs in a dist directory off the project root:
 
     $ mvn -Pdist
+
+Installing into the local Maven repository for testing
+------------------------------------------------------
+
+```
+$ mvn versions:set -DnewVersion=20190114-SNAPSHOT
+$ mvn install -DskipTests
+```
