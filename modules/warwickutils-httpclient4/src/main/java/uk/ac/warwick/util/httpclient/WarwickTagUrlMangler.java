@@ -14,12 +14,22 @@ public class WarwickTagUrlMangler {
 
     /**
      * Only looks for the unencoded form
+     * @deprecated Use substituteWarwickTags and specify allowToken
      */
     public final String substituteWarwickTags(String stringToSubstitute, final User user) {
+        return substituteWarwickTags(stringToSubstitute, user, true);
+    }
+
+    public final String substituteWarwickTags(String stringToSubstitute, final User user, boolean allowToken) {
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_userid/>", user.getUserId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_useremail/>", user.getEmail());
+
+        if (allowToken) {
+            stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_token/>", user.getOldWarwickSSOToken());
+        }
+
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_idnumber/>", user.getWarwickId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_deptcode/>", user.getDepartmentCode());
         return stringToSubstitute;
@@ -38,17 +48,31 @@ public class WarwickTagUrlMangler {
      * don't just Uri.parse() any old damn string
      */
     public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
-        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user).toUri();
+        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user, isHostWhitelistedForToken(urlToSubstitute)).toUri();
+    }
+
+    /**
+     * These are all grandfathered in.
+     * UTL-224
+     */
+    public boolean isHostWhitelistedForToken(Uri targetToCheck) {
+        return targetToCheck.getAuthority().equalsIgnoreCase("www.eng.warwick.ac.uk") ||
+                targetToCheck.getAuthority().equalsIgnoreCase("arnun.lnx.warwick.ac.uk");
     }
 
     /**
      * This will url-encode unencoded non-query string aware characters, so
      * don't just Uri.parse() any old damn string
      */
-    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user) {
+    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user, boolean allowToken) {
         replaceAndEncode(builder, "<warwick_username/>", user.getFullName());
         replaceAndEncode(builder, "<warwick_userid/>", user.getUserId());
         replaceAndEncode(builder, "<warwick_useremail/>", user.getEmail());
+
+        if (allowToken) {
+            replaceAndEncode(builder, "<warwick_token/>", user.getOldWarwickSSOToken());
+        }
+
         replaceAndEncode(builder, "<warwick_idnumber/>", user.getWarwickId());
         replaceAndEncode(builder, "<warwick_deptcode/>", user.getDepartmentCode());
 

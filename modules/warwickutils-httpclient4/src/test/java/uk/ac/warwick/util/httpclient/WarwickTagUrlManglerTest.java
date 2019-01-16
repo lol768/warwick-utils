@@ -34,6 +34,18 @@ public class WarwickTagUrlManglerTest {
 		String result = "http://www.warwick.ac.uk/?yes=Fred+Test%7CAUserId%7Csomewhere%40something%7C%3Cwarwick_token%2F%3E%7C123WarwickID%7CIN";
 		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
 	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void tokenForWhitelistedPage() {
+		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
+		User u = new User();
+		u.setToken("tok");
+
+		String testUrl="http://www.eng.warwick.ac.uk/legacy?token=<warwick_token/>";
+		String result = "http://www.eng.warwick.ac.uk/legacy?token=tok";
+		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
+	}
 	
 	@Test
 	public void plainTextReplacement() {
