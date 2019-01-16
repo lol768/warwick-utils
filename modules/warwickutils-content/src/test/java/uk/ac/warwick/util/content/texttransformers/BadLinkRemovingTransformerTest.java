@@ -23,6 +23,34 @@ public class BadLinkRemovingTransformerTest {
     }
 
     @Test
+    public void testInvalidCaretLink() {
+        String input = "<html><body><a href='https://google.com/foo^'></a></body></html>";
+        String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
+        Assert.assertFalse(result.toLowerCase().contains("https://google.com/foo%5E"));
+    }
+
+    @Test
+    public void testInvalidBackslashLink() {
+        String input = "<html><body><a href='https://google.com/foo\\'></a></body></html>";
+        String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
+        Assert.assertFalse(result.toLowerCase().contains("https://google.com/foo%5C"));
+    }
+
+    @Test
+    public void testInvalidSpaceLink() {
+        String input = "<html><body><a href='https://google.com/foo bar'></a></body></html>";
+        String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
+        Assert.assertFalse(result.toLowerCase().contains("https://google.com/foo%20bar"));
+    }
+
+    @Test
+    public void testInvalidPercentEncode() {
+        String input = "<html><body><a href='https://google.com/foo%bar'></a></body></html>";
+        String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
+        Assert.assertFalse(result.toLowerCase().contains("https://google.com/foo%25bar"));
+    }
+
+    @Test
     public void testWhitespaceJsLink() {
         String input = "<html><body><a href=' javascript:alert(1)'></a></body></html>";
         String result = transformer.apply(new MutableContent(new JsoupHtmlParser(), input)).getContent();
