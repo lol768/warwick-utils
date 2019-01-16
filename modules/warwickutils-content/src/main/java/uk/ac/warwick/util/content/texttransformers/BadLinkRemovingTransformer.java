@@ -3,8 +3,11 @@ package uk.ac.warwick.util.content.texttransformers;
 import org.jsoup.nodes.Element;
 import uk.ac.warwick.util.content.MutableContent;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -36,10 +39,11 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 			boolean allowAttribute;
 			boolean parseError = false;
 			try {
-				URI uri = new URI(el.attr(attributeToCheck));
+				String attrValue = el.attr(attributeToCheck);
+				URI uri = getValidUri(attrValue);
 
 				allowAttribute = (Arrays.stream(bannedSchemes).noneMatch(a -> uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(a)));
-			} catch (URISyntaxException e) {
+			} catch (URISyntaxException| UnsupportedEncodingException e) {
 				allowAttribute = false;
 				parseError = true;
 			}
@@ -51,5 +55,19 @@ public class BadLinkRemovingTransformer implements TextTransformer {
 			}
 		}
 		return changed;
+	}
+
+	private URI getValidUri(String attrValue) throws URISyntaxException, UnsupportedEncodingException {
+    	// this is a bit hacky.. since are different permitted characters in the path, query string and fragment.
+		// but if we can't parse the string, we can't really tell what is the path, what is the query string or what is the fragment.
+
+    	// try and fix the user's provided href - namely by encoding unsafe characters for them
+		String[] alwaysUnsafe = new String[]{"^", "|", "\\", "\"", " ", "{", "}"};
+		for (String replacement : alwaysUnsafe) {
+			attrValue = attrValue.replace(replacement, URLEncoder.encode(replacement, StandardCharsets.UTF_8.name()));
+		}
+
+		attrValue = attrValue.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
+		return new URI(attrValue);
 	}
 }
