@@ -47,17 +47,15 @@ public class WarwickTagUrlMangler {
      * This will url-encode unencoded non-query string aware characters, so
      * don't just Uri.parse() any old damn string
      */
-    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
-        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user, isHostWhitelistedForToken(urlToSubstitute)).toUri();
+    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user, boolean allowToken) {
+        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user, allowToken).toUri();
     }
 
     /**
-     * These are all grandfathered in.
-     * UTL-224
+     * @deprecated Use overload with `allowToken` param
      */
-    public boolean isHostWhitelistedForToken(Uri targetToCheck) {
-        return targetToCheck.getAuthority().equalsIgnoreCase("www.eng.warwick.ac.uk") ||
-                targetToCheck.getAuthority().equalsIgnoreCase("arnun.lnx.warwick.ac.uk");
+    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
+        return substituteWarwickTags(urlToSubstitute, user, true);
     }
 
     /**
