@@ -14,12 +14,7 @@ public class WarwickTagUrlMangler {
 
     /**
      * Only looks for the unencoded form
-     * @deprecated Use substituteWarwickTags and specify allowToken
      */
-    public final String substituteWarwickTags(String stringToSubstitute, final User user) {
-        return substituteWarwickTags(stringToSubstitute, user, true);
-    }
-
     public final String substituteWarwickTags(String stringToSubstitute, final User user, boolean allowToken) {
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
@@ -49,13 +44,6 @@ public class WarwickTagUrlMangler {
      */
     public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user, boolean allowToken) {
         return substituteWarwickTags(new UriBuilder(urlToSubstitute), user, allowToken).toUri();
-    }
-
-    /**
-     * @deprecated Use overload with `allowToken` param
-     */
-    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
-        return substituteWarwickTags(urlToSubstitute, user, true);
     }
 
     /**

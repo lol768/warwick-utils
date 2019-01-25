@@ -13,9 +13,9 @@ public class WarwickTagUrlManglerTest {
 		WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
 		String testUrl = "http://www2.warwick.ac.uk/foo/<warwick_deptcode/>/bar";
 		User u = new User();
-		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
+		assertEquals("http://www2.warwick.ac.uk/foo//bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u, false).toString());
 		u.setDepartmentCode("IN");
-		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
+		assertEquals("http://www2.warwick.ac.uk/foo/IN/bar", mangler.substituteWarwickTags(Uri.parse(testUrl), u, false).toString());
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -44,7 +44,7 @@ public class WarwickTagUrlManglerTest {
 
 		String testUrl="http://www.eng.warwick.ac.uk/legacy?token=<warwick_token/>";
 		String result = "http://www.eng.warwick.ac.uk/legacy?token=tok";
-		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u).toString());
+		assertEquals(result, mangler.substituteWarwickTags(Uri.parse(testUrl), u, true).toString());
 	}
 	
 	@Test
@@ -52,11 +52,11 @@ public class WarwickTagUrlManglerTest {
 	    User u = new User();
 	    
 	    WarwickTagUrlMangler mangler = new WarwickTagUrlMangler();
-	    assertEquals("don't change my spaces to %20", mangler.substituteWarwickTags("don't change my spaces to %20", u));
-	    assertEquals("here is a ", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u));
+	    assertEquals("don't change my spaces to %20", mangler.substituteWarwickTags("don't change my spaces to %20", u, false));
+	    assertEquals("here is a ", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u, false));
 	    
 	    u.setDepartmentCode("IN");
-	    assertEquals("here is a IN", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u));
+	    assertEquals("here is a IN", mangler.substituteWarwickTags("here is a <warwick_deptcode/>", u, false));
 	}
 	
 }
