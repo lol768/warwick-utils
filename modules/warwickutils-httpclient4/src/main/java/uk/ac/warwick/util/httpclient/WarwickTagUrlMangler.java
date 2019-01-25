@@ -15,12 +15,16 @@ public class WarwickTagUrlMangler {
     /**
      * Only looks for the unencoded form
      */
-    public final String substituteWarwickTags(String stringToSubstitute, final User user) {
+    public final String substituteWarwickTags(String stringToSubstitute, final User user, boolean allowToken) {
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_username/>", user.getFullName());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_userid/>", user.getUserId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_useremail/>", user.getEmail());
-        stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_token/>", user.getOldWarwickSSOToken());
+
+        if (allowToken) {
+            stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_token/>", user.getOldWarwickSSOToken());
+        }
+
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_idnumber/>", user.getWarwickId());
         stringToSubstitute = doStringReplace(stringToSubstitute, "<warwick_deptcode/>", user.getDepartmentCode());
         return stringToSubstitute;
@@ -38,19 +42,23 @@ public class WarwickTagUrlMangler {
      * This will url-encode unencoded non-query string aware characters, so
      * don't just Uri.parse() any old damn string
      */
-    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user) {
-        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user).toUri();
+    public final Uri substituteWarwickTags(final Uri urlToSubstitute, final User user, boolean allowToken) {
+        return substituteWarwickTags(new UriBuilder(urlToSubstitute), user, allowToken).toUri();
     }
 
     /**
      * This will url-encode unencoded non-query string aware characters, so
      * don't just Uri.parse() any old damn string
      */
-    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user) {
+    public final UriBuilder substituteWarwickTags(final UriBuilder builder, final User user, boolean allowToken) {
         replaceAndEncode(builder, "<warwick_username/>", user.getFullName());
         replaceAndEncode(builder, "<warwick_userid/>", user.getUserId());
         replaceAndEncode(builder, "<warwick_useremail/>", user.getEmail());
-        replaceAndEncode(builder, "<warwick_token/>", user.getOldWarwickSSOToken());
+
+        if (allowToken) {
+            replaceAndEncode(builder, "<warwick_token/>", user.getOldWarwickSSOToken());
+        }
+
         replaceAndEncode(builder, "<warwick_idnumber/>", user.getWarwickId());
         replaceAndEncode(builder, "<warwick_deptcode/>", user.getDepartmentCode());
 

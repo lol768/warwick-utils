@@ -59,14 +59,16 @@ public abstract class AbstractWarwickAwareHttpMethodExecutor extends AbstractHtt
 
     private Uri substituteWarwickTags(final Uri input) {
         if (isSubstituteTags()) {
-            return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
+            return new WarwickTagUrlMangler().substituteWarwickTags(input, user, this.shouldAllowWarwickToken(input));
         } else {
             return input;
         }
     }
 
+    protected abstract boolean shouldAllowWarwickToken(Uri requestUri);
+
     private static Uri substituted(final Uri input, final User user) {
-        return new WarwickTagUrlMangler().substituteWarwickTags(input, user);
+        return new WarwickTagUrlMangler().substituteWarwickTags(input, user, false);
     }
 
     private class WarwickAwareHttpRequestDecorator implements HttpRequestDecorator {
