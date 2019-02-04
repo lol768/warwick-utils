@@ -31,6 +31,8 @@ public final class DateTimeFreemarkerObjectWrapperTest {
     public void setUp() throws Exception {
         this.defaultTz = TimeZone.getDefault();
         this.defaultLocale = Locale.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+        Locale.setDefault(Locale.UK);
     }
     
     @After
@@ -41,9 +43,6 @@ public final class DateTimeFreemarkerObjectWrapperTest {
     
     @Test 
     public void jsr310JavaTimeWrapping() throws Exception {
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
-        Locale.setDefault(Locale.UK);
-        
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(getClass(), "");
         configuration.setObjectWrapper(new DateTimeFreemarkerObjectWrapper());
