@@ -1,4 +1,4 @@
-Warwick Utils
+Warwick Utils [![Build Status](https://travis-ci.com/UniversityofWarwick/warwick-utils.svg?branch=master)](https://travis-ci.com/UniversityofWarwick/warwick-utils)
 =============
 
 This is a set of (mostly Java) tools that can be used as dependencies from other projects.
