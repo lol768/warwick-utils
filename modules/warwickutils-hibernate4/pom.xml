@@ -42,13 +42,14 @@
 		<dependency>
 			<groupId>org.jadira.usertype</groupId>
 			<artifactId>usertype.extended</artifactId>
+			<version>4.0.0.GA</version>
 			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.2.4.Final</version>
+			<version>4.2.21.Final</version>
 		</dependency>
 
 		<dependency>

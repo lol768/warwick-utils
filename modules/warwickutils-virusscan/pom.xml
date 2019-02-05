@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
-            <version>4.1.2</version>
+            <version>4.1.4</version>
         </dependency>
 
         <dependency>
@@ -54,8 +54,8 @@
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.11</artifactId>
-            <version>2.5.0</version>
+            <artifactId>play_2.12</artifactId>
+            <version>2.6.20</version>
             <optional>true</optional>
         </dependency>
 
