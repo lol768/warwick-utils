@@ -44,6 +44,12 @@
 			<artifactId>usertype.extended</artifactId>
 			<version>4.0.0.GA</version>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
