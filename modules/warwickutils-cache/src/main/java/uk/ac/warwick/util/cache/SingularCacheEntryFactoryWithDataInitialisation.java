@@ -14,7 +14,7 @@ public abstract class SingularCacheEntryFactoryWithDataInitialisation<K extends 
         return false;
     }
 
-    public final Map<K,V> create(List<K> keys) throws CacheEntryUpdateException {
+    public final Map<K, V> create(List<K> keys) throws CacheEntryUpdateException {
         throw new UnsupportedOperationException();
     }
 

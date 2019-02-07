@@ -2,11 +2,10 @@ package uk.ac.warwick.util.cache;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Cache store that uses a LinkedHashMap to evict the oldest items.
@@ -20,44 +19,103 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author cusebr
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public final class HashMapCacheStore<K extends Serializable,V extends Serializable> implements CacheStore<K,V> {
+public final class HashMapCacheStore<K extends Serializable,V extends Serializable> implements CacheStore<K, V> {
 
-	private static final int DEFAULT_CACHE_SIZE = 10000;
-	
-	private int maximumCacheSize = DEFAULT_CACHE_SIZE;
-	
-	private static HashMap<String, WeakReference<Map>> maps = new HashMap<String, WeakReference<Map>>();
+	private static final int DEFAULT_CACHE_SIZE = 10_000;
+
+	private static ConcurrentMap<String, WeakReference<Map<?, ?>>> maps = new ConcurrentHashMap<>();
+
+	public static class Builder<K extends Serializable, V extends Serializable, T> implements Caches.Builder<K, V, T> {
+		private final String name;
+		private CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory;
+		private CacheExpiryStrategy<K, V> expiryStrategy = TTLCacheExpiryStrategy.eternal();
+		private long maximumSize = DEFAULT_CACHE_SIZE;
+		private boolean asynchronousUpdateEnabled;
+		private boolean asynchronousOnly;
+
+		public Builder(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory) {
+			this.name = name;
+			this.entryFactory = entryFactory;
+		}
+
+		private Builder(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory, CacheExpiryStrategy<K, V> expiryStrategy, long maximumSize, boolean asynchronousUpdateEnabled, boolean asynchronousOnly) {
+			this(name, entryFactory);
+			this.expiryStrategy = expiryStrategy;
+			this.maximumSize = maximumSize;
+			this.asynchronousUpdateEnabled = asynchronousUpdateEnabled;
+			this.asynchronousOnly = asynchronousOnly;
+		}
+
+		@Override
+		public <U> Builder<K, V, U> dataInitialisingEntryFactory(CacheEntryFactoryWithDataInitialisation<K, V, U> entryFactory) {
+			return new Builder<>(name, entryFactory, expiryStrategy, maximumSize, asynchronousUpdateEnabled, asynchronousOnly);
+		}
+
+		@Override
+		public Builder<K, V, T> expireAfterWrite(Duration duration) {
+			this.expiryStrategy = TTLCacheExpiryStrategy.forTTL(duration);
+			return this;
+		}
+
+		@Override
+		public Caches.Builder<K, V, T> expiryStategy(CacheExpiryStrategy<K, V> expiryStrategy) {
+			this.expiryStrategy = expiryStrategy;
+			return this;
+		}
+
+		@Override
+		public Builder<K, V, T> maximumSize(long size) {
+			this.maximumSize = size;
+			return this;
+		}
+
+		@Override
+		public Caches.Builder<K, V, T> asynchronous() {
+			this.asynchronousUpdateEnabled = true;
+			return this;
+		}
+
+		@Override
+		public Caches.Builder<K, V, T> asynchronousOnly() {
+			this.asynchronousUpdateEnabled = true;
+			this.asynchronousOnly = true;
+			return this;
+		}
+
+		@Override
+		public Builder<K, V, T> properties(Properties properties) {
+			throw new UnsupportedOperationException("Properties can only be set with Memcached cache stores");
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public HashMapCacheStore<K, V> buildStore() {
+			return new HashMapCacheStore<>(name, (Map<K, CacheEntry<K, V>>) maps.computeIfAbsent(name, n ->
+				new WeakReference<>(Collections.synchronizedMap(new LinkedHashMap<K, CacheEntry<K, V>>() {
+					private static final long serialVersionUID = 1L;
+					protected boolean removeEldestEntry(final Map.Entry<K, CacheEntry<K, V>> eldest) {
+						return size() > maximumSize;
+					}
+				}))
+			).get());
+		}
+
+		@Override
+		public Cache<K, V> build() {
+			return new BasicCache<>(buildStore(), entryFactory, expiryStrategy, asynchronousUpdateEnabled, asynchronousOnly);
+		}
+	}
 	
 	/**
 	 * Synchronized means we're pretty thread safe but you still need to manually synchronize over
 	 * loops. We don't do any loops at the moment.
 	 */
-	private final Map map;
+	private final Map<K, CacheEntry<K, V>> map;
 	private final String name;
 	
-	public HashMapCacheStore(String name) {
+	private HashMapCacheStore(String name, Map<K, CacheEntry<K, V>> map) {
 		this.name = name;
-		Map existingMap = get(name);
-		if (existingMap == null) {
-			map = Collections.synchronizedMap(new LinkedHashMap() {
-				private static final long serialVersionUID = 1L;
-				protected boolean removeEldestEntry(final Map.Entry eldest) {
-			        return size() > maximumCacheSize;
-			    }
-			});
-			maps.put(name, new WeakReference(map));
-		} else {
-			map = existingMap;
-		}
-	}
-
-	private Map get(final String cacheName) {
-		WeakReference<Map> weakReference = maps.get(cacheName);
-		if (weakReference != null) {
-			return weakReference.get();
-		}
-		return null;
+		this.map = map;
 	}
 	
 	/**
@@ -65,10 +123,10 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 	 * you will get a ClassCastException when retrieving the value.
 	 */
 	public CacheEntry<K, V> get(K key) {
-		return (CacheEntry<K, V>) map.get(key);
+		return map.get(key);
 	}
 
-	public void put(CacheEntry entry, long ignoredTtl, TimeUnit ignoredTimeUnit) {
+	public void put(CacheEntry<K, V> entry, Duration ttl) {
 		map.put(entry.getKey(), entry);
 	}
 
@@ -81,10 +139,6 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 		return new CacheStatistics(
 			map.size()	
 		);
-	}
-
-	public void setMaxSize(int max) {
-		maximumCacheSize = max;
 	}
 
 	public boolean clear() {
@@ -107,8 +161,8 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 
     /** Empty all hashmap cache stores. For debugging. */
     public static void clearAll() {
-        for (WeakReference<Map> ref : maps.values()) {
-            Map m = ref.get();
+        for (WeakReference<Map<?, ?>> ref : maps.values()) {
+            Map<?, ?> m = ref.get();
             if (m != null) {
                 m.clear();
             }

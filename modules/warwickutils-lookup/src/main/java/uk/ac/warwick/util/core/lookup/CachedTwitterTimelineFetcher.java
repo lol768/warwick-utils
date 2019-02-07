@@ -1,18 +1,12 @@
 package uk.ac.warwick.util.core.lookup;
 
-import java.io.IOException;
-
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-
 import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
 import uk.ac.warwick.util.concurrency.promise.UnfulfilledPromiseException;
 import uk.ac.warwick.util.concurrency.promise.WriteOncePromise;
@@ -23,11 +17,14 @@ import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
 
+import java.io.IOException;
+import java.time.Duration;
+
 public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetcher, InitializingBean {
     
     public static final String CACHE_NAME = "TwitterTimelineCache";
     
-    public static final long DEFAULT_CACHE_TIMEOUT = 60 * 60 * 1; // Cache for one hour
+    public static final Duration DEFAULT_CACHE_TIMEOUT = Duration.ofHours(1);
     
     private static final int TWEET_COUNT_PADDING = 20;
     
@@ -69,7 +66,11 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
 	public synchronized void initialiseCache() {
     	if (this.cache.isWritten()) return;
     	
-    	this.cache.setValue(Caches.newCache(CACHE_NAME, new TwitterTimelineEntryFactory(httpRequestDecorator), DEFAULT_CACHE_TIMEOUT, CacheStrategy.EhCacheRequired));
+    	this.cache.setValue(
+            Caches.builder(CACHE_NAME, new TwitterTimelineEntryFactory(httpRequestDecorator), Caches.CacheStrategy.CaffeineIfAvailable)
+                .expireAfterWrite(DEFAULT_CACHE_TIMEOUT)
+                .build()
+        );
     }
     
     public HttpRequestDecorator getHttpRequestDecorator() {
@@ -99,14 +100,12 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
             executor.setHttpRequestDecorator(httpRequestDecorator);
             
             try {
-                return executor.execute(new ResponseHandler<TwitterTimelineResponse>() {
-                    public TwitterTimelineResponse handleResponse(HttpResponse resp) throws IOException {
-                        return new TwitterTimelineResponse(
-                            EntityUtils.toString(resp.getEntity()),
-                            resp.getStatusLine().getStatusCode(),
-                            resp.getAllHeaders()
-                        );
-                    }
+                return executor.execute(resp -> {
+                    return new TwitterTimelineResponse(
+                        EntityUtils.toString(resp.getEntity()),
+                        resp.getStatusLine().getStatusCode(),
+                        resp.getAllHeaders()
+                    );
                 }).getRight();
             } catch (IOException e) {
                 throw new CacheEntryUpdateException(e);

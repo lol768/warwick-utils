@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -8,7 +9,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.warwick.util.cache.ehcache.EhCacheStore;
+import uk.ac.warwick.util.cache.caffeine.CaffeineCacheStore;
 import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
 
 /**
@@ -17,48 +18,96 @@ import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
 public final class Caches {
     
     public enum CacheStrategy {
-        EhCacheIfAvailable,
-        EhCacheRequired,
+        CaffeineIfAvailable,
+        CaffeineRequired,
         MemcachedIfAvailable,
         MemcachedRequired,
         InMemoryOnly
-    };
+    }
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Caches.class);
 	
-	private static boolean ehChecked;
-	private static boolean ehAvailable;
+	private static boolean caffeineChecked;
+	private static boolean caffeineAvailable;
 
     private static boolean memcachedChecked;
     private static boolean memcachedAvailable;
 	
 	private Caches() {}
-	
-	public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout) {
-	    return newCache(name, wrapFactoryWithoutDataInitialisation(factory), timeout, CacheStrategy.EhCacheIfAvailable);
-	}
-	
-	public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy) {
-		return new BasicCache<K, V, Object>(name, wrapFactoryWithoutDataInitialisation(factory), timeout, cacheStrategy);
-	}
 
-    public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
-        return new BasicCache<K, V, Object>(name, wrapFactoryWithoutDataInitialisation(factory), timeout, cacheStrategy, properties);
+	public interface Builder<K extends Serializable, V extends Serializable, T> {
+	    <U> Builder<K, V, U> dataInitialisingEntryFactory(CacheEntryFactoryWithDataInitialisation<K, V, U> entryFactory);
+        default Builder<K, V, Object> entryFactory(CacheEntryFactory<K, V> entryFactory) {
+            return dataInitialisingEntryFactory(wrapFactoryWithoutDataInitialisation(entryFactory));
+        }
+        Builder<K, V, T> expireAfterWrite(Duration duration);
+        Builder<K, V, T> expiryStategy(CacheExpiryStrategy<K, V> expiryStrategy);
+        Builder<K, V, T> maximumSize(long size);
+        Builder<K, V, T> asynchronous();
+        Builder<K, V, T> asynchronousOnly();
+        Builder<K, V, T> properties(Properties properties);
+        CacheStore<K, V> buildStore();
+        Cache<K, V> build();
     }
 
-    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout) {
-        return newDataInitialisatingCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
+    public static <K extends Serializable, V extends Serializable> Builder<K, V, Object> builder(String name) {
+        return builder(name, CacheStrategy.CaffeineIfAvailable);
     }
 
-    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy) {
-        return new BasicCache<K, V, T>(name, factory, timeout, cacheStrategy);
+    public static <K extends Serializable, V extends Serializable> Builder<K, V, Object> builder(String name, CacheStrategy strategy) {
+        return builderWithDataInitialisation(name, null, strategy);
     }
 
-    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
-        return new BasicCache<K, V, T>(name, factory, timeout, cacheStrategy, properties);
+    public static <K extends Serializable, V extends Serializable> Builder<K, V, Object> builder(String name, CacheEntryFactory<K, V> entryFactory) {
+        return builder(name, entryFactory, CacheStrategy.CaffeineIfAvailable);
     }
 
-    public static <K extends Serializable,V extends Serializable> CacheEntryFactoryWithDataInitialisation<K, V, Object> wrapFactoryWithoutDataInitialisation(final CacheEntryFactory<K,V> factory) {
+    public static <K extends Serializable, V extends Serializable> Builder<K, V, Object> builder(String name, CacheEntryFactory<K, V> entryFactory, CacheStrategy strategy) {
+        return builderWithDataInitialisation(name, wrapFactoryWithoutDataInitialisation(entryFactory), strategy);
+    }
+
+    public static <K extends Serializable, V extends Serializable, T> Builder<K, V, T> builderWithDataInitialisation(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory) {
+        return builderWithDataInitialisation(name, entryFactory, CacheStrategy.CaffeineIfAvailable);
+    }
+
+    public static <K extends Serializable, V extends Serializable, T> Builder<K, V, T> builderWithDataInitialisation(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory, CacheStrategy cacheStrategy) {
+        switch (cacheStrategy) {
+            case CaffeineRequired:
+                if (isCaffeineAvailable()) {
+                    return new CaffeineCacheStore.Builder<>(name, entryFactory);
+                }
+
+                throw new IllegalStateException("Caffeine unavailable for " + name);
+            case CaffeineIfAvailable:
+                if (isCaffeineAvailable()) {
+                    LOGGER.info("Caffeine detected - using CaffeineCacheStore for " + name + ".");
+                    return new CaffeineCacheStore.Builder<>(name, entryFactory);
+                }
+
+                LOGGER.info("Caffeine not found - using built in cache store for " + name + ".");
+                return new HashMapCacheStore.Builder<>(name, entryFactory);
+            case MemcachedRequired:
+                if (isMemcachedAvailable()) {
+                    return new MemcachedCacheStore.Builder<>(name, entryFactory);
+                }
+
+                throw new IllegalStateException("memcached unavailable for " + name);
+            case MemcachedIfAvailable:
+                if (isMemcachedAvailable()) {
+                    return new MemcachedCacheStore.Builder<>(name, entryFactory);
+                }
+
+                LOGGER.info("memcached not found - using built in cache store for " + name + ".");
+                return new HashMapCacheStore.Builder<>(name, entryFactory);
+            case InMemoryOnly:
+                return new HashMapCacheStore.Builder<>(name, entryFactory);
+
+            default:
+                throw new IllegalArgumentException("Unexpected cache strategy: " + cacheStrategy);
+        }
+    }
+
+    public static <K extends Serializable,V extends Serializable> CacheEntryFactoryWithDataInitialisation<K, V, Object> wrapFactoryWithoutDataInitialisation(final CacheEntryFactory<K, V> factory) {
         if (factory == null) { return null; }
 
         return new CacheEntryFactoryWithDataInitialisation<K, V, Object>() {
@@ -84,92 +133,25 @@ public final class Caches {
         };
     }
 
-    /**
-     * Creates a new cache. If Ehcache is available, it is used - reflection is used
-     * to avoid attempting to classload any EhCache classes until we know it's actually
-     * available.
-     */
-    public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy) {
-        return newCacheStore(name, timeoutSeconds, cacheStrategy, null);
-    }
-	
 	/**
-	 * Creates a new cache. If Ehcache is available, it is used - reflection is used
-	 * to avoid attempting to classload any EhCache classes until we know it's actually
-	 * available.
-	 */
-	public static <K extends Serializable,V extends Serializable> CacheStore<K, V> newCacheStore(String name, long timeoutSeconds, CacheStrategy cacheStrategy, Properties properties) {
-		switch (cacheStrategy) {
-		    case EhCacheRequired:
-		        if (isEhCacheAvailable()) {
-		            return new EhCacheStore<K, V>(name);
-		        }
-		        
-		        throw new IllegalStateException("EhCache unavailable for " + name);
-		    case EhCacheIfAvailable:
-		        if (isEhCacheAvailable()) {
-		            LOGGER.info("Ehcache detected - using EhCacheStore for " + name + ".");
-                    return new EhCacheStore<K, V>(name);
-                }
-
-	            LOGGER.info("Ehcache not found - using built in cache store for " + name + ".");
-                return new HashMapCacheStore<K, V>(name);
-            case MemcachedRequired:
-                if (isMemcachedAvailable()) {
-                    if (properties != null) {
-                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds, properties);
-                    } else {
-                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
-                    }
-                }
-
-                throw new IllegalStateException("memcached unavailable for " + name);
-            case MemcachedIfAvailable:
-                if (isMemcachedAvailable()) {
-                    LOGGER.info("memcached detected - using MemcachedCacheStore for " + name + ".");
-                    if (properties != null) {
-                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds, properties);
-                    } else {
-                        return new MemcachedCacheStore<K, V>(name, (int) timeoutSeconds);
-                    }
-                }
-
-                LOGGER.info("memcached not found - using built in cache store for " + name + ".");
-                return new HashMapCacheStore<K, V>(name);
-		    case InMemoryOnly:
-		        return new HashMapCacheStore<K, V>(name);
-		        
-		    default:
-		        throw new IllegalArgumentException("Unexpected cache strategy: " + cacheStrategy);
-		}
-	}
-
-	/**
-	 * Attempt to dynamically classload one of the main Ehcache classes, to
+	 * Attempt to dynamically classload one of the main Caffeine classes, to
 	 * see if it's available to the default classloader.
 	 */
-	public static boolean isEhCacheAvailable() {
-		if (!ehChecked) {			
+	public static boolean isCaffeineAvailable() {
+		if (!caffeineChecked) {
 			try {
-				Class.forName("net.sf.ehcache.CacheManager");
-				String storeDir = System.getProperty("ehcache.disk.store.dir");
-				String warwickDir = System.getProperty("warwick.ehcache.disk.store.dir");
-				if (storeDir == null && warwickDir == null) {
-					LOGGER.info("Ehcache found but no disk cache location specified with ehcache.disk.store.dir or warwick.ehcache.disk.store.dir, so not using Ehcache");
-					ehAvailable = false;
-				} else {
-					ehAvailable = true;
-				}
+				Class.forName("com.github.benmanes.caffeine.cache.Caffeine");
+				caffeineAvailable = true;
 			} catch (ClassNotFoundException e) {
-				ehAvailable = false;
+                caffeineAvailable = false;
 			}
-			ehChecked = true;
+			caffeineChecked = true;
 		}
-		return ehAvailable;
+		return caffeineAvailable;
 	}
 	
-	public static void resetEhCacheCheck() {
-	    ehChecked = false;
+	public static void resetCaffeineCheck() {
+	    caffeineChecked = false;
 	}
 
     /**

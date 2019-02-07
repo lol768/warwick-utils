@@ -1,26 +1,21 @@
 package uk.ac.warwick.util.core.lookup;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.HashMap;
+import org.apache.http.HttpStatus;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
+import uk.ac.warwick.util.web.Uri;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
 
-import org.apache.http.HttpStatus;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import uk.ac.warwick.util.AbstractJUnit4JettyTest;
-import uk.ac.warwick.util.JettyServer;
-import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.cache.Caches.CacheStrategy;
-import uk.ac.warwick.util.web.Uri;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings("serial")
 public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyTest {
@@ -111,23 +106,6 @@ public final class CachedTwitterTimelineFetcherTest extends AbstractJUnit4JettyT
         
         // Assert that we only went for an OAuth token once
         assertEquals(1, OAuthTokenServlet.executionCount - oauthBuffer);
-    }
-    
-    @BeforeClass
-    public static void setupEhCache() throws Exception {
-        Caches.resetEhCacheCheck();
-        System.setProperty("warwick.ehcache.disk.store.dir", root.getAbsolutePath());
-    }
-    
-    @AfterClass
-    public static void unsetEhCache() throws Exception {
-        System.clearProperty("warwick.ehcache.disk.store.dir");
-        Caches.resetEhCacheCheck();
-    }
-    
-    @After
-    public void emptyCache() {
-        assertTrue(Caches.newCache(CachedTwitterTimelineFetcher.CACHE_NAME, null, 0, CacheStrategy.EhCacheRequired).clear());
     }
     
     public static class TwitterJSONServlet extends HttpServlet {

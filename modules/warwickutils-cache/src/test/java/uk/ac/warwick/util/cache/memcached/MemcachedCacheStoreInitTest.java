@@ -11,9 +11,10 @@ import uk.ac.warwick.util.cache.CacheEntry;
 import uk.ac.warwick.util.cache.MemcachedUtils;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class MemcachedCacheStoreInitTest {
 
@@ -50,13 +51,13 @@ public class MemcachedCacheStoreInitTest {
 
     @Test
     public void init() throws Exception {
-        MemcachedCacheStore<String, String> cache = new MemcachedCacheStore<String, String>("testCache", 10);
+        MemcachedCacheStore<String, String> cache = new MemcachedCacheStore<String, String>("testCache", Duration.ofSeconds(10));
 
         CacheEntry<String, String> string = cache.get("token:abcdefghij");
         assertNull(string);
 
         CacheEntry<String, String> entry = new CacheEntry<String, String>("token:12345", "Johnny");
-        cache.put(entry, 10, TimeUnit.SECONDS);
+        cache.put(entry, Duration.ofSeconds(10));
 
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());
         assertEquals(entry.getValue(), cache.get("token:12345").getValue());

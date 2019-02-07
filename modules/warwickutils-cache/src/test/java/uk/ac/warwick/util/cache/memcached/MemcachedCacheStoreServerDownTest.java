@@ -7,17 +7,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.warwick.util.cache.BasicCache;
-import uk.ac.warwick.util.cache.Cache;
-import uk.ac.warwick.util.cache.CacheEntry;
-import uk.ac.warwick.util.cache.CacheEntryUpdateException;
-import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.cache.*;
 import uk.ac.warwick.util.core.DateTimeUtils;
 
+import java.time.Duration;
 import java.time.Instant;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @Ignore("Doesn't work on Bamboo")
 public class MemcachedCacheStoreServerDownTest {
@@ -32,7 +29,7 @@ public class MemcachedCacheStoreServerDownTest {
                 .build(),
             AddrUtil.getAddresses("localhost:12345")
         );
-        cacheStore = new MemcachedCacheStore("cacheName", Integer.MAX_VALUE, client);
+        cacheStore = new MemcachedCacheStore<>("cacheName", Duration.ofSeconds(Integer.MAX_VALUE), client);
     }
 
     private int cacheCallCount = 0;
@@ -41,9 +38,9 @@ public class MemcachedCacheStoreServerDownTest {
     private Cache<String, String> cache;
 
     @Before
-    public void setUpCache() throws Exception {
+    public void setUpCache() {
         cache  = new BasicCache<>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
-            public String create(String key) throws CacheEntryUpdateException {
+            public String create(String key) {
                 cacheCallCount++;
                 return key.substring(6);
             }
@@ -51,7 +48,7 @@ public class MemcachedCacheStoreServerDownTest {
             public boolean shouldBeCached(String val) {
                 return true;
             }
-        }), 10);
+        }), TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(10)), false, false);
     }
 
     @Test
@@ -64,7 +61,7 @@ public class MemcachedCacheStoreServerDownTest {
     }
 
     @Test
-    public void getResult() throws Exception {
+    public void getResult() {
         DateTimeUtils.useMockDateTime(Instant.now(), () -> {
             try {
                 Cache.Result<String> result = cache.getResult("token:12345");
@@ -78,24 +75,24 @@ public class MemcachedCacheStoreServerDownTest {
     }
 
     @Test
-    public void put() throws Exception {
-        cache.put(new CacheEntry<String, String>("token:12345", "12345"));
+    public void put() {
+        cache.put(new CacheEntry<>("token:12345", "12345"));
     }
 
     @Test
-    public void remove() throws Exception {
+    public void remove() {
         cache.remove("token:12345");
     }
 
     @Test
-    public void clear() throws Exception {
+    public void clear() {
         cache.clear();
     }
 
     @Test
-    public void contains() throws Exception {
+    public void contains() {
         assertFalse(cache.contains("token:12345"));
-        cache.put(new CacheEntry<String, String>("token:12345", "12345"));
+        cache.put(new CacheEntry<>("token:12345", "12345"));
         assertFalse(cache.contains("token:12345"));
     }
 }

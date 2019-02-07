@@ -1,22 +1,5 @@
 package uk.ac.warwick.util.web.filter.stack;
 
-import static java.util.Arrays.*;
-import static org.junit.Assert.*;
-import static uk.ac.warwick.util.MockUtils.*;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.ehcache.CacheManager;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.Sequence;
@@ -28,6 +11,16 @@ import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.filter.GenericFilterBean;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertNotNull;
+import static uk.ac.warwick.util.MockUtils.*;
 
 public class ConfigurableFilterStackTest {
 
@@ -50,9 +43,8 @@ public class ConfigurableFilterStackTest {
     }
 
     @After public void tearDown() {
-        CacheManager cm = CacheManager.getCacheManager("warwickUtilsFiltersCache");
-        if (cm != null) {
-            cm.clearAll();
+        if (filter != null) {
+            filter.getCache().invalidateAll();
         }
     }
     

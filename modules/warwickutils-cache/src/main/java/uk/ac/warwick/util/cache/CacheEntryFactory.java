@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,8 @@ import java.util.Map;
  * If you don't have any required exceptions that need to be
  * declared, you can put RuntimeException here.
  */
-public interface CacheEntryFactory<K extends Serializable,V extends Serializable> {
-    int TIME_TO_LIVE_ETERNITY = -1;
+public interface CacheEntryFactory<K extends Serializable, V extends Serializable> {
+    Duration TIME_TO_LIVE_ETERNITY = Duration.ofSeconds(-1);
 
 	V create(K key) throws CacheEntryUpdateException;
 	
@@ -23,7 +24,7 @@ public interface CacheEntryFactory<K extends Serializable,V extends Serializable
 	 * {@link UnsupportedOperationException} and {@link #isSupportsMultiLookups()}
 	 * should return false.
 	 */
-	Map<K,V> create(List<K> keys) throws CacheEntryUpdateException;
+	Map<K, V> create(List<K> keys) throws CacheEntryUpdateException;
 	
 	/**
 	 * @return Whether this factory supports the {@link #create(List)}
