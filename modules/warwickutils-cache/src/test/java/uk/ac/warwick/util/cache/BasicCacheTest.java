@@ -251,6 +251,10 @@ public class BasicCacheTest {
 				throw new UnsupportedOperationException();
 			}
 
+			public void setMaxSize(int size) {
+				throw new UnsupportedOperationException();
+			}
+
 			public boolean clear() {
 				throw new UnsupportedOperationException();
 			}

@@ -2,6 +2,8 @@ package uk.ac.warwick.util.cache.caffeine;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.annotations.VisibleForTesting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.cache.*;
 
 import java.io.Serializable;
@@ -14,6 +16,8 @@ import java.util.concurrent.ConcurrentMap;
  * Cache implementation that uses an in-memory frequency/recency biased cache.
  */
 public class CaffeineCacheStore<K extends Serializable, V extends Serializable> implements CacheStore<K, V> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheStore.class);
 
     private static final ConcurrentMap<String, com.github.benmanes.caffeine.cache.Cache<?, ?>> caches =
         new ConcurrentHashMap<>();
@@ -77,7 +81,8 @@ public class CaffeineCacheStore<K extends Serializable, V extends Serializable> 
 
         @Override
         public Builder<K, V, T> properties(Properties properties) {
-            throw new UnsupportedOperationException("Properties can only be set with Memcached cache stores");
+            LOGGER.warn("Properties can only be set with Memcached cache stores - ignoring");
+            return this;
         }
 
         @Override
@@ -93,7 +98,7 @@ public class CaffeineCacheStore<K extends Serializable, V extends Serializable> 
         }
 
         @Override
-        public Cache<K, V> build() {
+        public CacheWithDataInitialisation<K, V, T> build() {
             return new BasicCache<>(buildStore(), entryFactory, expiryStrategy, asynchronousUpdateEnabled, asynchronousOnly);
         }
     }
@@ -126,6 +131,10 @@ public class CaffeineCacheStore<K extends Serializable, V extends Serializable> 
     @Override
     public CacheStatistics getStatistics() {
         return new CacheStatistics(caffeineCache.estimatedSize());
+    }
+
+    public void setMaxSize(int max) {
+        LOGGER.warn("setMaxSize() called on CaffeineCacheStore which does not support it");
     }
 
     @Override

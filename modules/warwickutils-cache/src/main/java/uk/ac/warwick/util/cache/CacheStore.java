@@ -23,6 +23,9 @@ public interface CacheStore<K extends Serializable,V extends Serializable> {
 	
 	CacheStatistics getStatistics() throws CacheStoreUnavailableException;
 
+	@Deprecated
+	void setMaxSize(int max);
+
 	boolean clear() throws CacheStoreUnavailableException;
 	boolean contains(K key) throws CacheStoreUnavailableException;
 

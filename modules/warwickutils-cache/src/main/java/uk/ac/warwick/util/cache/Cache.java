@@ -73,6 +73,15 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	void addCacheListener(CacheListener<K, V> listener);
 	CacheStatistics getStatistics() throws CacheStoreUnavailableException;
 
+	@Deprecated
+	void setMaxSize(int size);
+	@Deprecated
+	void setTimeout(int seconds);
+	@Deprecated
+	void setExpiryStrategy(CacheExpiryStrategy<K,V> strategy);
+	@Deprecated
+	void setAsynchronousUpdateEnabled(boolean b);
+
     String getName();
 	
 	boolean remove(K key);

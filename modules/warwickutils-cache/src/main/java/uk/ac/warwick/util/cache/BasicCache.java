@@ -5,6 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -37,9 +38,9 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 
 	private final CacheStore<K, V> store;
 
-	private final CacheExpiryStrategy<K, V> expiryStrategy;
+	private CacheExpiryStrategy<K, V> expiryStrategy;
 	
-	private final boolean asynchronousUpdateEnabled;
+	private boolean asynchronousUpdateEnabled;
 
 	/**
 	 * If asynchronousUpdateEnabled is also enabled, the cache will _only_
@@ -48,7 +49,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 	 *
 	 * If asynchronousUpdateEnabled is false, this has no effect.
 	 */
-	private final boolean asynchronousOnly;
+	private boolean asynchronousOnly;
 
 	public BasicCache(@Nonnull CacheStore<K, V> cacheStore, @Nullable CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory, @Nonnull CacheExpiryStrategy<K, V> expiryStrategy, boolean asynchronousUpdateEnabled, boolean asynchronousOnly) {
 		if (asynchronousOnly && !asynchronousUpdateEnabled) {
@@ -277,7 +278,7 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 
 	public void put(CacheEntry<K, V> entry) {
         try {
-            store.put(entry, expiryStrategy.getTTL(entry));
+            store.put(entry, expiryStrategy.getTTLDuration(entry));
         } catch (CacheStoreUnavailableException e) {
             // do nothing
         }
@@ -356,6 +357,31 @@ public final class BasicCache<K extends Serializable, V extends Serializable, T>
 
 	public void shutdown() {
 		store.shutdown();
+	}
+
+	public void setMaxSize(final int cacheSize) {
+		this.store.setMaxSize(cacheSize);
+	}
+
+	/**
+	 * Set the cache entry timeout in seconds.
+	 * This has no effect if you have overridden the ExpiryStrategy using
+	 */
+	public void setTimeout(final int seconds) {
+		setExpiryStrategy(TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(seconds)));
+	}
+
+	public void setExpiryStrategy(CacheExpiryStrategy<K, V> expiryStrategy) {
+		this.expiryStrategy = expiryStrategy;
+	}
+
+	public void setAsynchronousUpdateEnabled(boolean asynchronousUpdateEnabled) {
+		this.asynchronousUpdateEnabled = asynchronousUpdateEnabled;
+	}
+
+	@Deprecated
+	public void setAsynchronousOnly(boolean asynchronousOnly) {
+		this.asynchronousOnly = asynchronousOnly;
 	}
 
 	/**

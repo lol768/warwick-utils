@@ -1,16 +1,15 @@
 package uk.ac.warwick.util.cache;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.warwick.util.cache.caffeine.CaffeineCacheStore;
+import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uk.ac.warwick.util.cache.caffeine.CaffeineCacheStore;
-import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
 
 /**
  * Cache factory methods.
@@ -18,6 +17,8 @@ import uk.ac.warwick.util.cache.memcached.MemcachedCacheStore;
 public final class Caches {
     
     public enum CacheStrategy {
+        @Deprecated EhCacheIfAvailable,
+        @Deprecated EhCacheRequired,
         CaffeineIfAvailable,
         CaffeineRequired,
         MemcachedIfAvailable,
@@ -47,7 +48,7 @@ public final class Caches {
         Builder<K, V, T> asynchronousOnly();
         Builder<K, V, T> properties(Properties properties);
         CacheStore<K, V> buildStore();
-        Cache<K, V> build();
+        CacheWithDataInitialisation<K, V, T> build();
     }
 
     public static <K extends Serializable, V extends Serializable> Builder<K, V, Object> builder(String name) {
@@ -72,12 +73,17 @@ public final class Caches {
 
     public static <K extends Serializable, V extends Serializable, T> Builder<K, V, T> builderWithDataInitialisation(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory, CacheStrategy cacheStrategy) {
         switch (cacheStrategy) {
+            case EhCacheRequired:
+                throw new UnsupportedOperationException("CacheStrategy is EhCacheRequired but EhCache no longer supported.");
             case CaffeineRequired:
                 if (isCaffeineAvailable()) {
                     return new CaffeineCacheStore.Builder<>(name, entryFactory);
                 }
 
                 throw new IllegalStateException("Caffeine unavailable for " + name);
+            case EhCacheIfAvailable:
+                LOGGER.warn("CacheStrategy EhCacheIfAvailable requested but no longer supported; using CaffeineIfAvailable");
+                // Intentional drop-through
             case CaffeineIfAvailable:
                 if (isCaffeineAvailable()) {
                     LOGGER.info("Caffeine detected - using CaffeineCacheStore for " + name + ".");
@@ -131,6 +137,37 @@ public final class Caches {
                 return factory.shouldBeCached(val);
             }
         };
+    }
+
+    // Legacy initialisers
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K, V> factory, long timeout) {
+        return newCache(name, wrapFactoryWithoutDataInitialisation(factory), timeout, CacheStrategy.EhCacheIfAvailable);
+    }
+
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy) {
+        return builder(name, factory, cacheStrategy).expireAfterWrite(Duration.ofSeconds(timeout)).build();
+    }
+
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
+        return builder(name, factory).expireAfterWrite(Duration.ofSeconds(timeout)).properties(properties).build();
+    }
+
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout) {
+        return newDataInitialisatingCache(name, factory, timeout, CacheStrategy.EhCacheIfAvailable);
+    }
+
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy) {
+        return builderWithDataInitialisation(name, factory, cacheStrategy).expireAfterWrite(Duration.ofSeconds(timeout)).build();
+    }
+
+    @Deprecated
+    public static <K extends Serializable,V extends Serializable,T> CacheWithDataInitialisation<K, V, T> newDataInitialisatingCache(String name, CacheEntryFactoryWithDataInitialisation<K,V,T> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
+        return builderWithDataInitialisation(name, factory, cacheStrategy).expireAfterWrite(Duration.ofSeconds(timeout)).properties(properties).build();
     }
 
 	/**

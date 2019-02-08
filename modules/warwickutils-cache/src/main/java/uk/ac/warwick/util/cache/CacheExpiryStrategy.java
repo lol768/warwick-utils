@@ -1,7 +1,10 @@
 package uk.ac.warwick.util.cache;
 
+import uk.ac.warwick.util.collections.Pair;
+
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public interface CacheExpiryStrategy<K extends Serializable, V extends Serializable> {
 	boolean isExpired(CacheEntry<K, V> entry);
@@ -17,5 +20,10 @@ public interface CacheExpiryStrategy<K extends Serializable, V extends Serializa
      * Return CacheEntryFactory.TIME_TO_LIVE_ETERNITY to never totally expire the value from cache.
      * It will still do asynchronous updates when stale, using the separate expiry time.
      */
-    Duration getTTL(CacheEntry<K, V> entry);
+    Pair<Number, TimeUnit> getTTL(CacheEntry<K, V> entry);
+
+    default Duration getTTLDuration(CacheEntry<K, V> entry) {
+        Pair<Number, TimeUnit> ttl = getTTL(entry);
+        return Duration.ofMillis(ttl.getRight().toMillis(ttl.getLeft().longValue()));
+    }
 }

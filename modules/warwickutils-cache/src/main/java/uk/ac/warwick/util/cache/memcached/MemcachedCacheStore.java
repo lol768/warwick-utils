@@ -90,7 +90,8 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
 
         @Override
         public Builder<K, V, T> maximumSize(long size) {
-            throw new UnsupportedOperationException("Memcached doesn't support size-bound caches");
+            LOGGER.warn("Memcached doesn't support size-bound caches - ignoring");
+            return this;
         }
 
         @Override
@@ -122,7 +123,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
 
         @Override
-        public Cache<K, V> build() {
+        public CacheWithDataInitialisation<K, V, T> build() {
             if (expiryStrategy == null) {
                 expiryStrategy = TTLCacheExpiryStrategy.forTTL(expireAfterWrite);
             }
@@ -383,6 +384,10 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
 
         return new CacheStatistics(totalSize);
+    }
+
+    public void setMaxSize(int max) {
+        LOGGER.warn("setMaxSize() called on MemcachedCacheStore which does not support it");
     }
 
     public boolean clear() {

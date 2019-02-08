@@ -101,7 +101,7 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 		}
 
 		@Override
-		public Cache<K, V> build() {
+		public CacheWithDataInitialisation<K, V, T> build() {
 			return new BasicCache<>(buildStore(), entryFactory, expiryStrategy, asynchronousUpdateEnabled, asynchronousOnly);
 		}
 	}
@@ -139,6 +139,10 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 		return new CacheStatistics(
 			map.size()	
 		);
+	}
+
+	public void setMaxSize(int max) {
+		// Ignored
 	}
 
 	public boolean clear() {
