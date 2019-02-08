@@ -50,7 +50,7 @@ public class BlobStoreBackedHashResolver implements FileHashResolver, Initializi
     }
 
     @Override
-    public HashFileReference lookupByHash(HashFileStore store, HashString hashString, boolean storeNewHash) {
+    public BlobBackedHashFileReference lookupByHash(HashFileStore store, HashString hashString, boolean storeNewHash) {
         if (!belongsToUs(hashString)) {
             throw new IllegalArgumentException("HashString name does not match resolver name");
         }
