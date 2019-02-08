@@ -1,12 +1,13 @@
 package uk.ac.warwick.util.cache.memcached;
 
-import org.junit.*;
+import org.junit.Test;
 import uk.ac.warwick.util.cache.CacheEntry;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class MemcachedCacheStoreTest extends AbstractMemcachedCacheStoreTest<String, String> {
 
@@ -16,7 +17,7 @@ public class MemcachedCacheStoreTest extends AbstractMemcachedCacheStoreTest<Str
         assertNull(string);
 
         CacheEntry<String, String> entry = new CacheEntry<String, String>("token:12345", "Johnny");
-        cacheStore.put(entry, 10, TimeUnit.SECONDS);
+        cacheStore.put(entry, Duration.ofSeconds(10));
 
         assertEquals(entry.getValue(), cacheStore.get("token:12345").getValue());
         assertEquals(entry.getValue(), cacheStore.get("token:12345").getValue());

@@ -1,10 +1,10 @@
 package uk.ac.warwick.util.cache;
 
+import junit.framework.TestCase;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import junit.framework.TestCase;
 
 public class HashMapCacheStoreTest extends TestCase {
 	
@@ -15,16 +15,16 @@ public class HashMapCacheStoreTest extends TestCase {
 	 * at runtime. 
 	 */
 	public void testMultipleStores() {
-		HashMapCacheStore<String, String> cache = new HashMapCacheStore<String, String>("MyCache");
-		HashMapCacheStore<String, String> cache2 = new HashMapCacheStore<String, String>("MyCache");
-		HashMapCacheStore<String, ArrayList<?>> cache3 = new HashMapCacheStore<String, ArrayList<?>>("MyCache");
+		HashMapCacheStore<String, String> cache = new HashMapCacheStore.Builder<String, String, Object>("MyCache", null).buildStore();
+		HashMapCacheStore<String, String> cache2 = new HashMapCacheStore.Builder<String, String, Object>("MyCache", null).buildStore();
+		HashMapCacheStore<String, ArrayList<?>> cache3 = new HashMapCacheStore.Builder<String, ArrayList<?>, Object>("MyCache", null).buildStore();
 		
-		cache.put(new CacheEntry<String, String>("one", "gamma"), 10, TimeUnit.SECONDS);
+		cache.put(new CacheEntry<>("one", "gamma"), Duration.ofSeconds(10));
 		
 		assertEquals("gamma", cache2.get("one").getValue());
 		
-		ArrayList<String> list = new ArrayList<String>(Arrays.asList("blah","blah"));
-		cache3.put(new CacheEntry<String, ArrayList<?>>("two", list), 10, TimeUnit.SECONDS);
+		ArrayList<String> list = new ArrayList<>(Arrays.asList("blah","blah"));
+		cache3.put(new CacheEntry<>("two", list), Duration.ofSeconds(10));
 		
 		assertEquals(list, cache3.get("two").getValue());
 		
@@ -32,13 +32,17 @@ public class HashMapCacheStoreTest extends TestCase {
 			@SuppressWarnings("unused")
             ArrayList<?> l = cache3.get("one").getValue();
 			fail("should have failed with incompatible value");
-		} catch (ClassCastException e) {}
+		} catch (ClassCastException e) {
+			// This is fine
+		}
 		
 		try {
             @SuppressWarnings("unused")
 			String s = cache2.get("two").getValue();
 			fail("should have failed with incompatible value");
-		} catch (ClassCastException e) {}
+		} catch (ClassCastException e) {
+			// This is fine
+		}
 		
 	}
 }

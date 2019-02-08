@@ -1,32 +1,60 @@
 package uk.ac.warwick.util.cache;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import org.jmock.lib.concurrent.DeterministicScheduler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.warwick.util.collections.Pair;
+import uk.ac.warwick.util.cache.caffeine.CaffeineCacheStore;
+
+import java.time.Duration;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class BasicCacheTest {
     
     private static final String CACHE_NAME = "customCache";
+	private static final String SLOW_CACHE_NAME = "slowCustomCache";
+	private static final String NO_FACTORY_CACHE_NAME = "noFactoryCustomCache";
 
-	BasicCache<String, String, Object> cache;
-	BasicCache<String, String, Object> slowCache;
+	private Cache<String, String> cache;
+	private Cache<String, String> slowCache;
 	private BrokenCacheEntryFactory slowFactory;
 
-    private BasicCache<String, String, Object> noFactoryCache;
+    private Cache<String, String> noFactoryCache;
 
 	// BasicCache minimum expiry is 1 second, this makes it 100ms to minimise sleep times.
-	private final CacheExpiryStrategy<String, String> shortExpiry = new TTLCacheExpiryStrategy<String, String>() {
-        public Pair<Number, TimeUnit> getTTL(CacheEntry<String, String> entry) {
-            return Pair.of((Number) 100, TimeUnit.MILLISECONDS);
-        }
-	};
+	private final CacheExpiryStrategy<String, String> shortExpiry = TTLCacheExpiryStrategy.forTTL(Duration.ofMillis(100));
+
+	@Before
+	public void setUp() {
+		cache = Caches.builder(CACHE_NAME, new SingularCacheEntryFactory<String, String>() {
+				public String create(String key) {
+					return "Value for " + key;
+				}
+				public boolean shouldBeCached(String val) {
+				return true;
+			}
+			})
+			.expireAfterWrite(Duration.ofSeconds(100))
+			.build();
+
+		slowFactory = new BrokenCacheEntryFactory();
+		slowCache = Caches.builder(SLOW_CACHE_NAME, slowFactory)
+			.expireAfterWrite(Duration.ofSeconds(100))
+			.build();
+
+		noFactoryCache = Caches.<String, String>builder(NO_FACTORY_CACHE_NAME)
+			.expireAfterWrite(Duration.ofSeconds(100))
+			.build();
+	}
+
+	@After
+	public void tearDown() {
+		cache.shutdown();
+		slowCache.shutdown();
+		noFactoryCache.shutdown();
+	}
 	
 	@Test
 	public void getMissingValue() throws Exception {
@@ -40,7 +68,7 @@ public class BasicCacheTest {
 
     @Test
     public void noFactory() throws Exception {
-        noFactoryCache.put(new CacheEntry<String, String>("cat", "meow"));
+        noFactoryCache.put(new CacheEntry<>("cat", "meow"));
         assertNull(noFactoryCache.get("dog"));
         assertEquals("meow", noFactoryCache.get("cat"));
     }
@@ -48,7 +76,7 @@ public class BasicCacheTest {
 	@Test
 	public void multiLookupsSynchronous() throws Exception {
 		slowFactory.stopBlocking();
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put("dog", "Value for dog");
 		expected.put("cat", "Value for cat");
 		assertEquals(expected, slowCache.get(Arrays.asList("dog", "cat")));
@@ -58,7 +86,12 @@ public class BasicCacheTest {
 	@Test(expected=UnsupportedOperationException.class)
 	public void multiLookupsAsynchronousOnly() throws Exception {
 		slowFactory.stopBlocking();
-		slowCache.setAsynchronousOnly(true);
+
+		slowCache = Caches.builder("customSlowCache1", slowFactory)
+			.expireAfterWrite(Duration.ofSeconds(100))
+			.asynchronousOnly()
+			.build();
+
 		slowCache.get(Arrays.asList("dog", "cat"));
 	}
 	
@@ -66,13 +99,11 @@ public class BasicCacheTest {
 	public void slowConcurrentLookups() throws Exception {
 		assertFactoryCount(0);
 		
-		Runnable getDog = new Runnable() {
-			public void run() {
-				try {
-					slowCache.get("dog");
-				} catch (CacheEntryUpdateException e) {
-					throw e.getRuntimeException();
-				}
+		Runnable getDog = () -> {
+			try {
+				slowCache.get("dog");
+			} catch (CacheEntryUpdateException e) {
+				throw e.getRuntimeException();
 			}
 		};
 		
@@ -104,9 +135,11 @@ public class BasicCacheTest {
 	
 	@Test
 	public void asynchronousUpdates() throws Exception {
-		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 0);
-		slowCache.setExpiryStrategy(shortExpiry);
-		slowCache.setAsynchronousUpdateEnabled(true);
+		slowCache = Caches.builder("asynchronousUpdates", slowFactory)
+			.expiryStategy(shortExpiry)
+			.asynchronous()
+			.build();
+
 		slowFactory.addFastRequest("one");
 		
 		assertFactoryCount(0);
@@ -135,7 +168,18 @@ public class BasicCacheTest {
 	@Test
 	public void sizeRestriction() throws Exception {	
 		int cacheSize = 4;
-		cache.setMaxSize(cacheSize);
+
+		cache = Caches.builder("sizeRestriction", new SingularCacheEntryFactory<String, String>() {
+				public String create(String key) {
+					return "Value for " + key;
+				}
+				public boolean shouldBeCached(String val) {
+					return true;
+				}
+			})
+			.expireAfterWrite(Duration.ofSeconds(100))
+			.maximumSize(cacheSize)
+			.build();
 		
 		assertEquals("Should start empty", 0, cache.getStatistics().getCacheSize());
 		
@@ -146,6 +190,7 @@ public class BasicCacheTest {
 		assertEquals(4, cache.getStatistics().getCacheSize());
 		cache.get("five");
 		cache.get("six");
+		((CaffeineCacheStore<String, String>) ((BasicCache<String, String, Object>) cache).getCacheStore()).getCaffeineCache().cleanUp();
 		assertEquals(4, cache.getStatistics().getCacheSize());
 		
 		assertEquals("Shouldn't exceed maximum size", cacheSize, cache.getStatistics().getCacheSize());
@@ -154,8 +199,10 @@ public class BasicCacheTest {
 	
 	@Test
 	public void expiry() throws Exception {
-		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 0);
-		slowCache.setExpiryStrategy(shortExpiry);
+		slowCache = Caches.builder("expiry", slowFactory)
+			.expiryStategy(shortExpiry)
+			.build();
+
 		slowFactory.addFastRequest("one");
 		
 		String result1 = slowCache.get("one");
@@ -181,18 +228,18 @@ public class BasicCacheTest {
 		
 		// This CacheStore _always_ returns null the first time, then returns the value the second time
 		final CacheStore<String, String> store = new CacheStore<String, String>() {
-			private final Set<String> called = new HashSet<String>(); 
+			private final Set<String> called = new HashSet<>();
 			
 			public CacheEntry<String, String> get(String key) {
 				if (called.contains(key)) {
-					return new CacheEntry<String, String>(key, "Value for " + key);
+					return new CacheEntry<>(key, "Value for " + key);
 				} else {
 					called.add(key);
 					return null;
 				}
 			}
 
-			public void put(CacheEntry<String, String> entry, long ignoredTTL, TimeUnit ignoredUnit) {
+			public void put(CacheEntry<String, String> entry, Duration ttl) {
 				called.add(entry.getKey());
 			}
 
@@ -201,10 +248,6 @@ public class BasicCacheTest {
 			}
 
 			public CacheStatistics getStatistics() {
-				throw new UnsupportedOperationException();
-			}
-
-			public void setMaxSize(int max) {
 				throw new UnsupportedOperationException();
 			}
 
@@ -225,14 +268,14 @@ public class BasicCacheTest {
             }
 		};	
 		
-		BasicCache<String, String, Object> cache = new BasicCache<String, String, Object>(store, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+		BasicCache<String, String, Object> cache = new BasicCache<>(store, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
 			public String create(String key) {
-				return new String("Value for " + key);
+				return "Value for " + key;
 			}
 			public boolean shouldBeCached(String val) {
 				return true;
 			}
-		}), 100);
+		}), TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(100)), false, false);
 		
 		assertEquals("Value for steve", cache.get("steve"));
 	}
@@ -240,11 +283,25 @@ public class BasicCacheTest {
 	@Test
 	public void asynchronousOnlyGetReturnsNull() throws Exception {
 		DeterministicScheduler scheduler = new DeterministicScheduler();
-		cache.setLocalThreadPool(scheduler);
-		cache.setAsynchronousUpdateEnabled(true);
-		cache.setAsynchronousOnly(true);
 
-		assertEquals("Should be null", null, cache.get("alan"));
+		BasicCache<String, String, Object> cache =
+			new BasicCache<>(
+				Caches.<String, String>builder(CACHE_NAME)
+					.expireAfterWrite(Duration.ofSeconds(100))
+					.buildStore(),
+				Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+					public String create(String key) {
+						return "Value for " + key;
+					}
+					public boolean shouldBeCached(String val) {
+						return true;
+					}
+				}),
+				TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(100)), true, true);
+
+		cache.setLocalThreadPool(scheduler);
+
+		assertNull("Should be null", cache.get("alan"));
 		scheduler.runUntilIdle();
 		assertEquals("Should be set", "Value for alan", cache.get("alan"));
 	}
@@ -253,13 +310,27 @@ public class BasicCacheTest {
 	public void asynchronousOnlyGetResultReturnsNull() throws Exception {
 		DeterministicScheduler scheduler = new DeterministicScheduler();
 
+		BasicCache<String, String, Object> cache =
+				new BasicCache<>(
+						Caches.<String, String>builder(CACHE_NAME)
+								.expireAfterWrite(Duration.ofSeconds(100))
+								.buildStore(),
+						Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+							public String create(String key) {
+								return "Value for " + key;
+							}
+							public boolean shouldBeCached(String val) {
+								return true;
+							}
+						}),
+						TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(100)), true, true);
+
 		cache.setLocalThreadPool(scheduler);
-		cache.setAsynchronousUpdateEnabled(true);
-		cache.setAsynchronousOnly(true);
+
 		Cache.Result<String> result = cache.getResult("alan");
 		assertEquals(-1, result.getLastUpdated());
 		assertTrue("Should be updating", result.isUpdating());
-		assertEquals("Should be null", null, result.getValue());
+		assertNull("Should be null", result.getValue());
 
 		scheduler.runUntilIdle();
 
@@ -267,30 +338,6 @@ public class BasicCacheTest {
 		assertTrue("Should have recent timestamp", result.getLastUpdated() + 1000 > System.currentTimeMillis());
 		assertFalse("Should not be updating", result.isUpdating());
 		assertEquals("Value for alan", result.getValue());
-	}
-	
-	@Before
-	public void setUp() throws Exception {
-		EhCacheUtils.setUp();
-		cache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
-			public String create(String key) {
-				return new String("Value for " + key);
-			}
-			public boolean shouldBeCached(String val) {
-				return true;
-			}
-		}), 100);
-		
-		slowFactory = new BrokenCacheEntryFactory();
-		slowCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, Caches.wrapFactoryWithoutDataInitialisation(slowFactory), 100);
-        noFactoryCache = (BasicCache<String, String, Object>) Caches.newCache(CACHE_NAME, (CacheEntryFactory<String, String>) null, 100);
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		System.out.println("Tearing down");
-		cache.shutdown();
-		EhCacheUtils.tearDown();
 	}
 
 	/**
@@ -302,10 +349,10 @@ public class BasicCacheTest {
 	class BrokenCacheEntryFactory implements CacheEntryFactory<String, String> {
 		private volatile boolean blocking = true;
 		
-		private List<String> requests = Collections.synchronizedList(new ArrayList<String>());
+		private List<String> requests = Collections.synchronizedList(new ArrayList<>());
 		
 		// if a key is in here it'll return straight away.
-		private Set<String> fastRequests = new HashSet<String>();
+		private Set<String> fastRequests = new HashSet<>();
 		
 		public synchronized String create(String key) {
 			if (!fastRequests.contains(key)) {
@@ -318,19 +365,19 @@ public class BasicCacheTest {
 				}
 			}
 			requests.add(key);
-			return new String("Value for " + key);
+			return "Value for " + key;
 		}
 		
-		public synchronized void stopBlocking() {
+		synchronized void stopBlocking() {
 			blocking = false;
 			notifyAll();
 		}
 
-		public List<String> getObjectsCreated() {
+		List<String> getObjectsCreated() {
 			return requests;
 		}
 		
-		public void addFastRequest(String s) {
+		void addFastRequest(String s) {
 			fastRequests.add(s);
 		}
 
@@ -339,9 +386,8 @@ public class BasicCacheTest {
 		 * was just going to look up each individually. Pretend as though
 		 * this were a batch lookup.
 		 */
-		public Map<String, String> create(List<String> keys)
-				throws CacheEntryUpdateException {
-			Map<String,String> response = new HashMap<String, String>();
+		public Map<String, String> create(List<String> keys) {
+			Map<String,String> response = new HashMap<>();
 			for (String key : keys) {
 				response.put(key, create(key));
 			}

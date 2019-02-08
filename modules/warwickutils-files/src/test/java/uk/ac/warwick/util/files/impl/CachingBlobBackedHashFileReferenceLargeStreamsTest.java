@@ -21,27 +21,25 @@ import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
-import uk.ac.warwick.util.files.HashFileReference;
-import uk.ac.warwick.util.files.HashInfoImpl;
-import uk.ac.warwick.util.files.LocalFileReference;
-import uk.ac.warwick.util.files.StaticFileReferenceCreationStrategy;
-import uk.ac.warwick.util.files.Storeable;
+import uk.ac.warwick.util.files.*;
 import uk.ac.warwick.util.files.dao.HashInfoDAO;
 import uk.ac.warwick.util.files.hash.FileHashResolver;
 import uk.ac.warwick.util.files.hash.HashString;
 import uk.ac.warwick.util.files.hash.impl.BlobStoreBackedHashResolver;
+import uk.ac.warwick.util.files.hash.impl.CachingBlobStoreBackedHashResolver;
 import uk.ac.warwick.util.files.hash.impl.SHAFileHasher;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * SBTWO-7780
  */
-public class BlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4FileBasedTest {
+public class CachingBlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4FileBasedTest {
 
     private static final String CONTAINER_PREFIX = "uk.ac.warwick.util.";
 
@@ -54,8 +52,10 @@ public class BlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4F
             .modules(Collections.singleton(new SLF4JLoggingModule()))
             .buildView(BlobStoreContext.class);
 
-    private final FileHashResolver defaultResolver =
-        new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_DEFAULT, new SHAFileHasher(), sbd, flags);
+    private final CachingBlobStoreBackedHashResolver defaultResolver =
+        new CachingBlobStoreBackedHashResolver(
+            new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_DEFAULT, new SHAFileHasher(), sbd, flags)
+        );
 
     private final BlobStoreFileStore fileStore = new BlobStoreFileStore(
         Collections.singletonMap(FileHashResolver.STORE_NAME_DEFAULT, defaultResolver), StaticFileReferenceCreationStrategy.hash(), blobStoreContext, CONTAINER_PREFIX
@@ -63,6 +63,9 @@ public class BlobBackedHashFileReferenceLargeStreamsTest extends AbstractJUnit4F
 
     @Before
     public void setup() {
+        defaultResolver.setMaximumSizeAsPercentage(50);
+        defaultResolver.afterPropertiesSet();
+
         blobStoreContext.getBlobStore().createContainerInLocation(null, "uk.ac.warwick.util.temp");
         blobStoreContext.getBlobStore().createContainerInLocation(null, "uk.ac.warwick.util.default");
 

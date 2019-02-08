@@ -8,17 +8,19 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryFactory;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.core.Logger;
 import uk.ac.warwick.util.core.lookup.DepartmentNameLookup;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
 import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.web.Uri;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -28,8 +30,8 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
 
     private static final String CACHE_NAME = "departments";
     private static final String DEPTS_KEY = "all.departments";
-    private static final long MAX_CACHE_AGE_SECS = 60 * 60 * 24 * 7; // 7 days
-    private static final Logger LOGGER = Logger.getLogger(DepartmentLookupImpl.class);
+    private static final Duration CACHE_EXPIRY = Duration.ofDays(7);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentLookupImpl.class);
 
     private static final Uri DEFAULT_DEPARTMENTS_API_URL = Uri.parse("https://departments.warwick.ac.uk/public/api/department.json");
     private static final Uri DEFAULT_FACULTY_API_URL = Uri.parse("https://departments.warwick.ac.uk/public/api/faculty.json");
@@ -38,7 +40,6 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     static final String RESERVED = "RESERVED";
     static final String SERVICE = "SERVICE";
     static final String SELF_FINANCING = "SELF_FINANCING";
-
 
     private final Cache<String, LinkedHashMap<String, Department>> cache;
 
@@ -52,7 +53,11 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
     public DepartmentLookupImpl(final String url, final String facultyUrl) {
         this.url = url;
         this.facultyLookup = new FacultyLookupImpl(facultyUrl);
-        this.cache = Caches.newCache(CACHE_NAME, this, MAX_CACHE_AGE_SECS, Caches.CacheStrategy.InMemoryOnly);
+        this.cache =
+            Caches.builder(CACHE_NAME, this, Caches.CacheStrategy.CaffeineIfAvailable)
+                .expireAfterWrite(CACHE_EXPIRY)
+                .build();
+
         // Pre-warm cache by immediately fetching a department
         getDepartment("IN");
     }

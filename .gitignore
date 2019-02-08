@@ -1,5 +1,4 @@
 ${null}
-${ehcache.disk.store.dir}
 build
 cobertura.sercobertura.ser
 /bin

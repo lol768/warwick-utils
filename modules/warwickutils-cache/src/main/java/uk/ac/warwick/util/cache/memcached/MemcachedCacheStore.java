@@ -1,6 +1,7 @@
 package uk.ac.warwick.util.cache.memcached;
 
 import net.spy.memcached.*;
+import net.spy.memcached.ops.Operation;
 import net.spy.memcached.ops.OperationQueueFactory;
 import net.spy.memcached.transcoders.SerializingTranscoder;
 import net.spy.memcached.transcoders.Transcoder;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.net.SocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Enumeration;
 import java.util.Map;
@@ -46,17 +48,99 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
 
     private static MemcachedClient defaultMemcachedClient;
 
+    public static class Builder<K extends Serializable, V extends Serializable, T> implements Caches.Builder<K, V, T> {
+        private final String name;
+        private CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory;
+        private Duration expireAfterWrite = Duration.ofDays(30);
+        private CacheExpiryStrategy<K, V> expiryStrategy;
+        private Properties properties;
+        private boolean asynchronousUpdateEnabled;
+        private boolean asynchronousOnly;
+
+        public Builder(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory) {
+            this.name = name;
+            this.entryFactory = entryFactory;
+        }
+
+        private Builder(String name, CacheEntryFactoryWithDataInitialisation<K, V, T> entryFactory, Duration expireAfterWrite, CacheExpiryStrategy<K, V> expiryStrategy, Properties properties, boolean asynchronousUpdateEnabled, boolean asynchronousOnly) {
+            this(name, entryFactory);
+            this.expireAfterWrite = expireAfterWrite;
+            this.expiryStrategy = expiryStrategy;
+            this.properties = properties;
+            this.asynchronousUpdateEnabled = asynchronousUpdateEnabled;
+            this.asynchronousOnly = asynchronousOnly;
+        }
+
+        @Override
+        public <U> Builder<K, V, U> dataInitialisingEntryFactory(CacheEntryFactoryWithDataInitialisation<K, V, U> entryFactory) {
+            return new Builder<>(name, entryFactory, expireAfterWrite, expiryStrategy, properties, asynchronousUpdateEnabled, asynchronousOnly);
+        }
+
+        @Override
+        public Builder<K, V, T> expireAfterWrite(Duration duration) {
+            this.expireAfterWrite = duration;
+            return this;
+        }
+
+        @Override
+        public Caches.Builder<K, V, T> expiryStategy(CacheExpiryStrategy<K, V> expiryStrategy) {
+            this.expiryStrategy = expiryStrategy;
+            return this;
+        }
+
+        @Override
+        public Builder<K, V, T> maximumSize(long size) {
+            throw new UnsupportedOperationException("Memcached doesn't support size-bound caches");
+        }
+
+        @Override
+        public Caches.Builder<K, V, T> asynchronous() {
+            this.asynchronousUpdateEnabled = true;
+            return this;
+        }
+
+        @Override
+        public Caches.Builder<K, V, T> asynchronousOnly() {
+            this.asynchronousUpdateEnabled = true;
+            this.asynchronousOnly = true;
+            return this;
+        }
+
+        @Override
+        public Builder<K, V, T> properties(Properties properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        @Override
+        public MemcachedCacheStore<K, V> buildStore() {
+            if (properties == null) {
+                properties = customProperties();
+            }
+
+            return new MemcachedCacheStore<>(name, expireAfterWrite, properties);
+        }
+
+        @Override
+        public Cache<K, V> build() {
+            if (expiryStrategy == null) {
+                expiryStrategy = TTLCacheExpiryStrategy.forTTL(expireAfterWrite);
+            }
+
+            return new BasicCache<>(buildStore(), entryFactory, expiryStrategy, asynchronousUpdateEnabled, asynchronousOnly);
+        }
+    }
+
     private final String cacheName;
 
-    private final int timeoutInSeconds;
+    private final long timeoutInSeconds;
 
     private final MemcachedClient memcachedClient;
 
-    MemcachedCacheStore(final String name, final int timeout, final MemcachedClient client) {
+    MemcachedCacheStore(final String name, final Duration timeout, final MemcachedClient client) {
         this.cacheName = name;
-        this.timeoutInSeconds = timeout;
+        this.timeoutInSeconds = timeout.getSeconds();
         this.memcachedClient = client;
-        init();
     }
 
     private static Properties customProperties() {
@@ -84,16 +168,6 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return new Properties();
     }
 
-    /**
-     * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from either
-     * a default classpath location, or one specified by the system property
-     * warwick.memcached.config. Subsequent MemcachedCacheStores created with this
-     * constructor will use the same MemcachedClient.
-     */
-    public MemcachedCacheStore(final String name, final int timeout) {
-        this(name, timeout, customProperties());
-    }
-
     static class ConfigurableOperationQueueFactory implements OperationQueueFactory {
         private int capacity;
 
@@ -102,7 +176,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
 
         @Override
-        public BlockingQueue create() {
+        public BlockingQueue<Operation> create() {
             if (capacity > 0) {
                 return new ArrayBlockingQueue<>(capacity);
             } else {
@@ -110,14 +184,25 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             }
         }
     }
+
+    /**
+     * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from either
+     * a default classpath location, or one specified by the system property
+     * warwick.memcached.config. Subsequent MemcachedCacheStores created with this
+     * constructor will use the same MemcachedClient.
+     */
+    MemcachedCacheStore(final String name, final Duration timeout) {
+        this(name, timeout, customProperties());
+    }
+
     /**
      * Creates a MemcachedCacheStore using a shared MemcachedClient loaded from the
      * passed properties. Subsequent MemcachedCacheStores created with this
      * constructor will use the same MemcachedClient.
      */
-    public MemcachedCacheStore(final String name, final int timeout, final Properties customProperties) {
+    private MemcachedCacheStore(final String name, final Duration timeout, final Properties customProperties) {
         this.cacheName = name;
-        this.timeoutInSeconds = timeout;
+        this.timeoutInSeconds = timeout.getSeconds();
         if (defaultMemcachedClient == null) {
             // Load the default properties first, then override
             Properties properties = new Properties();
@@ -167,11 +252,6 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             }
         }
         this.memcachedClient = defaultMemcachedClient;
-        init();
-    }
-
-    public void init() {
-        // Nothing to do
     }
 
     private String prefix(K key) {
@@ -181,6 +261,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return getName() + ":" + keyAsString;
     }
 
+    @SuppressWarnings("unchecked")
     public CacheEntry<K, V> get(K key) {
         try {
             Object value = memcachedClient.get(prefix(key));
@@ -188,9 +269,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
                 return null;
             }
             return (CacheEntry<K, V>) value;
-        } catch (CancellationException e) {
-            // Do nothing, treat as cache miss
-        } catch (OperationTimeoutException e) {
+        } catch (OperationTimeoutException | CancellationException e) {
             // Do nothing, treat as cache miss
         } catch (RuntimeException e) {
             // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
@@ -200,12 +279,12 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return null;
     }
 
-    public void put(final CacheEntry<K, V> entry, long ttl, TimeUnit timeUnit) {
+    public void put(final CacheEntry<K, V> entry, Duration ttl) {
         final int ttlSeconds;
 
-        if (ttl > 0) {
+        if (ttl.getSeconds() > 0) {
             // If explicit TTL set, use that
-            long ttlInSeconds = (int) timeUnit.toSeconds(ttl);
+            long ttlInSeconds = ttl.getSeconds();
 
             if (ttlInSeconds > Integer.MAX_VALUE) {
                 ttlSeconds = Integer.MAX_VALUE;
@@ -215,10 +294,12 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
             } else {
                 ttlSeconds = (int) ttlInSeconds;
             }
-        } else if (ttl == CacheEntryFactory.TIME_TO_LIVE_ETERNITY) {
+        } else if (ttl.equals(CacheEntryFactory.TIME_TO_LIVE_ETERNITY)) {
+            ttlSeconds = Integer.MAX_VALUE;
+        } else if (timeoutInSeconds > Integer.MAX_VALUE) {
             ttlSeconds = Integer.MAX_VALUE;
         } else {
-            ttlSeconds = timeoutInSeconds;
+            ttlSeconds = (int) timeoutInSeconds;
         }
 
         // FIXME Wasteful double-encode
@@ -273,11 +354,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     public boolean remove(K key) {
         try {
             return memcachedClient.delete(prefix(key)).get();
-        } catch (InterruptedException e) {
-            return false;
-        } catch (ExecutionException e) {
-            return false;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ExecutionException | InterruptedException e) {
             // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
             return false;
         }
@@ -308,18 +385,10 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         return new CacheStatistics(totalSize);
     }
 
-    public void setMaxSize(int max) {
-        LOGGER.warn("setMaxSize() called on MemcachedCacheStore which does not support it");
-    }
-
     public boolean clear() {
         try {
             return memcachedClient.flush().get();
-        } catch (InterruptedException e) {
-            return false;
-        } catch (ExecutionException e) {
-            return false;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ExecutionException | InterruptedException e) {
             // Gee, thanks spymemcached for wrapping the nice OperationTimeoutException in a RuntimeException
             return false;
         }
@@ -340,14 +409,14 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
         }
     }
 
-    public static final MemcachedClient getDefaultMemcachedClient() {
+    public static MemcachedClient getDefaultMemcachedClient() {
         return defaultMemcachedClient;
     }
 
     /**
      * Normally you can allow the shutdown hooks to
      */
-    public static final void shutdownDefaultMemcachedClient() {
+    public static void shutdownDefaultMemcachedClient() {
         if (defaultMemcachedClient != null) {
             defaultMemcachedClient.shutdown();
             defaultMemcachedClient = null;
@@ -387,7 +456,7 @@ public final class MemcachedCacheStore<K extends Serializable, V extends Seriali
     }
 
     private static char[] encodeHex(byte[] bytes) {
-        char chars[] = new char[32];
+        char[] chars = new char[32];
         for (int i = 0; i < chars.length; i = i + 2) {
             byte b = bytes[i / 2];
             chars[i] = HEX_CHARS[(b >>> 0x4) & 0xf];

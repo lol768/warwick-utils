@@ -1,25 +1,20 @@
 package uk.ac.warwick.util.core.lookup;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.HashMap;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import uk.ac.warwick.util.AbstractJUnit4JettyTest;
+import uk.ac.warwick.util.JettyServer;
+import uk.ac.warwick.util.web.Uri;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import uk.ac.warwick.util.AbstractJUnit4JettyTest;
-import uk.ac.warwick.util.JettyServer;
-import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.cache.Caches.CacheStrategy;
-import uk.ac.warwick.util.web.Uri;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings("serial")
 public final class GoWarwickDepartmentWebsiteLookupTest extends AbstractJUnit4JettyTest {
@@ -72,23 +67,6 @@ public final class GoWarwickDepartmentWebsiteLookupTest extends AbstractJUnit4Je
         
         // do it again to test caching behaviour
         assertNull(lookup.getWebsiteForDepartmentCode("FO"));
-    }
-    
-    @BeforeClass
-    public static void setupEhCache() throws Exception {
-        Caches.resetEhCacheCheck();
-        System.setProperty("warwick.ehcache.disk.store.dir", root.getAbsolutePath());
-    }
-    
-    @AfterClass
-    public static void unsetEhCache() throws Exception {
-        System.clearProperty("warwick.ehcache.disk.store.dir");
-        Caches.resetEhCacheCheck();
-    }
-    
-    @After
-    public void emptyCache() {
-        assertTrue(Caches.newCache(GoWarwickDepartmentWebsiteLookup.CACHE_NAME, null, 0, CacheStrategy.EhCacheRequired).clear());
     }
     
     public static class RedirectFoundServlet extends HttpServlet {

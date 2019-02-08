@@ -57,11 +57,8 @@ public final class CompositeFilter implements Filter {
      * Process each of the filters in turn.
      */
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
-        ServletRequest request = req;
-        ServletResponse response = res;
-        
         NestedFilterChain chain = new NestedFilterChain(filters, filterChain);
-        chain.doFilter(request, response);
+        chain.doFilter(req, res);
     }
     
     public List<Filter> getFilters() {

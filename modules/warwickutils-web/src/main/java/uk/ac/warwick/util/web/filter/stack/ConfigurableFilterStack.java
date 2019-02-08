@@ -1,22 +1,21 @@
 package uk.ac.warwick.util.web.filter.stack;
 
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.constructs.blocking.CacheEntryFactory;
-import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import uk.ac.warwick.util.collections.google.BasePredicate;
 import uk.ac.warwick.util.core.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 
@@ -44,30 +43,16 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurableFilterStack.class);
     
     private final ImmutableList<FilterStackSet> filterSets;
-    private final CacheManager cacheManager;
-    private final SelfPopulatingCache cache;
+    private final LoadingCache<String, CompositeFilter> cache =
+        Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .build(new FilterChainFactory());
     
     private FilterMappingParser parser;
     private boolean executeLifecycleEvents = true;
     
-    public ConfigurableFilterStack(final List<FilterStackSet> filters) throws IOException {
+    public ConfigurableFilterStack(final List<FilterStackSet> filters) {
         this.filterSets = merge(filters);
-        
-        InputStream is = getClass().getResourceAsStream("filters-ehcache.xml");
-        try {
-            // cachemanaged will use a fallback if the xml could not be found, which is bad,
-            // but our named cache will then be null so we will know about the problem there.
-            cacheManager = CacheManager.newInstance(is);
-            // self-populating cache allows us to define where to get missing values from,
-            // so we can then just call cache.get() and not have to worry about synchronisation - 
-            // it can just start using the returned value.
-            Ehcache basicMemoryCache = cacheManager.getEhcache("warwickUtilsFilterCache");
-            cache = new SelfPopulatingCache(basicMemoryCache, new FilterChainFactory());
-            LOGGER.info(String.format("Created. Cache info... maxElementsInMemory=%d",
-                    cache.getCacheConfiguration().getMaxEntriesLocalHeap()));
-        } finally {
-            is.close();
-        }
     }
     
     /**
@@ -109,8 +94,7 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
         // generate path - requestURI is /sitebuilder2/render/renderPage.htm so
         // get contextpath (/sitebuilder2) and trim it off the front to get the path for filtering
         String urlPath = request.getRequestURI().substring(request.getContextPath().length());
-        Element entry = cache.get(urlPath);
-        CompositeFilter filter = (CompositeFilter) entry.getObjectValue();
+        CompositeFilter filter = cache.get(urlPath);
         filter.doFilter(req, res, chain);
     }
 
@@ -171,8 +155,6 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
             }
         }
         destroyedFilters.clear();
-        
-        cacheManager.shutdown();
     }
 
     /**
@@ -195,7 +177,7 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
         this.executeLifecycleEvents = executeLifecycleEvents;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (parser == null) {
             parser = new FilterMappingParserImpl();
         }
@@ -207,15 +189,21 @@ public final class ConfigurableFilterStack implements Filter, InitializingBean {
     public List<FilterStackSet> getFilterSets() {
         return filterSets;
     }
+
+    @VisibleForTesting
+    LoadingCache<String, CompositeFilter> getCache() {
+        return cache;
+    }
     
     /**
      * Builds a list of filters to run for a given URL. Is called automatically
      * by the cache when an entry doesn't exist.
      */
-    private final class FilterChainFactory implements CacheEntryFactory {
-        public CompositeFilter createEntry(final Object keyObj) throws Exception {
-            List<Filter> filtersToRun = new ArrayList<Filter>();
-            String key = (String)keyObj;
+    private final class FilterChainFactory implements CacheLoader<String, CompositeFilter> {
+        @Nonnull
+        @Override
+        public CompositeFilter load(@Nonnull String key) {
+            List<Filter> filtersToRun = new ArrayList<>();
             for (FilterStackSet set : filterSets) {
                 if (set.isMatch(key)) {
                     filtersToRun.add(set.getCompositeFilter());

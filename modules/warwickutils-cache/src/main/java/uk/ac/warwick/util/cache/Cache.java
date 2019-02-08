@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Cache interface for a self-populating cache. 
  * 
@@ -13,7 +12,7 @@ import java.util.Map;
  */
 public interface Cache<K extends Serializable,V extends Serializable> {
 
-	static interface Result<V> {
+	interface Result<V> {
 		/**
 		 * @return Is the cache currently updating this key in the background?
 		 */
@@ -30,7 +29,7 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 		V getValue();
 	}
 
-	static class ResultImpl<V> implements Result<V> {
+	class ResultImpl<V> implements Result<V> {
 		private final V value;
 		private final boolean updating;
 		private final long lastUpdated;
@@ -55,14 +54,13 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	 * instead as it gives more information.
 	 */
 	V get(final K key) throws CacheEntryUpdateException;
-	Map<K,V> get(final List<K> keys) throws CacheEntryUpdateException;
+	Map<K, V> get(final List<K> keys) throws CacheEntryUpdateException;
 
 	/**
 	 * Gets the value for this key, wrapped in a Result which provides some
 	 * metadata about the returned value (which may be empty).
 	 */
 	Result<V> getResult(final K key) throws CacheEntryUpdateException;
-//	Map<K,Result<V>> getResults(final List<K> keys) throws CacheEntryUpdateException;
 
 	/**
 	 * Manually puts a new entry into the cache. Usually you don't
@@ -70,17 +68,10 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	 * factory, but there are some use cases for manual puts (such
 	 * as saving a new entry under an extra key).
 	 */
-	void put(final CacheEntry<K,V> entry);
+	void put(final CacheEntry<K, V> entry);
 	
-	void addCacheListener(CacheListener<K,V> listener);
+	void addCacheListener(CacheListener<K, V> listener);
 	CacheStatistics getStatistics() throws CacheStoreUnavailableException;
-	
-	void setMaxSize(int size);
-	void setTimeout(int seconds);
-	
-	void setExpiryStrategy(CacheExpiryStrategy<K,V> strategy);
-
-	void setAsynchronousUpdateEnabled(boolean b);
 
     String getName();
 	
@@ -89,5 +80,4 @@ public interface Cache<K extends Serializable,V extends Serializable> {
 	boolean contains(K key);
 	
 	void shutdown();
-	
 }

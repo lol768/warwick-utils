@@ -1,12 +1,13 @@
 package uk.ac.warwick.util.cache.memcached;
 
-import net.spy.memcached.DefaultConnectionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.warwick.util.cache.BasicCache;
-import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
+import uk.ac.warwick.util.cache.TTLCacheExpiryStrategy;
+
+import java.time.Duration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,9 +19,9 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
     private BasicCache<String, String, Object> cache;
 
     @Before
-    public void setUpCache() throws Exception {
-        cache  = new BasicCache<String, String, Object>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
-            public String create(String key) throws CacheEntryUpdateException {
+    public void setUpCache() {
+        cache = new BasicCache<>(cacheStore, Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
+            public String create(String key) {
                 cacheCallCount++;
                 return key.substring(6);
             }
@@ -28,7 +29,7 @@ public class MemcachedCacheStoreServerProblemsTest extends AbstractMemcachedCach
             public boolean shouldBeCached(String val) {
                 return true;
             }
-        }), 10);
+        }), TTLCacheExpiryStrategy.forTTL(Duration.ofSeconds(10)), false, false);
     }
 
     @Test

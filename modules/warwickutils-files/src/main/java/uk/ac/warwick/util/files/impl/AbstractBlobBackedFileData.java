@@ -39,7 +39,11 @@ public abstract class AbstractBlobBackedFileData implements FileData {
     protected final BlobBackedByteSource byteSource;
 
     protected AbstractBlobBackedFileData(FileStore fileStore, BlobStore blobStore, String containerName, String blobName) {
-        this.statistics = fileStore.getStatistics();
+        this(fileStore.getStatistics(), blobStore, containerName, blobName);
+    }
+
+    protected AbstractBlobBackedFileData(FileStoreStatistics statistics, BlobStore blobStore, String containerName, String blobName) {
+        this.statistics = statistics;
         this.blobStore = blobStore;
         this.containerName = containerName;
         this.blobName = blobName;
@@ -47,18 +51,18 @@ public abstract class AbstractBlobBackedFileData implements FileData {
     }
 
     @Override
-    public ByteSource asByteSource() {
+    public BlobBackedByteSource asByteSource() {
         return byteSource;
     }
 
     @Override
     public long length() {
-        return byteSource.size();
+        return asByteSource().size();
     }
 
     @Override
     public final boolean isExists() {
-        return !byteSource.isEmpty();
+        return !asByteSource().isEmpty();
     }
 
     @Override
@@ -72,15 +76,31 @@ public abstract class AbstractBlobBackedFileData implements FileData {
     }
 
     @Override
-    public final boolean delete() {
+    public boolean delete() {
         // Sometimes, files don't exist any more. The end result is still "the file doesn't exist", so just quit early.
         if (!isExists()) { return true; }
 
         statistics.timeSafe(() -> blobStore.removeBlob(containerName, blobName), statistics::referenceDeleted);
-        byteSource.invalidate();
+        asByteSource().invalidate();
 
         // This will have thrown an exception if the deletion failed
         return true;
+    }
+
+    FileStoreStatistics getStatistics() {
+        return statistics;
+    }
+
+    BlobStore getBlobStore() {
+        return blobStore;
+    }
+
+    String getContainerName() {
+        return containerName;
+    }
+
+    String getBlobName() {
+        return blobName;
     }
 
     @Override
@@ -93,20 +113,20 @@ public abstract class AbstractBlobBackedFileData implements FileData {
         return blobName;
     }
 
-    protected class BlobBackedByteSource extends StatisticsRecordingByteSource {
+    class BlobBackedByteSource extends StatisticsRecordingByteSource {
 
-        private final long offset;
-        private final long length;
+        protected final long offset;
+        protected final long length;
 
-        private transient Blob blob;
-        private transient long totalLength;
-        private transient boolean payloadUsed;
+        protected transient Blob blob;
+        protected transient long totalLength;
+        protected transient boolean payloadUsed;
 
-        private BlobBackedByteSource() {
+        BlobBackedByteSource() {
             this(-1, -1, -1);
         }
 
-        private BlobBackedByteSource(long offset, long length, long totalLength) {
+        BlobBackedByteSource(long offset, long length, long totalLength) {
             super(statistics);
             this.offset = offset;
             this.length = length;
@@ -119,7 +139,7 @@ public abstract class AbstractBlobBackedFileData implements FileData {
             payloadUsed = false;
         }
 
-        private synchronized void refresh() {
+        synchronized void refresh() {
             final GetOptions options;
             if (offset >= 0 && length > 0) {
                 options = GetOptions.Builder.range(offset, (offset + length) - 1);
@@ -146,7 +166,7 @@ public abstract class AbstractBlobBackedFileData implements FileData {
         @Override
         public synchronized InputStream openStream() throws IOException {
             // The payload from getting the blob isn't repeatable by default, so we need to get a new blob every time
-            if (blob == null || payloadUsed) {
+            if (blob == null || (!blob.getPayload().isRepeatable() && payloadUsed)) {
                 refresh();
             }
 
@@ -235,6 +255,18 @@ public abstract class AbstractBlobBackedFileData implements FileData {
         @Override
         public Reader openStream() throws IOException {
             return new InputStreamReader(byteSource.openStream(), charset);
+        }
+
+        @Override
+        public String read() throws IOException {
+            // Reading all the data as a byte array is more efficient than the default read()
+            // implementation because:
+            // 1. the string constructor can avoid an extra copy most of the time by correctly sizing the
+            //    internal char array (hard to avoid using StringBuilder)
+            // 2. we avoid extra copies into temporary buffers altogether
+            // The downside is that this will cause us to store the file bytes in memory twice for a short
+            // amount of time.
+            return new String(byteSource.read(), charset);
         }
 
         @Override

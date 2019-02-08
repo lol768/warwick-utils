@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>uk.ac.warwick.util</groupId>
 		<artifactId>warwickutils-project</artifactId>
-		<version>20190125</version>
+		<version>20190208</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -26,8 +26,8 @@
         </dependency>
 
 		<dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
             <optional>true</optional>
 		</dependency>
 

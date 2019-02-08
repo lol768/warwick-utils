@@ -5,6 +5,8 @@ import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryFactory;
 import uk.ac.warwick.util.cache.Caches;
 
+import java.io.Serializable;
+import java.time.Duration;
 import java.util.Properties;
 
 public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
@@ -13,9 +15,9 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
 
     private CacheEntryFactory<?, ?> entryFactory;
 
-    private Long timeout;
+    private Duration timeout;
 
-    private Caches.CacheStrategy strategy = Caches.CacheStrategy.EhCacheIfAvailable;
+    private Caches.CacheStrategy strategy = Caches.CacheStrategy.CaffeineIfAvailable;
 
     private Properties properties;
 
@@ -25,12 +27,19 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Cache<?, ?> createInstance() throws Exception {
-        if (properties != null) {
-            return Caches.newCache(name, entryFactory, timeout, strategy, properties);
-        } else {
-            return Caches.newCache(name, entryFactory, timeout, strategy);
-        }
+        Caches.Builder builder =
+            Caches.builder(name, strategy)
+                .entryFactory((CacheEntryFactory<Serializable, Serializable>) entryFactory);
+
+        if (properties != null)
+            builder = builder.properties(properties);
+
+        if (timeout != null)
+            builder = builder.expireAfterWrite(timeout);
+
+        return builder.build();
     }
 
     @Override
@@ -58,7 +67,7 @@ public class CacheBean extends AbstractFactoryBean<Cache<?, ?>> {
         this.entryFactory = entryFactory;
     }
 
-    public void setTimeout(long timeout) {
+    public void setTimeout(Duration timeout) {
         this.timeout = timeout;
     }
 

@@ -1,23 +1,22 @@
 package uk.ac.warwick.util.core.lookup;
 
-import javax.servlet.http.HttpServletResponse;
-
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONObject;
-
 import uk.ac.warwick.util.cache.Cache;
 import uk.ac.warwick.util.cache.CacheEntryUpdateException;
 import uk.ac.warwick.util.cache.Caches;
-import uk.ac.warwick.util.cache.Caches.CacheStrategy;
 import uk.ac.warwick.util.cache.SingularCacheEntryFactory;
 import uk.ac.warwick.util.collections.Pair;
 import uk.ac.warwick.util.core.StringUtils;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor;
-import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.httpclient.httpclient4.HttpMethodExecutor.Method;
+import uk.ac.warwick.util.httpclient.httpclient4.SimpleHttpMethodExecutor;
 import uk.ac.warwick.util.web.Uri;
 import uk.ac.warwick.util.web.UriBuilder;
+
+import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
 
 /**
  * Given a department code, will lookup the website related to that department
@@ -35,9 +34,9 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
     
     public static final String CACHE_NAME = "DepartmentWebsiteCache";
     
-    private static final Uri DEFAULT_GO_API_URL = Uri.parse("http://sitebuilder.warwick.ac.uk/sitebuilder2/api/go/redirect.json");
+    private static final Uri DEFAULT_GO_API_URL = Uri.parse("https://sitebuilder.warwick.ac.uk/sitebuilder2/api/go/redirect.json");
     
-    private static final long DEFAULT_CACHE_TIMEOUT = 60 * 60 * 24; // Cache for one day
+    private static final Duration DEFAULT_CACHE_TIMEOUT = Duration.ofDays(1);
     
     private final Cache<String, String> cache;
     
@@ -45,12 +44,11 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
         this(DEFAULT_GO_API_URL);
     }
 
-    /**
-     * EhCache is REQUIRED here, to make sure that the caches have been properly
-     * configured with a disk store. See ehcache-default.xml
-     */
     public GoWarwickDepartmentWebsiteLookup(Uri goApiUrl) {
-        this.cache = Caches.newCache(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), DEFAULT_CACHE_TIMEOUT, CacheStrategy.EhCacheRequired);
+        this.cache =
+            Caches.builder(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), Caches.CacheStrategy.CaffeineIfAvailable)
+                .expireAfterWrite(DEFAULT_CACHE_TIMEOUT)
+                .build();
     }
 
     /**

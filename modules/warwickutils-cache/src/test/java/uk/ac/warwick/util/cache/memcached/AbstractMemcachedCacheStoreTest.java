@@ -15,9 +15,10 @@ import uk.ac.warwick.util.cache.MemcachedUtils;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends Serializable> {
 
@@ -60,7 +61,7 @@ public class AbstractMemcachedCacheStoreTest<K extends Serializable, V extends S
     public void setUp() throws Exception {
         MemcachedUtils.setUp();
         client = new MemcachedClient(memcachedAddress);
-        cacheStore = new MemcachedCacheStore<K, V>(CACHE_NAME, 10, client);
+        cacheStore = new MemcachedCacheStore<>(CACHE_NAME, Duration.ofSeconds(10), client);
     }
 
     @After
