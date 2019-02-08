@@ -53,7 +53,7 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
 
     private final TaskExecutionService executionService = new TaskExecutionService(Executors.newCachedThreadPool());
 
-    public BlobStoreFileStore(Map<String,FileHashResolver> resolvers, FileReferenceCreationStrategy strategy, BlobStoreContext context, String containerPrefix) {
+    public BlobStoreFileStore(Map<String, FileHashResolver> resolvers, FileReferenceCreationStrategy strategy, BlobStoreContext context, String containerPrefix) {
         super(resolvers, strategy);
         this.blobStore = context.getBlobStore();
         this.containerPrefix = containerPrefix;
@@ -93,6 +93,7 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
         return target;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private void doPut(String container, Blob blob, long size) throws IOException {
         // TAB-4144 Use large object support for anything over 50mb
         // TAB-4235 If you want this done in parallel, you have to do it yourself
@@ -176,7 +177,7 @@ public final class BlobStoreFileStore extends AbstractFileStore implements Initi
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         executionService.shutdown();
     }
 

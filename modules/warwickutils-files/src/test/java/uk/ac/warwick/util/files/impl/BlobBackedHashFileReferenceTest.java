@@ -57,7 +57,8 @@ public class BlobBackedHashFileReferenceTest {
 
             allowing(blob).getMetadata(); will(returnValue(metadata));
             allowing(metadata).getSize(); will(returnValue(12345L));
-            one(blob).getPayload(); will(returnValue(payload));
+            exactly(2).of(blob).getPayload(); will(returnValue(payload));
+            allowing(payload).isRepeatable(); will(returnValue(false));
             one(payload).openStream(); will(returnValue(new ByteArrayInputStream(new byte[0])));
         }});
 
@@ -73,7 +74,8 @@ public class BlobBackedHashFileReferenceTest {
         // This requires the blob to be re-fetched to read the payload again
         m.checking(new Expectations() {{
             one(blobStore).getBlob(containerName, hash.getHash(), GetOptions.NONE); will(returnValue(blob));
-            one(blob).getPayload(); will(returnValue(payload));
+            exactly(2).of(blob).getPayload(); will(returnValue(payload));
+            allowing(payload).isRepeatable(); will(returnValue(false));
             one(payload).openStream(); will(returnValue(new ByteArrayInputStream(new byte[0])));
         }});
 
@@ -88,8 +90,9 @@ public class BlobBackedHashFileReferenceTest {
         final Payload slicedBlobPayload = m.mock(Payload.class, "slicedBlobPayload");
 
         m.checking(new Expectations() {{
-            one(blobStore).getBlob(containerName, hash.getHash(), GetOptions.Builder.range(10, 29));  will(returnValue(slicedBlob));
-            one(slicedBlob).getPayload(); will(returnValue(slicedBlobPayload));
+            one(blobStore).getBlob(containerName, hash.getHash(), GetOptions.Builder.range(10, 29)); will(returnValue(slicedBlob));
+            exactly(2).of(slicedBlob).getPayload(); will(returnValue(slicedBlobPayload));
+            allowing(slicedBlobPayload).isRepeatable(); will(returnValue(false));
             one(slicedBlobPayload).openStream(); will(returnValue(new ByteArrayInputStream(new byte[0])));
         }});
 

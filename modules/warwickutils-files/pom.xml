@@ -94,6 +94,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Only needed for caching file store -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Patched version of JAI from our local repo. -->
 		<dependency>
 	        <groupId>javax.media.jai</groupId>
@@ -118,7 +125,6 @@
 			<artifactId>imageio-jpeg</artifactId>
 			<version>3.3.2</version>
 		</dependency>
-
 	</dependencies>
 
 </project>

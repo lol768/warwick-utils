@@ -42,18 +42,18 @@ public final class BlobBackedHashFileReference extends AbstractFileReference imp
     }
 
     @Override
-    public HashFileReference copyTo(FileReference target) {
+    public BlobBackedHashFileReference copyTo(FileReference target) {
         return new BlobBackedHashFileReference(fileStore, blobStore, containerName, hash);
     }
 
     @Override
-    public HashFileReference renameTo(FileReference target) {
+    public BlobBackedHashFileReference renameTo(FileReference target) {
         return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public FileData<FileReference> getData() {
+    public Data getData() {
         return data;
     }
 
