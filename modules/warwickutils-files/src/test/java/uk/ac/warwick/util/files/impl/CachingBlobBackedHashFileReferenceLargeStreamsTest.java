@@ -17,6 +17,7 @@ import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.warwick.util.AbstractJUnit4FileBasedTest;
 import uk.ac.warwick.util.core.MaintenanceModeFlags;
@@ -91,6 +92,7 @@ public class CachingBlobBackedHashFileReferenceLargeStreamsTest extends Abstract
     }
 
     @Test
+    @Ignore("Flappy")
     public void copyLargeBlobsWithStreams() throws Exception {
         // Build a file larger than 50mb
         File file = File.createTempFile("large", ".file", root);

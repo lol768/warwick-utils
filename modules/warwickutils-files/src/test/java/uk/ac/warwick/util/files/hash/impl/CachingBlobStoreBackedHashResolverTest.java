@@ -34,12 +34,16 @@ public final class CachingBlobStoreBackedHashResolverTest {
 
     private final BlobStoreContext blobStoreContext = ContextBuilder.newBuilder("transient").buildView(BlobStoreContext.class);
     
-    private final BlobStoreBackedHashResolver htmlResolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_HTML, hasher, dao, flags);
+    private final BlobStoreBackedHashResolver underlyingHtmlResolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_HTML, hasher, dao, flags);
+    private final CachingBlobStoreBackedHashResolver cachingHtmlResolver = new CachingBlobStoreBackedHashResolver(underlyingHtmlResolver);
     private final BlobStoreBackedHashResolver defaultResolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_DEFAULT, hasher, dao, flags);
 
     @Before public void setup() throws Exception {
-        htmlResolver.afterPropertiesSet();
+        underlyingHtmlResolver.afterPropertiesSet();
         defaultResolver.afterPropertiesSet();
+
+        cachingHtmlResolver.setMaximumSizeAsPercentage(25);
+        cachingHtmlResolver.afterPropertiesSet();
 
         m.checking(new Expectations() {{
             allowing(store).getStatistics(); will(returnValue(new DefaultFileStoreStatistics(store)));
@@ -54,7 +58,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
     @Test(expected = IllegalArgumentException.class)
     public void hashNotBelongingToMe() {
         final HashString hash = new HashString("tiftof");
-        htmlResolver.lookupByHash(store, hash, true);
+        cachingHtmlResolver.lookupByHash(store, hash, true);
     }
     
     /**
@@ -85,7 +89,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
             oneOf(dao).hashCreated(new HashString("html/abcdef_-12345__6--7890__abcdef1234567890__abcdef1234567890"),0);
         }});
 
-        HashFileReference reference = htmlResolver.lookupByHash(store, hash, true);
+        HashFileReference reference = cachingHtmlResolver.lookupByHash(store, hash, true);
         assertNotNull(reference);
         
         assertEquals(hash, reference.getHash());
@@ -118,7 +122,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
             oneOf(hasher).hash(is); will(returnValue(hash));
         }});
         
-        HashString generateHash = htmlResolver.generateHash(is);
+        HashString generateHash = cachingHtmlResolver.generateHash(is);
         assertEquals(hash, generateHash.getHash());
         assertEquals("html", generateHash.getStoreName());
         
