@@ -1,5 +1,6 @@
 package uk.ac.warwick.util.files.impl;
 
+import com.google.common.base.Optional;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import org.jclouds.blobstore.BlobStore;
@@ -193,6 +194,19 @@ public abstract class AbstractBlobBackedFileData implements FileData {
             if (blob == null) refresh();
 
             return blob == null;
+        }
+
+        @Override
+        public Optional<Long> sizeIfKnown() {
+            if (length > 0 && totalLength > 0) {
+                if ((offset + length) > totalLength) {
+                    return Optional.of(totalLength - offset);
+                } else {
+                    return Optional.of(length);
+                }
+            } else {
+                return Optional.fromNullable(blob).transform(b -> b.getMetadata().getSize());
+            }
         }
 
         @Override

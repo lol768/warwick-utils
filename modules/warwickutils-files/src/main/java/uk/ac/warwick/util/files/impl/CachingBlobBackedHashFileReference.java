@@ -2,7 +2,9 @@ package uk.ac.warwick.util.files.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
+import com.google.common.io.Closer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,6 +16,7 @@ import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 public class CachingBlobBackedHashFileReference extends AbstractFileReference implements HashFileReference {
@@ -74,21 +77,27 @@ public class CachingBlobBackedHashFileReference extends AbstractFileReference im
                     if (blob != null && blob.getMetadata().getContentMetadata().getContentLength() < Integer.MAX_VALUE) {
                         // Eagerly read the content of the blob for the cache
                         try {
-                            Blob cacheableBlob = getBlobStore().blobBuilder(getBlobName())
-                                .payload(read())
-                                .contentDisposition(blob.getMetadata().getContentMetadata().getContentDisposition())
-                                .contentLength(blob.getMetadata().getContentMetadata().getContentLength())
-                                .contentType(blob.getMetadata().getContentMetadata().getContentType())
-                                .contentEncoding(blob.getMetadata().getContentMetadata().getContentEncoding())
-                                .contentLanguage(blob.getMetadata().getContentMetadata().getContentLanguage())
-                                .contentMD5(blob.getMetadata().getContentMetadata().getContentMD5AsHashCode())
-                                .cacheControl(blob.getMetadata().getContentMetadata().getCacheControl())
-                                .expires(blob.getMetadata().getContentMetadata().getExpires())
-                                .userMetadata(blob.getMetadata().getUserMetadata())
-                                .build();
-                            cacheableBlob.getMetadata().setSize(blob.getMetadata().getSize());
+                            Closer closer = Closer.create();
+                            try {
+                                InputStream in = closer.register(blob.getPayload().openStream());
+                                Blob cacheableBlob = getBlobStore().blobBuilder(getBlobName())
+                                        .payload(ByteStreams.toByteArray(in))
+                                        .contentDisposition(blob.getMetadata().getContentMetadata().getContentDisposition())
+                                        .contentLength(blob.getMetadata().getContentMetadata().getContentLength())
+                                        .contentType(blob.getMetadata().getContentMetadata().getContentType())
+                                        .contentEncoding(blob.getMetadata().getContentMetadata().getContentEncoding())
+                                        .contentLanguage(blob.getMetadata().getContentMetadata().getContentLanguage())
+                                        .contentMD5(blob.getMetadata().getContentMetadata().getContentMD5AsHashCode())
+                                        .cacheControl(blob.getMetadata().getContentMetadata().getCacheControl())
+                                        .expires(blob.getMetadata().getContentMetadata().getExpires())
+                                        .userMetadata(blob.getMetadata().getUserMetadata())
+                                        .build();
+                                cacheableBlob.getMetadata().setSize(blob.getMetadata().getSize());
 
-                            cache.put(getBlobName(), cacheableBlob);
+                                cache.put(getBlobName(), cacheableBlob);
+                            } finally {
+                                closer.close();
+                            }
                         } catch (IOException e) {
                             cache.invalidate(getBlobName());
                         }
@@ -98,11 +107,6 @@ public class CachingBlobBackedHashFileReference extends AbstractFileReference im
                 totalLength = blob == null ? -1 : blob.getMetadata().getSize();
 
                 payloadUsed = false;
-            }
-
-            @Override
-            public CharSource asCharSource(Charset charset) {
-                return super.asCharSource(charset);
             }
 
             @Override
