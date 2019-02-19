@@ -3,13 +3,14 @@ package uk.ac.warwick.util.files.impl;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.CharSource;
 import com.google.common.io.Closer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jclouds.blobstore.domain.Blob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.HashFileReference;
@@ -17,9 +18,10 @@ import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 public class CachingBlobBackedHashFileReference extends AbstractFileReference implements HashFileReference {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CachingBlobBackedHashFileReference.class);
 
     private final BlobBackedHashFileReference delegate;
     private final Cache<String, Blob> cache;
@@ -95,11 +97,14 @@ public class CachingBlobBackedHashFileReference extends AbstractFileReference im
                                 cacheableBlob.getMetadata().setSize(blob.getMetadata().getSize());
 
                                 cache.put(getBlobName(), cacheableBlob);
+                                blob = cacheableBlob;
                             } finally {
                                 closer.close();
                             }
                         } catch (IOException e) {
+                            LOGGER.error("Couldn't read blob into cache", e);
                             cache.invalidate(getBlobName());
+                            super.refresh(); // Need to refresh again because payload was used above
                         }
                     }
                 }
