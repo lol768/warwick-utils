@@ -152,7 +152,7 @@ public final class Caches {
 
     @Deprecated
     public static <K extends Serializable,V extends Serializable> Cache<K, V> newCache(String name, CacheEntryFactory<K,V> factory, long timeout, CacheStrategy cacheStrategy, Properties properties) {
-        return builder(name, factory).expireAfterWrite(Duration.ofSeconds(timeout)).properties(properties).build();
+        return builder(name, factory, cacheStrategy).expireAfterWrite(Duration.ofSeconds(timeout)).properties(properties).build();
     }
 
     @Deprecated
