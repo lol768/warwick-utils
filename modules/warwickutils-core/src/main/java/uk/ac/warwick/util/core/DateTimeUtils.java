@@ -2,15 +2,11 @@ package uk.ac.warwick.util.core;
 
 import org.threeten.extra.Days;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.Temporal;
+import java.time.temporal.*;
 
 /**
  * Utility functions to work with JSR310 JavaTime objects.
@@ -80,12 +76,35 @@ public final class DateTimeUtils {
      * NOT threadsafe. Used for testing.
      * Does an action with a mockdatetime.
      */
-    public static void useMockDateTime(final Instant dt, final Runnable fn) {
+    public static void useMockDateTime(final TemporalAccessor dt, final Runnable fn) {
         try {
-            CLOCK_IMPLEMENTATION = Clock.fixed(dt, ZoneId.systemDefault());
+            CLOCK_IMPLEMENTATION = Clock.fixed(toInstant(dt), ZoneId.systemDefault());
             fn.run();
         } finally {
             CLOCK_IMPLEMENTATION = Clock.systemDefaultZone();
+        }
+    }
+
+    /**
+     * Converts the common date-time types into an Instant. A date and a time are
+     * required components - if there is no zone information then the default zone
+     * is used.
+     */
+    private static Instant toInstant(final TemporalAccessor t) {
+        if (t instanceof Instant) return (Instant) t;
+
+        LocalDate date = TemporalQueries.localDate().queryFrom(t);
+        LocalTime time = TemporalQueries.localTime().queryFrom(t);
+        ZoneId zone = TemporalQueries.zone().queryFrom(t);
+        ZoneOffset offset = TemporalQueries.offset().queryFrom(t);
+
+        LocalDateTime datetime = date.atTime(time);
+        if (zone != null) {
+            return datetime.atZone(zone).toInstant();
+        } else if (offset != null) {
+            return datetime.atOffset(offset).toInstant();
+        } else {
+            return datetime.atZone(ZoneId.systemDefault()).toInstant();
         }
     }
 
