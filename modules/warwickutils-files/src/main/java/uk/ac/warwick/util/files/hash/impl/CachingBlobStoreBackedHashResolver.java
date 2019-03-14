@@ -2,7 +2,11 @@ package uk.ac.warwick.util.files.hash.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import com.google.common.io.ByteStreams;
 import org.jclouds.blobstore.domain.Blob;
+import org.jclouds.blobstore.options.GetOptions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import uk.ac.warwick.util.files.HashFileReference;
@@ -28,7 +32,7 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
     private final BlobStoreBackedHashResolver delegate;
 
     // Initialised in afterPropertiesSet()
-    private Cache<String, Blob> cache;
+    private LoadingCache<String, Blob> cache;
 
     private long maximumSizeInBytes;
 
@@ -60,7 +64,33 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
                     }
                 })
                 .maximumWeight(maximumSizeInBytes)
-                .build();
+                .recordStats()
+                .build(key -> {
+                    Blob blob = delegate.getBlobStore().getBlob(delegate.getContainerName(), key, GetOptions.NONE);
+
+                    if (blob != null) {
+                        // Eagerly read the content of the blob for the cache
+                        try (InputStream in = blob.getPayload().openStream()) {
+                            Blob cacheableBlob = delegate.getBlobStore().blobBuilder(key)
+                                .payload(ByteStreams.toByteArray(in))
+                                .contentDisposition(blob.getMetadata().getContentMetadata().getContentDisposition())
+                                .contentLength(blob.getMetadata().getContentMetadata().getContentLength())
+                                .contentType(blob.getMetadata().getContentMetadata().getContentType())
+                                .contentEncoding(blob.getMetadata().getContentMetadata().getContentEncoding())
+                                .contentLanguage(blob.getMetadata().getContentMetadata().getContentLanguage())
+                                .contentMD5(blob.getMetadata().getContentMetadata().getContentMD5AsHashCode())
+                                .cacheControl(blob.getMetadata().getContentMetadata().getCacheControl())
+                                .expires(blob.getMetadata().getContentMetadata().getExpires())
+                                .userMetadata(blob.getMetadata().getUserMetadata())
+                                .build();
+                            cacheableBlob.getMetadata().setSize(blob.getMetadata().getSize());
+
+                            return cacheableBlob;
+                        }
+                    }
+
+                    return null;
+                });
     }
 
     @Override
@@ -85,5 +115,17 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
     @Override
     public HashString generateHash(InputStream is) throws IOException {
         return delegate.generateHash(is);
+    }
+
+    public long getCacheEstimatedSize() {
+        return cache.estimatedSize();
+    }
+
+    public CacheStats getCacheStats() {
+        return cache.stats();
+    }
+
+    Cache<String, Blob> getCache() {
+        return cache;
     }
 }

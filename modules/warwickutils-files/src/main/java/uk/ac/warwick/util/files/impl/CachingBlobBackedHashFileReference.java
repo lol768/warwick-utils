@@ -1,32 +1,25 @@
 package uk.ac.warwick.util.files.impl;
 
-import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jclouds.blobstore.domain.Blob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.warwick.util.files.FileData;
 import uk.ac.warwick.util.files.FileReference;
 import uk.ac.warwick.util.files.HashFileReference;
 import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class CachingBlobBackedHashFileReference extends AbstractFileReference implements HashFileReference {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CachingBlobBackedHashFileReference.class);
-
     private final BlobBackedHashFileReference delegate;
-    private final Cache<String, Blob> cache;
+    private final LoadingCache<String, Blob> cache;
 
-    public CachingBlobBackedHashFileReference(BlobBackedHashFileReference delegate, Cache<String, Blob> cache) {
+    public CachingBlobBackedHashFileReference(BlobBackedHashFileReference delegate, LoadingCache<String, Blob> cache) {
         this.delegate = delegate;
         this.cache = cache;
     }
@@ -69,48 +62,8 @@ public class CachingBlobBackedHashFileReference extends AbstractFileReference im
 
             @Override
             synchronized void refresh() {
-                Blob cached = cache.getIfPresent(getBlobName());
-                if (cached != null) {
-                    blob = cached;
-                } else {
-                    super.refresh();
-
-                    // Check that our blob is under the maximum size of an integer or we won't be able to stream to a byte[]
-                    if (blob != null && blob.getMetadata().getContentMetadata().getContentLength() < Integer.MAX_VALUE) {
-                        // Eagerly read the content of the blob for the cache
-                        try {
-                            Closer closer = Closer.create();
-                            try {
-                                InputStream in = closer.register(blob.getPayload().openStream());
-                                Blob cacheableBlob = getBlobStore().blobBuilder(getBlobName())
-                                        .payload(ByteStreams.toByteArray(in))
-                                        .contentDisposition(blob.getMetadata().getContentMetadata().getContentDisposition())
-                                        .contentLength(blob.getMetadata().getContentMetadata().getContentLength())
-                                        .contentType(blob.getMetadata().getContentMetadata().getContentType())
-                                        .contentEncoding(blob.getMetadata().getContentMetadata().getContentEncoding())
-                                        .contentLanguage(blob.getMetadata().getContentMetadata().getContentLanguage())
-                                        .contentMD5(blob.getMetadata().getContentMetadata().getContentMD5AsHashCode())
-                                        .cacheControl(blob.getMetadata().getContentMetadata().getCacheControl())
-                                        .expires(blob.getMetadata().getContentMetadata().getExpires())
-                                        .userMetadata(blob.getMetadata().getUserMetadata())
-                                        .build();
-                                cacheableBlob.getMetadata().setSize(blob.getMetadata().getSize());
-
-                                cache.put(getBlobName(), cacheableBlob);
-                                blob = cacheableBlob;
-                            } finally {
-                                closer.close();
-                            }
-                        } catch (IOException e) {
-                            LOGGER.error("Couldn't read blob into cache", e);
-                            cache.invalidate(getBlobName());
-                            super.refresh(); // Need to refresh again because payload was used above
-                        }
-                    }
-                }
-
+                blob = cache.get(getBlobName());
                 totalLength = blob == null ? -1 : blob.getMetadata().getSize();
-
                 payloadUsed = false;
             }
 

@@ -1,7 +1,11 @@
 package uk.ac.warwick.util.files.hash.impl;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.google.common.io.ByteStreams;
+import org.apache.commons.lang3.StringUtils;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStoreContext;
+import org.jclouds.blobstore.domain.Blob;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -19,13 +23,14 @@ import uk.ac.warwick.util.files.hash.HashString;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.*;
 
 public final class CachingBlobStoreBackedHashResolverTest {
 
     private static final String CONTAINER_PREFIX = "uk.ac.warwick.sbr.";
-    
+
     private final Mockery m = new JUnit4Mockery();
     private final FileHasher hasher = m.mock(FileHasher.class);
     private final HashFileStore store = m.mock(HashFileStore.class);
@@ -33,7 +38,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
     private final MaintenanceModeFlags flags = () -> false;
 
     private final BlobStoreContext blobStoreContext = ContextBuilder.newBuilder("transient").buildView(BlobStoreContext.class);
-    
+
     private final BlobStoreBackedHashResolver underlyingHtmlResolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_HTML, hasher, dao, flags);
     private final CachingBlobStoreBackedHashResolver cachingHtmlResolver = new CachingBlobStoreBackedHashResolver(underlyingHtmlResolver);
     private final BlobStoreBackedHashResolver defaultResolver = new BlobStoreBackedHashResolver(blobStoreContext, CONTAINER_PREFIX, FileHashResolver.STORE_NAME_DEFAULT, hasher, dao, flags);
@@ -54,13 +59,13 @@ public final class CachingBlobStoreBackedHashResolverTest {
     public void shutdown() {
         blobStoreContext.close();
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void hashNotBelongingToMe() {
         final HashString hash = new HashString("tiftof");
         cachingHtmlResolver.lookupByHash(store, hash, true);
     }
-    
+
     /**
      * Check that when we lookup an unqualified hash on the default resolver,
      * the returned HashString doesn't have "default/" or worse, "null/" at
@@ -69,14 +74,14 @@ public final class CachingBlobStoreBackedHashResolverTest {
     @Test public void lookupByHashDefault() throws Exception {
         final String hash = "abcdefghijklmn";
         final HashString hashString = new HashString(hash);
-        
+
         m.checking(new Expectations(){{
             oneOf(dao).getHashByIdWithoutFlush(hashString.toString()); will(returnValue(null));
             oneOf(dao).hashCreated(hashString, 0);
         }});
-        
+
         HashFileReference reference = defaultResolver.lookupByHash(store, hashString, true);
-        
+
         assertEquals(hash, reference.getHash().toString());
     }
 
@@ -91,7 +96,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
 
         HashFileReference reference = cachingHtmlResolver.lookupByHash(store, hash, true);
         assertNotNull(reference);
-        
+
         assertEquals(hash, reference.getHash());
         assertFalse(reference.isExists());
         assertFalse(reference.isFileBacked());
@@ -105,7 +110,7 @@ public final class CachingBlobStoreBackedHashResolverTest {
                 .contentLength(13L)
                 .build()
         );
-        
+
         // we don't need to fetch the reference again, this one is fine
         assertEquals(hash, reference.getHash());
         assertTrue(reference.isExists());
@@ -115,18 +120,61 @@ public final class CachingBlobStoreBackedHashResolverTest {
     @Test
     public void generateHash() throws Exception {
         final String hash = "abcdef";
-        
+
         final InputStream is = new ByteArrayInputStream(new byte[0]);
-        
+
         m.checking(new Expectations() {{
             oneOf(hasher).hash(is); will(returnValue(hash));
         }});
-        
+
         HashString generateHash = cachingHtmlResolver.generateHash(is);
         assertEquals(hash, generateHash.getHash());
         assertEquals("html", generateHash.getStoreName());
-        
+
         m.assertIsSatisfied();
+    }
+
+    @Test
+    public void sizeEvictionWorks() throws Exception {
+        cachingHtmlResolver.setMaximumSizeInBytes(16 * 1024); // 16kB
+        cachingHtmlResolver.afterPropertiesSet();
+
+        assertEquals(0, cachingHtmlResolver.getCacheEstimatedSize());
+
+        String content = StringUtils.repeat('a', 4 * 1024);
+
+        // Put blobs 1 through 10, at 4kB each, into the blob store
+        for (int i = 0; i < 10; i++) {
+            blobStoreContext.getBlobStore().putBlob(
+                "uk.ac.warwick.sbr.html",
+                blobStoreContext.getBlobStore().blobBuilder("blobby-blobby-blobby-blobby-blobby-" + i)
+                    .payload(content)
+                    .contentDisposition("blobby-blobby-blobby-blobby-blobby-" + i)
+                    .contentLength(4 * 1024L)
+                    .build()
+            );
+        }
+
+        // Read blobs 1 through 10, twice
+        for (int i = 0; i < 10; i++) {
+            assertEquals(
+                content,
+                cachingHtmlResolver.lookupByHash(store, new HashString(FileHashResolver.STORE_NAME_HTML, "blobby-blobby-blobby-blobby-blobby-" + i), false)
+                    .asByteSource().asCharSource(StandardCharsets.UTF_8).read()
+            );
+
+            assertEquals(
+                content,
+                cachingHtmlResolver.lookupByHash(store, new HashString(FileHashResolver.STORE_NAME_HTML, "blobby-blobby-blobby-blobby-blobby-" + i), false)
+                    .asByteSource().asCharSource(StandardCharsets.UTF_8).read()
+            );
+        }
+
+        // Force a maintenance run
+        cachingHtmlResolver.getCache().cleanUp();
+
+        // We can only fit 4 items in the cache
+        assertEquals(4, cachingHtmlResolver.getCacheEstimatedSize());
     }
 
 }

@@ -94,4 +94,12 @@ public class BlobStoreBackedHashResolver implements FileHashResolver, Initializi
         if (!blobStore.containerExists(containerName))
             blobStore.createContainerInLocation(null, containerName);
     }
+
+    BlobStore getBlobStore() {
+        return blobStore;
+    }
+
+    String getContainerName() {
+        return containerName;
+    }
 }
