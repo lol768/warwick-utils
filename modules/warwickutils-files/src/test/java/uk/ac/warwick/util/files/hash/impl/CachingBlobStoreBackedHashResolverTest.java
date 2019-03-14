@@ -174,7 +174,8 @@ public final class CachingBlobStoreBackedHashResolverTest {
         cachingHtmlResolver.getCache().cleanUp();
 
         // We can only fit 4 items in the cache
-        assertEquals(4, cachingHtmlResolver.getCacheEstimatedSize());
+        assertEquals("Only 4 items fit in the cache", 4, cachingHtmlResolver.getCacheEstimatedSize());
+        assertEquals("Cache is full", 16 * 1024, cachingHtmlResolver.getCacheCurrentSize());
     }
 
 }

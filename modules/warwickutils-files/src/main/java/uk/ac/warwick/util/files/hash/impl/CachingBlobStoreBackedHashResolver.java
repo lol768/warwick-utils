@@ -7,6 +7,8 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import com.google.common.io.ByteStreams;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.options.GetOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import uk.ac.warwick.util.files.HashFileReference;
@@ -28,6 +30,8 @@ import java.io.InputStream;
  * @link https://github.com/ben-manes/caffeine/wiki/Eviction
  */
 public class CachingBlobStoreBackedHashResolver implements FileHashResolver, InitializingBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CachingBlobStoreBackedHashResolver.class);
 
     private final BlobStoreBackedHashResolver delegate;
 
@@ -53,6 +57,7 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
     public void afterPropertiesSet() {
         Assert.isTrue(maximumSizeInBytes > 0, "Maximum cache size should be set using either setMaximumSizeInBytes or setMaximumSizeAsPercentage");
 
+        LOGGER.info(String.format("Initialising a Caffeine cache with a maximum size of %d bytes", maximumSizeInBytes));
         this.cache =
             Caffeine.newBuilder()
                 .<String, Blob>weigher((k, b) -> {
@@ -119,6 +124,11 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
 
     public long getCacheEstimatedSize() {
         return cache.estimatedSize();
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public long getCacheCurrentSize() {
+        return cache.policy().eviction().get().weightedSize().getAsLong();
     }
 
     public CacheStats getCacheStats() {
