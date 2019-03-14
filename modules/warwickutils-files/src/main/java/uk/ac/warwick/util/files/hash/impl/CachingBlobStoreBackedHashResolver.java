@@ -44,6 +44,10 @@ public class CachingBlobStoreBackedHashResolver implements FileHashResolver, Ini
         this.delegate = delegate;
     }
 
+    public long getMaximumSizeInBytes() {
+        return maximumSizeInBytes;
+    }
+
     public void setMaximumSizeInBytes(long maximumSizeInBytes) {
         this.maximumSizeInBytes = maximumSizeInBytes;
     }
