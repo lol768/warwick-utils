@@ -13,7 +13,7 @@ public class CachesTest {
 
 	@Test
 	public void getCaffeine() {
-		CacheStore<?, ?> store = Caches.builder(CACHE_NAME, CacheStrategy.CaffeineIfAvailable).buildStore();
+		CacheStore<?, ?> store = Caches.builder(CACHE_NAME, CacheStrategy.CaffeineIfAvailable).maximumSize(100).buildStore();
 		assertTrue(store instanceof CaffeineCacheStore<?,?>);
 	}
 	
