@@ -48,6 +48,7 @@ public final class GoWarwickDepartmentWebsiteLookup implements DepartmentWebsite
         this.cache =
             Caches.builder(CACHE_NAME, new WebsiteLookupEntryFactory(goApiUrl), Caches.CacheStrategy.CaffeineIfAvailable)
                 .expireAfterWrite(DEFAULT_CACHE_TIMEOUT)
+                .maximumSize(1000)
                 .build();
     }
 

@@ -37,15 +37,18 @@ public class BasicCacheTest {
 			}
 			})
 			.expireAfterWrite(Duration.ofSeconds(100))
+			.maximumSize(100)
 			.build();
 
 		slowFactory = new BrokenCacheEntryFactory();
 		slowCache = Caches.builder(SLOW_CACHE_NAME, slowFactory)
 			.expireAfterWrite(Duration.ofSeconds(100))
+			.maximumSize(100)
 			.build();
 
 		noFactoryCache = Caches.<String, String>builder(NO_FACTORY_CACHE_NAME)
 			.expireAfterWrite(Duration.ofSeconds(100))
+			.maximumSize(100)
 			.build();
 	}
 
@@ -90,6 +93,7 @@ public class BasicCacheTest {
 		slowCache = Caches.builder("customSlowCache1", slowFactory)
 			.expireAfterWrite(Duration.ofSeconds(100))
 			.asynchronousOnly()
+			.maximumSize(100)
 			.build();
 
 		slowCache.get(Arrays.asList("dog", "cat"));
@@ -138,6 +142,7 @@ public class BasicCacheTest {
 		slowCache = Caches.builder("asynchronousUpdates", slowFactory)
 			.expiryStategy(shortExpiry)
 			.asynchronous()
+			.maximumSize(100)
 			.build();
 
 		slowFactory.addFastRequest("one");
@@ -201,6 +206,7 @@ public class BasicCacheTest {
 	public void expiry() throws Exception {
 		slowCache = Caches.builder("expiry", slowFactory)
 			.expiryStategy(shortExpiry)
+			.maximumSize(100)
 			.build();
 
 		slowFactory.addFastRequest("one");
@@ -215,6 +221,15 @@ public class BasicCacheTest {
 		assertNotSame(result1, result3);
 		
 		slowCache.shutdown();
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void unboundedCaffeineCachesDisallowed() throws Exception {
+		CacheWithDataInitialisation<String, String, Object> cache = Caches.builder("failingCache", slowFactory, Caches.CacheStrategy.CaffeineRequired)
+				.expiryStategy(shortExpiry)
+				.build();
+
+		cache.shutdown();
 	}
 	
 	@Test
@@ -292,6 +307,7 @@ public class BasicCacheTest {
 			new BasicCache<>(
 				Caches.<String, String>builder(CACHE_NAME)
 					.expireAfterWrite(Duration.ofSeconds(100))
+					.maximumSize(100)
 					.buildStore(),
 				Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
 					public String create(String key) {
@@ -318,6 +334,7 @@ public class BasicCacheTest {
 				new BasicCache<>(
 						Caches.<String, String>builder(CACHE_NAME)
 								.expireAfterWrite(Duration.ofSeconds(100))
+								.maximumSize(100)
 								.buildStore(),
 						Caches.wrapFactoryWithoutDataInitialisation(new SingularCacheEntryFactory<String, String>() {
 							public String create(String key) {

@@ -92,6 +92,8 @@ public class CaffeineCacheStore<K extends Serializable, V extends Serializable> 
                 Caffeine<Object, Object> builder = Caffeine.newBuilder();
                 if (maximumSize > 0) {
                     builder.maximumSize(maximumSize);
+                } else {
+                    throw new IllegalStateException("Unbounded cache creation is not permitted. Please specify a maximum size > 0.");
                 }
                 return builder.build();
             }));
