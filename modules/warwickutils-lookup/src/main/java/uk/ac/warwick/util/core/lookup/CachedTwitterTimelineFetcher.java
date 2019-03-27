@@ -69,6 +69,7 @@ public final class CachedTwitterTimelineFetcher implements TwitterTimelineFetche
     	this.cache.setValue(
             Caches.builder(CACHE_NAME, new TwitterTimelineEntryFactory(httpRequestDecorator), Caches.CacheStrategy.CaffeineIfAvailable)
                 .expireAfterWrite(DEFAULT_CACHE_TIMEOUT)
+                .maximumSize(1000)
                 .build()
         );
     }

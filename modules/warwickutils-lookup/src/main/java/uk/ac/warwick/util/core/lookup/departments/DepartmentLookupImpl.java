@@ -56,6 +56,7 @@ public class DepartmentLookupImpl implements DepartmentLookup, CacheEntryFactory
         this.cache =
             Caches.builder(CACHE_NAME, this, Caches.CacheStrategy.CaffeineIfAvailable)
                 .expireAfterWrite(CACHE_EXPIRY)
+                .maximumSize(100)
                 .build();
 
         // Pre-warm cache by immediately fetching a department

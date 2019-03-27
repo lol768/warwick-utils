@@ -44,6 +44,7 @@ public class FacultyLookupImpl implements FacultyLookup, CacheEntryFactory<Strin
         this.cache =
             Caches.builder(CACHE_NAME, this, Caches.CacheStrategy.CaffeineIfAvailable)
                 .expireAfterWrite(CACHE_EXPIRY)
+                .maximumSize(100)
                 .build();
 
         // Pre-warm cache by immediately fetching a department
