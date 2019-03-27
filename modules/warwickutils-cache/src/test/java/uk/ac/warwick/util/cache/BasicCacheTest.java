@@ -222,6 +222,15 @@ public class BasicCacheTest {
 		
 		slowCache.shutdown();
 	}
+
+	@Test(expected = IllegalStateException.class)
+	public void unboundedCaffeineCachesDisallowed() throws Exception {
+		CacheWithDataInitialisation<String, String, Object> cache = Caches.builder("failingCache", slowFactory, Caches.CacheStrategy.CaffeineRequired)
+				.expiryStategy(shortExpiry)
+				.build();
+
+		cache.shutdown();
+	}
 	
 	@Test
 	public void concurrentInitialRequests() throws Exception {
