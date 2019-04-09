@@ -65,7 +65,7 @@ public final class EmailAddressChecker {
      * exists (or a server error prevented lookup).
      */
     public boolean isValid() {
-        return (!empty && matches) || (!empty && serverError);
+        return !empty && (matches || serverError);
     }
 
     /**
