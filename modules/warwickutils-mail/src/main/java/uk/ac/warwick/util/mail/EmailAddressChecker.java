@@ -74,4 +74,11 @@ public final class EmailAddressChecker {
     public boolean isMatches() {
         return matches;
     }
+
+    /**
+     * @return If a server error prevented a thorough DNS-based check.
+     */
+    public boolean isServerError() {
+        return serverError;
+    }
 }
