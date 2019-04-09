@@ -30,7 +30,7 @@ public class EmailAddressCheckerTest {
 
     @Test
     public void testDnsServerFailure() throws UnknownHostException {
-        SimpleResolver resolver = new SimpleResolver("203.0.113.042");
+        SimpleResolver resolver = new SimpleResolver("203.0.113.42");
         resolver.setTimeout(3);
         Lookup.setDefaultResolver(resolver);
         EmailAddressChecker checker = new EmailAddressChecker("m.mannion@warwick.ac.uk");
