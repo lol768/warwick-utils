@@ -1,15 +1,18 @@
 package uk.ac.warwick.util.mail;
 
 import java.io.IOException;
+import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +160,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
 
         public Boolean call() {
             try {
-                LOGGER.info("Trying to send mail " + mimeMessageToString(message));
+                LOGGER.info("Trying to send mail " + MimeMessageUtilities.mimeMessageToString(message));
             } catch (Exception e) {
                 LOGGER.warn("Exception toString() for message: " + message);
             }
@@ -170,19 +173,6 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
                 LOGGER.error("Error sending mail",e);
                 return false;
             }
-        }
-        
-        private String mimeMessageToString(MimeMessage message) throws MessagingException, IOException {
-            StringBuilder sb = new StringBuilder("MimeMessage: ");
-            sb.append("from=").append(arrayToCommaDelimitedString(message.getFrom())).append("; ");
-            sb.append("replyTo=").append(arrayToCommaDelimitedString(message.getReplyTo())).append("; ");
-            sb.append("to=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.TO))).append("; ");
-            sb.append("cc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.CC))).append("; ");
-            sb.append("bcc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.BCC))).append("; ");
-            sb.append("sentDate=").append(message.getSentDate()).append("; ");
-            sb.append("subject=").append(message.getSubject()).append("; ");
-            sb.append("text=").append(message.getContent());
-            return sb.toString();
         }
 
     }
