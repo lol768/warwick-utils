@@ -1,6 +1,10 @@
 package uk.ac.warwick.util.mail;
 
 import org.junit.Test;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.SimpleResolver;
+
+import java.net.UnknownHostException;
 
 import static org.junit.Assert.*;
 
@@ -22,6 +26,19 @@ public class EmailAddressCheckerTest {
         assertFalse(checker.isEmpty());
         assertFalse(checker.isMatches());
         assertFalse(checker.isValid());
+    }
+
+    @Test
+    public void testDnsServerFailure() throws UnknownHostException {
+        SimpleResolver resolver = new SimpleResolver("203.0.113.42");
+        resolver.setTimeout(3);
+        Lookup.setDefaultResolver(resolver);
+        EmailAddressChecker checker = new EmailAddressChecker("m.mannion@warwick.ac.uk");
+        assertFalse(checker.isEmpty());
+        assertFalse(checker.isMatches());
+        assertTrue(checker.isServerError());
+        assertTrue(checker.isValid());
+        Lookup.refreshDefault();
     }
 
 }
