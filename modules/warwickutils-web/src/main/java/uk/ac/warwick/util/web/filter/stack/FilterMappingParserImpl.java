@@ -29,13 +29,51 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
      * @return Whether there was a match
      */
     private boolean matchesNonExtensionSpanningWildcardPrefix(String requestPath, String mapping) {
-        Matcher matcher = compiledPattern.matcher(mapping);
-        int index = -1;
-        while (matcher.find()) {
-            index = matcher.start();
-        }
+        char lookBehind = 0;
 
-        return index >= 0 && requestPath.startsWith(mapping.substring(0, index));
+        int indexMapping = 0;
+        int indexRequestPath = 0;
+
+        int backtrackMappingIndex = -1;
+        int backtrackCharacterIndex = -1;
+
+        while (true) {
+            char requestPathChar = requestPath.charAt(indexRequestPath++);
+            char mappingChar = mapping.charAt(indexMapping++);
+            if (indexMapping > 1) {
+                lookBehind = mapping.charAt(indexMapping - 2);
+            }
+            switch (mappingChar) {
+                case '?':
+                    if (indexMapping == mapping.length()) {
+                        return true;
+                    }
+                    break;
+                case '*':
+                    if (lookBehind != '.') {
+                        if (indexMapping == mapping.length()) {
+                            return true;
+                        }
+                        backtrackMappingIndex = indexMapping;
+                        backtrackCharacterIndex = --indexRequestPath;
+                        continue;
+                    }
+                default:
+                    if (mappingChar != requestPathChar) {
+                        if (backtrackMappingIndex == -1 || indexRequestPath == requestPath.length()) {
+                            return false;
+                        } else {
+                            indexMapping = backtrackMappingIndex;
+                            // advance cursor one, try again
+                            indexRequestPath = ++backtrackCharacterIndex;
+                        }
+                    } else if (indexMapping == mapping.length() && indexRequestPath == requestPath.length()) {
+                        return true;
+                    } else if (indexMapping == mapping.length()) {
+                        return false;
+                    }
+            }
+        }
     }
 
     private static boolean matchesExtension(String requestPath, String mapping) {

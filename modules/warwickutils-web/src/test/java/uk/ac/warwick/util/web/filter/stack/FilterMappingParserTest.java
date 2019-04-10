@@ -52,6 +52,11 @@ public class FilterMappingParserTest {
                 "/render/renderPage.htm", "/render/renderPage.html", "/render/renderPage/foo.html");
         assertDoesNotMatch("/render/renderPage*",
                 "/foo/renderPage/anything");
+        assertMatches("/render/renderPag?f",
+                "/render/renderPagef", "/render/renderPagaf");
+        assertMatches("/render/renderPag?",
+                "/render/renderPage", "/render/renderPaga");
+
     }
 
     @Test public void middleWildcard() {
