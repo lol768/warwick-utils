@@ -22,7 +22,8 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
 
     /**
      * Allows /foo* to match paths spanning multiple segments, e.g. /foo/bar/x.htm
-     * NonExtension: Will not handle /foo.* - for that, see matchesExtension
+     * Note that a pattern of /foo/bar.* will not match against
+     * /foo/bar.txt/other/directories/
      *
      * @param requestPath The request path
      * @param mapping Mapping string
