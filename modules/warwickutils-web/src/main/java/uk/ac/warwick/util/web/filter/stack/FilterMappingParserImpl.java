@@ -1,17 +1,13 @@
 package uk.ac.warwick.util.web.filter.stack;
 
+import org.springframework.util.AntPathMatcher;
 import uk.ac.warwick.util.core.spring.FileUtils;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Attempts to match request paths to URL patterns according to the
  * Servlet spec (SRV.11)
  */
 public final class FilterMappingParserImpl implements FilterMappingParser {
-
-    private final Pattern compiledPattern = Pattern.compile("(?<!\\.)\\*(?!\\.)");
 
     public boolean matches(String requestPath, String mapping) {
         return (matchesPrefix(requestPath, mapping)
@@ -21,21 +17,22 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
     }
 
     /**
-     * Allows /foo* to match paths spanning multiple segments, e.g. /foo/bar/x.htm
-     * NonExtension: Will not handle /foo.* - for that, see matchesExtension
+     * Allows /foo* to match paths spanning multiple segments,
+     * e.g. /foo/bar/x.htm
+     *
+     * Note that a pattern of /foo/bar.* will not match against
+     * /foo/bar.txt/other/directories/
      *
      * @param requestPath The request path
      * @param mapping Mapping string
      * @return Whether there was a match
      */
     private boolean matchesNonExtensionSpanningWildcardPrefix(String requestPath, String mapping) {
-        Matcher matcher = compiledPattern.matcher(mapping);
-        int index = -1;
-        while (matcher.find()) {
-            index = matcher.start();
+        AntPathMatcher apm = new AntPathMatcher();
+        if (apm.isPattern(mapping)) {
+            return apm.match(mapping, requestPath);
         }
-
-        return index >= 0 && requestPath.startsWith(mapping.substring(0, index));
+        return false;
     }
 
     private static boolean matchesExtension(String requestPath, String mapping) {
