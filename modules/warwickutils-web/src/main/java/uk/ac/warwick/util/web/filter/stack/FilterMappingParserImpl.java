@@ -70,7 +70,7 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
                         }
                     } else if (indexMapping == mapping.length() && indexRequestPath == requestPath.length()) {
                         return true;
-                    } else if (indexMapping == mapping.length()) {
+                    } else if (indexMapping == mapping.length() || indexRequestPath == requestPath.length()) {
                         return false;
                     }
             }

@@ -56,7 +56,8 @@ public class FilterMappingParserTest {
                 "/render/renderPagef", "/render/renderPagaf");
         assertMatches("/render/renderPag?",
                 "/render/renderPage", "/render/renderPaga");
-
+        assertMatches("/foo",
+                "/foo");
     }
 
     @Test public void middleWildcard() {
@@ -74,6 +75,11 @@ public class FilterMappingParserTest {
         assertMatches("/edit/api/deleteWebsite","/edit/api/deleteWebsite");
         assertDoesNotMatch("/edit/api/deleteWebsite",
                 "/edit/api/deleteWebsites", "/do/edit/api/deleteWebsite");
+    }
+
+    @Test public void longerMappingThanUrl() {
+        assertDoesNotMatch("/edit/api/deleteWebsite",
+                "/edit");
     }
     
     private void assertMatches(String mapping, String... urls) {
