@@ -121,8 +121,8 @@ public class ConfigurableFilterStackTest {
     @Test public void exclusion() throws Exception {
         ctx.checking(new Expectations(){{
             final Sequence filterOrder = ctx.sequence("filterOrder");
-            exactly(0).of(f1).doFilter(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)), with(any(FilterChain.class)));
-            will(continueFilterChain()); 
+            never(f1);
+            will(continueFilterChain());
             inSequence(filterOrder);
         }});
         //                                      filters            inclusions                  exclusions
