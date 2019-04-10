@@ -53,6 +53,17 @@ public class FilterMappingParserTest {
         assertDoesNotMatch("/render/renderPage*",
                 "/foo/renderPage/anything");
     }
+
+    @Test public void middleWildcard() {
+        final String mapping = "/api/*/entries.json";
+        assertMatches(mapping,
+            "/api/v1/entries.json",
+                "/api/v2/entries.json"
+          );
+        assertDoesNotMatch(mapping,
+            "/api/v1/anything"
+          );
+    }
     
     @Test public void exact() {
         assertMatches("/edit/api/deleteWebsite","/edit/api/deleteWebsite");
@@ -62,13 +73,13 @@ public class FilterMappingParserTest {
     
     private void assertMatches(String mapping, String... urls) {
         for (String url : urls) {
-            assertTrue(parser.matches(url, mapping));
+            assertTrue(mapping + " didn't match " + url, parser.matches(url, mapping));
         }
     }
     
     private void assertDoesNotMatch(String mapping, String... urls) {
         for (String url : urls) {
-            assertFalse(parser.matches(url, mapping));
+            assertFalse(mapping + " matched " + url, parser.matches(url, mapping));
         }
     }
 
