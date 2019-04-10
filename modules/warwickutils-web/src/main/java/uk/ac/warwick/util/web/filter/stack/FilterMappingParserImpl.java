@@ -2,16 +2,40 @@ package uk.ac.warwick.util.web.filter.stack;
 
 import uk.ac.warwick.util.core.spring.FileUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Attempts to match request paths to URL patterns according to the
  * Servlet spec (SRV.11)
  */
 public final class FilterMappingParserImpl implements FilterMappingParser {
 
+    private final Pattern compiledPattern = Pattern.compile("(?<!\\.)\\*(?!\\.)");
+
     public boolean matches(String requestPath, String mapping) {
         return (matchesPrefix(requestPath, mapping)
                 || matchesExtension(requestPath, mapping))
-                || matchesExact(requestPath, mapping);
+                || matchesExact(requestPath, mapping)
+                || matchesNonExtensionSpanningWildcardPrefix(requestPath, mapping);
+    }
+
+    /**
+     * Allows /foo* to match paths spanning multiple segments, e.g. /foo/bar/x.htm
+     * NonExtension: Will not handle /foo.* - for that, see matchesExtension
+     *
+     * @param requestPath The request path
+     * @param mapping Mapping string
+     * @return Whether there was a match
+     */
+    private boolean matchesNonExtensionSpanningWildcardPrefix(String requestPath, String mapping) {
+        Matcher matcher = compiledPattern.matcher(mapping);
+        int index = -1;
+        while (matcher.find()) {
+            index = matcher.start();
+        }
+
+        return index >= 0 && requestPath.startsWith(mapping.substring(0, index));
     }
 
     private static boolean matchesExtension(String requestPath, String mapping) {

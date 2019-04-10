@@ -46,6 +46,13 @@ public class FilterMappingParserTest {
                 "/render/renderPage/anything", "/hello", "/Render",
                 "/context/render/", "/context/render/renderPage.htm");
     }
+
+    @Test public void wildcardNonExtensionPrefix() {
+        assertMatches("/render/renderPage*",
+                "/render/renderPage.htm", "/render/renderPage.html", "/render/renderPage/foo.html");
+        assertDoesNotMatch("/render/renderPage*",
+                "/foo/renderPage/anything");
+    }
     
     @Test public void exact() {
         assertMatches("/edit/api/deleteWebsite","/edit/api/deleteWebsite");

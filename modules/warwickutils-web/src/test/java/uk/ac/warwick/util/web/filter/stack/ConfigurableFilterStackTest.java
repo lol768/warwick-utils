@@ -111,18 +111,21 @@ public class ConfigurableFilterStackTest {
     
     /**
      * This test is actually to demonstrate an exclusion mapping that _doesn't_ work.
-     * Currently * only works directly after a / - you can't put it just anwhere. This is
+     * Currently * only works directly after a / - you can't put it just anywhere. This is
      * a limitation of the Servlet Filter spec, but there's no reason we couldn't make
      * our filter stack more advanced and accept this format.
+     *
+     * Edit: as of UTL-106, more flexible filter stack formats are permitted!
+     *       This test now works as expected, ~8 years later \o/
      */
     @Test public void exclusion() throws Exception {
         ctx.checking(new Expectations(){{
             final Sequence filterOrder = ctx.sequence("filterOrder");
-            exactly(1).of(f1).doFilter(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)), with(any(FilterChain.class)));
+            exactly(0).of(f1).doFilter(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)), with(any(FilterChain.class)));
             will(continueFilterChain()); 
             inSequence(filterOrder);
         }});
-        
+        //                                      filters            inclusions                  exclusions
         FilterStackSet set = new FilterStackSet(asList(f1), asList("/api/dataentry/*"), asList("/api/*/entries.*"));
         
         filter = new ConfigurableFilterStack(asList(set));
