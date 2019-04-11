@@ -61,7 +61,10 @@ public final class StringUtils {
      * charset after finding out what it is.
      * 
      * Never assume a charset!
+     *
+     * @deprecated Use {@link String#getBytes(Charset)}
      */
+    @Deprecated
     public static byte[] create(final String s) {
         return nullGuard(s).getBytes(DEFAULT_CHARSET);
     }
