@@ -1,7 +1,6 @@
 package uk.ac.warwick.util.web.filter.stack;
 
-import uk.ac.warwick.util.core.spring.FileUtils;
-
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,98 +10,57 @@ import java.util.regex.Pattern;
  */
 public final class FilterMappingParserImpl implements FilterMappingParser {
 
-    private final Pattern compiledPattern = Pattern.compile("(?<!\\.)\\*(?!\\.)");
+    private static final Pattern SLASH_PREFIXED_WILDCARDS_AT_END = Pattern.compile("(?<!\\.)\\/\\*$");
+    private static final Pattern ONE_CHARACTER_WILDCARD = Pattern.compile("\\?");
+    private static final Pattern MATCH_ONE_CHARACTER = Pattern.compile(".");
+    private static final Pattern EXTENSION_SUFFIXED_WILDCARD = Pattern.compile("\\.\\*(?!\\.)");
+    private static final Pattern MATCH_WITHOUT_SLASHES = Pattern.compile("\\.[^\\/]+");
+    private static final Pattern EXTENSION_PREFIXED_WILDCARD = Pattern.compile("(?<!\\.)\\*\\.");
+    private static final Pattern MATCH_DOT_PREFIXED_ANYTHING = Pattern.compile(".+\\.");
+
+    private static Pattern MATCH_WILDCARD_WITH_OPTIONAL_SLASH = Pattern.compile("(?:\\/.*)?");
+    private static Pattern NON_EXTENSION_WILDCARD = Pattern.compile("(?<!\\.)\\*(?!\\.)");
+    private static Pattern MATCH_ANYTHING = Pattern.compile(".*");
 
     public boolean matches(String requestPath, String mapping) {
-        return (matchesPrefix(requestPath, mapping)
-                || matchesExtension(requestPath, mapping))
-                || matchesExact(requestPath, mapping)
-                || matchesNonExtensionSpanningWildcardPrefix(requestPath, mapping);
+        return requestPath.matches(handleSlashPrefixedWildcards(mapping));
     }
 
-    /**
-     * Allows /foo* to match paths spanning multiple segments, e.g. /foo/bar/x.htm
-     * Note that a pattern of /foo/bar.* will not match against
-     * /foo/bar.txt/other/directories/
-     *
-     * @param requestPath The request path
-     * @param mapping Mapping string
-     * @return Whether there was a match
-     */
-    private boolean matchesNonExtensionSpanningWildcardPrefix(String requestPath, String mapping) {
-        char lookBehind = 0;
+    private static String handleSlashPrefixedWildcards(String str) {
+        // we allow /path/* at the end of the mapping to match /path but not /pathsabc
+        // this should match behaviour in the old matchesPrefix
+        return "^" + genericHandle(str, FilterMappingParserImpl::handleGeneralWildcards, SLASH_PREFIXED_WILDCARDS_AT_END, MATCH_WILDCARD_WITH_OPTIONAL_SLASH, 1) + "$";
+    }
 
-        int indexMapping = 0;
-        int indexRequestPath = 0;
+    private static String handleGeneralWildcards(String str) {
+        return genericHandle(str, FilterMappingParserImpl::handleOneCharacterWildcards, NON_EXTENSION_WILDCARD, MATCH_ANYTHING, 1);
+    }
 
-        int backtrackMappingIndex = -1;
-        int backtrackCharacterIndex = -1;
+    private static String handleOneCharacterWildcards(String str) {
+        return genericHandle(str, FilterMappingParserImpl::handleStartingExtensions, ONE_CHARACTER_WILDCARD, MATCH_ONE_CHARACTER, 1);
+    }
 
-        while (true) {
-            char requestPathChar = requestPath.charAt(indexRequestPath++);
-            char mappingChar = mapping.charAt(indexMapping++);
-            if (indexMapping > 1) {
-                lookBehind = mapping.charAt(indexMapping - 2);
-            }
-            switch (mappingChar) {
-                case '?':
-                    if (indexMapping == mapping.length()) {
-                        return true;
-                    }
-                    break;
-                case '*':
-                    if (lookBehind != '.') {
-                        if (indexMapping == mapping.length()) {
-                            return true;
-                        }
-                        backtrackMappingIndex = indexMapping;
-                        backtrackCharacterIndex = --indexRequestPath;
-                        continue;
-                    }
-                default:
-                    if (mappingChar != requestPathChar) {
-                        if (backtrackMappingIndex == -1 || indexRequestPath == requestPath.length()) {
-                            return false;
-                        } else {
-                            indexMapping = backtrackMappingIndex;
-                            // advance cursor one, try again
-                            indexRequestPath = ++backtrackCharacterIndex;
-                        }
-                    } else if (indexMapping == mapping.length() && indexRequestPath == requestPath.length()) {
-                        return true;
-                    } else if (indexMapping == mapping.length() || indexRequestPath == requestPath.length()) {
-                        return false;
-                    }
-            }
+    private static String handleStartingExtensions(String str) {
+        return genericHandle(str, FilterMappingParserImpl::handleEndingExtensions, EXTENSION_SUFFIXED_WILDCARD, MATCH_WITHOUT_SLASHES, 2);
+    }
+
+    private static String handleEndingExtensions(String str) {
+        // note we allow *.css to match /foo/bar/styles.css
+        return genericHandle(str, Pattern::quote, EXTENSION_PREFIXED_WILDCARD, MATCH_DOT_PREFIXED_ANYTHING, 2);
+    }
+
+    private static String genericHandle(String str, Function<String, String> callback, Pattern pattern, Pattern patternToAppend, int offset) {
+        StringBuilder intermediateRegex = new StringBuilder();
+        Matcher matcher = pattern.matcher(str);
+        int beginning = 0;
+        while (matcher.find()) {
+            int start = matcher.start();
+            intermediateRegex.append(callback.apply(str.substring(beginning, start))).append(patternToAppend);
+            beginning = matcher.end();
         }
+        if (!str.substring(beginning).isEmpty()) {
+            intermediateRegex.append(callback.apply((str.substring(beginning))));
+        }
+        return intermediateRegex.toString();
     }
-
-    private static boolean matchesExtension(String requestPath, String mapping) {
-        return (mapping.startsWith("*.") && FileUtils.extensionMatches(requestPath, mapping.substring(2))) ||
-               (mapping.endsWith(".*") && mapping.substring(0, mapping.length() - 2).equals(FileUtils.getFileNameWithoutExtension(requestPath)));
-    }
-
-    /**
-     * Match patterns starting / and ending /*. The specification says that it
-     * should match each part of the path with the pattern, which implies that
-     * it shouldn't matter if there is a trailing slash in the pattern but not
-     * in the request. Otherwise SBTWO-3349 happens.
-     */
-    private static boolean matchesPrefix(String requestPath, String mapping) {
-        return (mapping.startsWith("/") && mapping.endsWith("/*") 
-                && (
-                        requestPath.startsWith(mapping.substring(0,mapping.length()-1))
-                        || (requestPath+"/").startsWith(mapping.substring(0,mapping.length()-1))
-                        ));
-    }
-    
-    private static boolean matchesExact(String requestPath, String mapping) {
-        return (mapping.equals(requestPath));
-    }
-
-    // it turns out that this is only used for the default servlet mapping -
-    // it isn't interpreted as "always run" for filters - for that use "/*"
-//    private static boolean isRoot(String mapping) {
-//        return mapping.equals("/");
-//    }
 }
