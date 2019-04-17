@@ -17,10 +17,9 @@ public final class FilterMappingParserImpl implements FilterMappingParser {
     private static final Pattern MATCH_WITHOUT_SLASHES = Pattern.compile("\\.[^\\/]+");
     private static final Pattern EXTENSION_PREFIXED_WILDCARD = Pattern.compile("(?<!\\.)\\*\\.");
     private static final Pattern MATCH_DOT_PREFIXED_ANYTHING = Pattern.compile(".+\\.");
-
-    private static Pattern MATCH_WILDCARD_WITH_OPTIONAL_SLASH = Pattern.compile("(?:\\/.*)?");
-    private static Pattern NON_EXTENSION_WILDCARD = Pattern.compile("(?<!\\.)\\*(?!\\.)");
-    private static Pattern MATCH_ANYTHING = Pattern.compile(".*");
+    private static final Pattern MATCH_WILDCARD_WITH_OPTIONAL_SLASH = Pattern.compile("(?:\\/.*)?");
+    private static final Pattern NON_EXTENSION_WILDCARD = Pattern.compile("(?<!\\.)\\*(?!\\.)");
+    private static final Pattern MATCH_ANYTHING = Pattern.compile(".*");
 
     public boolean matches(String requestPath, String mapping) {
         return requestPath.matches(handleSlashPrefixedWildcards(mapping));
