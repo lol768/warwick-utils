@@ -53,10 +53,10 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
     public MimeMessage createMimeMessage() {
         return mailSender.createMimeMessage();
     }
-    
-    public Future<Boolean> send(MimeMessage message) throws MailException {
+
+    public Future<Boolean> send(MimeMessage message, boolean logBody) throws MailException {
         // if we wanted to block and wait, we could do a .get() on the future
-        return sendAndReturnFuture(message);
+        return sendAndReturnFuture(message, logBody);
     }
 
     public Future<Boolean> send(SimpleMailMessage message) throws MailException {
@@ -64,14 +64,14 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         return sendAndReturnFuture(message);
     }
 
-    public Future<Boolean> send(MimeMessagePreparator preparator) throws MailException {
+    public Future<Boolean> send(MimeMessagePreparator preparator, boolean logBody) throws MailException {
         MimeMessage message = createMimeMessage();
         try {
             preparator.prepare(message);
         } catch (Exception ex) {
             throw new MailPreparationException(ex);
         }
-        return sendAndReturnFuture(message);
+        return sendAndReturnFuture(message, logBody);
     }
 
     /**
@@ -80,7 +80,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
      * and return a boolean true or false for reported success (success is where
      * the mail sender does not throw an exception when asked to send the mail)
      */
-    private Future<Boolean> sendAndReturnFuture(MimeMessage message) throws MailException {
+    private Future<Boolean> sendAndReturnFuture(MimeMessage message, boolean logBody) throws MailException {
         // we need to throw a MailException if the address is invalid in any way
         try {
             validateRecipients(message.getAllRecipients());
@@ -93,7 +93,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
             throw new MailParseException(e);
         }
 
-        return executionService.submit(new MimeMailSenderTask(mailSender, message));
+        return executionService.submit(new MimeMailSenderTask(mailSender, message, logBody));
     }
 
     /**
