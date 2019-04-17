@@ -33,7 +33,7 @@ public class MimeMessageUtilitiesTest {
         multipart.addBodyPart(htmlPart); // <-- second
         mail.setContent(multipart);
 
-        String s = MimeMessageUtilities.mimeMessageToString(mail);
+        String s = MimeMessageUtilities.mimeMessageToString(mail, true);
         Assert.assertTrue("toString contains subject", s.contains("Geese in building"));
         Assert.assertTrue("toString contains plain text part", s.contains("raise P2 incident"));
         Assert.assertTrue("toString contains HTML part", s.contains("raise <strong>P2</strong> incident"));

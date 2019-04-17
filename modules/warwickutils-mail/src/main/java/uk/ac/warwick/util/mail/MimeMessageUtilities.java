@@ -10,7 +10,7 @@ import java.util.Stack;
 import static org.springframework.util.StringUtils.arrayToCommaDelimitedString;
 
 public class MimeMessageUtilities {
-    public static String mimeMessageToString(MimeMessage message) throws MessagingException, IOException {
+    public static String mimeMessageToString(MimeMessage message, boolean logBody) throws MessagingException, IOException {
         StringBuilder sb = new StringBuilder("MimeMessage: ");
         sb.append("from=").append(arrayToCommaDelimitedString(message.getFrom())).append("; ");
         sb.append("replyTo=").append(arrayToCommaDelimitedString(message.getReplyTo())).append("; ");
@@ -20,6 +20,10 @@ public class MimeMessageUtilities {
         sb.append("sentDate=").append(message.getSentDate()).append("; ");
         sb.append("subject=").append(message.getSubject()).append("; ");
         sb.append("text=");
+        if (!logBody) {
+            sb.append("[Redacted, logBody=false]");
+            return sb.toString();
+        }
         if (message.getContent() instanceof MimeMultipart) {
             MimeMultipart multipartMessage = (MimeMultipart) message.getContent();
             processMultipartMessage(sb, multipartMessage);

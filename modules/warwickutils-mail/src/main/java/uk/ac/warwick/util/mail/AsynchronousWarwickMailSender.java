@@ -153,14 +153,22 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
 
         private final MimeMessage message;
 
+        private boolean logBody = false;
+
         public MimeMailSenderTask(JavaMailSender javaMailSender, MimeMessage theMessage) {
             this.sender = javaMailSender;
             this.message = theMessage;
         }
 
+        public MimeMailSenderTask(JavaMailSender javaMailSender, MimeMessage theMessage, boolean logBody) {
+            this.sender = javaMailSender;
+            this.message = theMessage;
+            this.logBody = logBody;
+        }
+
         public Boolean call() {
             try {
-                LOGGER.info("Trying to send mail " + MimeMessageUtilities.mimeMessageToString(message));
+                LOGGER.info("Trying to send mail " + MimeMessageUtilities.mimeMessageToString(message, logBody));
             } catch (Exception e) {
                 LOGGER.warn("Exception toString() for message: " + message);
             }
