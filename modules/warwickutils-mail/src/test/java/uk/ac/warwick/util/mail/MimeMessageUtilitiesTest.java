@@ -20,7 +20,28 @@ public class MimeMessageUtilitiesTest {
 
     @Test
     public void itWorks() throws MessagingException, IOException {
-        MimeMessage mail = new MimeMessage((Session)null);
+        MimeMessage mail = getTestMessage();
+
+        String s = MimeMessageUtilities.mimeMessageToString(mail, true);
+        Assert.assertTrue("toString contains subject", s.contains("Geese in building"));
+        Assert.assertTrue("toString contains plain text part", s.contains("raise P2 incident"));
+        Assert.assertTrue("toString contains HTML part", s.contains("raise <strong>P2</strong> incident"));
+        Assert.assertTrue("toString contains recipient", s.contains("helpdesk@warwick.ac.uk"));
+    }
+
+    @Test
+    public void bodyCanBeSuppressedWithFlag() throws MessagingException, IOException {
+        MimeMessage mail = getTestMessage();
+        String s = MimeMessageUtilities.mimeMessageToString(mail, false);
+        Assert.assertTrue("toString contains subject", s.contains("Geese in building"));
+        Assert.assertFalse("toString contains plain text part", s.contains("raise P2 incident"));
+        Assert.assertFalse("toString contains HTML part", s.contains("raise <strong>P2</strong> incident"));
+        Assert.assertTrue("toString contains redaction message", s.contains("Redacted"));
+        Assert.assertTrue("toString contains recipient", s.contains("helpdesk@warwick.ac.uk"));
+    }
+
+    private MimeMessage getTestMessage() throws MessagingException {
+        MimeMessage mail = new MimeMessage((Session) null);
         mail.setRecipients(Message.RecipientType.TO, "helpdesk@warwick.ac.uk");
         mail.setSubject("Geese in building");
         MimeBodyPart textPart = new MimeBodyPart();
@@ -32,12 +53,7 @@ public class MimeMessageUtilitiesTest {
         multipart.addBodyPart(textPart); // <-- first
         multipart.addBodyPart(htmlPart); // <-- second
         mail.setContent(multipart);
-
-        String s = MimeMessageUtilities.mimeMessageToString(mail, true);
-        Assert.assertTrue("toString contains subject", s.contains("Geese in building"));
-        Assert.assertTrue("toString contains plain text part", s.contains("raise P2 incident"));
-        Assert.assertTrue("toString contains HTML part", s.contains("raise <strong>P2</strong> incident"));
-        Assert.assertTrue("toString contains recipient", s.contains("helpdesk@warwick.ac.uk"));
+        return mail;
     }
 
 }
