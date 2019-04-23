@@ -20,16 +20,15 @@ public class MimeMessageUtilities {
         sb.append("sentDate=").append(message.getSentDate()).append("; ");
         sb.append("subject=").append(message.getSubject()).append("; ");
         sb.append("text=");
-        if (!logBody) {
-            sb.append("[Redacted, logBody=false]");
-            return sb.toString();
-        }
-        if (message.getContent() instanceof MimeMultipart) {
-            MimeMultipart multipartMessage = (MimeMultipart) message.getContent();
-            processMultipartMessage(sb, multipartMessage);
-
+        if (logBody) {
+            if (message.getContent() instanceof MimeMultipart) {
+                MimeMultipart multipartMessage = (MimeMultipart) message.getContent();
+                processMultipartMessage(sb, multipartMessage);
+            } else {
+                sb.append(message.getContent());
+            }
         } else {
-            sb.append(message.getContent());
+            sb.append("[Redacted, logBody=false]");
         }
         return sb.toString();
     }
