@@ -1,15 +1,18 @@
 package uk.ac.warwick.util.mail;
 
 import java.io.IOException;
+import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +53,10 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
     public MimeMessage createMimeMessage() {
         return mailSender.createMimeMessage();
     }
-    
-    public Future<Boolean> send(MimeMessage message) throws MailException {
+
+    public Future<Boolean> send(MimeMessage message, boolean logBody) throws MailException {
         // if we wanted to block and wait, we could do a .get() on the future
-        return sendAndReturnFuture(message);
+        return sendAndReturnFuture(message, logBody);
     }
 
     public Future<Boolean> send(SimpleMailMessage message) throws MailException {
@@ -61,14 +64,14 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
         return sendAndReturnFuture(message);
     }
 
-    public Future<Boolean> send(MimeMessagePreparator preparator) throws MailException {
+    public Future<Boolean> send(MimeMessagePreparator preparator, boolean logBody) throws MailException {
         MimeMessage message = createMimeMessage();
         try {
             preparator.prepare(message);
         } catch (Exception ex) {
             throw new MailPreparationException(ex);
         }
-        return sendAndReturnFuture(message);
+        return sendAndReturnFuture(message, logBody);
     }
 
     /**
@@ -77,7 +80,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
      * and return a boolean true or false for reported success (success is where
      * the mail sender does not throw an exception when asked to send the mail)
      */
-    private Future<Boolean> sendAndReturnFuture(MimeMessage message) throws MailException {
+    private Future<Boolean> sendAndReturnFuture(MimeMessage message, boolean logBody) throws MailException {
         // we need to throw a MailException if the address is invalid in any way
         try {
             validateRecipients(message.getAllRecipients());
@@ -90,7 +93,7 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
             throw new MailParseException(e);
         }
 
-        return executionService.submit(new MimeMailSenderTask(mailSender, message));
+        return executionService.submit(new MimeMailSenderTask(mailSender, message, logBody));
     }
 
     /**
@@ -150,14 +153,22 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
 
         private final MimeMessage message;
 
+        private boolean logBody = false;
+
         public MimeMailSenderTask(JavaMailSender javaMailSender, MimeMessage theMessage) {
             this.sender = javaMailSender;
             this.message = theMessage;
         }
 
+        public MimeMailSenderTask(JavaMailSender javaMailSender, MimeMessage theMessage, boolean logBody) {
+            this.sender = javaMailSender;
+            this.message = theMessage;
+            this.logBody = logBody;
+        }
+
         public Boolean call() {
             try {
-                LOGGER.info("Trying to send mail " + mimeMessageToString(message));
+                LOGGER.info("Trying to send mail " + MimeMessageUtilities.mimeMessageToString(message, logBody));
             } catch (Exception e) {
                 LOGGER.warn("Exception toString() for message: " + message);
             }
@@ -170,19 +181,6 @@ public final class AsynchronousWarwickMailSender implements WarwickMailSender {
                 LOGGER.error("Error sending mail",e);
                 return false;
             }
-        }
-        
-        private String mimeMessageToString(MimeMessage message) throws MessagingException, IOException {
-            StringBuilder sb = new StringBuilder("MimeMessage: ");
-            sb.append("from=").append(arrayToCommaDelimitedString(message.getFrom())).append("; ");
-            sb.append("replyTo=").append(arrayToCommaDelimitedString(message.getReplyTo())).append("; ");
-            sb.append("to=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.TO))).append("; ");
-            sb.append("cc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.CC))).append("; ");
-            sb.append("bcc=").append(arrayToCommaDelimitedString(message.getRecipients(RecipientType.BCC))).append("; ");
-            sb.append("sentDate=").append(message.getSentDate()).append("; ");
-            sb.append("subject=").append(message.getSubject()).append("; ");
-            sb.append("text=").append(message.getContent());
-            return sb.toString();
         }
 
     }

@@ -16,7 +16,16 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
  */
 public interface WarwickMailSender {
     MimeMessage createMimeMessage();
-    Future<Boolean> send(MimeMessage message) throws MailException;
+    Future<Boolean> send(MimeMessage message, boolean logBody) throws MailException;
+
+    default Future<Boolean> send(MimeMessage message) throws MailException {
+        return send(message, false);
+    }
+
     Future<Boolean> send(SimpleMailMessage message) throws MailException;
-    Future<Boolean> send(MimeMessagePreparator preparator) throws MailException;
+    Future<Boolean> send(MimeMessagePreparator preparator, boolean logBody) throws MailException;
+
+    default Future<Boolean> send(MimeMessagePreparator preparator) throws MailException {
+        return send(preparator, false);
+    }
 }
