@@ -3,8 +3,6 @@ package uk.ac.warwick.util.mywarwick;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,28 +11,27 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import uk.ac.warwick.util.mywarwick.model.Instance;
-
-import static org.junit.Assert.*;
-
 import uk.ac.warwick.util.mywarwick.model.response.Data;
 import uk.ac.warwick.util.mywarwick.model.response.Error;
 import uk.ac.warwick.util.mywarwick.model.response.Response;
 import uk.ac.warwick.util.mywarwick.model.response.Warning;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyWarwickHttpResponseCallbackTest {
 
-    Instance myWarwickInstance = new Instance("", "", "", "", "true");
-    Logger testLogger = TestLoggerFactory.getTestLogger("uk.ac.warwick.util.core.LoggerTest");
+    private Instance myWarwickInstance = new Instance("", "", "", "", "true");
+    private Instance myWarwickInstanceNoLogErrors = new Instance("", "", "", "", "false");
 
-    CompletableFuture<Response> completableFuture;
+    private CompletableFuture<Response> completableFuture;
 
     @Mock
     StatusLine fakeStatusLine;
@@ -42,41 +39,43 @@ public class MyWarwickHttpResponseCallbackTest {
     @Mock
     HttpResponse fakeHttpResponse;
 
+    @Mock
+    Logger fakeLogger;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(fakeStatusLine.getStatusCode()).thenReturn(200);
         completableFuture = new CompletableFuture<>();
         when(fakeHttpResponse.getStatusLine()).thenReturn(fakeStatusLine);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         completableFuture = null;
     }
 
     @Test
     public void shouldHandleCompletedFullySuccessfulResponse() throws ExecutionException, InterruptedException {
-
         MyWarwickHttpResponseCallback myWarwickHttpResponseCallback = new MyWarwickHttpResponseCallback(
                 "https://test.invalid/path",
                 "{}",
                 myWarwickInstance,
-                testLogger,
+                fakeLogger,
                 completableFuture,
                 new AlwaysSuccessResponse()
         );
         myWarwickHttpResponseCallback.completed(fakeHttpResponse);
         assertTrue(completableFuture.isDone());
-        Response response = completableFuture.get();
+        completableFuture.get();
     }
 
     @Test
-    public void shouldHandleCompletedSuccessfulWithWarningResponse() throws ExecutionException, InterruptedException {
+    public void shouldHandleCompletedSuccessfulWithWarningResponse() {
         MyWarwickHttpResponseCallback myWarwickHttpResponseCallback = new MyWarwickHttpResponseCallback(
                 "https://test.invalid/path",
                 "{}",
                 myWarwickInstance,
-                testLogger,
+                fakeLogger,
                 completableFuture,
                 new AlwaysSuccessWithWarningResponse()
         );
@@ -90,12 +89,30 @@ public class MyWarwickHttpResponseCallbackTest {
                 "https://test.invalid/path",
                 "{}",
                 myWarwickInstance,
-                testLogger,
+                fakeLogger,
                 completableFuture,
                 new AlwaysErrorResponse()
         );
         myWarwickHttpResponseCallback.completed(fakeHttpResponse);
         assertTrue(completableFuture.isDone());
+        assertFalse(completableFuture.get().getErrors().isEmpty());
+    }
+
+    @Test
+    public void shouldNotLogOrReturnErrors() throws ExecutionException, InterruptedException {
+        MyWarwickHttpResponseCallback myWarwickHttpResponseCallback = new MyWarwickHttpResponseCallback(
+                "https://test.invalid/path",
+                "{}",
+                myWarwickInstanceNoLogErrors,
+                fakeLogger,
+                completableFuture,
+                new AlwaysErrorResponse()
+        );
+        verify(fakeLogger, never()).error(anyString(), any(Exception.class));
+        verify(fakeLogger, never()).error(anyString());
+        myWarwickHttpResponseCallback.completed(fakeHttpResponse);
+        assertTrue(completableFuture.isDone());
+        assertTrue(completableFuture.get().getErrors().isEmpty());
     }
 
     class AlwaysSuccessResponse implements MyWarwickHttpResponseCallbackHelper {
@@ -120,7 +137,7 @@ public class MyWarwickHttpResponseCallbackTest {
 
     class AlwaysErrorResponse implements MyWarwickHttpResponseCallbackHelper {
         @Override
-        public Response parseHttpResponseToResponseObject(HttpResponse httpResponse, ObjectMapper mapper) throws IOException {
+        public Response parseHttpResponseToResponseObject(HttpResponse httpResponse, ObjectMapper mapper) {
             Response response = new Response();
             response.setSuccess(false);
             response.setError(new Error("999", "this is totally wrong"));
