@@ -1,9 +1,15 @@
 package uk.ac.warwick.util.cache;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,6 +26,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author cusebr
  */
 public final class HashMapCacheStore<K extends Serializable,V extends Serializable> implements CacheStore<K, V> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HashMapCacheStore.class);
 
 	private static final int DEFAULT_CACHE_SIZE = 10_000;
 
@@ -84,7 +92,8 @@ public final class HashMapCacheStore<K extends Serializable,V extends Serializab
 
 		@Override
 		public Builder<K, V, T> properties(Properties properties) {
-			throw new UnsupportedOperationException("Properties can only be set with Memcached cache stores");
+			LOGGER.warn("Properties can only be set with Memcached cache stores - ignoring");
+			return this;
 		}
 
 		@Override
