@@ -23,6 +23,8 @@ public class HttpClientImpl implements HttpClient {
 
     private final CloseableHttpAsyncClient httpClient;
 
+    private final static int ThirtySecondsInMillis = 30 * 1000;
+
     @Inject
     public HttpClientImpl(Configuration config) {
         this.httpClient =
@@ -35,8 +37,8 @@ public class HttpClientImpl implements HttpClient {
                 )
                 .setDefaultRequestConfig(
                     RequestConfig.custom()
-                        .setConnectTimeout(8000) // 8 seconds
-                        .setSocketTimeout(8000) // 8 seconds
+                        .setConnectTimeout(ThirtySecondsInMillis)
+                        .setSocketTimeout(ThirtySecondsInMillis)
                         .setExpectContinueEnabled(true)
                         .setRedirectsEnabled(false)
                         .build()
