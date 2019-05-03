@@ -48,14 +48,14 @@ public class RetryingHttpResponseCallback implements FutureCallback<HttpResponse
 						"\nmax attempts: " + this.maxAttempts +
 						"\nerror message:" + e.getMessage(), e);
 
-				this.numberOfAttempts = this.numberOfAttempts + 1;
 				RequestConfig requestConfig = this.httpclient.getRequestConfig();
 				this.request.setConfig(
 						RequestConfig.copy(requestConfig)
-								.setConnectTimeout(requestConfig.getConnectTimeout() * this.numberOfAttempts)
-								.setSocketTimeout(requestConfig.getSocketTimeout() * this.numberOfAttempts)
+								.setConnectTimeout(requestConfig.getConnectTimeout() * Double.valueOf(Math.pow(2, this.numberOfAttempts)).intValue())
+								.setSocketTimeout(requestConfig.getSocketTimeout() * Double.valueOf(Math.pow(2, this.numberOfAttempts)).intValue())
 								.build()
 				);
+				this.numberOfAttempts = this.numberOfAttempts + 1;
 				httpclient.execute(this.request, this);
 			} else {
 				callback.failed(e);
