@@ -23,8 +23,6 @@ public class HttpClientImpl implements HttpClient {
 
     private final CloseableHttpAsyncClient httpClient;
 
-    private final static int ThirtySecondsInMillis = 30 * 1000;
-
     @Inject
     public HttpClientImpl(Configuration config) {
         this.httpClient =
@@ -35,14 +33,7 @@ public class HttpClientImpl implements HttpClient {
                         .setCharset(StandardCharsets.UTF_8)
                         .build()
                 )
-                .setDefaultRequestConfig(
-                    RequestConfig.custom()
-                        .setConnectTimeout(ThirtySecondsInMillis)
-                        .setSocketTimeout(ThirtySecondsInMillis)
-                        .setExpectContinueEnabled(true)
-                        .setRedirectsEnabled(false)
-                        .build()
-                )
+                .setDefaultRequestConfig(getRequestConfig())
                 .setMaxConnPerRoute(config.getHttpMaxConnPerRoute())
                 .setMaxConnTotal(config.getHttpMaxConn())
                 .build();
@@ -65,6 +56,16 @@ public class HttpClientImpl implements HttpClient {
 
     public Future<HttpResponse> execute(HttpUriRequest request, FutureCallback<HttpResponse> callback) {
         return httpClient.execute(request, callback);
+    }
+
+    @Override
+    public RequestConfig getRequestConfig() {
+        return RequestConfig.custom()
+                .setConnectTimeout(2000) // 2 seconds (on first attempt)
+                .setSocketTimeout(2000) // 2 seconds (on first attempt)
+                .setExpectContinueEnabled(true)
+                .setRedirectsEnabled(false)
+                .build();
     }
 
     @Override
