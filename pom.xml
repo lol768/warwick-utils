@@ -28,7 +28,7 @@
 
         <org.springframework.version>4.3.21.RELEASE</org.springframework.version>
         <org.hibernate.version>4.3.11.Final</org.hibernate.version>
-        <com.fasterxml.jackson.version>2.9.8</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.10.0.pr1</com.fasterxml.jackson.version>
 
         <project.root>${project.basedir}</project.root>
     </properties>
