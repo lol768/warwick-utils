@@ -26,7 +26,7 @@
     <properties>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 
-        <org.springframework.version>4.3.21.RELEASE</org.springframework.version>
+        <org.springframework.version>5.0.0.RELEASE</org.springframework.version>
         <org.hibernate.version>4.3.11.Final</org.hibernate.version>
         <com.fasterxml.jackson.version>2.9.8</com.fasterxml.jackson.version>
 
